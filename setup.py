@@ -20,6 +20,7 @@ setup(name='ckanextiati',
       zip_safe=False,
       install_requires=[
           # -*- Extra requirements: -*-
+          'ckanclient>=0.3',
       ],
       entry_points="""
       # -*- Entry points: -*-
