@@ -1,0 +1,47 @@
+
+Schema elements known so far: 
+
+* Source
+* Country
+* Date Registered
+* Formats: XML / CSV / XLS / RSS Feed of content 
+* Type of Source [Community|Partner Country|Agency]
+* Status [Not Verified|Verified]
+* Activity Date Range
+* Donor Details
+
+
+As per Tariqs Mail:
+
+Publishing Entity: 
+Publishing Entity Type: (Donor, Recipient, Community Data..)
+Donor (Generate from crawler)   
+Country
+Activity period: (Generate from crawler) 
+Verification status: enumeration of statuses (checked, not checked etc)
+Resource links: to the actual IATI record
+Number of activities: (Generate from crawler) 
+Date record updated:
+Date data updated: 
+License: Need this field even if it may be a standard license
+
+
+Identifier
+Title   
+Abstract
+Donor
+Country
+Publisher
+Publisher Type
+Verification Status
+Department
+Contact   
+Contact e-mail
+Licence    
+Resource format    
+Resource URL    
+Resource ID    
+Activity period (Generate from crawler) 
+Number of activities (Generate from crawler) 
+Date record updated
+Date data updated
