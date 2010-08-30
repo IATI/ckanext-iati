@@ -123,3 +123,38 @@ a, a:visited {
 body, #table, .box {
 	color: #425B6B;
 }
+
+.box {
+	background-color: #BBE3F7;
+	border-right: 0px;
+	border-bottom: 0px;
+	padding-bottom: 1em;
+}
+
+#primary {
+	margin-top: 0px;
+}
+
+input[type=submit] { 
+	border: 0px;
+	font-weight: bolder;
+	font-size: 1.1em;
+	padding: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 4px;
+	color: #425B6B;
+	background-color: #BBE3F7;
+}
+
+input[type=submit]:hover { 
+	cursor: pointer;
+	color: #BBE3F7;
+	background-color: #425B6B;
+}
+
+input[type="search"] {
+	font-size: 1.1em;
+	padding: 0.1em;
+	-webkit-appearance: textfield;	
+}

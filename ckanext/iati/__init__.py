@@ -1,5 +1,12 @@
 import inspect
 import os
+from forms.countries import COUNTRIES
+
+def country_name(code):
+    return dict(COUNTRIES).get(code, code)
+
+import ckan.lib.helpers as h
+h.country_name = country_name 
 
 class TemplatingPlugin(object):
     
