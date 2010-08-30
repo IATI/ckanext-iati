@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
+  xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  >
+
+<xi:include href="_util.html" />
+
+<head>
+  <title>${page_title()} - ${g.site_title}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="shortcut icon" href="http://iatiregistry.org/ui/wp-content/themes/iatidata/images/iati.png" />
+  <link rel="icon" type="image/png" href="http://iatiregistry.org/ui/wp-content/themes/twentyten/images/iati.png" />
+  
+  <py:choose>
+  <py:when test="defined('optional_feed')">
+    ${optional_feed()}
+  </py:when>
+  <py:otherwise>
+  <link rel="alternate" type="application/atom+xml" title="${g.site_title} - Recent Revision History" href="/revision/list?format=atom&amp;days=1" />
+  </py:otherwise>
+  </py:choose>
+
+  <style type="text/css"> 
+    @import url(http://m.okfn.org/kforge/css/structure.css);
+    @import url(http://m.okfn.org/kforge/css/display.css);
+    @import url(http://m.okfn.org/kforge/css/navigation.css);
+    @import url(http://m.okfn.org/kforge/css/print.css);
+  </style> 
+
+  <link rel="stylesheet" href="/css/ckan.master.css" type="text/css" media="screen, print" />
+  <link rel="stylesheet" href="/css/iati.css" type="text/css" media="screen, print" />
+
+  <!--[if IE]>
+  <link rel="stylesheet" href="/css/ie.css" type="text/css" media="screen, print" />
+  <![endif]-->
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/scripts/application.js"></script>
+
+  <py:if test="defined('optional_head')">
+    ${optional_head()}
+  </py:if>
+</head>
+
+<body>
+<div id="airlock">
+  
+  <!--[if IE]>
+    <hr class="holder" />
+  <![endif]-->
+  <div id="top">
+    <div id="top-inner">
+      <div id="top-bar">
+        <topbar py:choose="">
+	<p py:when="c.user" i18n:msg="openid_icon, user">
+            Logged in as <strong>${h.icon('openid')} ${c.user}</strong>
+            &middot; <a href="${h.url_for(controller='user',action=None,id=None)}">My account</a>
+	    &middot; <a href="${h.url_for('/logout_openid')}">Logout</a>
+          </p>
+          <p py:otherwise="" i18n:msg="openid_icon">
+            <a href="${h.url_for(controller='user',action='login', id=None)}">Login with ${h.icon('openid')} OpenID</a>
+          </p>
+        </topbar>
+      </div><!-- /top-bar -->
+      
+      <div id="header">
+      		<div id="masthead">
+      			<div id="branding" role="banner">
+      			    <div id="site-description"></div>
+      								<h1 id="site-title">
+                                            
+      					<span>
+      						<a href="http://iatiregistry.org/ui/" title="IATI Registry" rel="home">IATI Registry</a>
+      					</span>
+      				</h1>
+      				
+      										<img src="http://iatiregistry.org/ui/wp-content/themes/iatidata/images/headers/stripes.jpg" width="940" height="79" alt="" />
+      								</div><!-- #branding -->
+
+      		</div><!-- #masthead -->
+      	</div><!-- #header -->
+
+    </div><!-- /top-inner -->
+
+    <h3 class="hidden">Sections:</h3>
+    <ul id="navigation">
+      <li>${h.nav_link(c, _('Home'), controller='home', action='index', id=None)}</li>
+      <li>${h.nav_link(c, _('Data Packages'), controller='package', action='index', id=None)}</li>
+      <li>${h.nav_link(c, _('Tags'), controller='tag', action='index', id=None)}</li>
+      <li>${h.nav_link(c, _('Groups'), controller='group', action='index', id=None)}</li>
+      <li>${h.nav_link(c, _('Revision History'), controller='revision', action='index', id=None)}</li>
+	  <li>${h.nav_link(c, _('API'), controller='rest', action='index', id=None)}</li>
+    </ul>
+    <h3 class="hidden">In this section:</h3>
+    <!--! This is a default (blank) subnav. -->
+    <py:match path="minornavigation"></py:match>
+    <ul id="subnav"><minornavigation></minornavigation></ul>
+
+    <!--[if IE]>
+    <hr class="holder" />
+    <![endif]-->
+
+  </div><!-- /top -->
+  
+  <div id="wrapper">
+  <p class="hidden"><a href="#main" title="Skip to page content">[ Skip to main content ]</a></p>
+  
+  
+  <div id="primary" class="sidebar">
+    <primarysidebar>
+    <!-- Primary Side Bar Goes Here -->
+    </primarysidebar>
+
+    <!--[if IE]>
+    <hr class="primary" />
+    <![endif]-->
+  </div><!-- /primary -->
+  <div id="main">
+    <div id="content">
+        <content>
+            <p>Master content template placeholder &hellip; please replace me.</p>
+        </content>
+    </div>
+
+    <div id="footer">
+      <p>
+        Powered by <a href="http://www.okfn.org/ckan/">CKAN</a>
+        | <a href="http://www.okfn.org/contact/">Contact Us</a>
+        | <a href="http://www.okfn.org/privacy-policy/">Privacy Policy</a>
+      </p>
+    </div><!-- /footer -->
+    
+    <!--[if IE]>
+    <hr class="main" />
+    <![endif]-->
+  </div><!-- /main -->
+  </div>
+</div><!-- /airlock -->
+
+</body>
+</html>

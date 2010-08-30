@@ -25,6 +25,9 @@ setup(name='ckanextiati',
       entry_points="""
       # -*- Entry points: -*-
       
+      [ckan.plugins]
+      iati = ckanext.iati:TemplatingPlugin
+      
       [ckan.forms]
       iati = ckanext.iati.forms:get_iati_fieldset
       """,
