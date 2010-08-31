@@ -131,6 +131,10 @@ body, #table, .box {
 	padding-bottom: 1em;
 }
 
+th {
+	background-color: #BBE3F7;
+}
+
 #primary {
 	margin-top: 0px;
 }
