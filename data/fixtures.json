@@ -1,0 +1,152 @@
+[
+	{
+		"name": "DFID-RW-ALL",
+		"title": "DFID IATI Country Record Archive for Rwanda",
+		"notes": "",
+		"author": "A. Example",
+		"author_email": "a.example@dfid.gov.uk",
+		"license": "IATI-License",
+		"extras": {
+			"donors": ["DFID"],
+			"donors_type": ["bilateral"],
+			"donors_country": ["GB"],
+			"country": "RW",
+			"publisher": "DFID",
+			"publisher_type": "donor",
+			"archive_file": true,
+			"verified": true,
+			"department": "",
+			"data_updated": "2010-06-01 .",
+			"record_updated": "2010-09-01 .",
+			"activity_period-from": "2004-09-01",
+			"activity_period-to": "2014-10-31",
+			"activity_count": "45"
+		},
+		"resources": [
+			{
+				"format": "IATI-XML",
+				"url": "http://iatilabs.org/test-data/donor-data/DFDonor/RW.xml"
+			}
+		]
+	},
+	{
+		"name": "DFID-ET-ALL",
+		"title": "DFID IATI Country Record Archive for Ethiopia",
+		"notes": "",
+		"author": "A. Example",
+		"author_email": "a.example@dfid.gov.uk",
+		"license": "IATI-License",
+		"extras": {
+			"donors": ["DFID"],
+			"donors_type": ["bilateral"],
+			"donors_country": ["GB"],
+			"country": "ET",
+			"publisher": "DFID",
+			"publisher_type": "donor",
+			"archive_file": true,
+			"verified": true,
+			"department": "",
+			"data_updated": "2010-06-01 .",
+			"record_updated": "2010-09-01 .",
+			"activity_period-from": "2004-06-01",
+			"activity_period-to": "2013-05-31",
+			"activity_count": "77"
+		},
+		"resources": [
+			{
+				"format": "IATI-XML",
+				"url": "http://iatilabs.org/test-data/donor-data/DFDonor/ET.xml"
+			}
+		]
+	},
+	{
+		"name": "UNDP-CO-ALL",
+		"title": "UNDP IATI Country Record Archive for Colombia",
+		"notes": "",
+		"author": "B.Example",
+		"author_email": "b.example@undp.org",
+		"license": "IATI-License",
+		"extras": {
+			"donors": ["UNDP"],
+			"donors_type": ["multilateral"],
+			"donors_country": [],
+			"country": "CO",
+			"publisher": "UNDP",
+			"publisher_type": "donor",
+			"archive_file": true,
+			"verified": true,
+			"department": "",
+			"data_updated": "2010-06-01 .",
+			"record_updated": "2010-09-01 .",
+			"activity_period-from": "2000-01-01",
+			"activity_period-to": "2025-12-31",
+			"activity_count": "128"
+		},
+		"resources": [
+			{
+				"format": "IATI-XML",
+				"url": "http://iatidonordemo.org/undp/data/2"
+			}
+		]
+	},
+	{
+		"name": "DG-BF-ALL",
+		"title": "Development Gateway IATI Country Record Archive for Burkina Faso",
+		"notes": "",
+		"author": "C.Example",
+		"author_email": "c.example@developmentgateway.org/",
+		"license": "IATI-License",
+		"extras": {
+			"donors": ["IBRD", "IDB", "DFID"],
+			"donors_type": ["multilateral", "bilateral"],
+			"donors_country": [],
+			"country": "BF",
+			"publisher": "Development Gateway",
+			"publisher_type": "community",
+			"archive_file": false,
+			"verified": true,
+			"department": "",
+			"data_updated": "2010-06-01 .",
+			"record_updated": "2010-09-01 .",
+			"activity_period-from": "2009-01-01",
+			"activity_period-to": " 2010-03-30",
+			"activity_count": "128"
+		},
+		"resources": [
+			{
+				"format": "IATI-XML",
+				"url": "http://iatilabs.org/test-data/DevelopmentGateway/DevelopmentGateway_BF_IATI.xml"
+			}
+		]
+	},
+	{
+		"name": "DAD-Rwanda-RW-ALL",
+		"title": "DAD Rwanda",
+		"notes": "",
+		"author": "D.Example",
+		"author_email": "d.example@rwanda.gov",
+		"license": "IATI-License",
+		"extras": {
+			"donors": ["World Bank", "Netherlands", "DFID", "UNDP"],
+			"donors_type": ["multilateral", "bilateral"],
+			"donors_country": ["GB", "NL"],
+			"country": "RW",
+			"publisher": "DAD Rwanda",
+			"publisher_type": "country",
+			"archive_file": false,
+			"verified": true,
+			"department": "",
+			"data_updated": null,
+			"record_updated": null,
+			"activity_period-from": null,
+			"activity_period-to": null,
+			"activity_count": null
+		},
+		"resources": [
+			{
+				"format": "IATI-XML",
+				"url": "http://iatilabs.org/test-data/DAD-Rwanda/DAD-Rwanda_RW_IATI.xml"
+			}
+		]
+	}
+]
