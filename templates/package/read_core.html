@@ -46,6 +46,17 @@
           </td>
         </tr>
     </py:def>
+    
+    <py:def function="details_list(label, values)">
+        <tr py:if="values is not None and len(values) > 0">
+          <td class="package-label">
+            ${label}
+          </td>
+          <td class="package-details"><ul>
+            <li py:for="value in values">${value}</li>
+          </ul></td>
+        </tr>
+    </py:def>
 
     <div class="details">
     <h4>Details</h4>
@@ -54,9 +65,13 @@
         ${details_item('Contact', c.pkg_author_link)}
         <!--${details_item('Maintainer', c.pkg_maintainer_link)}
         ${details_item('Version', c.pkg.version)}-->
-        ${details_item('Donors', c.pkg.extras.get('donors', '-'))}
-        ${details_item('Country', h.country_name(c.pkg.extras.get('country', '(Unknown)')))}
+        ${details_list('Donors', c.pkg.extras.get('donors', '-'))}
+        ${details_list('Donor types', c.pkg.extras.get('donors_type', []))}
+        ${details_list('Donor countries', [h.country_name(x) for x in c.pkg.extras.get('donors_country', [])])}
+        ${details_item('Recipient Country', h.country_name(c.pkg.extras.get('country', '(Unknown)')))}
         
+        ${details_item('Verified', c.pkg.extras.get('verified', 'no'))}
+        ${details_item('Archive File', c.pkg.extras.get('archive_file', 'no'))}
         ${details_item('Department', c.pkg.extras.get('department', '-'))}
         
         <tr>

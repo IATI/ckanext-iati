@@ -4,9 +4,9 @@
   
   <?python
     any = [('', 'Any')]
-    country_options = any + [(o, h.country_name(o)) for o in h.facet_options('package', 'country')]
-    donors_options = any + [(o, h.country_name(o)) for o in h.facet_options('package', 'donors')]
-    groups_options = any + [(o, h.country_name(o)) for o in h.facet_options('package', 'donors')]
+    country_options = any + [(o, h.country_name(o) + " (%s)" % n) for o, n in h.facet_options('package', 'country')]
+    donors_options = any + [(o, o + " (%s)" % n) for o, n in h.facet_options('package', 'donors')]
+    groups_options = any + [(o, o + " (%s)" % n) for o, n in h.facet_options('package', 'donors')]
   ?>
   <p class="small">
       
