@@ -119,13 +119,13 @@ def build_package_iati_form(is_admin=False):
     #Donor (TODO: Generate from crawler)   
     # Editable List, CSV? 
     builder.add_field(CommaListExtraField('donors'))
-    builder.set_field_text('donors', _('Donors'))
+    builder.set_field_text('donors', _('Donors'), "Separate multiple entries using comments.")
     
     builder.add_field(CommaListExtraField('donors_type'))
-    builder.set_field_text('donors_type', _('Donor type'))
+    builder.set_field_text('donors_type', _('Donor type'), "Separate multiple entries using comments.")
     
     builder.add_field(CommaListExtraField('donors_country'))
-    builder.set_field_text('donors_country', _('Donor country'))
+    builder.set_field_text('donors_country', _('Donor country'), "Separate multiple entries using comments.")
     
     # TODO: Enforce validation
     countries = [(v, k) for k, v in COUNTRIES]
