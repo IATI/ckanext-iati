@@ -47,6 +47,17 @@
         </tr>
     </py:def>
     
+    <py:def function="details_asbool(label, value)">
+        <tr>
+          <td class="package-label">
+            ${label}
+          </td>
+          <td class="package-details">
+            ${'yes' if value else 'no'}
+          </td>
+        </tr>
+    </py:def>
+    
     <py:def function="details_list(label, values)">
         <tr py:if="values is not None and len(values) > 0">
           <td class="package-label">
@@ -70,8 +81,8 @@
         ${details_list('Donor countries', [h.country_name(x) for x in c.pkg.extras.get('donors_country', [])])}
         ${details_item('Recipient Country', h.country_name(c.pkg.extras.get('country', '(Unknown)')))}
         
-        ${details_item('Verified', c.pkg.extras.get('verified', 'no'))}
-        ${details_item('Archive File', c.pkg.extras.get('archive_file', 'no'))}
+        ${details_asbool('Verified', c.pkg.extras.get('verified', False))}
+        ${details_asbool('Archive File', c.pkg.extras.get('archive_file', False))}
         ${details_item('Department', c.pkg.extras.get('department', '-'))}
         
         <tr>
