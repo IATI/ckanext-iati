@@ -37,7 +37,7 @@ ckan.model.authz.default_role_actions = [
 class TemplatingPlugin(object):
     
     def __init__(self, config):
-        this_file = os.path.dirname(inspect.currentframe().f_code.co_filename)
+        this_file = os.path.dirname(__file__)
         config['extra_template_paths'] = ', '.join((os.path.join(this_file, '../../templates'),
                                                    config.get('extra_template_paths', '')))
         config['extra_public_paths'] = ', '.join((os.path.join(this_file, '../../public'),
