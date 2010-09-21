@@ -99,22 +99,20 @@ class SelectExtraField(TextExtraField):
 # Setup the fieldset
 def build_package_iati_form(is_admin=False):
     
-    PUBLISHER_TYPES = [_("Donor"),
-                       _("Recipient"),
-                       _("Community")]
     
     builder = package.build_package_form()
     
     # IATI specifics
     
-    # TODO Factor these out into group properties and enforce using authz
     #Publishing Entity: 
-    builder.add_field(common.TextExtraField('publisher'))
-    builder.set_field_text('publisher', _('Publishing entity'))
+    builder.add_field(common.GroupSelectField('groups', allow_empty=False))
+    
+    #builder.add_field(common.TextExtraField('publisher'))
+    #builder.set_field_text('publisher', _('Publishing entity'))
     
     #Publishing Entity Type: (Donor, Recipient, Community Data..)
-    builder.add_field(SelectExtraField('publisher_type', options=PUBLISHER_TYPES))
-    builder.set_field_text('publisher_type', _('Publishing entity type'))
+    #builder.add_field(SelectExtraField('publisher_type', options=PUBLISHER_TYPES))
+    #builder.set_field_text('publisher_type', _('Publishing entity type'))
     
     #Donor (TODO: Generate from crawler)   
     # Editable List, CSV? 
@@ -187,7 +185,7 @@ def build_package_iati_form(is_admin=False):
     field_groups = OrderedDict([
         (_('Basic information'), ['name', 'title', 
                                   'author', 'author_email', 'department',]),
-        (_('TEMP: Publishing Entity Info'), ['publisher', 'publisher_type']),
+        (_('Publishing Entity'), ['groups']),
         (_('Details'), ['country', 'donors', 'donors_type', 'donors_country',
                         'record_updated', 'data_updated',
                         'license_id', 'tags', 'notes']),
@@ -214,7 +212,7 @@ def build_package_iati_form(is_admin=False):
 
 fieldsets = {} # fieldset cache
 
-def get_iati_fieldset(is_admin=False):
+def get_package_fieldset(is_admin=False):
     '''Returns the standard fieldset
     '''
     if not fieldsets:

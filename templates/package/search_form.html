@@ -5,14 +5,14 @@
   <?python
     any = [('', 'Any')]
     country_options = any + [(o, h.country_name(o) + " (%s)" % n) for o, n in h.facet_options('package', 'country')]
-    donors_options = any + [(o, o + " (%s)" % n) for o, n in h.facet_options('package', 'donors')]
+    ##donors_options = any + [(o, o + " (%s)" % n) for o, n in h.facet_options('package', 'donors')]
     groups_options = any + [(o, o + " (%s)" % n) for o, n in h.facet_options('package', 'donors')]
   ?>
   <p class="small">
       
   </p>
-    
-  Country: ${h.select('country', c.facets.get('country', '') if c.facets else '',  country_options)}
-  Donor: ${h.select('donors', c.facets.get('donors', '') if c.facets else '', donors_options)}
+
   Publisher: ${h.select('groups', c.facets.get('groups', '') if c.facets else '', groups_options)}
+  Country: ${h.select('country', c.facets.get('country', '') if c.facets else '',  country_options)}
+  ##Donor: ${h.select('donors', c.facets.get('donors', '') if c.facets else '', donors_options)}
 </form>

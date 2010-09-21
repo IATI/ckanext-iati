@@ -30,6 +30,7 @@ setup(name='ckanextiati',
       iati = ckanext.iati:TemplatingPlugin
       
       [ckan.forms]
-      iati = ckanext.iati.forms:get_iati_fieldset
+      iati_package = ckanext.iati.forms:get_iati_package_fieldset
+      iati_group = ckanext.iati.forms:get_iati_group_fieldset
       """,
       )
