@@ -8,7 +8,7 @@ from pylons.i18n import _, ungettext, N_, gettext
 import ckan.model as model
 import ckan.forms.common as common
 import ckan.forms.group as group
-from ckan.forms.common import ExtrasField, PackageNameField
+from ckan.forms.common import ExtrasField, PackageNameField, SelectExtraField
 from ckan.lib.helpers import literal
 
 __all__ = ['get_group_dict', 'edit_group_dict']
@@ -25,7 +25,7 @@ def build_group_form(with_packages=False):
     builder.set_field_text('name', 'Unique Name (required)', literal("<br/><strong>Unique identifier</strong> for group.<br/>2+ chars, lowercase, using only 'a-z0-9' and '-_'"))
     builder.set_field_option('name', 'validate', common.group_name_validator)
     #builder.set_field_option('description', 'textarea', {'size':'60x15'})
-    builder.add_field(common.SuggestedTextExtraField('type', options=PUBLISHER_TYPES))
+    builder.add_field(SelectExtraField('type', options=PUBLISHER_TYPES, allow_empty=False))
     builder.set_field_text('type', 'Publishing Entity Type')
     #builder.add_field(ExtrasField('extras', hidden_label=True))
     displayed_fields = ['name', 'title', 'type']
