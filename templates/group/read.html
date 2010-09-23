@@ -1,0 +1,49 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  py:strip="">
+  
+  <py:def function="page_title">${c.group.title or c.group.name} - Groups</py:def>
+
+  <div py:match="content">
+   <div class="group">
+    <h2 class="head">
+      <py:if test="not c.group.title">
+        <em>No Title</em>
+      </py:if>
+
+      ${c.group.title}
+      <span class="name">(${c.group.extras.get('type', _('Type unknown'))})</span>
+    </h2>
+
+    <div class="description">
+
+          <span class="object-action">
+          <py:if test="c.auth_for_edit">
+            <a href="${h.url_for(controller='group',action='edit',id=c.group.name)}">[edit]</a>
+          </py:if>
+          <py:if test="c.auth_for_authz">
+            <a href="${h.url_for(controller='group',action='authz',id=c.group.name)}">[authorization]</a>
+          </py:if>
+          </span>
+    </div>
+
+    <h3>Packages:</h3>
+    ${c.page.pager()}
+    ${package_list(c.page.items)}
+    ${c.page.pager()}
+    <p i18n:msg="item_count">There are ${c.page.item_count} packages in this group.</p>
+    
+    <py:if test="c.group_admins">
+      <h3>Administrators:</h3> 
+        <ul py:for="admin in c.group_admins">
+          <li><a href="${h.url_for(controller='user',action='read',id=admin.id)}">${admin.name}</a></li>
+        </ul>
+    </py:if>
+   </div>
+  </div>
+
+  <xi:include href="layout.html" />
+</html>
+
+
