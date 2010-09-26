@@ -6,7 +6,7 @@ from pylons.i18n import _, ungettext, N_, gettext
 
 from ckan.lib.helpers import literal
 import ckan.forms.common as common
-from ckan.forms.common import fa_h, TextExtraField, RegExRangeValidatingField
+from ckan.forms.common import fa_h, TextExtraField, RegExRangeValidatingField, GroupSelectField
 import ckan.model as model
 import ckan.forms.package as package
 from ckan.lib import field_types
@@ -94,8 +94,18 @@ class SelectExtraField(TextExtraField):
             main_value = self.params.get(self.name, u'')
             return main_value
 
+class AtLeastOneGroupSelectField(GroupSelectField):
+    
+    def get_configured(self):
+        field = self.GroupSelectionField(self.name, self.allow_empty).with_renderer(self.GroupSelectEditRenderer)
+        field = field.validate(self.validate_groups)
+        return field
+        
+    def validate_groups(self, val, field):
+        if len(val) < 1:
+            raise formalchemy.ValidationError(_("Need at least one publishing entity assigned"))
 
-
+            
 # Setup the fieldset
 def build_package_iati_form(is_admin=False):
     
@@ -105,7 +115,7 @@ def build_package_iati_form(is_admin=False):
     # IATI specifics
     
     #Publishing Entity: 
-    builder.add_field(common.GroupSelectField('groups', allow_empty=False))
+    builder.add_field(AtLeastOneGroupSelectField('groups', allow_empty=False))
     
     #builder.add_field(common.TextExtraField('publisher'))
     #builder.set_field_text('publisher', _('Publishing entity'))

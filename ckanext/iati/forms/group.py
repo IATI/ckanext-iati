@@ -15,7 +15,7 @@ __all__ = ['get_group_dict', 'edit_group_dict']
 
 
 
-def build_group_form(with_packages=False):
+def build_group_form(is_admin=False, with_packages=False):
     
     PUBLISHER_TYPES = [_("Donor"),
                        _("Recipient"),
@@ -25,8 +25,9 @@ def build_group_form(with_packages=False):
     builder.set_field_text('name', 'Unique Name (required)', literal("<br/><strong>Unique identifier</strong> for group.<br/>2+ chars, lowercase, using only 'a-z0-9' and '-_'"))
     builder.set_field_option('name', 'validate', common.group_name_validator)
     #builder.set_field_option('description', 'textarea', {'size':'60x15'})
-    builder.add_field(SelectExtraField('type', options=PUBLISHER_TYPES, allow_empty=False))
-    builder.set_field_text('type', 'Publishing Entity Type')
+    if is_admin:
+        builder.add_field(SelectExtraField('type', options=PUBLISHER_TYPES, allow_empty=False))
+        builder.set_field_text('type', 'Type')
     #builder.add_field(ExtrasField('extras', hidden_label=True))
     displayed_fields = ['name', 'title', 'type']
     if with_packages:
@@ -39,13 +40,14 @@ def build_group_form(with_packages=False):
 
 fieldsets = {}
 
-def get_group_fieldset(combined=False):
+def get_group_fieldset(is_admin=False, combined=False):
     if not 'group_fs' in fieldsets:
         # group_fs has no packages - first half of the WUI form
-        fieldsets['group_fs'] = build_group_form().get_fieldset()
+        fieldsets['group_fs'] = build_group_form(is_admin=is_admin).get_fieldset()
         
         # group_fs_combined has packages - used for REST interface
-        fieldsets['group_fs_combined'] = build_group_form(with_packages=True).get_fieldset()
+        fieldsets['group_fs_combined'] = build_group_form(is_admin=is_admin, 
+                                         with_packages=True).get_fieldset()
     if combined:
         return fieldsets['group_fs_combined']
     return fieldsets['group_fs']
