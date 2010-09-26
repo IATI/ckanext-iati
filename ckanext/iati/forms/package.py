@@ -127,13 +127,13 @@ def build_package_iati_form(is_admin=False):
     #Donor (TODO: Generate from crawler)   
     # Editable List, CSV? 
     builder.add_field(CommaListExtraField('donors'))
-    builder.set_field_text('donors', _('Donors'), "Separate multiple entries using comments.")
+    builder.set_field_text('donors', _('Donors'), "Separate multiple entries using commas.")
     
     builder.add_field(CommaListExtraField('donors_type'))
-    builder.set_field_text('donors_type', _('Donor type'), "Separate multiple entries using comments.")
+    builder.set_field_text('donors_type', _('Donor type'), "Separate multiple entries using commas.")
     
     builder.add_field(CommaListExtraField('donors_country'))
-    builder.set_field_text('donors_country', _('Donor country'), "Separate multiple entries using comments.")
+    builder.set_field_text('donors_country', _('Donor country'), "Separate multiple entries using commas.")
     
     # TODO: Enforce validation
     countries = [(v, k) for k, v in COUNTRIES]
@@ -148,11 +148,9 @@ def build_package_iati_form(is_admin=False):
     builder.add_field(common.CheckboxExtraField('archive_file'))
     builder.set_field_text('archive_file', _('Archive'))
     
-    
     #Activity period: (Generate from crawler) 
     builder.add_field(common.DateRangeExtraField('activity_period'))
     builder.set_field_text('activity_period', _('Activitiy Period'))
-    
     
     #Resource links: to the actual IATI record
     #Number of activities: (Generate from crawler) 
