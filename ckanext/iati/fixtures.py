@@ -16,17 +16,27 @@ def load_fixtures_via_api(api_url, api_key):
     fp = open(FIXTURES_PATH, 'r')
     fixtures = json.load(fp)
     fp.close()
-    for fixture in fixtures: 
+    for fixture in fixtures.get('packages'): 
         name = fixture['name'] = fixture.get('name').lower()
         print "Loading %s" % fixture.get('title').encode('utf-8')
         existing = cc.package_entity_get(name)
-        if existing: 
+        if isinstance(existing, dict): 
             cc.package_entity_put(fixture)
         else:
             cc.package_register_post(fixture)
-        #pprint(existing)
-        #pprint(fixture) 
-        
+        print cc.last_message
+    for fixture in []: # fixtures.get('groups'): 
+        name = fixture['name'] = fixture.get('name').lower()
+        fixture['packages'] = [p.lower() for p in fixture.get('packages', [])]
+        print "Loading %s" % fixture.get('title').encode('utf-8')
+        pprint(fixture)
+        existing = cc.group_entity_get(name)
+        pprint(existing)
+        if isinstance(existing, dict): 
+            cc.group_entity_put(fixture)
+        else:
+            cc.group_register_post(fixture)
+        pprint(cc.last_message)
 
 
 

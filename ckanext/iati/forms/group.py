@@ -25,16 +25,17 @@ def build_group_form(is_admin=False, with_packages=False):
     builder.set_field_text('name', 'Unique Name (required)', literal("<br/><strong>Unique identifier</strong> for group.<br/>2+ chars, lowercase, using only 'a-z0-9' and '-_'"))
     builder.set_field_option('name', 'validate', common.group_name_validator)
     #builder.set_field_option('description', 'textarea', {'size':'60x15'})
+    displayed_fields = ['name', 'title']
     if is_admin:
         builder.add_field(SelectExtraField('type', options=PUBLISHER_TYPES, allow_empty=False))
         builder.set_field_text('type', 'Type')
+        displayed_fields.append('type')
     #builder.add_field(ExtrasField('extras', hidden_label=True))
-    displayed_fields = ['name', 'title', 'type']
+    
     if with_packages:
         builder.add_field(group.PackagesField('packages'))
         displayed_fields.append('packages')
-    builder.set_displayed_fields(OrderedDict([('Details', displayed_fields),
-                                              ]))
+    builder.set_displayed_fields(OrderedDict([('Details', displayed_fields)]))
     builder.set_label_prettifier(common.prettify)
     return builder  
 

@@ -1,4 +1,4 @@
-[
+{"packages": [
 	{
 		"name": "DFID-RW-ALL",
 		"title": "DFID IATI Country Record Archive for Rwanda",
@@ -11,8 +11,6 @@
 			"donors_type": ["bilateral"],
 			"donors_country": ["GB"],
 			"country": "RW",
-			"publisher": "DFID",
-			"publisher_type": "donor",
 			"archive_file": true,
 			"verified": true,
 			"department": "",
@@ -41,8 +39,6 @@
 			"donors_type": ["bilateral"],
 			"donors_country": ["GB"],
 			"country": "ET",
-			"publisher": "DFID",
-			"publisher_type": "donor",
 			"archive_file": true,
 			"verified": true,
 			"department": "",
@@ -101,8 +97,6 @@
 			"donors_type": ["multilateral", "bilateral"],
 			"donors_country": [],
 			"country": "BF",
-			"publisher": "Development Gateway",
-			"publisher_type": "community",
 			"archive_file": false,
 			"verified": true,
 			"department": "",
@@ -131,8 +125,6 @@
 			"donors_type": ["multilateral", "bilateral"],
 			"donors_country": ["GB", "NL"],
 			"country": "RW",
-			"publisher": "DAD Rwanda",
-			"publisher_type": "country",
 			"archive_file": false,
 			"verified": true,
 			"department": "",
@@ -149,4 +141,31 @@
 			}
 		]
 	}
+],
+"groups": [
+	{
+		"name": "dad-rwanda", 
+		"title": "DAD Rwanda",
+		"type": "Recipient",
+		"packages": ["DAD-Rwanda-RW-ALL"]
+	},
+	{
+		"name": "development-gateway", 
+		"title": "Development Gateway",
+		"type": "Community",
+		"packages": ["DG-BF-ALL"]
+  },
+	{
+		"name": "dfid", 
+		"title": "DFID",
+		"type": "Donor",
+		"packages": ["DFID-RW-ALL"]
+  },
+	{
+		"name": "undp", 
+		"title": "UN Development Programme",
+		"type": "Donor",
+		"packages": ["UNDP-CO-ALL"]
+	}
 ]
+}

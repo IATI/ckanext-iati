@@ -8,11 +8,9 @@
     groups_options = any + [(o, o + " (%s)" % n) for o, n in h.facet_options('package', 'donors')]
     types_options = any + [(o, o + " (%s)" % n) for o, n in h.facet_options('package', 'groups_types')]
   ?>
-  <p class="small">
-      
-  </p>
-
+  <div>
   Publisher: ${h.select('groups', c.facets.get('groups', '') if c.facets else '', groups_options)}
-  Country: ${h.select('country', c.facets.get('country', '') if c.facets else '',  country_options)}
   Publisher types: ${h.select('groups_types', c.facets.get('groups_types', '') if c.facets else '', types_options)}
+  Country: ${h.select('country', c.facets.get('country', '') if c.facets else '',  country_options)}
+  </div>
 </form>

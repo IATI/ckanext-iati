@@ -1,0 +1,31 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
+  xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  py:strip=""
+  >
+
+  <py:match path="primarysidebar">
+    <div class="box">
+      <h2>Groups section</h2>
+      <p>
+	<span class="ckan_logged_in" style="display: none;">
+	  To create a new group, please first <a href="${h.url_for(controller='user',action='login', id=None)}">login</a>.
+	</span>
+	<span class="ckan_logged_out">
+	  <a href="${h.url_for(controller='group',action='new', id=None)}">Create a new group</a>
+	</span>
+      </p>
+      
+    </div>
+  </py:match>
+  
+  <py:match path="minornavigation">
+    <li>${h.subnav_link(c, _('Home'), controller='group', action='index', id=None)}</li>
+    <li>${h.subnav_link(c, _('Create a new group'), controller='group', action='new', id=None)}</li>
+  </py:match>
+
+  
+  <xi:include href="../layout.html" />
+</html>

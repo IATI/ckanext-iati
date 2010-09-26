@@ -21,10 +21,10 @@
         Tags: ${tag_list(c.pkg.tags)}
       </div>
       <div py:if="len(c.pkg.groups)" class="item-list">
-        <span title="A curated collection of packages">Groups:</span>
+        <span title="A curated collection of packages">Group:</span>
         <ul>
           <li py:for="group in c.pkg.groups">
-          <a href="${h.url_for(controller='group', action='read', id=group.name)}">${group.name}</a>
+          <a href="${h.url_for(controller='group', action='read', id=group.name)}">${group.title} (${group.extras.get('type', '')})</a>
           </li>
         </ul>
       </div>
@@ -84,13 +84,6 @@
         ${details_asbool('Verified', c.pkg.extras.get('verified', False))}
         ${details_asbool('Archive File', c.pkg.extras.get('archive_file', False))}
         ${details_item('Department', c.pkg.extras.get('department', '-'))}
-        
-        <tr>
-          <td class="package-label">Publishing Entity</td>
-          <td class="package-details">
-            ${c.pkg.extras.get('publisher', '?')} 
-            (${c.pkg.extras.get('publisher_type', '?')})</td>
-        </tr>
         
         ${details_item('Data updated', c.pkg.extras.get('data_updated', '-'))}
         ${details_item('Record updated', c.pkg.extras.get('record_updated', '-'))}
