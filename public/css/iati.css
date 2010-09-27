@@ -124,6 +124,10 @@ body, #table, .box {
 	color: #425B6B;
 }
 
+.package-details {
+	vertical-align: top !important; 
+}
+
 .box {
 	background-color: #BBE3F7;
 	border-right: 0px;
