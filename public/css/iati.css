@@ -135,6 +135,11 @@ body, #table, .box {
 	padding-bottom: 1em;
 }
 
+#iati_map {
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
 th {
 	background-color: #BBE3F7;
 }
@@ -167,6 +172,21 @@ input[type="search"] {
 	-webkit-appearance: textfield;	
 }
 
-.titlecased {
-	text-transform: capitalize;
+#package-search .search {
+	width: 100%;
+}
+
+#package-search .facets {
+	padding-top: 0.8em;
+}
+
+#package-search .facets select {
+	border: 0px solid #BBE3F7;
+	font-size: 0.9em;
+	padding: 0.0em;
+}
+
+#package-search .button {
+	float: right;
+	margin-top: 0.8em;
 }

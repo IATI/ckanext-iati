@@ -54,19 +54,32 @@
     <h2>Welcome to the IATI Registry</h2>
     
     <p i18n:msg="package_count"><strong>${c.package_count} registered data packages</strong> available.</p>
-
+    
+    
+    <script type="text/javascript">
+        <?python 
+        facets = h.facet_options('package', 'country')
+        ?>
+        var iati_map_data = {
+          cols: [{id: 'c', label: 'Country', type: 'string'},
+                 {id: 'p', label: 'Records', type: 'number'}
+                ],
+                
+          rows: [
+          <py:for each="country, count in facets">
+              {c:[{v: '${h.country_name(country)}'}, {v: ${count}}]},
+          </py:for>
+                ],
+        }
+        
+        
+    </script>
+    <script type="text/javascript" src="/scripts/iati_map.js"></script>
+    <div id="iati_map"></div>
+    
     <xi:include href="../package/search_form.html" />
-
-    <h4>Top Tags</h4>
-    <div id="tagcloud">
-    <py:for each="tag_name, count in c.tag_counts">
-      <a rel="${count}" title="${count}" href="${h.url_for(controller='tag',
-        action='read', id=tag_name)}">${tag_name}</a>
-    </py:for>
-    </div>
-
-    <hr />
-
+    
+    
     <h4>Recently changed</h4>
     <table class="recent-changes">
       <tr>
