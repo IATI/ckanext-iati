@@ -108,6 +108,8 @@
       </tbody>
     </table>
     
+    
+    
     <h4>Contents</h4>
     <table width="100%">
       <tbody>
@@ -121,6 +123,11 @@
         </tr>
       </tbody>
     </table>
+    </div>
+    
+    <div py:if="'iati:preview' in c.pkg.extras">
+        <!--h4>Preview</h4-->
+        ${h.literal(c.pkg.extras.get('iati:preview'))}
     </div>
     
     <div class="resources">
