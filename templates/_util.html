@@ -50,13 +50,13 @@
 		 	<b>${package.name}</b>
 		 	
     		<py:if test="len(package.groups)">
-    		    &middot; ${package.groups[0].title}
+    		    &middot; published by ${package.groups[0].title}
     		</py:if>
     		<py:if test="'country' in package.extras.keys()">
     		    &middot; ${h.country_name(package.extras.get('country'))}
     		</py:if>
     		<py:if test="'record_updated' in package.extras.keys()">
-    		    &middot; ${package.extras.get('record_updated')}
+    		    &middot; updated ${package.extras.get('record_updated')}
     		</py:if>
 		</span>
 		
