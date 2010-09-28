@@ -166,3 +166,7 @@ input[type="search"] {
 	padding: 0.1em;
 	-webkit-appearance: textfield;	
 }
+
+.titlecased {
+	text-transform: capitalize;
+}

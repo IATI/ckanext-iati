@@ -38,17 +38,26 @@ def generate_preview(url):
     return etree.tostring(transform(doc))
 
 
-
+# plugin impl.
 from ckan import model, signals
 
 def on_package(pkg):
-    preview = '<table>'
+    preview = ''
     for resource in pkg.resources:
         pkg_preview = generate_preview(resource.url)
         if pkg_preview is not None:
             preview += pkg_preview
-    preview += '</table>'
     pkg.extras['iati:preview'] = preview
     
 signals.PACKAGE_NEW.connect(on_package)
 signals.PACKAGE_EDIT.connect(on_package)
+
+
+#cli test.
+if __name__ == '__main__':
+    doc = etree.parse(open('data/xml/undp-congo.xml', 'r')) 
+    from xml import IatiXmlParser
+    parser = IatiXmlParser(doc)
+    
+    transform = get_preview_transformer()
+    print etree.tostring(transform(doc)).encode('utf-8')
