@@ -25,7 +25,7 @@ def load_fixtures_via_api(api_url, api_key):
         else:
             cc.package_register_post(fixture)
         print cc.last_message
-    for fixture in []: # fixtures.get('groups'): 
+    for fixture in []: #fixtures.get('groups'): 
         name = fixture['name'] = fixture.get('name').lower()
         fixture['packages'] = [p.lower() for p in fixture.get('packages', [])]
         print "Loading %s" % fixture.get('title').encode('utf-8')
