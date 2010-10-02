@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: ckan 1.2c\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2010-09-26 16:49+0200\n"
-"PO-Revision-Date: 2010-09-27 10:59+0100\n"
+"PO-Revision-Date: 2010-09-28 23:33+0100\n"
 "Last-Translator: Friedrich Lindenberg <friedrich@pudo.org>\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -713,7 +713,7 @@ msgstr ""
 #: ckan/templates/package/index.html:9
 #: ckan/templates/package/list.html:34
 msgid "Data Packages"
-msgstr ""
+msgstr "Activity Record"
 
 #: ckan/templates/layout_base.html:99
 #: ckan/templates/revision/list.html:5
@@ -820,7 +820,7 @@ msgstr "Edit Publishing entity:"
 #: ckan/templates/revision/read.html:21
 #: ckan/templates/user/read.html:38
 msgid "Packages"
-msgstr ""
+msgstr "Records"
 
 #: ckan/templates/group/edit_form.html:17
 msgid "There are no packages currently in this group."
@@ -886,7 +886,7 @@ msgstr ""
 
 #: ckan/templates/group/read.html:39
 msgid "Packages:"
-msgstr ""
+msgstr "Records:"
 
 #: ckan/templates/group/read.html:43
 #, python-format
@@ -1117,20 +1117,20 @@ msgstr ""
 
 #: ckan/templates/home/stats.html:16
 msgid "Total number of packages"
-msgstr ""
+msgstr "Total number of records"
 
 #: ckan/templates/home/stats.html:35
 msgid "Revisions to packages per week"
-msgstr ""
+msgstr "Revisions to records per week"
 
 #: ckan/templates/home/stats.html:71
 msgid "Top Rated Packages"
-msgstr ""
+msgstr "Top Rated Records"
 
 #: ckan/templates/home/stats.html:73
 #: ckan/templates/home/stats.html:81
 msgid "Package"
-msgstr ""
+msgstr "Activity Record"
 
 #: ckan/templates/home/stats.html:73
 msgid "Average rating"
@@ -1142,7 +1142,7 @@ msgstr ""
 
 #: ckan/templates/home/stats.html:79
 msgid "Most Edited Packages"
-msgstr ""
+msgstr "Most Edited Packages"
 
 #: ckan/templates/home/stats.html:81
 msgid "Number of edits"

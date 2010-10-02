@@ -19,17 +19,13 @@
                     Status
                 </th>
                 <th>
-                    <xsl:attribute name="class">activity-country</xsl:attribute>
-                    Country
-                </th>
-                <th>
                     <xsl:attribute name="class">activity-dates</xsl:attribute>
                     Start and End Dates
                 </th>
             </tr>
         </thead>
         <tbody>
-      <xsl:for-each select="iati-activity">
+      <xsl:for-each select="iati-activity[position() &lt; 10]">
         
             <tr>
                 <td>
@@ -42,10 +38,6 @@
                     <xsl:value-of select="activity-status" />
                 </td>
                 <td>
-                    <xsl:attribute name="class">activity-country</xsl:attribute>
-                    <xsl:value-of select="recipient-country/@code" />
-                </td>
-                <td>
                     <xsl:attribute name="class">date</xsl:attribute>
                     <xsl:apply-templates select="activity-date[@type='start']" />
                     &#x2014;
@@ -54,7 +46,13 @@
             </tr>
         
       </xsl:for-each>
-        </tbody>
+      
+      </tbody>
+      <tfoot>
+        <tr>
+            <th colspan="3"><span style="float: right;">(Listing at most 10 entries)</span></th>
+        </tr>
+    </tfoot>
     </table>
 </xsl:template>
 

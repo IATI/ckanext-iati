@@ -53,13 +53,12 @@
   <div py:match="content">
     <h2>Welcome to the IATI Registry</h2>
     
-    <p i18n:msg="package_count"><strong>${c.package_count} registered data packages</strong> available.</p>
+    <?python 
+    facets = h.facet_options('package', 'country')
+    ?>
     
-    
+    <h4>${c.package_count} activity records from ${len(facets)} countries</h4>
     <script type="text/javascript">
-        <?python 
-        facets = h.facet_options('package', 'country')
-        ?>
         var iati_map_data = {
           cols: [{id: 'c', label: 'Country', type: 'string'},
                  {id: 'p', label: 'Records', type: 'number'}
@@ -77,6 +76,7 @@
     <script type="text/javascript" src="/scripts/iati_map.js"></script>
     <div id="iati_map"></div>
     
+    <h4>Search for IATI activity records</h4>
     <xi:include href="../package/search_form.html" />
     
     
