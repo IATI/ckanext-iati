@@ -98,7 +98,9 @@ class AtLeastOneGroupSelectField(GroupSelectField):
     
     def get_configured(self):
         field = self.GroupSelectionField(self.name, self.allow_empty).with_renderer(self.GroupSelectEditRenderer)
+        field.set(multiple=self.multiple)
         field = field.validate(self.validate_groups)
+        field.user_editable_groups = self.user_editable_groups
         return field
         
     def validate_groups(self, val, field):
@@ -107,15 +109,15 @@ class AtLeastOneGroupSelectField(GroupSelectField):
 
             
 # Setup the fieldset
-def build_package_iati_form(is_admin=False):
-    
-    
-    builder = package.build_package_form()
+def build_package_iati_form(is_admin=False, user_editable_groups=None):
+    builder = package.build_package_form(is_admin=is_admin, 
+                                         user_editable_groups=user_editable_groups)
     
     # IATI specifics
     
     #Publishing Entity: 
-    builder.add_field(AtLeastOneGroupSelectField('groups', allow_empty=False))
+    builder.add_field(AtLeastOneGroupSelectField('groups', allow_empty=False, 
+                      user_editable_groups=user_editable_groups))
     
     #builder.add_field(common.TextExtraField('publisher'))
     #builder.set_field_text('publisher', _('Publishing entity'))
@@ -193,7 +195,7 @@ def build_package_iati_form(is_admin=False):
     field_groups = OrderedDict([
         (_('Basic information'), ['name', 'title', 
                                   'author', 'author_email', 'department',]),
-        (_('Publishing Entity'), ['groups']),
+        (_('Publisher'), ['groups']),
         (_('Details'), ['country', 'donors', 'donors_type', 'donors_country',
                         'record_updated', 'data_updated',
                         'license_id', 'tags', 'notes']),
@@ -218,18 +220,9 @@ def build_package_iati_form(is_admin=False):
      _('Precision'), _('Taxonomy URL'), _('Department'), _('Agency'), 
      ]
 
-fieldsets = {} # fieldset cache
-
-def get_package_fieldset(is_admin=False):
+def get_package_fieldset(is_admin=False, user_editable_groups=None):
     '''Returns the standard fieldset
     '''
-    if not fieldsets:
-        # fill cache
-        fieldsets['package_iati_fs'] = build_package_iati_form().get_fieldset()
-        fieldsets['package_iati_fs_admin'] = build_package_iati_form(is_admin=True).get_fieldset()
-
-    if is_admin:
-        fs = fieldsets['package_iati_fs_admin']
-    else:
-        fs = fieldsets['package_iati_fs']
-    return fs
+    return build_package_iati_form(is_admin=is_admin, 
+                                   user_editable_groups=user_editable_groups).get_fieldset()
+    

@@ -38,13 +38,28 @@
     
     <py:choose test="">
       <table py:when="c.pkg.resources" width="100%">
-        <tr><th>URL</th><th>Format</th></tr>
+        <tr><th>URL</th><th>Format</th><th>Preview</th></tr>
         <py:for each="res in c.pkg.resources">
-          <tr><td><a href="${res.url}" target="_blank">Download</a></td><td>${res.format}</td></tr>
+          <tr>
+            <td><a href="${res.url}" target="_blank">Download</a></td>
+            <td>${res.format}</td>
+            <td py:if="'iati:preview:%s' % res.id in c.pkg.extras.keys()">
+                <a href="javascript:{$('.iati_preview').not('#iati_preview_${res.id}').hide(); $('#iati_preview_${res.id}').toggle();}">preview</a>
+            </td>
+        </tr>
         </py:for>
       </table>
       <table py:otherwise=""><tr><th>Resources</th><td>None given for this package.</td></tr></table>
       </py:choose>
+      
+      <py:for each="(key, value) in c.pkg.extras.items()">
+        <py:if test="key.startswith('iati:preview:')">
+          <div id="iati_preview_${key.split('iati:preview:')[-1]}" class="iati_preview">
+            <h4>Record preview</h4>
+            ${h.literal(value)}
+          </div>
+        </py:if>
+      </py:for>
     
     <py:def function="details_item(label, value)">
         <tr py:if="value is not None and len(value) > 0">
@@ -133,11 +148,6 @@
         </tr>
       </tbody>
     </table>
-    </div>
-    
-    <div py:if="'iati:preview' in c.pkg.extras">
-        <!--h4>Preview</h4-->
-        ${h.literal(c.pkg.extras.get('iati:preview'))}
     </div>
 
     <div class="rating">

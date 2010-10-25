@@ -64,7 +64,6 @@
     
     <h4>Latest Data</h4>
     <?python 
-    # there must be a better way to do this: 
     from itertools import chain
     packages = set(chain(*[r.packages for r in c.revisions]))
     ?>

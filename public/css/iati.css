@@ -190,3 +190,7 @@ input[type="search"] {
 	float: right;
 	margin-top: 0.8em;
 }
+
+.iati_preview {
+	display: none; 
+}
