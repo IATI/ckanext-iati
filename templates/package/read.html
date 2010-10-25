@@ -11,10 +11,6 @@
         <dl class="icons clearfix">
           <dt>${h.icon('user')}</dt>
           <dd>${c.pkg_author_link}</dd>
-          <dt>${h.icon('user_grey')}</dt>
-          <dd>${c.pkg_maintainer_link}</dd>
-          <dt>${h.icon('package')}</dt>
-          <dd i18n:msg="pkg_version">Version <strong>${c.pkg.version}</strong></dd>
           <dt>${package_license_icon(c.pkg)}</dt>
           <py:choose test="">
             <dd py:when="c.pkg.license and c.pkg.license.url"><a href="${c.pkg.license.url}">${c.pkg.license.title}</a></dd>

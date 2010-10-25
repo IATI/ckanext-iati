@@ -47,59 +47,31 @@
       The registry itself <b>stores no data</b> but provides a searchable index, 
       feeds, and links to datasets hosted by donor <b>agencies</b>, <b>community 
       organisations</b> and <b>partner countries</b>.</p>
+      <ul>
+          <li><a href="http://aidtransparency.net">Aid Transparency Project</a></li>
+          <li><a href="http://iatistandard.org">IATI Reporting Standard</a></li>
+      </ul>
     </div>
   </py:match>
 
   <div py:match="content">
-    <h2>Welcome to the IATI Registry</h2>
-    
-    <?python 
-    facets = h.facet_options('package', 'country')
-    ?>
-    
-    <h4>${c.package_count} activity records from ${len(facets)} countries</h4>
-    <script type="text/javascript">
-        var iati_map_data = {
-          cols: [{id: 'c', label: 'Country', type: 'string'},
-                 {id: 'p', label: 'Records', type: 'number'}
-                ],
-                
-          rows: [
-          <py:for each="country, count in facets">
-              {c:[{v: '${h.country_name(country)}'}, {v: ${count}}]},
-          </py:for>
-                ],
-        }
-        
-        
-    </script>
-    <script type="text/javascript" src="/scripts/iati_map.js"></script>
-    <div id="iati_map"></div>
+    <p>
+        The IATI Registry is a hub for international development data published by agencies, community orgranisations and partner countries in a standard, open format.
+    </p>
     
     <h4>Search for IATI activity records</h4>
     <xi:include href="../package/search_form.html" />
     
+    <h4>Latest Data</h4>
+    <?python 
+    # there must be a better way to do this: 
+    from itertools import chain
+    packages = set(chain(*[r.packages for r in c.revisions]))
+    ?>
+    ${package_list(packages)}
     
-    <h4>Recently changed</h4>
-    <table class="recent-changes">
-      <tr>
-        <th>Packages</th>
-        <th>Author</th>
-        <th class="greyed">Time</th>
-      </tr>
-      <tr py:for="rev in c.revisions">
-        <td>
-        <py:for each="pkg in rev.packages[:10]">
-        <a href="${h.url_for(controller='package', action='read', id=pkg.name)}">${pkg.name}</a>
-        </py:for>
-        ${'...' if len(rev.packages) > 10 else ''}
-        </td>
-        <td>${rev.author}</td>
-        <td class="greyed">${rev.timestamp.replace(microsecond=0)}</td>
-      </tr>
-    </table>
     <p><a href="${h.url_for(controller='revision', action='index',
-      id=None)}">View older changes &raquo;</a></p>
+      id=None)}">View revision data &raquo;</a></p>
   </div>
 
   <xi:include href="layout.html" />
