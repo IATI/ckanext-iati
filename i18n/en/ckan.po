@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: ckan 1.2c\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2010-09-26 16:49+0200\n"
-"PO-Revision-Date: 2010-09-28 23:33+0100\n"
+"PO-Revision-Date: 2010-10-30 18:27+0100\n"
 "Last-Translator: Friedrich Lindenberg <friedrich@pudo.org>\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -24,7 +24,7 @@ msgstr ""
 
 #: ckan/controllers/group.py:58
 msgid "Unauthorized to create a group"
-msgstr "Unauthorized to create a publishing entity"
+msgstr "Unauthorized to create a publisher"
 
 #: ckan/controllers/group.py:110
 #, python-format
@@ -33,11 +33,11 @@ msgstr ""
 
 #: ckan/controllers/group.py:153
 msgid "Group not found"
-msgstr "Publishing entity not found"
+msgstr "Publisher not found"
 
 #: ckan/controllers/group.py:159
 msgid "Not authorized to edit authorization for group"
-msgstr "Not authorized to edit authorization for publishing entity"
+msgstr "Not authorized to edit authorization for publisher"
 
 #: ckan/controllers/group.py:187
 #: ckan/controllers/package.py:392
@@ -109,12 +109,12 @@ msgstr ""
 #: ckan/controllers/importer.py:167
 #, python-format
 msgid "Package %s already exists in database. Import will edit the fields."
-msgstr ""
+msgstr "Activity Record %s already exists in database. Import will edit the fields."
 
 #: ckan/controllers/importer.py:170
 #, python-format
 msgid "User %r unauthorized to edit existing package %s"
-msgstr ""
+msgstr "User %r unauthorized to edit existing activity record %s"
 
 #: ckan/controllers/package.py:39
 #: ckan/controllers/tag.py:38
@@ -126,12 +126,12 @@ msgstr ""
 #: ckan/controllers/package.py:148
 #: ckan/controllers/package.py:359
 msgid "Package not found"
-msgstr ""
+msgstr "Record not found"
 
 #: ckan/controllers/package.py:123
 #, python-format
 msgid "Unauthorized to read package %s"
-msgstr ""
+msgstr "Unauthorized to read record %s"
 
 #: ckan/controllers/package.py:142
 msgid "Select two revisions before doing the comparison."
@@ -139,11 +139,11 @@ msgstr ""
 
 #: ckan/controllers/package.py:154
 msgid "CKAN Package Revision History"
-msgstr ""
+msgstr "IATI Record Revision History"
 
 #: ckan/controllers/package.py:156
 msgid "Recent changes to CKAN Package: "
-msgstr ""
+msgstr "Recent changes to IATI Activity Record: "
 
 #: ckan/controllers/package.py:175
 msgid "Log message: "
@@ -151,7 +151,7 @@ msgstr ""
 
 #: ckan/controllers/package.py:198
 msgid "Unauthorized to create a package"
-msgstr ""
+msgstr "Unauthorized to create a activity record"
 
 #: ckan/controllers/package.py:269
 #, python-format
@@ -208,12 +208,12 @@ msgstr ""
 #: ckan/controllers/apiv1/package.py:144
 #, python-format
 msgid "Package format incorrect: %s"
-msgstr ""
+msgstr "Activity record format incorrect: %s"
 
 #: ckan/controllers/rest.py:270
 #, python-format
 msgid "REST API: Create package relationship: %s %s %s"
-msgstr ""
+msgstr "REST API: Create activity record relationship: %s %s %s"
 
 #: ckan/controllers/rest.py:290
 #, python-format
@@ -295,7 +295,7 @@ msgstr ""
 #: ckan/controllers/rest.py:606
 #, python-format
 msgid "Package with name %r does not exist."
-msgstr ""
+msgstr "Activity record with name %r does not exist."
 
 #: ckan/controllers/rest.py:630
 msgid "You must supply a user_ref."
@@ -313,20 +313,20 @@ msgstr ""
 #: ckan/controllers/rest.py:693
 #, python-format
 msgid "REST API: Update package relationship: %s %s %s"
-msgstr ""
+msgstr "REST API: Update activity record relationship: %s %s %s"
 
 #: ckan/controllers/revision.py:19
 msgid "CKAN Repository Revision History"
-msgstr ""
+msgstr "IATI Repository Revision History"
 
 #: ckan/controllers/revision.py:21
 msgid "Recent changes to the CKAN repository."
-msgstr ""
+msgstr "Recent changes to the IATI registry."
 
 #: ckan/controllers/revision.py:75
 #, python-format
 msgid "Packages affected: %s.\n"
-msgstr ""
+msgstr "Activity records affected: %s.\n"
 
 #: ckan/controllers/revision.py:136
 msgid "No revision id specified"
@@ -353,7 +353,7 @@ msgstr ""
 #: ckan/controllers/apiv1/package.py:109
 #: ckan/controllers/apiv1/package.py:151
 msgid "Package was not found."
-msgstr ""
+msgstr "Activity record was not found."
 
 #: ckan/controllers/apiv1/package.py:134
 msgid "Integrity Error"
@@ -362,7 +362,7 @@ msgstr ""
 #: ckan/controllers/apiv1/package.py:159
 #, python-format
 msgid "REST API: Delete Package: %s"
-msgstr ""
+msgstr "REST API: Delete Activity Record: %s"
 
 #: ckan/forms/common.py:22
 #, python-format
@@ -375,11 +375,11 @@ msgstr ""
 
 #: ckan/forms/common.py:32
 msgid "Package name already exists in database"
-msgstr ""
+msgstr "Activity record name already exists in database"
 
 #: ckan/forms/common.py:40
 msgid "Group name already exists in database"
-msgstr "Publishing entity name already exists in database"
+msgstr "Publisher name already exists in database"
 
 #: ckan/forms/common.py:44
 msgid "Harvest source URL is invalid (must start with \"http://\")."
@@ -483,7 +483,7 @@ msgstr ""
 #: ckan/templates/layout_base.html:98
 #: ckan/templates/group/index.html:9
 msgid "Groups"
-msgstr "Publishing entities"
+msgstr "Publishers"
 
 #: ckan/forms/package.py:49
 #: ckan/forms/package.py:55
@@ -615,7 +615,7 @@ msgstr ""
 #: ckan/model/harvesting.py:93
 #, python-format
 msgid "Harvester: Created package %s"
-msgstr ""
+msgstr "Harvester: Created activity record %s"
 
 #: ckan/model/package_relationship.py:48
 #, python-format
@@ -782,11 +782,11 @@ msgstr ""
 
 #: ckan/templates/group/authz.html:5
 msgid "- Authorization - Groups"
-msgstr "- Authorization - Publishing entities"
+msgstr "- Authorization - Publishers"
 
 #: ckan/templates/group/authz.html:8
 msgid "Authorization for group:"
-msgstr "Authorization for publishing entity:"
+msgstr "Authorization for publisher:"
 
 #: ckan/templates/group/authz.html:15
 #: ckan/templates/package/authz.html:15
@@ -808,11 +808,11 @@ msgstr ""
 
 #: ckan/templates/group/edit.html:5
 msgid "- Edit - Groups"
-msgstr "- Edit - Publishing entities"
+msgstr "- Edit - Publishers"
 
 #: ckan/templates/group/edit.html:17
 msgid "Edit Group:"
-msgstr "Edit Publishing entity:"
+msgstr "Edit Publisher:"
 
 #: ckan/templates/group/edit_form.html:10
 #: ckan/templates/home/index.html:81
@@ -824,20 +824,20 @@ msgstr "Records"
 
 #: ckan/templates/group/edit_form.html:17
 msgid "There are no packages currently in this group."
-msgstr "There are no packages currently in this publishing entities."
+msgstr "There are no packages currently in this publisher."
 
 #: ckan/templates/group/index.html:6
 msgid "Groups of Data Packages"
-msgstr "Publishing Entities"
+msgstr "Publishers"
 
 #: ckan/templates/group/index.html:11
 #, python-format
 msgid "There are [1:%(item_count)s] groups."
-msgstr "There are [1:%(item_count)s] publishing entities."
+msgstr "There are [1:%(item_count)s] publishers."
 
 #: ckan/templates/group/layout.html:11
 msgid "Groups section"
-msgstr "Publishing entities section"
+msgstr "Publishers section"
 
 #: ckan/templates/group/layout.html:12
 msgid "Whilst tags are great at collecting packages together, there are occasions when you want to restrict users from editing a collection. A [1:group] can be set-up to specify which users have permission to add or remove packages from it."
@@ -845,7 +845,7 @@ msgstr ""
 
 #: ckan/templates/group/layout.html:14
 msgid "To create a new group, please first"
-msgstr "To create a new publishing entity, please first"
+msgstr "To create a new publisher, please first"
 
 #: ckan/templates/group/layout.html:15
 msgid "login"
@@ -854,19 +854,19 @@ msgstr ""
 #: ckan/templates/group/layout.html:18
 #: ckan/templates/group/layout.html:27
 msgid "Create a new group"
-msgstr "Create a new publishing entity"
+msgstr "Create a new publisher"
 
 #: ckan/templates/group/new.html:5
 msgid "New - Groups"
-msgstr "New - Publishing entity"
+msgstr "New - Publisher"
 
 #: ckan/templates/group/new.html:17
 msgid "New Group"
-msgstr "New Publishing entity"
+msgstr "New Publisher"
 
 #: ckan/templates/group/read.html:6
 msgid "- Groups"
-msgstr "- Publishing entities"
+msgstr "- Publisher"
 
 #: ckan/templates/group/read.html:12
 msgid "No Title"
@@ -1150,19 +1150,19 @@ msgstr ""
 
 #: ckan/templates/home/stats.html:87
 msgid "Largest Groups"
-msgstr "Largest Publishing entities"
+msgstr "Largest Publishers"
 
 #: ckan/templates/home/stats.html:89
 msgid "Group"
-msgstr "Publishing entity"
+msgstr "Publisher"
 
 #: ckan/templates/home/stats.html:89
 msgid "Number of packages"
-msgstr ""
+msgstr "Number of activity records"
 
 #: ckan/templates/home/stats.html:102
 msgid "Users owning most packages"
-msgstr ""
+msgstr "Users owning most activity records"
 
 #: ckan/templates/home/stats.html:109
 msgid "Page last updated:"
@@ -1170,19 +1170,19 @@ msgstr ""
 
 #: ckan/templates/package/authz.html:5
 msgid "- Authorization - Data Packages"
-msgstr ""
+msgstr "- Authorization - Activity Records"
 
 #: ckan/templates/package/authz.html:8
 msgid "Authorization for Data Package:"
-msgstr ""
+msgstr "Authorization for Activity Record:"
 
 #: ckan/templates/package/edit.html:6
 msgid "- Edit - Data Packages"
-msgstr ""
+msgstr "- Edit - Activity Records"
 
 #: ckan/templates/package/edit.html:21
 msgid "Edit Data Package:"
-msgstr ""
+msgstr "Edit Activity Record:"
 
 #: ckan/templates/package/edit.html:23
 #: ckan/templates/package/new.html:22
@@ -1199,7 +1199,7 @@ msgstr ""
 #: ckan/templates/package/edit.html:38
 #: ckan/templates/package/history.html:50
 msgid "Package History"
-msgstr ""
+msgstr "Activity Record History"
 
 #: ckan/templates/package/edit_form.html:13
 msgid "Edit summary (briefly describe the changes you have made)"
@@ -1265,11 +1265,11 @@ msgstr ""
 
 #: ckan/templates/package/form_groups.html:15
 msgid "Group:"
-msgstr "Publishing entity:"
+msgstr "Publisher:"
 
 #: ckan/templates/package/form_groups.html:21
 msgid "Cannot add any groups."
-msgstr "Cannot add any publishing entity."
+msgstr "Cannot add any publishers."
 
 #: ckan/templates/package/form_resources.html:6
 #: ckan/templates/package/read_core.html:37
@@ -1288,7 +1288,7 @@ msgstr ""
 
 #: ckan/templates/package/history.html:5
 msgid "- Data Packages - History"
-msgstr ""
+msgstr "- Activity Records - History"
 
 #: ckan/templates/package/history.html:8
 #: ckan/templates/package/read_core.html:8
@@ -1336,19 +1336,19 @@ msgstr ""
 #: ckan/templates/package/index.html:15
 #, python-format
 msgid "There are [1:%(package_count)s] packages."
-msgstr ""
+msgstr "There are [1:%(package_count)s] activity records."
 
 #: ckan/templates/package/index.html:18
 msgid "Browse packages"
-msgstr ""
+msgstr "Browse activity records"
 
 #: ckan/templates/package/index.html:22
 msgid "Register a new package"
-msgstr ""
+msgstr "Register a new activity record"
 
 #: ckan/templates/package/layout.html:10
 msgid "This package:"
-msgstr ""
+msgstr "This activity record:"
 
 #: ckan/templates/package/layout.html:11
 msgid "View"
@@ -1373,15 +1373,15 @@ msgstr ""
 
 #: ckan/templates/package/layout.html:21
 msgid "Register new package"
-msgstr ""
+msgstr "Register new activity record"
 
 #: ckan/templates/package/list.html:6
 msgid "Browse - Data Packages"
-msgstr ""
+msgstr "Browse - Activity Records"
 
 #: ckan/templates/package/list.html:10
 msgid "Package listing key"
-msgstr ""
+msgstr "Activity record listing key"
 
 #: ckan/templates/package/list.html:13
 msgid "Openly licensed"
@@ -1408,18 +1408,20 @@ msgid ""
 "Packages with a blue stripe satisfy the OKFN's \n"
 "        [1:Open Knowledge Definition.]"
 msgstr ""
+"Activity records with a blue stripe satisfy the OKFN's \n"
+"        [1:Open Knowledge Definition.]"
 
 #: ckan/templates/package/new.html:6
 msgid "New - Data Packages"
-msgstr ""
+msgstr "New - Activity Records"
 
 #: ckan/templates/package/new.html:21
 msgid "Register a New Data Package"
-msgstr ""
+msgstr "Register a New IATI Activity Record"
 
 #: ckan/templates/package/read.html:6
 msgid "- Data Packages"
-msgstr ""
+msgstr "- Activity Records"
 
 #: ckan/templates/package/read.html:17
 #, python-format
@@ -1441,7 +1443,7 @@ msgstr ""
 
 #: ckan/templates/package/read.html:31
 msgid "Related packages"
-msgstr ""
+msgstr "Related records"
 
 #: ckan/templates/package/read.html:47
 msgid "Openness:"
@@ -1457,12 +1459,12 @@ msgstr ""
 
 #: ckan/templates/package/read.html:58
 msgid "This package is licensed with"
-msgstr ""
+msgstr "This activity record is licensed with"
 
 #: ckan/templates/package/read.html:73
 #: ckan/templates/package/read.html:77
 msgid "This package satisfies the Open Knowledge Definition."
-msgstr ""
+msgstr "This activity record satisfies the Open Knowledge Definition."
 
 #: ckan/templates/package/read.html:76
 msgid "[Open Data]"
@@ -1474,7 +1476,7 @@ msgstr ""
 
 #: ckan/templates/package/read.html:83
 msgid "Help Make This Package Open!"
-msgstr ""
+msgstr "Help Make This Activity Record Open!"
 
 #: ckan/templates/package/read.html:84
 msgid ""
@@ -1490,7 +1492,7 @@ msgstr ""
 
 #: ckan/templates/package/read.html:98
 msgid "Edit this Package"
-msgstr ""
+msgstr "Edit this Activity Record"
 
 #: ckan/templates/package/read.html:99
 msgid ""
@@ -1530,11 +1532,11 @@ msgstr ""
 
 #: ckan/templates/package/read_core.html:24
 msgid "A curated collection of packages"
-msgstr ""
+msgstr "A curated collection of activity records"
 
 #: ckan/templates/package/read_core.html:24
 msgid "Groups:"
-msgstr "Publishing entities:"
+msgstr "Publishers:"
 
 #: ckan/templates/package/read_core.html:39
 msgid "Download"
@@ -1542,7 +1544,7 @@ msgstr ""
 
 #: ckan/templates/package/read_core.html:42
 msgid "None given for this package."
-msgstr ""
+msgstr "None given for this activity record."
 
 #: ckan/templates/package/read_core.html:97
 msgid "Rating"
@@ -1558,7 +1560,7 @@ msgstr ""
 
 #: ckan/templates/package/search.html:8
 msgid "Search - Data Packages"
-msgstr ""
+msgstr "Search - Activity Records"
 
 #: ckan/templates/package/search.html:11
 msgid "Search Data Packages"
@@ -1680,11 +1682,11 @@ msgstr ""
 
 #: ckan/templates/revision/read.html:30
 msgid "Packages' Tags"
-msgstr ""
+msgstr "Activity Records' Tags"
 
 #: ckan/templates/revision/read.html:33
 msgid "Package -"
-msgstr ""
+msgstr "Activity Record -"
 
 #: ckan/templates/revision/read.html:34
 msgid ""
@@ -1846,7 +1848,7 @@ msgstr ""
 
 #: ckan/templates/user/read.html:32
 msgid "Number of packages administered:"
-msgstr ""
+msgstr "Number of activity records administered:"
 
 #: ckan/templates/user/read.html:35
 msgid "Recent changes"
