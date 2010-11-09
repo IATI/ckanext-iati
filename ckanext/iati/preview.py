@@ -54,7 +54,7 @@ class IatiPackagePreviewExtension(SingletonPlugin):
             preview = self.preview(resource.url)
             if preview is not None:
                 key = 'iati:preview:%s' % resource.id
-                package.extras[key] = pkg_preview
+                package.extras[key] = preview
 
 #cli test.
 if __name__ == '__main__':

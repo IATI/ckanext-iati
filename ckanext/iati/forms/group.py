@@ -41,8 +41,6 @@ def build_group_form(is_admin=False, with_packages=False):
     builder.set_label_prettifier(common.prettify)
     return builder  
 
-fieldsets = {}
-
 def get_group_fieldset(is_admin=False, combined=False):
     return build_group_form(is_admin=is_admin, with_packages=combined).get_fieldset()
    

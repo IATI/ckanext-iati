@@ -28,8 +28,9 @@ def _get_group_authz_group(group):
 
 class IatiPackageAuthzExtension(SingletonPlugin):
     implements(IPackageController, inherit=True)
-
-    def _sync_authz_groups(pkg):
+    
+    @classmethod
+    def _sync_authz_groups(cls, pkg):
         authz_groups = [_get_group_authz_group(g) for g in pkg.groups]
         q = model.Session.query(model.PackageRole).filter_by(package=pkg)
         for package_role in q.all():
@@ -66,15 +67,23 @@ class IatiPackageAuthzExtension(SingletonPlugin):
 class IatiGroupAuthzExtension(SingletonPlugin):
     implements(IGroupController, inherit=True)
     
+    @classmethod
+    def _sync_packages(cls, group):
+        for package in group.packages:
+            IatiPackageAuthzExtension._sync_authz_groups(package)
+    
     def create(self, group):
         model.clear_user_roles(group)
         _get_group_authz_group(group)  
+        self._sync_packages(group)
     
     def edit(self, group):
         _get_group_authz_group(group)
+        self._sync_packages(group)
 
     def delete(self, group):
         _get_group_authz_group(group)
+        self._sync_packages(group)
 
     def authz_add_role(self, group_role):
         authz_group = _get_group_authz_group(group_role.group)

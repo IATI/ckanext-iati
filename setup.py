@@ -36,5 +36,9 @@ setup(name='ckanextiati',
       [ckan.forms]
       iati_package = ckanext.iati.forms:get_iati_package_fieldset
       iati_group = ckanext.iati.forms:get_iati_group_fieldset
+      
+      [paste.paster_command]
+      create-iati-fixtures = ckanext.iati.fixtures:CreateIatiFixtures
+      
       """,
       )

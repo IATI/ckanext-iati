@@ -1,6 +1,6 @@
 {"packages": [
 	{
-		"name": "DFID-RW-ALL",
+		"name": "dfid-rw-all",
 		"title": "DFID IATI Country Record Archive for Rwanda",
 		"notes": "",
 		"author": "A. Example",
@@ -28,7 +28,7 @@
 		]
 	},
 	{
-		"name": "DFID-ET-ALL",
+		"name": "dfid-et-all",
 		"title": "DFID IATI Country Record Archive for Ethiopia",
 		"notes": "",
 		"author": "A. Example",
@@ -56,7 +56,7 @@
 		]
 	},
 	{
-		"name": "UNDP-CO-ALL",
+		"name": "undp-co-all",
 		"title": "UNDP IATI Country Record Archive for Colombia",
 		"notes": "",
 		"author": "B.Example",
@@ -86,7 +86,7 @@
 		]
 	},
 	{
-		"name": "DG-BF-ALL",
+		"name": "dg-bf-all",
 		"title": "Development Gateway IATI Country Record Archive for Burkina Faso",
 		"notes": "",
 		"author": "C.Example",
@@ -114,7 +114,7 @@
 		]
 	},
 	{
-		"name": "DAD-Rwanda-RW-ALL",
+		"name": "dad-wwanda-rw-all",
 		"title": "DAD Rwanda",
 		"notes": "",
 		"author": "D.Example",
@@ -146,26 +146,27 @@
 	{
 		"name": "dad-rwanda", 
 		"title": "DAD Rwanda",
-		"type": "Recipient",
-		"packages": ["DAD-Rwanda-RW-ALL"]
+		"extras": {"type": "Recipient"},
+		"packages": ["dad-rwanda-rw-all"]
 	},
 	{
 		"name": "development-gateway", 
 		"title": "Development Gateway",
+		"extras": {"type": "Community"},
 		"type": "Community",
-		"packages": ["DG-BF-ALL"]
+		"packages": ["dg-bf-all"]
   },
 	{
 		"name": "dfid", 
 		"title": "DFID",
-		"type": "Donor",
-		"packages": ["DFID-RW-ALL"]
+		"extras": {"type": "Donor"},
+		"packages": ["dfid-rw-all"]
   },
 	{
 		"name": "undp", 
 		"title": "UN Development Programme",
-		"type": "Donor",
-		"packages": ["UNDP-CO-ALL"]
+		"extras": {"type": "Donor"},
+		"packages": ["undp-co-all"]
 	}
 ]
 }

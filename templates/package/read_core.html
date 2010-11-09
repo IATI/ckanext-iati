@@ -24,7 +24,7 @@
         <span title="A curated collection of packages">Group:</span>
         <ul>
           <li py:for="group in c.pkg.groups">
-          <a href="${h.url_for(controller='group', action='read', id=group.name)}">${group.title} (${group.extras.get('type', '')})</a>
+          <a href="${h.url_for(controller='group', action='read', id=group.name)}">${group.title}</a>
           </li>
         </ul>
       </div>
@@ -56,7 +56,7 @@
         <py:if test="key.startswith('iati:preview:')">
           <div id="iati_preview_${key.split('iati:preview:')[-1]}" class="iati_preview">
             <h4>Record preview</h4>
-            ${h.literal(value)}
+            ${h.literal(value if value else "&nbsp;")}
           </div>
         </py:if>
       </py:for>
