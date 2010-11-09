@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.1'
+version = '0.3'
 
 setup(name='ckanextiati',
       version=version,
@@ -27,7 +27,9 @@ setup(name='ckanextiati',
       # -*- Entry points: -*-
       
       [ckan.plugins]
-      iati = ckanext.iati:IatiPlugin
+      iati_routes = ckanext.iati.controllers:IatiRoutesExtension
+      iati_preview = ckanext.iati.preview:IatiPackagePreviewExtension
+      iati_approval = ckanext.iati.approval:IatiGroupApprovalExtension
       
       [ckan.forms]
       iati_package = ckanext.iati.forms:get_iati_package_fieldset

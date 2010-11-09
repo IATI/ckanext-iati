@@ -5,26 +5,6 @@ from ckan.authz import Authorizer
 
 log = logging.getLogger(__name__)
 
-# Authorization extensions 
-
-def validate_authorization_setup():
-    log.warn("Running monkey-patched authorization setup")
-    
-    for role_action in model.Session.query(model.RoleAction).filter_by(
-                                                        role=model.Role.READER, 
-                                                        action=model.Action.PACKAGE_CREATE):
-        model.Session.delete(role_action)
-    
-    for role_action in model.Session.query(model.RoleAction).filter_by(
-                                                        action=model.Action.GROUP_CREATE):
-        model.Session.delete(role_action)
-    
-    model.setup_default_user_roles(model.System())
-    
-    
-model.validate_authorization_setup = validate_authorization_setup
-
-
 
 def _get_group_authz_group(group):
     """ For each group, we're adding an authorization group with the same settings 
@@ -59,7 +39,7 @@ def _sync_package_groups_to_authz_groups(pkg):
             model.Session.delete(package_role)
     for authz_group in authz_groups:
         pkg_role = model.PackageRole(package=pkg, user=None, authorized_group=authz_group, 
-                                     role=model.Role.ADMIN)
+                                     role=model.Role.EDITOR)
         model.Session.add(pkg_role)
 
 

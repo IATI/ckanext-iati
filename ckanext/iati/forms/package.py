@@ -221,8 +221,6 @@ def build_package_iati_form(is_admin=False, user_editable_groups=None):
      ]
 
 def get_package_fieldset(is_admin=False, user_editable_groups=None):
-    '''Returns the standard fieldset
-    '''
     return build_package_iati_form(is_admin=is_admin, 
                                    user_editable_groups=user_editable_groups).get_fieldset()
     
