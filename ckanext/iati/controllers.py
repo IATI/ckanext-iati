@@ -4,6 +4,9 @@ from ckan.plugins import implements, SingletonPlugin, IRoutesExtension
 class IatiRoutesExtension(SingletonPlugin):
     implements(IRoutesExtension, inherit=True)
     
+    def before_map(self, map):
+        return map
+    
     def after_map(self, map):
         map.connect('/iati', controller='ckanext.iati.controllers:IatiController', 
                              action='index')

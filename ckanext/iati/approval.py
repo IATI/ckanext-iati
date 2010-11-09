@@ -32,7 +32,7 @@ class IatiGroupApprovalExtension(SingletonPlugin):
     def __init__(self):
         from ckan.model import core
         if not core.State.PENDING in core.State.all:
-            log.warning("Adding 'pending' state to vdm State for IATI pubisher approval") 
+            log.warning("Adding 'pending' state to vdm State for IATI publisher approval") 
             core.State.all.append(core.State.PENDING)
     
     def get_admins(self):
