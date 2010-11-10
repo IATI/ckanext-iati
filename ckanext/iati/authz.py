@@ -1,6 +1,5 @@
 import logging
 import ckan.model as model
-from ckan import signals
 from ckan.authz import Authorizer
 
 from ckan.plugins import implements, SingletonPlugin, IGroupController, IPackageController
