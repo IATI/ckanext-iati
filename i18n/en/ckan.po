@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: ckan 1.2c\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2010-09-26 16:49+0200\n"
-"PO-Revision-Date: 2010-11-10 14:04+0100\n"
+"PO-Revision-Date: 2010-11-10 14:07+0100\n"
 "Last-Translator: Friedrich Lindenberg <friedrich@pudo.org>\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -993,7 +993,7 @@ msgstr "Records"
 
 #: ckan/templates/group/edit_form.html:17
 msgid "There are no packages currently in this group."
-msgstr "There are no packages currently in this publisher."
+msgstr "There are no published activity records."
 
 #: ckan/templates/group/history.html:5
 #| msgid "- Data Packages - History"

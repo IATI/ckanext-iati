@@ -21,7 +21,7 @@ def _get_group_authz_group(group):
         authz_group = model.AuthorizationGroup(name=authz_group_name)
         model.Session.add(authz_group)
         model.add_user_to_authorization_group(user, authz_group, model.Role.ADMIN)
-        model.add_authorization_group_to_role(authz_group, model.Role.EDITOR, group)
+        model.add_authorization_group_to_role(authz_group, model.Role.OWNER, group)
     return authz_group
 
 
@@ -44,7 +44,7 @@ class IatiPackageAuthzExtension(SingletonPlugin):
                 model.Session.delete(package_role)
         for authz_group in authz_groups:
             pkg_role = model.PackageRole(package=pkg, user=None, authorized_group=authz_group, 
-                                         role=model.Role.EDITOR)
+                                         role=model.Role.OWNER)
             model.Session.add(pkg_role)
 
 
