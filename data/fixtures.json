@@ -114,7 +114,7 @@
 		]
 	},
 	{
-		"name": "dad-wwanda-rw-all",
+		"name": "dad-rwanda-rw-all",
 		"title": "DAD Rwanda",
 		"notes": "",
 		"author": "D.Example",
@@ -139,34 +139,30 @@
 				"format": "IATI-XML",
 				"url": "http://iatilabs.org/test-data/DAD-Rwanda/DAD-Rwanda_RW_IATI.xml"
 			}
-		]
+		],
+		"groups": ["dad-rwanda"]
 	}
 ],
 "groups": [
 	{
 		"name": "dad-rwanda", 
 		"title": "DAD Rwanda",
-		"extras": {"type": "Recipient"},
-		"packages": ["dad-rwanda-rw-all"]
+		"extras": {"type": "Recipient"}
 	},
 	{
 		"name": "development-gateway", 
 		"title": "Development Gateway",
-		"extras": {"type": "Community"},
-		"type": "Community",
-		"packages": ["dg-bf-all"]
+		"extras": {"type": "Community"}
   },
 	{
 		"name": "dfid", 
 		"title": "DFID",
-		"extras": {"type": "Donor"},
-		"packages": ["dfid-rw-all"]
+		"extras": {"type": "Donor"}
   },
 	{
 		"name": "undp", 
 		"title": "UN Development Programme",
-		"extras": {"type": "Donor"},
-		"packages": ["undp-co-all"]
+		"extras": {"type": "Donor"}
 	}
 ]
 }

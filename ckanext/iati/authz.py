@@ -18,7 +18,7 @@ def _get_group_authz_group(group):
     if not authz_group: 
         user = model.User.by_name(c.user)
         if not user: 
-            raise ValueError()
+            raise ValueError(c.user)
         authz_group = model.AuthorizationGroup(name=authz_group_name)
         model.Session.add(authz_group)
         model.add_user_to_authorization_group(user, authz_group, model.Role.ADMIN)
@@ -70,10 +70,12 @@ class IatiGroupAuthzExtension(SingletonPlugin):
     @classmethod
     def _sync_packages(cls, group):
         for package in group.packages:
-            IatiPackageAuthzExtension._sync_authz_groups(package)
+            if package is not None:
+                IatiPackageAuthzExtension._sync_authz_groups(package)
     
     def create(self, group):
         model.clear_user_roles(group)
+        model.setup_default_user_roles(group, [])
         _get_group_authz_group(group)  
         self._sync_packages(group)
     
