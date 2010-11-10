@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: ckan 1.2c\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2010-09-26 16:49+0200\n"
-"PO-Revision-Date: 2010-11-10 14:07+0100\n"
+"PO-Revision-Date: 2010-11-10 16:31+0100\n"
 "Last-Translator: Friedrich Lindenberg <friedrich@pudo.org>\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -91,7 +91,6 @@ msgid "Select two revisions before doing the comparison."
 msgstr ""
 
 #: ckan/controllers/group.py:266
-#| msgid "CKAN Package Revision History"
 msgid "CKAN Group Revision History"
 msgstr "IATI Record Revision History"
 
@@ -167,7 +166,7 @@ msgstr "User %r unauthorized to edit existing activity record %s"
 
 #: ckan/controllers/package.py:40
 #: ckan/controllers/tag.py:38
-#: ckan/forms/common.py:847
+#: ckan/forms/common.py:848
 msgid "Other"
 msgstr ""
 
@@ -453,13 +452,50 @@ msgid "Extra key-value pair: key is not set for value \"%s\"."
 msgstr ""
 
 #: ckan/forms/common.py:677
-#: ckan/forms/common.py:798
+#: ckan/forms/common.py:799
 msgid "(None)"
 msgstr ""
 
-#: ckan/forms/common.py:831
+#: ckan/forms/common.py:687
+#: ckan/templates/package/form_groups.html:21
+msgid "Cannot add any groups."
+msgstr "Cannot add any publishers."
+
+#: ckan/forms/common.py:702
+#: ckan/templates/home/stats.html:89
+msgid "Group"
+msgstr "Publisher"
+
+#: ckan/forms/common.py:832
 msgid "other - please specify"
 msgstr ""
+
+#: ckan/forms/group.py:52
+msgid "Unique Name (required)"
+msgstr ""
+
+#: ckan/forms/group.py:63
+#: ckan/forms/package_gov.py:117
+#: ckan/templates/package/read_core.html:64
+msgid "Details"
+msgstr ""
+
+#: ckan/forms/group.py:64
+#: ckan/forms/package.py:52
+#: ckan/forms/package.py:62
+msgid "Extras"
+msgstr ""
+
+#: ckan/forms/group.py:88
+#: ckan/templates/home/stats.html:73
+#: ckan/templates/home/stats.html:81
+msgid "Package"
+msgstr "Activity Record"
+
+#: ckan/forms/group.py:89
+#| msgid "Related packages"
+msgid "Add packages"
+msgstr "Add records"
 
 #: ckan/forms/package.py:32
 #: ckan/forms/package.py:60
@@ -484,7 +520,7 @@ msgstr ""
 
 #: ckan/forms/package.py:34
 #: ckan/forms/package.py:62
-#: ckan/templates/layout_base.html:97
+#: ckan/templates/layout_base.html:113
 #: ckan/templates/tag/index.html:6
 #: ckan/templates/tag/index.html:9
 msgid "Tags"
@@ -517,7 +553,7 @@ msgid "Resources"
 msgstr ""
 
 #: ckan/forms/package.py:48
-#: ckan/templates/layout_base.html:98
+#: ckan/templates/layout_base.html:114
 #: ckan/templates/group/index.html:9
 #: ckan/templates/revision/read.html:40
 msgid "Groups"
@@ -526,11 +562,6 @@ msgstr "Publishers"
 #: ckan/forms/package.py:49
 #: ckan/forms/package.py:55
 msgid "Detail"
-msgstr ""
-
-#: ckan/forms/package.py:52
-#: ckan/forms/package.py:62
-msgid "Extras"
 msgstr ""
 
 #: ckan/forms/package.py:60
@@ -575,11 +606,6 @@ msgstr ""
 #: ckan/forms/package_gov.py:104
 #: ckan/forms/package_gov.py:136
 msgid "National Statistic"
-msgstr ""
-
-#: ckan/forms/package_gov.py:117
-#: ckan/templates/package/read_core.html:64
-msgid "Details"
 msgstr ""
 
 #: ckan/forms/package_gov.py:123
@@ -711,131 +737,147 @@ msgstr ""
 msgid "%(message)s"
 msgstr ""
 
-#: ckan/templates/layout_base.html:66
+#: ckan/templates/layout_base.html:76
 msgid "Logged in as"
 msgstr ""
 
-#: ckan/templates/layout_base.html:67
+#: ckan/templates/layout_base.html:77
 msgid "username"
 msgstr ""
 
-#: ckan/templates/layout_base.html:68
+#: ckan/templates/layout_base.html:78
 msgid "My account"
 msgstr ""
 
-#: ckan/templates/layout_base.html:69
+#: ckan/templates/layout_base.html:79
 #: ckan/templates/user/logout.html:8
 msgid "Logout"
 msgstr ""
 
-#: ckan/templates/layout_base.html:72
+#: ckan/templates/layout_base.html:82
 msgid "Login with"
 msgstr ""
 
-#: ckan/templates/layout_base.html:72
+#: ckan/templates/layout_base.html:82
 msgid "OpenID"
 msgstr ""
 
-#: ckan/templates/layout_base.html:93
-msgid "Sections:"
+#: ckan/templates/layout_base.html:95
+msgid "Skip to content"
 msgstr ""
 
-#: ckan/templates/layout_base.html:95
-#: ckan/templates/authorization_group/layout.html:39
-#: ckan/templates/authorization_group/layout.html:48
-#: ckan/templates/group/layout.html:39
+#: ckan/templates/layout_base.html:99
 #: ckan/templates/home/index.html:6
-#: ckan/templates/package/layout.html:21
 msgid "Home"
 msgstr ""
 
-#: ckan/templates/layout_base.html:96
+#: ckan/templates/layout_base.html:101
+#: ckan/templates/layout_base.html:181
+#: ckan/templates/home/about.html:6
+#: ckan/templates/home/index.html:45
+#: ckan/templates/user/read.html:19
+msgid "About"
+msgstr ""
+
+#: ckan/templates/layout_base.html:102
+#: ckan/templates/home/index.html:48
+#: ckan/templates/home/stats.html:6
+#: ckan/templates/home/stats.html:14
+msgid "Statistics"
+msgstr ""
+
+#: ckan/templates/layout_base.html:105
 #: ckan/templates/package/index.html:6
 #: ckan/templates/package/index.html:9
 #: ckan/templates/package/list.html:34
 msgid "Data Packages"
 msgstr "Activity Record"
 
-#: ckan/templates/layout_base.html:99
+#: ckan/templates/layout_base.html:107
+msgid "Browse"
+msgstr ""
+
+#: ckan/templates/layout_base.html:109
+msgid "Register"
+msgstr ""
+
+#: ckan/templates/layout_base.html:117
+#: ckan/templates/group/layout.html:18
+msgid "Create a new group"
+msgstr "Create a new publisher"
+
+#: ckan/templates/layout_base.html:121
 #: ckan/templates/authorization_group/index.html:6
 #: ckan/templates/authorization_group/index.html:9
-#: ckan/templates/authorization_group/layout.html:11
-#| msgid "Authorization for group:"
+#: ckan/templates/authorization_group/layout.html:23
 msgid "Authorization Groups"
 msgstr "Authorization Groups"
 
-#: ckan/templates/layout_base.html:100
+#: ckan/templates/layout_base.html:124
+#: ckan/templates/authorization_group/layout.html:32
+msgid "Create a new authorization group"
+msgstr "Create a new authorization group"
+
+#: ckan/templates/layout_base.html:128
 #: ckan/templates/revision/list.html:5
 #: ckan/templates/revision/list.html:14
 msgid "Revision History"
 msgstr ""
 
-#: ckan/templates/layout_base.html:102
-msgid "In this section:"
-msgstr ""
-
-#: ckan/templates/layout_base.html:113
-msgid "Skip to page content"
-msgstr ""
-
-#: ckan/templates/layout_base.html:113
-msgid "[ Skip to main content ]"
-msgstr ""
-
-#: ckan/templates/layout_base.html:128
+#: ckan/templates/layout_base.html:150
 msgid "Master content template placeholder … please replace me."
 msgstr ""
 
-#: ckan/templates/layout_base.html:134
-msgid "Valid XHTML 1.1"
-msgstr ""
-
-#: ckan/templates/layout_base.html:134
-msgid "XHTML"
-msgstr ""
-
-#: ckan/templates/layout_base.html:135
-msgid "CSS"
-msgstr ""
-
-#: ckan/templates/layout_base.html:136
+#: ckan/templates/layout_base.html:185
 msgid "Project Home Page"
 msgstr ""
 
-#: ckan/templates/layout_base.html:137
+#: ckan/templates/layout_base.html:188
 msgid "Contact Us"
 msgstr ""
 
-#: ckan/templates/layout_base.html:138
+#: ckan/templates/layout_base.html:191
 msgid "Privacy Policy"
 msgstr ""
 
-#: ckan/templates/layout_base.html:140
-msgid "[1:] CKAN is an [2:Open Knowledge Foundation] project"
+#: ckan/templates/layout_base.html:202
+msgid "Credits"
 msgstr ""
 
-#: ckan/templates/layout_base.html:147
-#: ckan/templates/layout_base.html:151
+#: ckan/templates/layout_base.html:205
+msgid ""
+"[1:]\n"
+"                An\n"
+"                [2:Open Knowledge Foundation] Project"
+msgstr ""
+
+#: ckan/templates/layout_base.html:211
+msgid "Open Knowledge Foundation"
+msgstr ""
+
+#: ckan/templates/layout_base.html:215
+#: ckan/templates/layout_base.html:220
 msgid "This Content and Data is Open"
 msgstr ""
 
-#: ckan/templates/layout_base.html:143
+#: ckan/templates/layout_base.html:237
+msgid "CKAN"
+msgstr ""
+
+#: ckan/templates/layout_base.html:238
+msgid "Powered by CKAN"
+msgstr ""
+
+#: ckan/templates/layout_base.html:240
 #, python-format
-msgid ""
-"v%(version)s\n"
-"        | (c) Open Knowledge Foundation\n"
-"\t| All material available under an [1:open license]\n"
-"        | [2:[3:]]\n"
-"        | [4:[5:]]"
+msgid "v%(version)s"
 msgstr ""
 
 #: ckan/templates/authorization_group/authz.html:5
-#| msgid "- Authorization - Groups"
 msgid "- Authorization - AuthorizationGroups"
 msgstr "- Authorization - AuthorizationGroups"
 
 #: ckan/templates/authorization_group/authz.html:8
-#| msgid "Authorization for group:"
 msgid "Authorization for authorization group:"
 msgstr "Authorization for authorization group:"
 
@@ -860,12 +902,10 @@ msgid "Save"
 msgstr ""
 
 #: ckan/templates/authorization_group/edit.html:5
-#| msgid "- Authorization - Groups"
 msgid "- Edit - AuthorizationGroups"
 msgstr "- Edit - Authorization Groups"
 
 #: ckan/templates/authorization_group/edit.html:17
-#| msgid "Authorization for group:"
 msgid "Edit Authorization Group:"
 msgstr "Edit Authorization Group:"
 
@@ -874,77 +914,58 @@ msgid "Users"
 msgstr ""
 
 #: ckan/templates/authorization_group/edit_form.html:17
-#| msgid "There are no packages currently in this group."
 msgid "There are no users currently in this group."
 msgstr "There are no users currently in this group."
 
 #: ckan/templates/authorization_group/index.html:11
 #, python-format
-#| msgid "There are [1:%(item_count)s] groups."
 msgid "There are [1:%(item_count)s] authorization groups."
 msgstr "There are [1:%(item_count)s] authorization groups."
 
-#: ckan/templates/authorization_group/layout.html:12
+#: ckan/templates/authorization_group/layout.html:11
+#: ckan/templates/group/layout.html:26
+#: ckan/templates/package/layout.html:11
+msgid "View"
+msgstr ""
+
+#: ckan/templates/authorization_group/layout.html:13
+#: ckan/templates/group/layout.html:28
+#: ckan/templates/package/layout.html:13
+#: ckan/templates/user/read.html:25
+msgid "Edit"
+msgstr ""
+
+#: ckan/templates/authorization_group/layout.html:16
+#: ckan/templates/group/layout.html:32
+#: ckan/templates/package/layout.html:17
+msgid "Authorization"
+msgstr ""
+
+#: ckan/templates/authorization_group/layout.html:24
 msgid ""
 "Instead of specifying the privileges of specific users on a package or group,\n"
 "          you can also specify a set of users that will share the same rights. To do that, an    \n"
 "          [1:authorization group] can be set-up and users can be added to it."
 msgstr ""
 
-#: ckan/templates/authorization_group/layout.html:16
-#| msgid "To create a new group, please first"
+#: ckan/templates/authorization_group/layout.html:28
 msgid "To create a new authorization group, please first"
 msgstr "To create a new authorization group, please first"
 
-#: ckan/templates/authorization_group/layout.html:17
+#: ckan/templates/authorization_group/layout.html:29
 #: ckan/templates/group/layout.html:15
 msgid "login"
 msgstr ""
 
-#: ckan/templates/authorization_group/layout.html:20
-#: ckan/templates/authorization_group/layout.html:41
-#: ckan/templates/authorization_group/layout.html:49
-#| msgid "Create a new group"
-msgid "Create a new authorization group"
-msgstr "Create a new authorization group"
-
-#: ckan/templates/authorization_group/layout.html:29
-#: ckan/templates/group/layout.html:27
-#| msgid "Edit Group:"
-msgid "This group:"
-msgstr "This publisher:"
-
-#: ckan/templates/authorization_group/layout.html:30
-#: ckan/templates/group/layout.html:28
-#: ckan/templates/package/layout.html:11
-msgid "View"
-msgstr ""
-
-#: ckan/templates/authorization_group/layout.html:32
-#: ckan/templates/group/layout.html:30
-#: ckan/templates/package/layout.html:13
-#: ckan/templates/user/read.html:25
-msgid "Edit"
-msgstr ""
-
-#: ckan/templates/authorization_group/layout.html:35
-#: ckan/templates/group/layout.html:35
-#: ckan/templates/package/layout.html:17
-msgid "Authorization"
-msgstr ""
-
 #: ckan/templates/authorization_group/new.html:5
-#| msgid "- Authorization - Groups"
 msgid "New - Authorization Groups"
 msgstr "New - Authorization Groups"
 
 #: ckan/templates/authorization_group/new.html:17
-#| msgid "Authorization for group:"
 msgid "New Authorization Group"
 msgstr "New Authorization Group"
 
 #: ckan/templates/authorization_group/read.html:6
-#| msgid "- Authorization - Groups"
 msgid "- Authorization Groups"
 msgstr "- Authorization Groups"
 
@@ -959,7 +980,6 @@ msgstr ""
 
 #: ckan/templates/authorization_group/read.html:25
 #, python-format
-#| msgid "There are [1:%(item_count)s] groups."
 msgid "There are %(item_count)s users in this authorization group."
 msgstr "There are %(item_count)s users in this authorization group."
 
@@ -996,7 +1016,6 @@ msgid "There are no packages currently in this group."
 msgstr "There are no published activity records."
 
 #: ckan/templates/group/history.html:5
-#| msgid "- Data Packages - History"
 msgid "- Groups - History"
 msgstr "- Publishers - History"
 
@@ -1078,12 +1097,7 @@ msgstr ""
 msgid "To create a new group, please first"
 msgstr "To create a new publisher, please first"
 
-#: ckan/templates/group/layout.html:18
-#: ckan/templates/group/layout.html:41
-msgid "Create a new group"
-msgstr "Create a new publisher"
-
-#: ckan/templates/group/layout.html:32
+#: ckan/templates/group/layout.html:30
 #: ckan/templates/package/layout.html:15
 msgid "History"
 msgstr ""
@@ -1112,13 +1126,6 @@ msgstr "Records:"
 #, python-format
 msgid "There are %(item_count)s packages in this group."
 msgstr "There are %(item_count)s activity records by this publisher."
-
-#: ckan/templates/home/about.html:6
-#: ckan/templates/home/index.html:45
-#: ckan/templates/home/layout.html:9
-#: ckan/templates/user/read.html:19
-msgid "About"
-msgstr ""
 
 #: ckan/templates/home/about.html:9
 msgid "About CKAN"
@@ -1260,13 +1267,6 @@ msgstr ""
 msgid "User Guide"
 msgstr ""
 
-#: ckan/templates/home/index.html:48
-#: ckan/templates/home/layout.html:10
-#: ckan/templates/home/stats.html:6
-#: ckan/templates/home/stats.html:14
-msgid "Statistics"
-msgstr ""
-
 #: ckan/templates/home/index.html:49
 msgid "CKAN development"
 msgstr ""
@@ -1348,11 +1348,6 @@ msgid "Top Rated Packages"
 msgstr "Top Rated Records"
 
 #: ckan/templates/home/stats.html:73
-#: ckan/templates/home/stats.html:81
-msgid "Package"
-msgstr "Activity Record"
-
-#: ckan/templates/home/stats.html:73
 msgid "Average rating"
 msgstr ""
 
@@ -1371,10 +1366,6 @@ msgstr ""
 #: ckan/templates/home/stats.html:87
 msgid "Largest Groups"
 msgstr "Largest Publishers"
-
-#: ckan/templates/home/stats.html:89
-msgid "Group"
-msgstr "Publisher"
 
 #: ckan/templates/home/stats.html:89
 msgid "Number of packages"
@@ -1482,10 +1473,6 @@ msgstr ""
 msgid "Group:"
 msgstr "Publisher:"
 
-#: ckan/templates/package/form_groups.html:21
-msgid "Cannot add any groups."
-msgstr "Cannot add any publishers."
-
 #: ckan/templates/package/form_resources.html:6
 #: ckan/templates/package/read_core.html:37
 msgid "Format"
@@ -1500,30 +1487,10 @@ msgstr ""
 msgid "- Data Packages - History"
 msgstr "- Activity Records - History"
 
-#: ckan/templates/package/index.html:15
+#: ckan/templates/package/index.html:10
 #, python-format
 msgid "There are [1:%(package_count)s] packages."
 msgstr "There are [1:%(package_count)s] activity records."
-
-#: ckan/templates/package/index.html:18
-msgid "Browse packages"
-msgstr "Browse activity records"
-
-#: ckan/templates/package/index.html:22
-msgid "Register a new package"
-msgstr "Register a new activity record"
-
-#: ckan/templates/package/layout.html:10
-msgid "This package:"
-msgstr "This activity record:"
-
-#: ckan/templates/package/layout.html:22
-msgid "Browse"
-msgstr ""
-
-#: ckan/templates/package/layout.html:24
-msgid "Register new package"
-msgstr "Register new activity record"
 
 #: ckan/templates/package/list.html:6
 msgid "Browse - Data Packages"
@@ -2019,10 +1986,27 @@ msgstr "Number of activity records administered:"
 msgid "Recent changes"
 msgstr ""
 
-#~ msgid "Can't find entity data in request params %s: %s"
+#~ msgid "Sections:"
 #~ msgstr ""
-#~ msgid "[edit]"
+#~ msgid "In this section:"
 #~ msgstr ""
-#~ msgid "[authorization]"
+#~ msgid "Skip to page content"
+#~ msgstr ""
+#~ msgid "[ Skip to main content ]"
+#~ msgstr ""
+#~ msgid "Valid XHTML 1.1"
+#~ msgstr ""
+#~ msgid "XHTML"
+#~ msgstr ""
+#~ msgid "CSS"
+#~ msgstr ""
+#~ msgid "[1:] CKAN is an [2:Open Knowledge Foundation] project"
+#~ msgstr ""
+#~ msgid ""
+#~ "v%(version)s\n"
+#~ "        | (c) Open Knowledge Foundation\n"
+#~ "\t| All material available under an [1:open license]\n"
+#~ "        | [2:[3:]]\n"
+#~ "        | [4:[5:]]"
 #~ msgstr ""
 
