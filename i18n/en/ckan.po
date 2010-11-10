@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: ckan 1.2c\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2010-09-26 16:49+0200\n"
-"PO-Revision-Date: 2010-11-10 12:51+0100\n"
+"PO-Revision-Date: 2010-11-10 14:04+0100\n"
 "Last-Translator: Friedrich Lindenberg <friedrich@pudo.org>\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -314,7 +314,7 @@ msgstr ""
 
 #: ckan/controllers/rest.py:624
 msgid "You must supply a package id or name (parameter \"package\")."
-msgstr ""
+msgstr "You must supply a record id or name (parameter \"package\")."
 
 #: ckan/controllers/rest.py:626
 msgid "You must supply a rating (parameter \"rating\")."
@@ -1111,7 +1111,7 @@ msgstr "Records:"
 #: ckan/templates/group/read.html:34
 #, python-format
 msgid "There are %(item_count)s packages in this group."
-msgstr ""
+msgstr "There are %(item_count)s activity records by this publisher."
 
 #: ckan/templates/home/about.html:6
 #: ckan/templates/home/index.html:45
@@ -1288,7 +1288,7 @@ msgstr ""
 #: ckan/templates/home/index.html:64
 #, python-format
 msgid "[1:%(package_count)s registered data packages] available."
-msgstr ""
+msgstr "[1:%(package_count)s registered activity records] available."
 
 #: ckan/templates/home/index.html:68
 #: ckan/templates/home/stats.html:95
@@ -1734,11 +1734,11 @@ msgstr ""
 #: ckan/templates/package/search.html:27
 #, python-format
 msgid "[1:%(item_count)s] packages found."
-msgstr ""
+msgstr "[1:%(item_count)s] activity records found."
 
 #: ckan/templates/package/search.html:29
 msgid "Would you like to [1:create a new package?]"
-msgstr ""
+msgstr "Would you like to [1:upload a new activity record?]"
 
 #: ckan/templates/package/search_form.html:4
 msgid "E.g. 'geo', 'shakespeare', 'science'"
@@ -1797,6 +1797,8 @@ msgid ""
 "This page lists all changes to package database, with most recent\n"
 "    changes first."
 msgstr ""
+"This page lists all changes to records database, with most recent\n"
+"    changes first."
 
 #: ckan/templates/revision/list.html:22
 msgid "Number"
@@ -1884,7 +1886,7 @@ msgstr ""
 #: ckan/templates/tag/read.html:10
 #, python-format
 msgid "There are %(package_count)s packages tagged with [1:%(tagname)s]:"
-msgstr ""
+msgstr "There are %(package_count)s records tagged with [1:%(tagname)s]:"
 
 #: ckan/templates/user/apikey.html:5
 msgid "API Key -"

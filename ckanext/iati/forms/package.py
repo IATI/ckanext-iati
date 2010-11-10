@@ -116,6 +116,7 @@ def build_package_iati_form(is_admin=False, user_editable_groups=None):
     # IATI specifics
     
     #Publishing Entity: 
+    builder.set_field_text('groups', _('Publisher'))
     builder.add_field(AtLeastOneGroupSelectField('groups', allow_empty=False, 
                       user_editable_groups=user_editable_groups))
     
