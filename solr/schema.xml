@@ -113,8 +113,8 @@
    <field name="ratings_average" type="float" indexed="true" stored="false" />
    <field name="tags" type="textgen" indexed="true" stored="true" multiValued="true"/>
 
-   <field name="groups" type="textgen" indexed="true" stored="true" multiValued="true"/>
-	 <field name="groups_types" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="groups" type="string" indexed="true" stored="true" omitNorms="true" multiValued="true"/>
+	 <field name="groups_types" type="string" indexed="true" stored="true" omitNorms="true" multiValued="true"/>
 
 	 <field name="res_description" type="textgen" indexed="true" stored="true" multiValued="true"/>
 	 <field name="res_format" type="string" indexed="true" stored="true" multiValued="true"/>

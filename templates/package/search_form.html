@@ -5,7 +5,7 @@
   <?python
     any = [('', 'Any')]
     country_options = any + [(o, h.country_name(o) + " (%s)" % n) for o, n in h.facet_options('package', 'country')]
-    groups_options = any + [(o, o + " (%s)" % n) for o, n in h.facet_options('package', 'donors')]
+    groups_options = any + [(o, h.group_title(o) + " (%s)" % n) for o, n in h.facet_options('package', 'groups')]
     types_options = any + [(o, o + " (%s)" % n) for o, n in h.facet_options('package', 'groups_types')]
   ?>
   <div class="facets">
