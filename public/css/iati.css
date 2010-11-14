@@ -1,43 +1,58 @@
 
+
+body, input, textarea, .page-title span, .pingback a.url {
+	font-family: arial, sans-serif;
+}
+
+#top-bar-login {
+	max-width: 300px;
+}
+
+div#access {
+	margin-left: -20px;
+	margin-right: -20px;
+	padding-left: 20px;
+	padding-right: 20px;
+	width: 940px;
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+}
+
+div#access ul li a { 
+	font-weight: bold; 
+	color: #000;
+	padding: 0px 12px;
+	border-right: 1px solid #ccc;
+}
+
+div#access ul li a:hover {
+	background-color: #000;
+	color: #fff;
+}
+
+div#access ul li:first-child a {
+	border-left: 1px solid #ccc;
+}
+
+div#access ul li ul li a {
+	padding: 10px;
+	border-bottom: 1px solid #ccc;
+}
+
 body {
 	background: #E8F2F7;
 	/* margin: 0px; */
 	min-height: 100%;
 }
 
-#airlock {
-	margin: 0px auto;
-	/* padding: 0px; */
-	width: 940px;
-	background-color: white;
-	overflow: visible;
-	min-height: 100%;
+#content, #content input, #content textarea {
+	font-size: 14px;
 }
 
 #wrapper {
 	background: white;
 }
 
-#main {
-	position: relative;
-	overflow: visible;
-}
-
-#top {
-	margin: 0px;
-	padding: 0em;
-	padding-top: 0.5em;
-}
-
-#top-inner {
-	margin: 0px;
-	border-bottom: 0px;
-}
-
-#top-bar {
-	border-bottom: 0px;
-	padding-right: 1em;
-}
 
 #navigation {
 	background: url("/images/fade.png") repeat-x scroll center bottom transparent;
@@ -96,13 +111,40 @@ body {
 	font-style: italic;
 }
 
-h1#site-title {
-	margin-left: 1em;
-	line-height: 1.4em;
+h1, h2, h3, h4, h5, h6 {
+	color: #26237B !important;
+	font-weight: bold; 
 }
 
-.package h3, .package h4 { 
-	color: #425B6B;
+div#branding h1#site-title a {
+	margin-left: 1em;
+	line-height: 1.4em;
+	text-transform: none;
+	font-size: 24pt; 
+	color: #26237B;
+}
+
+div#branding {
+	padding-bottom: 0.7em;
+}
+
+div#branding h1#site-title a #logo_text {
+	float: right;
+	margin-left: 20px;
+	margin-top: 28px;
+}
+
+.packages {
+	margin: 0px;
+}
+
+.packages li {
+	padding: 0.4em 0px 0.4em 0em;
+}
+
+#content .package h3, 
+#content .package h4 { 
+	color: #fff;
 	background-color: #BBE3F7;
 }
 a, a:link {
@@ -132,7 +174,19 @@ body, #table, .box {
 	background-color: #BBE3F7;
 	border-right: 0px;
 	border-bottom: 0px;
-	padding-bottom: 1em;
+	padding: 1em;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	margin-bottom: 1em;
+}
+
+.box h2 {
+	padding-bottom: 0.5em;
+}
+
+.box p {
+	margin-bottom: 0em;
 }
 
 #iati_map {
@@ -152,18 +206,18 @@ input[type=submit] {
 	border: 0px;
 	font-weight: bolder;
 	font-size: 1.1em;
-	padding: 5px;
+	padding: 10px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	border-radius: 4px;
-	color: #425B6B;
+	color: #000;
 	background-color: #BBE3F7;
 }
 
 input[type=submit]:hover { 
 	cursor: pointer;
-	color: #BBE3F7;
-	background-color: #425B6B;
+	color: #fff !important;
+	background-color: #000;
 }
 
 input[type="search"] {
@@ -172,12 +226,32 @@ input[type="search"] {
 	-webkit-appearance: textfield;	
 }
 
+div#footer {
+	margin-left: -20px;
+	margin-right: -20px;
+	padding-left: 20px;
+	padding-right: 20px;
+	border-top: 0px;
+	padding-top: 1em;
+	background: url(/images/bands.jpeg);
+}
+
+div#colophon {
+	padding-top: 22px;
+	border-top: 0px solid; 
+}
+
 #package-search .search {
 	width: 100%;
+	border: 1px solid #ccc;
+	font-size: 1.2em;
+	padding: 0.3em;
+	margin-bottom: 0.1em;
 }
 
 #package-search .facets {
 	padding-top: 0.8em;
+	font-size: 1em;
 }
 
 #package-search .facets select {
@@ -188,9 +262,23 @@ input[type="search"] {
 
 #package-search .button {
 	float: right;
-	margin-top: 0.8em;
+	margin-top: 0.0em;
+	margin-right: 0.0em;
+	margin-bottom: 0.0em;
 }
 
 .iati_preview {
 	display: none; 
+}
+
+#minornavigation ul li a {
+	padding: 5px;
+}
+
+#minornavigation ul li a img {
+	margin-bottom: -4px;
+}
+
+#minornavigation ul li {
+	float: right;
 }

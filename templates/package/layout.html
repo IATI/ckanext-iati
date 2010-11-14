@@ -5,23 +5,22 @@
   py:strip=""
   >
   
-  <py:match path="minornavigation" py:choose="">
-    <py:when test="c.pkg">
-      <li class="intro">This package:</li>
+  <py:match path="minornavigation">
+    <py:if test="c.pkg">
+    <ul>
       <li>${h.subnav_link(c, h.icon('package') + _('View'), controller='package', action='read', id=c.pkg.name)}</li>
       <li py:if="h.am_authorized(c, actions.EDIT, c.pkg)">
           ${h.subnav_link(c, h.icon('package_edit') + _('Edit'), controller='package', action='edit', id=c.pkg.name)}
       </li>
+      <li><a href="/package/history/${c.pkg.name}?format=atom&amp;days=7">
+          <img style="height:16; width:16; margin-bottom:-0.3em" src="/images/icons/atom_feed.png" alt="Atom Feed" title="${g.site_title} - Package History - ${c.pkg.name}"/>
+          Subscribe</a></li>
       <li>${h.subnav_link(c, h.icon('page_white_stack') + _('History'), controller='package', action='history', id=c.pkg.name)}</li>
       <li py:if="h.am_authorized(c, actions.EDIT_PERMISSIONS, c.pkg)">
         ${h.subnav_link(c, h.icon('lock') + _('Authorization'), controller='package', action='authz', id=c.pkg.name)}
       </li>
-    </py:when>
-    <py:otherwise>
-      <li py:if="h.am_authorized(c, actions.PACKAGE_CREATE)">
-        ${h.subnav_link(c, _('Register new package'), controller='package', action='new', id=None)}
-      </li>
-    </py:otherwise>
+    </ul>
+    </py:if>
   </py:match>
   
   <xi:include href="../layout.html" />
