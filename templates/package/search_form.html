@@ -4,9 +4,9 @@
   
   <?python
     any = [('', 'Any')]
-    country_options = any + [(o, h.country_name(o) + " (%s)" % n) for o, n in h.facet_options(c.q, 'country')]
-    groups_options = any + [(o, h.group_title(o) + " (%s)" % n) for o, n in h.facet_options(c.q, 'groups')]
-    types_options = any + [(o, o + " (%s)" % n) for o, n in h.facet_options('', 'groups_types')]
+    country_options = any + [(o, h.country_name(o) + " (%s)" % n) for o, n in h.facet_options(c.q, 'country', c.facets)]
+    groups_options = any + [(o, h.group_title(o) + " (%s)" % n) for o, n in h.facet_options(c.q, 'groups', c.facets)]
+    types_options = any + [(o, o + " (%s)" % n) for o, n in h.facet_options('', 'groups_types', c.facets)]
   ?>
   <div class="facets">
   Type: ${h.select('groups_types', c.facets.get('groups_types', '') if c.facets else '', types_options)}
