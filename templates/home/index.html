@@ -63,11 +63,7 @@
     <xi:include href="../package/search_form.html" />
     
     <h4>Latest Data</h4>
-    <?python 
-    from itertools import chain
-    packages = set(chain(*[r.packages for r in c.revisions]))
-    ?>
-    ${package_list(packages)}
+    ${package_list(c.latest_packages)}
     
     <p><a href="${h.url_for(controller='revision', action='index',
       id=None)}">View revision data &raquo;</a></p>

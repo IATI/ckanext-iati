@@ -6,6 +6,11 @@ import unittest
 import os
 
 def parse_iso_date(date_str):
+    if date_str is None: 
+        return None
+    date_str = date_str.get('iso-date') if date_str.get('iso-date') else date_str.text
+    if date_str.endswith('Z'):
+        date_str = date_str[:len(date_str)-1]
     return datetime.strptime(date_str, "%Y-%m-%d")
 
 
@@ -21,14 +26,18 @@ class IatiActivity(object):
     @property
     def start_date(self):
         subn = self.node.find('activity-date[@type="start"]')
+        if subn is None:
+            subn = self.node.find('activity-date[@type="start-planned"]')
         if subn is not None:
-            return parse_iso_date(subn.get('iso-date'))
+            return parse_iso_date(subn)
         
     @property
     def end_date(self):
         subn = self.node.find('activity-date[@type="end"]')
+        if subn is None:
+            subn = self.node.find('activity-date[@type="end-planned"]')
         if subn is not None:
-            return parse_iso_date(subn.get('iso-date'))
+            return parse_iso_date(subn)
 
 
 class IatiXmlParser(object):

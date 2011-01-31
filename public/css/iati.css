@@ -250,8 +250,16 @@ div#colophon {
 }
 
 #package-search .facets {
-	padding-top: 0.8em;
+	margin-top: 0.8em;
 	font-size: 1em;
+    border: 0px;
+}
+
+#package-search .facets tr td {
+    background-color: white; 
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
 }
 
 #package-search .facets select {
