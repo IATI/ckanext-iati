@@ -1,5 +1,21 @@
+import logging
 from forms.countries import COUNTRIES
 import ckan.lib.helpers as h
+
+from ckan.model import Package
+
+log = logging.getLogger(__name__)
+
+######### 
+log.warn("Monkey-patching package serialization format!")
+
+def as_dict_with_groups_types(self):
+    _dict = Package.as_dict(self)
+    _dict['groups_types'] = "".join([g.extras.get('type', '') for g in self.groups])
+    return _dict
+
+Package.as_dict = as_dict_with_groups_types
+######### 
 
 # TODO move this to helpers proper
 def country_name(code):
@@ -27,3 +43,5 @@ def am_authorized_with_publisher(c, action, domain_object=None):
 h.am_authorized_with_publisher = am_authorized_with_publisher
 h.country_name = country_name
 h.group_title = group_title
+
+
