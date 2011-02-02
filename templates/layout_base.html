@@ -90,26 +90,25 @@
         <ul>
           <li>${h.nav_link(c, _('Home'), controller='home', action='index', id=None)}
           <ul class="children">
-            <li class="page_item">${h.subnav_link(c, _('About'), controller='home', action='about', id=None)}</li>
             <li class="page_item">${h.subnav_link(c, _('Statistics'), controller='home', action='stats', id=None)}</li>
             <li class="page_item">${h.subnav_link(c, _('Newsfeed'), controller='revision', action='', id=None)}</li>
           </ul>
         </li>
-        <li><a href="/package/search?groups_types=Donor">${_('Donor data')}</a>
+        <li><a href="/package?groups_types=Donor">${_('Donor data')}</a>
           <ul class="children">
             <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
               ${h.subnav_link(c, _('Register'), controller='package', action='new', id=None)}
             </li>
           </ul>
         </li>
-        <li><a href="/package/search?groups_types=Community">${_('Community data')}</a>
+        <li><a href="/package?groups_types=Community">${_('Community data')}</a>
           <ul class="children">
             <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
               ${h.subnav_link(c, _('Register'), controller='package', action='new', id=None)}
             </li>
           </ul>
         </li>
-        <li><a href="/package/search?groups_types=Recipient">${_('Recipient data')}</a>
+        <li><a href="/package?groups_types=Recipient">${_('Recipient data')}</a>
           <ul class="children">
             <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
               ${h.subnav_link(c, _('Register'), controller='package', action='new', id=None)}

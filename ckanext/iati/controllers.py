@@ -1,8 +1,8 @@
 from ckan.lib.base import *
-from ckan.plugins import implements, SingletonPlugin, IRoutesExtension
+from ckan.plugins import implements, SingletonPlugin, IRoutes
 
 class IatiRoutesExtension(SingletonPlugin):
-    implements(IRoutesExtension, inherit=True)
+    implements(IRoutes, inherit=True)
     
     def before_map(self, map):
         return map
