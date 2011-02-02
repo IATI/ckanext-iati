@@ -1,4 +1,6 @@
 syntax: glob
 *.pyc
+*.swp
+*.swo
 *.egg-info
 .DS_Store
