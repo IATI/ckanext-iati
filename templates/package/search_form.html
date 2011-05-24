@@ -3,7 +3,7 @@
  
   <?python
     any = [('', 'Any')]
-    country_options = any + [(o, h.country_name(o) + " (%s)" % n) for o, n in c.facets.get('country', {}).items()]
+    country_options = any + [(o, h.country_name(o) + " (%s)" % n) for o, n in c.facets.get('extras_country', {}).items()]
     groups_options = any + [(o, h.group_title(o) + " (%s)" % n) for o, n in c.facets.get('groups', {}).items()]
     types_options = any + [(o, o + " (%s)" % n) for o, n in c.facets.get('groups_types', {}).items()]
   ?>
