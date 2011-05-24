@@ -92,32 +92,30 @@
 
  <fields>
    <field name="id" type="string" indexed="true" stored="true" required="true" /> 
-	 <field name="site_id" type="string" indexed="true" stored="true" required="true" /> 
+     <field name="site_id" type="string" indexed="true" stored="true" required="true" /> 
    <field name="title" type="text" indexed="true" stored="true" />
-	 <field name="entity_type" type="string" indexed="true" stored="true" omitNorms="true" />
-	 <field name="state" type="string" indexed="true" stored="true" omitNorms="true" />
+     <field name="entity_type" type="string" indexed="true" stored="true" omitNorms="true" />
+     <field name="state" type="string" indexed="true" stored="true" omitNorms="true" />
    <field name="name" type="string" indexed="true" stored="true" omitNorms="true" />
    <field name="revision_id" type="string" indexed="true" stored="true" omitNorms="true" />
    <field name="version" type="string" indexed="true" stored="true" /> 
    <field name="url" type="string" indexed="true" stored="true" omitNorms="true" />
    <field name="ckan_url" type="string" indexed="true" stored="true" omitNorms="true" />
-	 <field name="download_url" type="string" indexed="true" stored="true" omitNorms="true" />
-	 <field name="notes" type="text" indexed="true" stored="true"/>
-	 <field name="author" type="textgen" indexed="true" stored="true" />
-	 <field name="author_email" type="textgen" indexed="true" stored="true" />
-	 <field name="maintainer" type="textgen" indexed="true" stored="true" />
-	 <field name="maintainer_email" type="textgen" indexed="true" stored="true" />
-	 <field name="license" type="textgen" indexed="true" stored="true" />
-	 <field name="license_id" type="string" indexed="true" stored="true" />
+     <field name="download_url" type="string" indexed="true" stored="true" omitNorms="true" />
+     <field name="notes" type="text" indexed="true" stored="true"/>
+     <field name="author" type="textgen" indexed="true" stored="true" />
+     <field name="author_email" type="textgen" indexed="true" stored="true" />
+     <field name="maintainer" type="textgen" indexed="true" stored="true" />
+     <field name="maintainer_email" type="textgen" indexed="true" stored="true" />
+   <field name="license" type="string" indexed="true" stored="true" />
+     <field name="license_id" type="string" indexed="true" stored="true" />
    <field name="ratings_count" type="int" indexed="true" stored="false" />
    <field name="ratings_average" type="float" indexed="true" stored="false" />
-   <field name="tags" type="textgen" indexed="true" stored="true" multiValued="true"/>
-
-   <field name="groups" type="string" indexed="true" stored="true" omitNorms="true" multiValued="true"/>
-	 <field name="groups_types" type="string" indexed="true" stored="true" omitNorms="true" multiValued="true"/>
-
-	 <field name="res_description" type="textgen" indexed="true" stored="true" multiValued="true"/>
-	 <field name="res_format" type="string" indexed="true" stored="true" multiValued="true"/>
+     <field name="tags" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="groups" type="string" indexed="true" stored="true" multiValued="true"/>
+     
+     <field name="res_description" type="textgen" indexed="true" stored="true" multiValued="true"/>
+     <field name="res_format" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="res_url" type="string" indexed="true" stored="true" multiValued="true"/>
 
    <!-- catchall field, containing all other searchable text fields (implemented
@@ -125,30 +123,43 @@
    <field name="text" type="text" indexed="true" stored="false" multiValued="true"/>
    <field name="urls" type="text" indexed="true" stored="false" multiValued="true"/>
 
-   <field name="country" type="string" indexed="true" stored="true" omitNorms="true" />
-   <field name="donors" type="string" indexed="true" stored="true" omitNorms="true" multiValued="true" />
-   <field name="donors_type" type="string" indexed="true" stored="true" omitNorms="true" multiValued="true" />
-   <field name="donors_country" type="string" indexed="true" stored="true" omitNorms="true" multiValued="true" />
-
+   <field name="depends_on" type="text" indexed="true" stored="false" multiValued="true"/>
+   <field name="dependency_of" type="text" indexed="true" stored="false" multiValued="true"/>
+   <field name="derives_from" type="text" indexed="true" stored="false" multiValued="true"/>
+   <field name="has_derivation" type="text" indexed="true" stored="false" multiValued="true"/>
+   <field name="links_to" type="text" indexed="true" stored="false" multiValued="true"/>
+   <field name="linked_from" type="text" indexed="true" stored="false" multiValued="true"/>
+   <field name="child_of" type="text" indexed="true" stored="false" multiValued="true"/>
+   <field name="parent_of" type="text" indexed="true" stored="false" multiValued="true"/>
+   <field name="extras_*" type="text" indexed="true" stored="true" multiValued="true"/>
+   <field name="groups_types" type="string" indexed="true" stored="true" omitNorms="true" multiValued="true"/>
 
    <field name="indexed_ts" type="date" indexed="true" stored="true" default="NOW" multiValued="false"/>
-   
    <dynamicField name="*" type="string" indexed="true"  stored="false"/>
  </fields>
 
  <uniqueKey>id</uniqueKey>
  <defaultSearchField>text</defaultSearchField>
- <solrQueryParser defaultOperator="OR"/>
-
- <copyField source="title" dest="text"/>
- <copyField source="text" dest="text"/>
- <copyField source="notes" dest="text"/>
- <copyField source="res_description" dest="text"/>
- <copyField source="maintainer" dest="text"/>
- <copyField source="author" dest="text"/>
+ <solrQueryParser defaultOperator="AND"/>
 
  <copyField source="url" dest="urls"/>
  <copyField source="ckan_url" dest="urls"/>
  <copyField source="download_url" dest="urls"/>
  <copyField source="res_url" dest="urls"/>
+ 
+
+ <copyField source="extras_*" dest="text"/>
+ <copyField source="urls" dest="text"/>
+ <copyField source="title" dest="text"/>
+ <copyField source="text" dest="text"/>
+ <copyField source="license" dest="text"/>
+ <copyField source="notes" dest="text"/>
+ <copyField source="tags" dest="text"/>
+ <copyField source="groups" dest="text"/>
+ <copyField source="res_description" dest="text"/>
+ <copyField source="maintainer" dest="text"/>
+ <copyField source="author" dest="text"/>
+
 </schema>
+
+

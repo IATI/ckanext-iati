@@ -73,10 +73,10 @@
                 <strong>${h.icon('user')} <span id="ckan_user_name">username</span></strong>
                 <br/>
                 <a href="${h.url_for(controller='user',action=None,id=None)}">My account</a>
-          &middot; <a href="${h.url_for('/logout_openid')}">Logout</a>
+          &middot; <a href="/user/logout">Logout</a>
         </span>
         <span class="ckan_logged_out">
-                <a href="${h.url_for(controller='user',action='login', id=None)}">Login with ${h.icon('openid')} OpenID</a>
+                <a href="${h.url_for(controller='user',action='login', id=None)}">Login</a>
         </span>
       </div>
 
