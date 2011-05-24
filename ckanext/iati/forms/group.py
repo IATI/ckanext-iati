@@ -22,14 +22,17 @@ def build_group_form(is_admin=False, with_packages=False):
                        _("Community")]
     
     builder = FormBuilder(model.Group)
-    builder.set_field_text('name', 'Unique Name (required)', literal("<br/><strong>Unique identifier</strong> for group.<br/>2+ chars, lowercase, using only 'a-z0-9' and '-_'"))
+    builder.set_field_text('name', 'Unique Name (required)', 
+            literal("<br/><strong>Unique identifier</strong> for group.<br/>2+ chars, lowercase, using only 'a-z0-9' and '-_'"))
     builder.set_field_option('name', 'validate', common.group_name_validator)
     builder.set_field_option('state', 'dropdown', {'options':model.State.all})
     builder.add_field(SelectExtraField('type', options=PUBLISHER_TYPES, allow_empty=False))
     builder.set_field_text('type', 'Type')
     displayed_fields = ['name', 'title', 'type']
     
-    if is_admin:
+    from ckan.authz import Authorizer
+    from ckan.lib.base import c
+    if Authorizer.is_sysadmin(c.user):
         displayed_fields.append('state')
     #builder.add_field(ExtrasField('extras', hidden_label=True))
     
