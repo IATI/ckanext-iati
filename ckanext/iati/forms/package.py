@@ -109,9 +109,9 @@ class AtLeastOneGroupSelectField(GroupSelectField):
 
             
 # Setup the fieldset
-def build_package_iati_form(is_admin=False, user_editable_groups=None):
+def build_package_iati_form(is_admin=False, user_editable_groups=None, **kwargs):
     builder = package.build_package_form(is_admin=is_admin, 
-                                         user_editable_groups=user_editable_groups)
+                                         user_editable_groups=user_editable_groups, **kwargs)
     
     # IATI specifics
     
@@ -134,7 +134,7 @@ def build_package_iati_form(is_admin=False, user_editable_groups=None):
     
     builder.add_field(CommaListExtraField('donors_type'))
     builder.set_field_text('donors_type', _('Donor type'), "Separate multiple entries using commas.")
-    
+
     builder.add_field(CommaListExtraField('donors_country'))
     builder.set_field_text('donors_country', _('Donor country'), "Separate multiple entries using commas.")
     
@@ -221,7 +221,7 @@ def build_package_iati_form(is_admin=False, user_editable_groups=None):
      _('Precision'), _('Taxonomy URL'), _('Department'), _('Agency'), 
      ]
 
-def get_package_fieldset(is_admin=False, user_editable_groups=None):
+def get_package_fieldset(is_admin=False, user_editable_groups=None, **kwargs):
     return build_package_iati_form(is_admin=is_admin, 
-                                   user_editable_groups=user_editable_groups).get_fieldset()
+                                   user_editable_groups=user_editable_groups, **kwargs).get_fieldset()
     

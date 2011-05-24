@@ -21,7 +21,6 @@ setup(name='ckanextiati',
       install_requires=[
           # -*- Extra requirements: -*-
           'ckanclient>=0.3',
-          'lxml>2.2.6'
       ],
       entry_points="""
       # -*- Entry points: -*-
