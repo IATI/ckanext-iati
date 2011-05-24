@@ -9,8 +9,9 @@ log = logging.getLogger(__name__)
 ######### 
 log.warn("Monkey-patching package serialization format!")
 
+old = Package.as_dict
 def as_dict_with_groups_types(self):
-    _dict = Package.as_dict(self)
+    _dict = old(self)
     _dict['groups_types'] = "".join([g.extras.get('type', '') for g in self.groups])
     return _dict
 
