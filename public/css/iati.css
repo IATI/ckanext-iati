@@ -263,6 +263,10 @@ div#footer {
 	background: url(/images/bands.jpeg);
 }
 
+#site-title a img {
+  max-height: 90px;
+}
+
 div#colophon {
 	padding-top: 22px;
 	border-top: 0px solid; 
