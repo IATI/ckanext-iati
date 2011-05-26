@@ -307,6 +307,42 @@ div#colophon {
 	margin-bottom: 0.0em;
 }
 
+
+/* =================== */
+/* = Package listing = */
+/* =================== */
+
+ul.packages {
+    padding-left: 0;
+        margin: 0 0 18px 0;
+}
+
+.packages .header {
+    font-weight: bold;
+}
+
+.packages .extract {
+    font-size: 0.9em;
+    padding-top:10px;
+}
+
+.packages li {
+    list-style: none;
+    padding: 0.4em 0 0.4em 0.0em;
+    border-left: 0.5em solid #fff;
+    border-bottom: 1px solid #ececec;
+    overflow: hidden;
+    /*white-space: nowrap;*/
+}
+
+.packages li a {
+    text-decoration: none;
+}
+
+.packages li img {
+    margin-bottom: -2px;
+}
+
 .iati_preview {
 	display: none; 
 }
