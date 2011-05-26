@@ -149,11 +149,6 @@
     </table>
     </div>
 
-    <div class="rating">
-      <h4>Rating</h4>
-      ${package_rating(c.pkg)}
-    </div>
-
     <ul>
       <py:if test="c.auth_for_change_state">
          <li><strong>State:</strong> ${c.pkg.state}</li>
