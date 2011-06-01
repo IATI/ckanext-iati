@@ -9,6 +9,7 @@ import ckan.model as model
 import ckan.forms.common as common
 import ckan.forms.group as group
 from ckan.forms.common import ExtrasField, PackageNameField, SelectExtraField
+from ckan.forms.common import TextExtraField
 from ckan.lib.helpers import literal
 
 __all__ = ['get_group_dict', 'edit_group_dict']
@@ -20,6 +21,23 @@ def build_group_form(is_admin=False, with_packages=False):
     PUBLISHER_TYPES = [_("Donor"),
                        _("Recipient"),
                        _("Community")]
+
+    publisher_record_fields = (('publisher_contact',
+                               'Contact',
+                               'Email or URL for publisher'),
+                               ('publisher_description',
+                               'Description',
+                               "General description of Publisher's role and activities"),
+                               ('publisher_agencies',
+                               'Organisations / agencies covered',
+                               'Whose activities does this publisher publish?'),
+                               ('publisher_timeliness',
+                               'Timeliness of Data',
+                               'How up do date is the data when published?'),
+                               ('publisher_frequency',
+                               'Frequency of publication',
+                               'How often is IATI data refreshed?  Monthly/Quarterly?'),
+                               )
     
     builder = FormBuilder(model.Group)
     builder.set_field_text('name', 'Unique Name (required)', 
@@ -28,13 +46,17 @@ def build_group_form(is_admin=False, with_packages=False):
     builder.set_field_option('state', 'dropdown', {'options':model.State.all})
     builder.add_field(SelectExtraField('type', options=PUBLISHER_TYPES, allow_empty=False))
     builder.set_field_text('type', 'Type')
-    displayed_fields = ['name', 'title', 'type']
+    for name, title, description in publisher_record_fields:
+        builder.add_field(TextExtraField(name))
+        builder.set_field_text(name, title, description)
+
+    displayed_fields = ['name', 'title', 'type',] + [x[0] for x in publisher_record_fields]
     
     from ckan.authz import Authorizer
     from ckan.lib.base import c
     if Authorizer.is_sysadmin(c.user):
         displayed_fields.append('state')
-    #builder.add_field(ExtrasField('extras', hidden_label=True))
+
     
     if with_packages:
         builder.add_field(group.PackagesField('packages'))

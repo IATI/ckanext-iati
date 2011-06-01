@@ -19,6 +19,23 @@
       </p>
       
     </div>
+
+    <div class="box">
+      <h2>About this publisher</h2>
+      <p>
+	<dl>
+	  <dt>Contact</dt>
+	  <dd>${c.group.extras.get('publisher_contact', 'n/a')}</dd>
+	  <dt>Description</dt>
+	  <dd>${c.group.extras.get('publisher_description', 'n/a')}</dd>
+	  <dt>Organisations / agencies covered</dt>
+	  <dd>${c.group.extras.get('publisher_agencies', 'n/a')}</dd>
+	  <dt>Timeliness of data</dt>
+	  <dd>${c.group.extras.get('publisher_timeliness', 'n/a')}</dd>
+	</dl>
+      </p>
+      
+    </div>
   </py:match>
   
   <py:match path="minornavigation" py:if="c.group">
