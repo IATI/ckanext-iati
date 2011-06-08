@@ -4,16 +4,7 @@ body, input, textarea, .page-title span, .pingback a.url {
 	font-family: arial, sans-serif;
 }
 
-#header {
-    padding-top: 15px;
-}
-
-#top-bar {
-    text-align: right;
-}
-
 #top-bar-login {
-    float: right; 
 	max-width: 300px;
 }
 
@@ -22,7 +13,6 @@ div#access {
 	margin-right: -20px;
 	padding-left: 20px;
 	padding-right: 20px;
-    background-color: #fff;
 	width: 940px;
 	border-top: 1px solid #ccc;
 	border-bottom: 1px solid #ccc;
@@ -45,11 +35,6 @@ div#access ul li:first-child a {
 }
 
 div#access ul li ul li a {
-    background-color: #fff;
-    color: #000;
-}
-
-div#access ul li ul li a {
 	padding: 10px;
 	border-bottom: 1px solid #ccc;
 }
@@ -68,9 +53,6 @@ body {
 	background: white;
 }
 
-#main {
-    padding-top: 1em;
-}
 
 #navigation {
 	background: url("/images/fade.png") repeat-x scroll center bottom transparent;
@@ -111,11 +93,6 @@ body {
 	color: white !important; 
 }
 
-#branding img {
-    border-top: 0px;
-    border-bottom: 0px;
-}
-
 #branding a {
 	font-family: "Helvetica Neue",Arial,Helvetica,"Nimbus Sans L",sans-serif;
 	color: #425B6B;
@@ -137,10 +114,6 @@ body {
 h1, h2, h3, h4, h5, h6 {
 	color: #26237B !important;
 	font-weight: bold; 
-}
-div#branding h1#site-title {
-    width: auto; 
-    margin-bottom: 0px;
 }
 
 div#branding h1#site-title a {
@@ -263,10 +236,6 @@ div#footer {
 	background: url(/images/bands.jpeg);
 }
 
-#site-title a img {
-  max-height: 90px;
-}
-
 div#colophon {
 	padding-top: 22px;
 	border-top: 0px solid; 
@@ -286,16 +255,11 @@ div#colophon {
     border: 0px;
 }
 
-#package-search table.facets {
-    margin-bottom: 0px;
-}
-
 #package-search .facets tr td {
     background-color: white; 
     border: 0px;
     padding: 0px;
     margin: 0px;
-    line-height: 12px;
 }
 
 #package-search .facets select {
@@ -311,49 +275,12 @@ div#colophon {
 	margin-bottom: 0.0em;
 }
 
-
-/* =================== */
-/* = Package listing = */
-/* =================== */
-
-ul.packages {
-    padding-left: 0;
-        margin: 0 0 18px 0;
-}
-
-.packages .header {
-    font-weight: bold;
-}
-
-.packages .extract {
-    font-size: 0.9em;
-    padding-top:10px;
-}
-
-.packages li {
-    list-style: none;
-    padding: 0.4em 0 0.4em 0.0em;
-    border-left: 0.5em solid #fff;
-    border-bottom: 1px solid #ececec;
-    overflow: hidden;
-    /*white-space: nowrap;*/
-}
-
-.packages li a {
-    text-decoration: none;
-}
-
-.packages li img {
-    margin-bottom: -2px;
-}
-
 .iati_preview {
 	display: none; 
 }
 
 #minornavigation ul li a {
 	padding: 5px;
-    text-decoration: none; 
 }
 
 #minornavigation ul li a img {
@@ -363,25 +290,3 @@ ul.packages {
 #minornavigation ul li {
 	float: right;
 }
-
-#minornavigation ul {
-     list-style: none !important;
-}
-
-#content .package h3, #content .package h4 {
-     padding: 10px;
-}
-
-dl.icons dt {
-  float: left;
-  clear: both;
-  margin: 0.4em 0 0 0;
-  height: 16px;
-  width: 16px;
-}
-
-dl.icons dd {
-  float: left;
-  margin: 0.4em 0 0 10px;
-}
-

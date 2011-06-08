@@ -36,38 +36,84 @@
       text-align: center;
     }
   </style>
+  <link rel="stylesheet" href="/css/overrides.css" type="text/css" media="screen, print" />
+  <link rel="stylesheet" href="/fonts/fonts.css" type="text/css" media="screen, print" />
+
   </py:def>
 
-  <py:match path="primarysidebar">
-    <div class="box">
-      <p>The International Aid Transparency Initiative (<b>IATI</b>) makes 
-      information about aid spending easier to <b>access</b>, <b>use</b> and 
-      <b>understand</b>.</p> 
-      <p>This is a registry of data on international development activities. 
-      The registry itself <b>stores no data</b> but provides a searchable index, 
-      feeds, and links to datasets hosted by donor <b>agencies</b>, <b>community 
-      organisations</b> and <b>partner countries</b>.</p>
-      <ul>
-          <li><a href="http://aidtransparency.net">Aid Transparency Project</a></li>
-          <li><a href="http://iatistandard.org">IATI Reporting Standard</a></li>
-      </ul>
-    </div>
-  </py:match>
-
   <div py:match="content">
-    <p>
-        The IATI Registry is a hub for international development data published by agencies, community orgranisations and partner countries in a standard, open format.
-    </p>
-    
-    <h4>Search for IATI activity records</h4>
-    <xi:include href="../package/search_form.html" />
-    
-    <h4>Latest Data</h4>
-    ${package_list(c.latest_packages)}
-    
-    <p><a href="${h.url_for(controller='revision', action='index',
-      id=None)}">View revision data &raquo;</a></p>
-  </div>
+
+        <div class="page type-page hentry">
+          <div class="entry-content">
+            <div id="minornavigation">
+              <minornavigation></minornavigation>
+            </div>
+            <!-- support both options for defining content -->
+            <div>
+    <h1>Welcome to the IATI registry <span>The online repository of IATI data links</span></h1>
+    <div id="id-like-to">
+      I'd like to
+    </div>
+      <div id="home-options">
+        <ul>
+          <li>
+            <img id="news-image" src="/images/home-news.png"/>
+            <h1>
+              <em>Keep up</em><br/>
+              With the latest <b>IATI</b> news
+            </h1>
+            <p>
+              Visit aidtransparency.net to read about IATI and learn about new developments.
+            </p>
+            <a class="go" href="/">Go &raquo;</a>
+          </li>
+          <li>
+            <img src="/images/home-search.png"/>
+            <h1>
+              <em>Search</em><br/>
+              The <b>IATI</b> registry
+            </h1>
+            <p>
+              Find links to IATI records from contributing parties.
+            </p>
+            <a class="go" href="/">Go &raquo;</a>
+          </li>
+          <li>
+            <img src="/images/home-visualise.png"/>
+            <h1>
+              <em>Visualise</em><br/>
+              Data with third-party tools
+            </h1>
+            <p>
+              Learn about third-party tools to visualise and manipulate the IATI datasets.
+            </p>
+            <a class="go" href="/">Go &raquo;</a>
+          </li>
+          <li>
+            <img src="/images/home-learn.png"/>
+            <h1>
+              <em>Learn</em><br/>
+              About the <b>IATI</b> standard
+            </h1>
+            <p>
+              Get to grips with the techincal side of IATI.
+            </p>
+            <a class="go" href="/">Go &raquo;</a>
+          </li>
+        </ul>
+      </div>
+	  </div>
+	  <h1>What is the IATI registry?</h1>
+	  <p class="two-col">
+	    Cras mattis consectetur purus sit amet fermentum. Donec ullamcorper nulla non metus auctor fringilla. Aenean lacinia bibendum nulla sed consectetur. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec ullamcorper nulla non metus auctor fringilla. Nullam quis risus eget urna 
+      Donec sed odio dui. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Cras mattis consectetur purus sit amet fermentum.
+	  </p>
+          </div><!-- .entry-content -->
+        </div>
+        <div id="comments">
+        </div><!-- #comments -->
+      </div> <!-- #content -->
+
 
   <xi:include href="layout.html" />
 </html>

@@ -1,0 +1,280 @@
+#wrapper {
+  padding:0px;
+  margin:0px;
+  width:100%;
+  overflow:hidden;
+}
+
+#logo_text {
+  display:none;
+}
+
+#topbar {
+  background:#333333;
+  height:20px;
+}
+
+#header {
+  background:url(/images/header.png);
+  padding:0px;
+  margin-bottom:10px;
+}
+
+#masthead {
+  width:940px;
+  height:150px;
+  padding:0px;
+  margin:0px auto;
+}
+
+#branding img {
+  border-top: 0px solid black;
+  border-bottom: 0px solid black;
+  display: block;
+  float: left;
+  margin:20px 0px 25px 0px;
+}
+
+#main {
+  padding-top:10px;
+  overflow:visible;
+}
+
+#container {
+  padding-bottom:20px;
+}
+
+div.menu {
+  margin:0px;
+}
+
+div#access {
+  background:transparent;
+  margin: 0px;
+  padding:0px;
+  border-top: 0px solid #CCC;
+  border-bottom: 0px solid #CCC;
+  width:650px;
+  float:left;
+}
+
+div#top-bar {
+  float:right;
+  width:200px;
+  margin-top:100px;
+  text-align:right;
+}
+
+div#top-bar a {
+  color:#FFF;
+}
+
+div#access ul li {
+  padding-right:15px;
+}
+
+div#access ul li:hover a {background:transparent;}
+div#access ul li a:hover { border-bottom: 1px dashed #fff; background:transparent !important;}
+
+div#access ul li a {
+  font-weight: normal;
+  font-family:'Museo300';
+  font-size:14px;
+  text-transform:uppercase;
+  color: #fff;
+  padding: 0px;
+  border-right: 0px solid #CCC;
+  line-height:100%;
+}
+
+div#access ul li:first-child a {
+  border-left: 0px solid #CCC;
+}
+
+#site-title {
+  float: left;
+  font-size: 30px;
+  line-height: 36px;
+  margin: 0 !important;
+  width: 700px;
+  padding: 0 ! important;
+}
+
+#site-title a img {
+ max-height: inherit;
+ margin: 20px 0 25px;
+}
+
+#content {
+  margin:0px;
+}
+
+#primary {
+  display:none;
+}
+
+h1, h2, h3 {
+  font-family:'Museo300';
+  font-weight:normal;
+}
+
+h1 {
+  color: #2C4F87;
+  font-size: 25px;
+  letter-spacing: 0px;
+  line-height: 33px;
+  margin: 0 0 18px !important;
+  text-transform: uppercase;
+}
+
+h1 span {
+  text-transform:none;
+  color:#666;
+  font-size:15px;
+}
+
+#home-options {
+  background: url(/images/home-grad.png);
+  height:350px;
+  width:300%;
+  margin-left:-100%;
+  margin-bottom:30px;
+  margin-top:30px;
+  position:relative;
+}
+
+#home-options ul {
+  height:350px;
+  width:940px;
+  margin:0px auto;
+}
+
+#home-options ul li {
+  width:235px;
+  background:url(/images/home-dots.png) no-repeat right;
+  display:block;
+  float:left;
+  height:350px;
+  text-align:center;
+}
+
+#home-options ul li img,
+#home-options ul li canvas {
+  padding-top:30px;
+  padding-bottom:15px;
+}
+
+#home-options ul li:last-child {
+  background:none;
+}
+
+#home-options ul li h1 {
+  font-family:'BebasNeueRegular';
+  text-transform:uppercase;
+  font-size:20px;
+  color:#666 !important;
+  line-height:1.2em;
+  margin-bottom:4px !important;
+}
+
+#home-options ul li h1 b {
+  color:#536FA1 !important;
+  font-weight:normal !important;
+}
+
+#home-options ul li h1 em {
+  font-style:normal;
+  color:#8A993D !important;
+  font-size:50px;
+  line-height:50px;
+  background:url(/images/home-arrow.png) no-repeat right 4px;
+  display:inline-block;
+  padding-right:40px;
+}
+
+#home-options ul li p {
+  font-size:13px;
+  width:190px;
+  margin-left:23px;
+  margin-top:0px;
+  height:55px;
+  line-height:22px;
+}
+
+#home-options ul li a.go {
+  background:#536FA1;
+  -moz-border-radius:5px;
+  -webkit-border-radius:5px;
+  border-radius:5px;
+  padding:7px 10px 0px 10px;
+  color:#FFF;
+  text-decoration:none;
+  font-family:'BebasNeueRegular';
+  text-transform:uppercase;
+  font-size:21px;
+  line-height:19px;
+  border-bottom:solid 3px #3E5379;
+  display:inline-block;
+  letter-spacing:1px;
+}
+
+#home-options ul li a.go:active {
+  border-bottom:solid 1px #3E5379;
+  margin-top:2px;
+}
+
+div#footer {
+  padding-right:0px;
+  background-color:#333;
+  margin-bottom:0px;
+  padding:12px 0px 10px 0px;
+  color:#fff;
+  font-family:Arial;
+  text-transform:uppercase;
+}
+
+div#colophon {
+  padding:0px;
+  width:900px;
+  margin:0px auto;
+}
+
+div#colophon a {
+  color:#fff;
+}
+
+div#site-info {
+  font-weight:normal;
+}
+
+p {
+  font-size:13px;
+  line-height:20px;
+}
+
+p.two-col {
+  -moz-column-count: 2;
+	-moz-column-gap: 40px;
+	-webkit-column-count: 2;
+	-webkit-column-gap: 40px;
+	column-count: 2;
+	column-gap: 40px;
+	text-align:justify;
+}
+
+#id-like-to {
+  font-family:'Museo300';
+  color:#fff;
+  background:#536FA1;
+  display:block;
+  width:75px;
+  position:relative;
+  top:-3px;
+  left:-20px;
+  text-transform:uppercase;
+  padding:0px 6px;
+  margin:0px;
+  margin-bottom:-45px;
+  z-index:999;
+  text-align:center;
+}
