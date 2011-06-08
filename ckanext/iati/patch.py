@@ -46,7 +46,8 @@ def am_authorized_with_publisher(c, action, domain_object=None):
     return True
 
 def my_group():
-    authzgroups = model.User.by_name(c.user).authorization_groups
+    user = model.User.by_name(c.user)
+    authzgroups = user and user.authorization_groups
     authzgroup = authzgroups and authzgroups[0]
     if authzgroup:
         group_id = re.match(r"group-(.*)-authz", authzgroup.name).group(1)
