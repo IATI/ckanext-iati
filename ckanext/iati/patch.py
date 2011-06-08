@@ -4,6 +4,8 @@ import ckan.lib.helpers as h
 
 from ckan.model import Package
 
+from ckanext.iati.forms.group_schema import fields
+
 log = logging.getLogger(__name__)
 
 ######### 
@@ -44,5 +46,6 @@ def am_authorized_with_publisher(c, action, domain_object=None):
 h.am_authorized_with_publisher = am_authorized_with_publisher
 h.country_name = country_name
 h.group_title = group_title
+h.publisher_record_fields = fields
 
 
