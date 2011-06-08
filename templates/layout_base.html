@@ -39,6 +39,7 @@
   <script type="text/javascript" src="/scripts/application.js"></script>
 
   <script type="text/javascript">
+  //<![CDATA[
     $(document).ready(function() {
         var ckan_user = $.cookie("ckan_display_name");
         if (ckan_user) {
@@ -47,6 +48,14 @@
             $(".ckan_logged_in").show();
         }
     });
+
+    $(document).ready(function(){
+      var license_selector = $('#package-edit dd select[id*="license_id"]')
+      if (license_selector && !license_selector.val()) {
+        license_selector.val("${h.my_group_license()}")
+       }
+    });
+  //]]>
   </script>
   <py:if test="defined('optional_head')">
     ${optional_head()}
@@ -197,7 +206,22 @@
   } catch(err) {}
   </script>
   <!-- /Google Analytics -->
+  <!-- Start of Woopra Code -->
+  <script type="text/javascript">
+  var woo_settings = {idle_timeout:'300000', domain:'iatiregistry.org'};
+  (function(){
+  var wsc = document.createElement('script');
+  wsc.src = document.location.protocol+'//static.woopra.com/js/woopra.js';
+  wsc.type = 'text/javascript';
+  wsc.async = true;
+  var ssc = document.getElementsByTagName('script')[0];
+  ssc.parentNode.insertBefore(wsc, ssc);
+  })();
+  </script>
+<!-- End of Woopra Code -->
+
 </py:if>
+
 ${getattr(g, 'template_footer_end', '')}
 </body>
 </html>

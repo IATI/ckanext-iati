@@ -32,10 +32,15 @@ def build_group_form(is_admin=False, with_packages=False):
                                        options=PUBLISHER_TYPES,
                                        allow_empty=False))
     builder.set_field_text('type', 'Type')
+    
+    builder.add_field(SelectExtraField('license_id',
+                                       options=[('', None)] + model.Package.get_license_options()))
+    builder.set_field_text('license_id', _('License'))
+
     for name, title, description in publisher_record_fields:
         builder.add_field(TextAreaExtraField(name))
         builder.set_field_text(name, title, description)
-    displayed_fields = ['name', 'title', 'type'] +\
+    displayed_fields = ['name', 'title', 'type', 'license_id'] +\
                        [x[0] for x in publisher_record_fields]
     from ckan.authz import Authorizer
     from ckan.lib.base import c

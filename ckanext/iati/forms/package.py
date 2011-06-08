@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 import formalchemy
 from formalchemy import helpers as h
 from sqlalchemy.util import OrderedDict
@@ -49,7 +48,7 @@ class CommaListExtraField(RegExRangeValidatingField):
         def _serialized_value(self):
             param_val = self.params.get(self.name, u'')
             return [v.strip()for v in param_val.split(',') if len(v.strip())]
-            
+
         def deserialize(self):
             return self._serialized_value()
 
@@ -186,9 +185,9 @@ def build_package_iati_form(is_admin=False, user_editable_groups=None, **kwargs)
     
     #Licence    
     builder.set_field_text('license_id', _('License'))
-    
+
     #Resource format    
-    #Resource URL    
+    #Resource URL     
     #Resource ID    
     #  -- do we have an ID? 
     

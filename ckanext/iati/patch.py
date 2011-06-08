@@ -1,7 +1,10 @@
 import logging
+import re
+
 from forms.countries import COUNTRIES
 import ckan.lib.helpers as h
-
+import ckan.authz as authz
+from ckan.lib.base import *
 from ckan.model import Package
 
 from ckanext.iati.forms.group_schema import fields
@@ -41,11 +44,24 @@ def am_authorized_with_publisher(c, action, domain_object=None):
     if q.count() < 1:
         return False
     return True
-    
+
+def my_group():
+    authzgroups = model.User.by_name(c.user).authorization_groups
+    authzgroup = authzgroups and authzgroups[0]
+    if authzgroup:
+        group_id = re.match(r"group-(.*)-authz", authzgroup.name).group(1)
+        group = model.Session.query(model.Group).filter_by(id=group_id).first()
+        return group
+
+def my_group_license():
+    group = my_group()
+    return group and group.extras.get('license_id', '')
+
 
 h.am_authorized_with_publisher = am_authorized_with_publisher
 h.country_name = country_name
 h.group_title = group_title
 h.publisher_record_fields = fields
-
+h.my_group = my_group
+h.my_group_license = my_group_license
 
