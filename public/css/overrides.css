@@ -100,11 +100,11 @@
  margin: 20px 0 25px;
 }
 
-#content {
+body.home #content {
   margin:0px;
 }
 
-#primary {
+body.home #primary {
   display:none;
 }
 
