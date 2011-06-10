@@ -13,6 +13,7 @@
 <head>
   <title>${page_title()} - ${g.site_title}</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=7" />
   <link rel="shortcut icon" href="http://assets.okfn.org/images/logo/favicon.ico" type="image/x-icon" />
   <py:choose>
   <py:when test="defined('optional_feed')">
@@ -29,6 +30,8 @@
 
   <link rel="stylesheet" href="/css/style.css" type="text/css" media="screen, print" />
   <link rel="stylesheet" href="/css/iati.css" type="text/css" media="screen, print" />
+  <link rel="stylesheet" href="/fonts/fonts.css" type="text/css" media="screen, print" />
+  <link rel="stylesheet" href="/css/overrides.css" type="text/css" media="screen, print" />
 
   <!--[if IE]>
   <link rel="stylesheet" href="/css/ie.css" type="text/css" media="screen, print" />
@@ -65,7 +68,13 @@
 <body class="${value_of('body_class', default=lambda: c.body_class)()}">
 
 <div id="wrapper" class="hfeed">
-  <div id="topbar"></div>
+  <div id="topbar">
+    <ul>
+      <li><a class="active" href="/">IATI Registry</a></li>
+      <li><a href="http://www.iatistandard.org/">IATI Specification</a></li>
+      <li><a href="http://www.aidtransparency.net/">About IATI</a></li>
+    </ul>
+  </div>
   <div id="header">
   <div id="masthead">
     <div id="branding" role="banner">

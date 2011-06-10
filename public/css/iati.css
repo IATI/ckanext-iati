@@ -112,8 +112,8 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-	color: #26237B !important;
-	font-weight: bold; 
+	color: #2C4F87 !important;
+	font-weight: normal; 
 }
 
 div#branding h1#site-title a {
@@ -241,6 +241,8 @@ div#colophon {
 	border-top: 0px solid; 
 }
 
+/*
+COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
 #package-search .search {
 	width: 100%;
 	border: 1px solid #ccc;
@@ -248,6 +250,7 @@ div#colophon {
 	padding: 0.3em;
 	margin-bottom: 0.1em;
 }
+*/
 
 #package-search .facets {
 	margin-top: 0.8em;
@@ -262,11 +265,15 @@ div#colophon {
     margin: 0px;
 }
 
+
+/*
+COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
 #package-search .facets select {
 	border: 0px solid #BBE3F7;
 	font-size: 0.9em;
 	padding: 0.0em;
 }
+*/
 
 #package-search .button {
 	float: right;
