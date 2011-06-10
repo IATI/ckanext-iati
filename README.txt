@@ -61,6 +61,10 @@ search.facets = groups groups_types extras_country
 
 (Don't forget to also add a 'solr_url').
 
+4) Note that currently there are no hooks in place to update the
+indexes when a Group/Publisher is updated.  Therefore we currently rely on a dirty hack to keep the indexes roughly up to date: a cron job to update indexes daily, thus:
+
+   . /etc/ckan/testing/pyenv/bin/activate && paster  --plugin=ckan search-index -c /etc/ckan/testing/testing.ini rebuild && deactivate
 
 Overall workflow for IATI
 =========================
