@@ -39,7 +39,7 @@
       
     </div>
 
-    <div class="box" id="publisher-info">
+    <div py:if="c.group" class="box" id="publisher-info">
       <h2>About this publisher</h2>
       <p>
 	<dl py:for="(field_id, field_title, description) in h.publisher_record_fields">
