@@ -28,6 +28,10 @@ is not available at this time):
 
 (Solr is a requirement but also available in packaged form).
 
+You probably also want to install the ckanext-solr and
+ckanext-wordpresser packages.  See their respective documentation for
+install notes.
+
 2) Copy or symlink the modified Solr schema.xml into the Solr core 
 ´´conf/´´ directory, remove any existing index and restart Solr. 
 
@@ -53,7 +57,7 @@ ckan.site_title = IATI Registry
 ckan.site_url = http://iati.test.ckan.net
 
 # Add any other plugins you want to use:
-ckan.plugins = iati_preview iati_routes iati_approval iati_group_authz iati_package_authz
+ckan.plugins = iati_preview iati_approval iati_group_authz iati_package_authz  wordpresser
 
 # Use solr and facet over specific fields:
 search_backend = solr
