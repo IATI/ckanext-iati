@@ -59,6 +59,9 @@ ckan.site_url = http://iati.test.ckan.net
 # Add any other plugins you want to use:
 ckan.plugins = iati_preview iati_approval iati_group_authz iati_package_authz  wordpresser
 
+# Use a proxy wordpress to provide help & about pages (etc)
+wordpresser.proxy_host = http://wordpress.iatiregistry.org/
+
 # Use solr and facet over specific fields:
 search_backend = solr
 search.facets = groups groups_types extras_country
