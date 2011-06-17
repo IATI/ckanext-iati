@@ -109,8 +109,7 @@
         <ul>
           <li>${h.nav_link(c, _('Home'), controller='home', action='index', id=None)}
           <ul class="children">
-            <li class="page_item">${h.subnav_link(c, _('Statistics'), controller='home', action='stats', id=None)}</li>
-            <li class="page_item">${h.subnav_link(c, _('Newsfeed'), controller='revision', action='', id=None)}</li>
+            <li class="page_item">${h.subnav_link(c, _('Newsfeed'), controller='revision', action=None, id=None)}</li>
           </ul>
         </li>
         <li><a href="/package?groups_types=Donor">${_('Donor data')}</a>
