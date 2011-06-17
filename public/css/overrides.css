@@ -12,7 +12,7 @@
 }
 
 #topbar {
-  background:#333333;
+  background:#E5EFF1;
   height:20px;
 }
 
@@ -26,23 +26,21 @@
   float:right;
   list-style-type:none;
   text-transform:uppercase;
-  border-right: solid 1px #777;
   padding:0px 10px;
 }
 
 #topbar ul li:first-child {
-  border-right: none;
   padding:0px 0px 0px 10px;
 }
 
 #topbar ul li a {
-  color:#AAA;
+  color:#A9B7D0;
   font-size:11px;
 }
 
 #topbar ul li a.active, 
 #topbar ul li a:hover {
-  color:#FFF;
+  color:#536FA1;
 }
 
 #header {
@@ -62,8 +60,10 @@
   float:none !important;
 }
 
-#branding a {
+div#branding h1#site-title a {
   margin:0px !important;
+  font-size:20px;
+  line-height:100%;
 }
 
 #branding a img {
@@ -108,11 +108,17 @@ body.home #primary {
   display:none;
 }
 
+#content {
+  margin-left:0px;
+}
+
 
 /*-------- Menu --------*/
 
 div.menu {margin:0px;}
-div.menu ul.children {visibility:hidden;}
+div.menu ul.children a {
+  color:#497B90;
+}
 
 div#access {
   background:transparent;
@@ -124,8 +130,27 @@ div#access {
   float:left;
 }
 
+#access ul ul {
+  top:20px;
+}
+
 div#access ul li {
   padding-right:15px;
+  padding-bottom:15px;
+}
+
+div#access ul li ul li {
+  padding:0px;
+}
+
+div#access ul li ul.children li.page_item a {
+  color:#536FA1 !important;
+  border:none !important;
+}
+
+div#access ul li ul.children li.page_item a:hover {
+  color:#FFF !important;
+  background:#80B8C8 !important;
 }
 
 div#access ul li:hover a {background:transparent; color:#fff !important;}
@@ -146,8 +171,8 @@ div#access ul li:first-child a {
   border-left: 0px solid #CCC;
 }
 
-#access ul li:hover > ul {
-	display:none;
+#access ul li:hover > ul li a {
+  background: #FFF !important;  
 }
 
 #access ul li a.active {
@@ -161,7 +186,12 @@ div#access ul li:first-child a {
 #access ul li.current-menu-parent > a
 {
   color:#fff;
-} 
+}
+
+span.ckan_logged_in {
+  display:block;
+  margin-top:-21px;
+}
 
 /*-------- Login controls -------*/
 
@@ -248,13 +278,18 @@ h3#reply-title {
 
 /*-------- Home menu --------*/
 
+body.home {
+  background:url(/images/home-grad.png) repeat-x 0px 269px;
+}
+
+body.home #wrapper{
+ background:transparent; 
+}
+
 #home-options {
-  background: url(/images/home-grad.png);
   height:350px;
-  width:300%;
-  margin-left:-100%;
-  margin-bottom:34px;
-  margin-top:25px;
+  width:940px;
+  margin:25px auto 34px auto;
   position:relative;
 }
 
@@ -277,6 +312,7 @@ h3#reply-title {
 #home-options ul li canvas {
   padding-top:30px;
   padding-bottom:22px;
+  height:82px;
 }
 
 #home-options ul li:last-child {
