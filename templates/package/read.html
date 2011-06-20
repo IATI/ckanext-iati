@@ -28,7 +28,12 @@
         <p>Alternative metadata formats</p>
         <ul class="clearfix">
           <li>
-            <a href="${h.url_for(controller='rest', register='package', action='show', id=c.pkg.name)}">JSON</a>
+                <py:if test="config.get('ckan.api_url')">
+                  <a href="${config.get('ckan.api_url') + h.url_for(controller='api', register='package', action='show', id=c.pkg.name)}">JSON</a>
+                </py:if>
+                <py:if test="not config.get('ckan.api_url')">
+                  <a href="${h.url_for(controller='api', register='package', action='show', id=c.pkg.name)}">JSON</a>
+                </py:if>
           </li>
           <li py:if="config.get('rdf_packages')">
             <a href="${config.get('rdf_packages') + c.pkg.name}">RDF</a>
