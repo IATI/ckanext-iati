@@ -26,6 +26,7 @@ setup(name='ckanextiati',
       # -*- Entry points: -*-
       
       [ckan.plugins]
+      iati_theme = ckanext.iati.theme:IatiThemeExtension
       iati_preview = ckanext.iati.preview:IatiPackagePreviewExtension
       iati_approval = ckanext.iati.approval:IatiGroupApprovalExtension
       iati_group_authz = ckanext.iati.authz:IatiGroupAuthzExtension

@@ -4,7 +4,7 @@ from lxml import etree
 from urllib2 import urlopen
 from ckan.plugins import implements, SingletonPlugin, IPackageController
 
-PREVIEW_XSL = os.path.join(os.path.dirname(__file__), '..', '..', 'xsl', 'activities_file_preview.xsl')
+PREVIEW_XSL = os.path.join(os.path.dirname(__file__), 'xsl', 'activities_file_preview.xsl')
 
 log = logging.getLogger(__name__)
 

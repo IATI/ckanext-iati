@@ -112,14 +112,7 @@
             <li class="page_item">${h.subnav_link(c, _('Newsfeed'), controller='revision', action=None, id=None)}</li>
           </ul>
         </li>
-        <li><a href="/package?groups_types=Donor">${_('Donor data')}</a>
-          <ul class="children">
-            <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
-              ${h.subnav_link(c, _('Register'), controller='package', action='new', id=None)}
-            </li>
-          </ul>
-        </li>
-        <li><a href="/package?groups_types=Community">${_('Community data')}</a>
+        <li><a href="/package">${_('Data')}</a>
           <ul class="children">
             <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
               ${h.subnav_link(c, _('Register'), controller='package', action='new', id=None)}

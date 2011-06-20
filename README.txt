@@ -20,11 +20,11 @@ release known to be compatible is:
 The installation has the following steps, assuming you have a running 
 copy of CKAN:
 
-1) Install the extentsion from its source repository (a Debian package 
+1) Install the extension from its source repository (a Debian package 
 is not available at this time):
 
-(env)$ pip install -e hg+https://pudo@bitbucket.org/okfn/ckanext-solr#egg=ckanext-solr
-(env)$ pip install -e hg+https://pudo@bitbucket.org/okfn/ckanextiati#egg=ckanextiati
+(env)$ pip install -e hg+https://okfn@bitbucket.org/okfn/ckanext-solr#egg=ckanext-solr
+(env)$ pip install -e hg+https://okfn@bitbucket.org/okfn/ckanextiati#egg=ckanextiati
 
 (Solr is a requirement but also available in packaged form).
 
@@ -47,20 +47,16 @@ iati.email = activation@iatiregistry.org
 package_form = iati_package
 group_form = iati_group
 
-# Add extra template paths:
-extra_template_paths = /etc/ckan/testing/pyenv/src/ckanextiati/templates
-extra_public_paths = /etc/ckan/testing/pyenv/src/ckanextiati/public
-
 ckan.site_title = IATI Registry
 
 # Used in approval mails, make sure its correct:
 ckan.site_url = http://iati.test.ckan.net
 
 # Add any other plugins you want to use:
-ckan.plugins = iati_preview iati_approval iati_group_authz iati_package_authz  wordpresser
+ckan.plugins = iati_theme iati_approval iati_group_authz iati_package_authz  wordpresser
 
 # Use a proxy wordpress to provide help & about pages (etc)
-wordpresser.proxy_host = http://wordpress.iatiregistry.org/
+wordpresser.proxy_host = http://iatiregistry.wordpress.org/
 
 # Use solr and facet over specific fields:
 search_backend = solr
