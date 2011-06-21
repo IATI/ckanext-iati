@@ -24,7 +24,7 @@
       <py:if test="c.q">      
         <h4 i18n:msg="item_count"><strong>${c.page.item_count}</strong> packages found</h4>            
      </py:if>
-      ${package_list(c.page.items)}
+      ${package_list_local(c.page.items)}
       ${c.page.pager(q=c.q)}
 
   </div>

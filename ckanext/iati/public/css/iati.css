@@ -282,6 +282,11 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
 	margin-bottom: 0.0em;
 }
 
+.package-result-links {
+    margin-top: 0.5em;
+    font-size: 0.9em;
+}
+
 .iati_preview {
 	display: none; 
 }
