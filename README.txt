@@ -43,6 +43,9 @@ groups_types field not present in generic CKAN.
 # Approval message sender email: 
 iati.email = activation@iatiregistry.org 
 
+# File preview service URL (notice the token that will be replaced with the file URL):
+iati.preview_service = http://dev.yipl.com.np/iati/tools/public/api/activityviewer?xmlUrl=%s
+
 # Custom package and group form:
 package_form = iati_package
 group_form = iati_group

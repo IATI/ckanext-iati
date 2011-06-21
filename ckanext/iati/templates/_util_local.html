@@ -51,9 +51,9 @@
 	<div class="package-result-links">
         ${h.link_to('View Metadata', h.url_for(controller='package', action='read', id=package.name))} |
         <py:if test="package.resources">
-            ${h.link_to('Download file', package.resources[0].url)} |
-            <py:if test="'iati:preview:%s' % package.resources[0].id in package.extras.keys()">
-                <a href="javascript:window.open('http://dev.yipl.com.np/iati/tools/public/api/activityviewer?xmlUrl=${package.resources[0].url}', 'preview', 'location=0,status=0,width=960,height=535')">Preview file</a>
+            ${h.link_to('Download file', package.resources[0].url,target='_blank')} |
+            <py:if test="'iati:preview:%s' % package.resources[0].id in package.extras.keys() and config.get('iati.preview_service','')">
+                ${h.link_to('Preview file',  config.get('iati.preview_service') % package.resources[0].url, target='_blank')}
             </py:if>
         </py:if>
     </div>

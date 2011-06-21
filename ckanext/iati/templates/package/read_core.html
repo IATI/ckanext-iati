@@ -42,8 +42,8 @@
           <tr>
             <td><a href="${res.url}" target="_blank">Download</a></td>
             <td>${res.format}</td>
-            <td py:if="'iati:preview:%s' % res.id in c.pkg.extras.keys()">
-                <a href="javascript:window.open('http://dev.yipl.com.np/iati/tools/public/api/activityviewer?xmlUrl=${res.url}', 'preview', 'location=0,status=0,width=960,height=535')">preview</a>
+            <td py:if="'iati:preview:%s' % res.id in c.pkg.extras.keys() and config.get('iati.preview_service','')">
+                ${h.link_to('preview',  config.get('iati.preview_service') % res.url, target='_blank')}
             </td>
         </tr>
         </py:for>
