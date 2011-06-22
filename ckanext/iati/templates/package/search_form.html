@@ -2,10 +2,25 @@
   <input type="search" class="search" name="q" value="${c.q}" />
  
   <?python
-    any = [('', 'Any')]
-    country_options = any + [(o, h.country_name(o) + " (%s)" % n) for o, n in c.facets.get('extras_country', {}).items()]
-    groups_options = any + [(o, h.group_title(o) + " (%s)" % n) for o, n in c.facets.get('groups', {}).items()]
-    types_options = any + [(o, o + " (%s)" % n) for o, n in c.facets.get('groups_types', {}).items()]
+    from ckan.lib.search import query_for, SearchError
+    from ckan.model import Package
+
+    global_query = query_for(Package)
+    global_query.run(facet_by=g.facets)
+    global_facets = global_query.facets
+
+    any = ('', 'Any')
+    country_options = [(o, h.country_name(o) + " (%s)" % n) for o, n in global_facets.get('extras_country', {}).items()]
+    groups_options = [(o, h.group_title(o) + " (%s)" % n) for o, n in global_facets.get('groups', {}).items()]
+    types_options = [(o, h.type_title(o) + " (%s)" % n) for o, n in global_facets.get('groups_types', {}).items()]
+
+    country_options.sort(key=lambda name: name[1])
+    country_options.insert(0,any)
+    groups_options.sort(key=lambda name: name[1])
+    groups_options.insert(0,any)
+    types_options.sort(key=lambda name: name[1])
+    types_options.insert(0,any)
+
   ?>
   <table border="0" class="facets">
     <tr>
