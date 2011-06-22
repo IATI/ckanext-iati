@@ -302,3 +302,13 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
 #minornavigation ul li {
 	float: right;
 }
+/*-------- jQuery UI --------*/
+.ui-widget-header{
+    border: 1px solid #BBE3F7;
+    background: white url("/images/header.png") 50% 50% repeat-x;
+}
+
+.ckan-dialog{
+    background-color: white !important; 
+}
+
