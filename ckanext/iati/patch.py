@@ -25,7 +25,10 @@ Package.as_dict = as_dict_with_groups_types
 
 # TODO move this to helpers proper
 def country_name(code):
-    return dict(COUNTRIES).get(code, code)
+    if code == "":
+        return "(No country assigned)"
+    else:
+        return dict(COUNTRIES).get(code, code)
     
 def group_title(name):
     from ckan import model
@@ -33,7 +36,13 @@ def group_title(name):
     if group is not None:
         name = group.title
     return name
-    
+
+def type_title(name):
+    if name == "":
+        return "(No type assigned)"
+    else:
+        return name
+
 def am_authorized_with_publisher(c, action, domain_object=None):
     from ckan import model
     from ckan.authz import Authorizer
@@ -62,6 +71,7 @@ def my_group_license():
 h.am_authorized_with_publisher = am_authorized_with_publisher
 h.country_name = country_name
 h.group_title = group_title
+h.type_title = type_title
 h.publisher_record_fields = fields
 h.my_group = my_group
 h.my_group_license = my_group_license
