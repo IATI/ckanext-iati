@@ -9,10 +9,10 @@
     global_query.run(facet_by=g.facets)
     global_facets = global_query.facets
 
-    any = ('*', 'Any')
-    country_options = [(o, h.country_name(o) + " (%s)" % n) for o, n in global_facets.get('extras_country', {}).items()]
-    groups_options = [(o, h.group_title(o) + " (%s)" % n) for o, n in global_facets.get('groups', {}).items()]
-    types_options = [(o, h.type_title(o) + " (%s)" % n) for o, n in global_facets.get('groups_types', {}).items()]
+    any = ('', 'Any')
+    country_options = [(o, h.country_name(o) + " (%s)" % n) for o, n in global_facets.get('extras_country', {}).items() if o != ""]
+    groups_options = [(o, h.group_title(o) + " (%s)" % n) for o, n in global_facets.get('groups', {}).items() if o != ""]
+    types_options = [(o, o + " (%s)" % n) for o, n in global_facets.get('groups_types', {}).items() if o != ""]
 
     country_options.sort(key=lambda name: name[1])
     country_options.insert(0,any)
@@ -25,15 +25,15 @@
   <table border="0" class="facets">
     <tr>
         <td>Source:</td>
-        <td>${h.select('groups_types', dict(c.fields).get('groups_types', '*') if c.facets else '*', types_options)}</td>
+        <td>${h.select('groups_types', dict(c.fields).get('groups_types', '') if c.facets else '', types_options)}</td>
     </tr>
     <tr>
         <td>Publisher:</td>
-        <td>${h.select('groups', dict(c.fields).get('groups', '*') if c.facets else '*', groups_options)}</td>
+        <td>${h.select('groups', dict(c.fields).get('groups', '') if c.facets else '', groups_options)}</td>
     </tr>
     <tr>
         <td>Country:</td>
-        <td>${h.select('extras_country', dict(c.fields).get('extras_country', '*') if c.facets else '*',  country_options)}</td>
+        <td>${h.select('extras_country', dict(c.fields).get('extras_country', '') if c.facets else '',  country_options)}</td>
     </tr>
   </table>
   
