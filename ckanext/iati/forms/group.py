@@ -19,9 +19,9 @@ __all__ = ['get_group_dict', 'edit_group_dict']
 
 
 def build_group_form(is_admin=False, with_packages=False):
-    PUBLISHER_TYPES = [_("Donor"),
-                       _("Recipient"),
-                       _("Community")]
+    PUBLISHER_TYPES = [_("Primary source"),
+                       _("Secondary source")
+                       ]
     publisher_record_fields = fields
     builder = FormBuilder(model.Group)
     builder.set_field_text('name', 'Unique Name (required)',
@@ -31,7 +31,7 @@ def build_group_form(is_admin=False, with_packages=False):
     builder.add_field(SelectExtraField('type',
                                        options=PUBLISHER_TYPES,
                                        allow_empty=False))
-    builder.set_field_text('type', 'Type')
+    builder.set_field_text('type', 'Source')
     
     builder.add_field(SelectExtraField('license_id',
                                        options=[('', None)] + model.Package.get_license_options()))
