@@ -30,7 +30,7 @@ class IatiPackageAuthzExtension(SingletonPlugin):
     
     @classmethod
     def _sync_authz_groups(cls, pkg):
-        authz_groups = [_get_group_authz_group(g) for g in pkg.groups]
+        authz_groups = [_get_group_authz_group(g) for g in pkg.groups if g is not None]
         q = model.Session.query(model.PackageRole).filter_by(package=pkg)
         for package_role in q.all():
             if package_role.authorized_group is None:
