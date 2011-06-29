@@ -7,10 +7,12 @@ CKAN.IATI = function($){
             div.empty();
             div.html($("#publisher-info").html());
             div.dialog({
-                "minWidth" : $("#content").width(),
-                "height": $(window).height() * 0.5,
+                "title": "About this publisher",
+                "minWidth" : $("#container").width(),
+                "height": $(window).height() * 0.6,
                 "position": ["center","center"]
             });
+            div.scrollTop(0);
         }
     }
 }(jQuery)

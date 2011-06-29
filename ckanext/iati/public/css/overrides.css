@@ -564,3 +564,8 @@ a, a:link {
 /*-------- Wordpress Specific --------*/
 
 .type-page 
+
+
+ul {
+    list-style-type: none
+}

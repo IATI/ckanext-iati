@@ -306,9 +306,35 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
 .ui-widget-header{
     border: 1px solid #BBE3F7;
     background: white url("/images/header.png") 50% 50% repeat-x;
+    font-family: 'Museo300','Times New Roman',serif;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 100%;
+    padding: 0;
+    text-transform: uppercase;
 }
 
 .ckan-dialog{
     background-color: white !important; 
 }
 
+#publisher-dialog .view-full{
+    display: none;
+}
+
+#publisher-dialog h2{
+    display: none;
+}
+
+#publisher-dialog dt{
+    background-color: #BBE3F7;
+    padding: 5px;
+    margin-bottom: 5px;
+    font-family: 'Museo300','Times New Roman',serif;
+}
+
+.view-full{
+    float: left;
+    margin-top: -20px;
+    margin-bottom: 20px;
+}
