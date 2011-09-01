@@ -132,7 +132,15 @@
   </div><!-- #masthead -->
   </div><!-- #header -->  
 
-  <div id="main"> 
+  <div id="main">
+      <py:with vars="messages = list(h._flash.pop_messages())">
+      <div class="flash-banner-box" py:if="len(messages)">
+        <div class="flash-banner ${m.category}" py:for="m in messages">
+          ${m.message}
+        </div>
+      </div>
+      </py:with>
+
     <div id="container"> 
       <div id="content" role="main"> 
 
