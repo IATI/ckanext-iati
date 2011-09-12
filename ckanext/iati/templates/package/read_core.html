@@ -34,7 +34,7 @@
     <div class="notes" py:if="str(c.pkg_notes_formatted).strip()">
       ${c.pkg_notes_formatted}
     </div>
-    
+
     <py:choose test="">
       <table py:when="c.pkg.resources" width="100%">
         <tr><th>URL</th><th>Format</th><th>Preview</th></tr>
@@ -50,7 +50,7 @@
       </table>
       <table py:otherwise=""><tr><th>Resources</th><td>None given for this package.</td></tr></table>
       </py:choose>
-      
+
     <py:def function="details_item(label, value)">
         <tr py:if="value is not None and len(value) > 0">
           <td class="package-label">
@@ -61,18 +61,18 @@
           </td>
         </tr>
     </py:def>
-    
+
     <py:def function="details_asbool(label, value)">
         <tr>
           <td class="package-label">
             ${label}
           </td>
           <td class="package-details">
-            ${'yes' if value else 'no'}
+            ${'yes' if value == 'yes' else 'no'}
           </td>
         </tr>
     </py:def>
-    
+
     <py:def function="details_list(label, values)">
         <tr py:if="values is not None and len(values) > 0">
           <td class="package-label" valign="top">
@@ -95,14 +95,14 @@
         ${details_list('Donor types', c.pkg.extras.get('donors_type', []))}
         ${details_list('Donor countries', [h.country_name(x) for x in c.pkg.extras.get('donors_country', [])])}
         ${details_item('Recipient Country', h.country_name(c.pkg.extras.get('country', '(Unknown)')))}
-        
+
         ${details_asbool('Verified', c.pkg.extras.get('verified', False))}
         ${details_asbool('Archive File', c.pkg.extras.get('archive_file', False))}
         ${details_item('Department', c.pkg.extras.get('department', '-'))}
-        
+
         ${details_item('Data updated', c.pkg.extras.get('data_updated', '-'))}
         ${details_item('Record updated', c.pkg.extras.get('record_updated', '-'))}
-        
+
         <tr>
           <td class="package-label">
             License
@@ -122,14 +122,18 @@
         </tr>
       </tbody>
     </table>
-    
-    
-    
+
+
+
     <h4>Contents</h4>
     <table width="100%">
       <tbody>
-        ${details_item('# of Activities', c.pkg.extras.get('activity_count', '-'))}
-        
+        <tr>
+          <td class="package-label"># of Activities</td>
+          <td class="package-details">
+            ${c.pkg.extras.get('activity_count', '-')}</td>
+        </tr>
+
         <tr>
           <td class="package-label">Activity Period</td>
           <td class="package-details">
