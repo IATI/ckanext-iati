@@ -64,7 +64,9 @@
         <dt>Publisher</dt>
             <dd py:if="c.groups_available">
             <select id="groups__${len(data.get('groups', []))}__id" name="groups__${len(data.get('groups', []))}__id">
-                <option value="" >(None)</option>
+                <dd py:if="data.get('groups',[])">
+                    <option value="" >(None)</option>
+                </dd>
                 <py:for each="group in c.groups_available">
                     <option value="${group['id']}" >${group['title']}</option>
                 </py:for>

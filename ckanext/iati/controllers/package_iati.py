@@ -99,9 +99,11 @@ def checkbox_value(value,context):
     return 'yes' if not isinstance(value, Missing) else 'no'
 
 def integer(value,context):
-    try:
-        value = int(value)
-    except ValueError,e:
-        raise Invalid(str(e))
-    return value
+
+    if not value == '':
+        try:
+            value = int(value)
+        except ValueError,e:
+            raise Invalid(str(e))
+        return value
 
