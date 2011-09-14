@@ -1,4 +1,5 @@
-from ckan.lib.base import c
+from pylons.i18n import  _
+from ckan.lib.base import c, request, config, h, redirect
 from ckan.lib.helpers import json
 from ckan import model
 from ckan.controllers.package import PackageController
@@ -70,6 +71,26 @@ class PackageIatiController(PackageController):
 
     def _check_data_dict(self, data_dict):
         return
+
+    def _form_save_redirect(self, pkgname, action):
+        '''This redirects the user to the CKAN package/read page,
+        unless there is request parameter giving an alternate location,
+        perhaps an external website.
+        @param pkgname - Name of the package just edited
+        @param action - What the action of the edit was
+        '''
+        assert action in ('new', 'edit')
+        if action == 'new':
+            msg = _('IATI Record created')
+            h.flash_success(msg,allow_html=True)
+
+        url = request.params.get('return_to') or \
+              config.get('package_%s_return_url' % action)
+        if url:
+            url = url.replace('<NAME>', pkgname)
+        else:
+            url = h.url_for(controller='package', action='read', id=pkgname)
+        redirect(url)        
 
     # End hooks
 

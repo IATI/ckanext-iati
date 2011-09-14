@@ -146,20 +146,22 @@
                     <th class="field_req resource-url">URL*</th>
                     <th class="field_opt resource-format">Format</th>
                     <th class="field_opt resource-description">Description</th>
-                    <th class="field_opt resource-hash">Hash</th>
                 </tr>
             </thead>
             <tbody>
                 <py:for each="num, res in enumerate(data.get('resources', []) + [{}])">
                 <tr>
-                    <py:for each="col in c.resource_columns">
-                    <td py:choose="" class="resource-${col}">
-                        <input py:when="col == 'format'" name="resources__${num}__${col}" type="text" value="${res.get(col, '')}" class="autocomplete-format short" />
-
-                        <input py:otherwise="" name="resources__${num}__${col}" type="text" value="${res.get(col, '')}" class="${'medium-width' if col == 'url' else 'short'}" />
+                    <td class="resource-url">
+                        <input name="resources__${num}__url" type="text" value="${res.get('url', '')}" class="medium-width" />
                     </td>
-                    </py:for>
-                    <td class="resource-id"><input name="resources__${num}__id" type="hidden" value="${res.get('id', '')}" /></td>
+                    <td class="resource-format">
+                        <input name="resources__${num}__format" type="text" value="${res.get('format', '')}" class="short"  />
+                    </td>
+                    <td class="resource-description">
+                        <input name="resources__${num}__description" type="text" value="${res.get('description', '')}" class="short" />
+                        <input name="resources__${num}__id" type="hidden" value="${res.get('id', '')}" />
+                    </td>
+
                 </tr>
                 </py:for>
             </tbody>
