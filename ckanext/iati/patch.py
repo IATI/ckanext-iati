@@ -1,13 +1,13 @@
 import logging
 import re
 
-from forms.countries import COUNTRIES
+from controllers.countries import COUNTRIES
 import ckan.lib.helpers as h
 import ckan.authz as authz
 from ckan.lib.base import *
 from ckan.model import Package
 
-from ckanext.iati.forms.group_schema import fields
+from ckanext.iati.controllers.group_schema import fields
 
 log = logging.getLogger(__name__)
 
