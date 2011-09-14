@@ -54,9 +54,9 @@ class PackageIatiController(PackageController):
         schema.update({
             'department': [convert_from_extras,ignore_missing],
             'country': [convert_from_extras, ignore_missing],
-            'donors': [convert_from_extras, convert_to_comma_list, ignore_missing],
-            'donors_type': [convert_from_extras, convert_to_comma_list, ignore_missing],
-            'donors_country': [convert_from_extras, convert_to_comma_list, ignore_missing],
+            'donors': [ignore_missing, convert_from_extras, convert_to_comma_list],
+            'donors_type': [ignore_missing, convert_from_extras, convert_to_comma_list],
+            'donors_country': [ignore_missing, convert_from_extras, convert_to_comma_list],
             'record_updated': [convert_from_extras,ignore_missing, date_to_form],
             'data_updated': [convert_from_extras,ignore_missing, date_to_form],
             'activity_period-from': [convert_from_extras,ignore_missing, date_to_form],
@@ -87,11 +87,11 @@ class PackageIatiController(PackageController):
 
 
 def convert_to_comma_list(value, context):
-
+     
     return ', '.join(json.loads(value))
 
 def convert_from_comma_list(value, context):
-
+     
     return [x.strip() for x in value.split(',') if len(x)]
 
 def checkbox_value(value,context):
