@@ -930,7 +930,7 @@ msgstr ""
 
 #: ckan/templates/layout_base.html:99
 #: ckan/templates/package/search.html:14
-msgid "Add a package"
+msgid "Add a Dataset"
 msgstr "Add a record"
 
 #: ckan/templates/layout_base.html:101
@@ -1186,7 +1186,7 @@ msgid "Group History"
 msgstr "Publishers History"
 
 #: ckan/templates/group/index.html:6
-msgid "Groups of Data Packages"
+msgid "Groups of Datasets"
 msgstr "Publishers"
 
 #: ckan/templates/group/index.html:11

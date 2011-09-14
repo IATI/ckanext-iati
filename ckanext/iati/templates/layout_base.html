@@ -149,7 +149,8 @@
             <div id="minornavigation">
               <minornavigation></minornavigation> 
             </div>
-            <!-- support both options for defining content -->
+            <h2 py:if="defined('page_heading')">${page_heading()}</h2>
+        <!-- support both options for defining content -->
             <py:if test="defined('content')">
             ${content()}
             </py:if>

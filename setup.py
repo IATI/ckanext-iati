@@ -31,7 +31,8 @@ setup(name='ckanextiati',
       iati_approval = ckanext.iati.approval:IatiGroupApprovalExtension
       iati_group_authz = ckanext.iati.authz:IatiGroupAuthzExtension
       iati_package_authz = ckanext.iati.authz:IatiPackageAuthzExtension
-      
+      iati_forms = ckanext.iati.plugin:IatiForms
+
       [ckan.forms]
       iati_package = ckanext.iati.forms:get_iati_package_fieldset
       iati_group = ckanext.iati.forms:get_iati_group_fieldset

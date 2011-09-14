@@ -1,0 +1,151 @@
+<form id="group-edit" action="" method="post" 
+    py:attrs="{'class':'has-errors'} if errors else {}"
+    xmlns:i18n="http://genshi.edgewall.org/i18n"
+    xmlns:py="http://genshi.edgewall.org/"
+    xmlns:xi="http://www.w3.org/2001/XInclude">
+
+    <div class="error-explanation" py:if="error_summary">
+        <h3>Errors in form</h3>
+        <p>The form contains invalid entries:</p>
+        <ul>
+            <li py:for="key, error in error_summary.items()">${"%s: %s" % (key, error)}</li>
+        </ul>
+    </div>
+    
+    <fieldset>
+        <legend>Basic information</legend> 
+        <dl>
+            <dt><label class="field_req" for="name">Unique Name (required) *</label></dt> 
+            <dd><input id="name" name="name" type="text" value="${data.get('name', '')}" /></dd>
+            <dd class="field_error" py:if="errors.get('name', '')">${errors.get('name', '')}</dd>
+            <dd class="instructions basic"><strong>Unique identifier</strong> for group.<br/>2+ chars, lowercase, using only 'a-z0-9' and '-_'</dd> 
+            <script type="text/javascript"> 
+                //<![CDATA[
+                $(document).ready(function () { if (!$('#preview').length) { $("#name").focus();}});
+                //]]>
+            </script>
+            
+            <dt><label class="field_opt" for="title">Title</label></dt> 
+            <dd><input id="title" name="title" type="text" value="${data.get('title', '')}" /></dd>
+            <dd class="field_error" py:if="errors.get('title', '')">${errors.get('title', '')}</dd>
+
+            <dt><label class="field_req" for="type">Source</label></dt> 
+            <dd>
+                <select id="type" name="type">
+                    <option value="Primary source" py:attrs="{'selected': 'selected' if data.get('type', '') == 'Primary source' else None}">Primary source</option>
+                    <option value="Secondary source" py:attrs="{'selected': 'selected' if data.get('type', '') == 'Secondary source' else None}">Secondary source</option>
+                </select>
+            </dd> 
+            
+            <dt><label class="field_opt" for="license_id">License</label></dt> 
+            <dd>
+                <select id="license_id" name="license_id">
+                    <py:for each="licence_desc, licence_id in c.licences">
+                        <option value="${licence_id}" py:attrs="{'selected': 'selected' if data.get('license_id', '') == licence_id else None}" >${licence_desc}</option>
+                    </py:for>
+
+                </select>
+            </dd>
+
+            <py:choose>
+                <py:when test="c.is_sysadmin">
+                    <dt><label class="field_opt" for="state">State</label></dt> 
+                    <dd>
+                        <select id="state" name="state">
+                            <option py:attrs="{'selected': 'selected' if data.get('state') == 'active' else None}" value="active">active</option>
+                            <option py:attrs="{'selected': 'selected' if data.get('state') == 'deleted' else None}" value="deleted">deleted</option>
+                            <option py:attrs="{'selected': 'selected' if data.get('state') == 'pending' else None}" value="pending">pending</option>
+                        </select>
+                    </dd>
+                </py:when>
+            </py:choose>
+
+        </dl>
+    </fieldset>
+
+    <fieldset>
+        <legend>Details</legend> 
+        <dl>
+
+            <dt><label class="field_opt" for="publisher_contact">Contact</label></dt>
+            <dd><textarea id="publisher_contact" name="publisher_contact">${data.get('publisher_contact', '')}</textarea></dd> 
+            <dd class="instructions basic">Contact details for publisher</dd>
+ 
+            <dt><label class="field_opt" for="publisher_description">Description</label></dt> 
+            <dd><textarea id="publisher_description" name="publisher_description">${data.get('publisher_description', '')}</textarea></dd> 
+            <dd class="instructions basic">General description of publisher's role and activities</dd>
+
+            <dt><label class="field_opt" for="publisher_agencies">Organisations / agencies covered</label></dt> 
+            <dd><textarea id="publisher_agencies" name="publisher_agencies">${data.get('publisher_agencies', '')}</textarea></dd> 
+            <dd class="instructions basic">Whose activities does this publisher publish?</dd>
+
+            <dt><label class="field_opt" for="publisher_timeliness">Timeliness of Data</label></dt> 
+            <dd><textarea id="publisher_timeliness" name="publisher_timeliness">${data.get('publisher_timeliness','')}</textarea></dd> 
+            <dd class="instructions basic">How up do date is the data when published?</dd> 
+
+            <dt><label class="field_opt" for="publisher_frequency">Frequency of publication</label></dt> 
+            <dd><textarea id="publisher_frequency" name="publisher_frequency">${data.get('publisher_frequency','')}</textarea></dd>
+            <dd class="instructions basic">How often is IATI data refreshed? Monthly/Quarterly?</dd>
+
+            <dt><label class="field_opt" for="publisher_units">Units of Aid</label></dt>
+            <dd><textarea id="publisher_units" name="publisher_units">${data.get('publisher_units','')}</textarea></dd> 
+            <dd class="instructions basic">A description of any hierarchical reporting units used and how they are applied</dd>
+
+            <dt><label class="field_opt" for="publisher_segmentation">Segmentation of Published Data</label></dt> 
+            <dd><textarea id="publisher_segmentation" name="publisher_segmentation">${data.get('publisher_segmentation','')}</textarea></dd>
+            <dd class="instructions basic">Is IATI data published by country, regions?</dd>
+
+            <dt><label class="field_opt" for="publisher_refs">Data Definitions and References</label></dt> 
+            <dd><textarea id="publisher_refs" name="publisher_refs">${data.get('publisher_refs','')}</textarea></dd> 
+            <dd class="instructions basic">Links to guides, explanations, codelists on the publisher's own site that clarify their data</dd> 
+
+            <dt><label class="field_opt" for="publisher_field_exclusions">Field Exclusions</label></dt> 
+            <dd><textarea id="publisher_field_exclusions" name="publisher_field_exclusions">${data.get('publisher_field_exclusions','')}</textarea></dd> 
+            <dd class="instructions basic">What fields does the publisher never use - and for what reason</dd> 
+
+            <dt><label class="field_opt" for="publisher_record_exclusions">Record Exclusions</label></dt> 
+            <dd><textarea id="publisher_record_exclusions" name="publisher_record_exclusions">${data.get('publisher_record_exclusions','')}</textarea></dd> 
+            <dd class="instructions basic">What are the policies for excluding particular activities, or parts of an activity's data?</dd> 
+
+            <dt><label class="field_opt" for="publisher_thresholds">Thresholds</label></dt> 
+            <dd><textarea id="publisher_thresholds" name="publisher_thresholds">${data.get('publisher_thresholds','')}</textarea></dd> 
+            <dd class="instructions basic">What are the thresholds below which data or whole activities are not published?</dd> 
+
+            <dt><label class="field_opt" for="publisher_constraints">Other Constraints</label></dt> 
+            <dd><textarea id="publisher_constraints" name="publisher_constraints">${data.get('publisher_constraints','')}</textarea></dd> 
+            <dd class="instructions basic">Other policies that restrict full compliance with the standard</dd> 
+            
+            <dt><label class="field_opt" for="publisher_data_quality">Data Quality</label></dt> 
+            <dd><textarea id="publisher_data_quality" name="publisher_data_quality">${data.get('publisher_data_quality','')}</textarea></dd> 
+            <dd class="instructions basic">Publisher's comment on the status and accuracyof the data - audited/verified, operational/sub to change, etc</dd> 
+             
+            <dt><label class="field_opt" for="publisher_ui">User Interface</label></dt> 
+            <dd><textarea id="publisher_ui" name="publisher_ui">${data.get('publisher_ui','')}</textarea></dd> 
+            <dd class="instructions basic">Link to publisher's own public user activity interface</dd> 
+        </dl>
+    </fieldset>
+
+    <fieldset>
+        <legend>Records</legend>
+        <dl py:if="data.get('packages')">
+            <py:for each="num, package in enumerate(data.get('packages'))">
+                <dt><input checked="checked" id="datasets__${num}__name" name="packages__${num}__name" type="checkbox" value="${package['name']}"/></dt>
+                <dd><label for="packages__${num}__name">${package['name']}</label></dd>
+            </py:for>
+        </dl>
+        <p py:if="not data.get('packages')">There are no records currently in this group.</p>
+    </fieldset>
+    
+    <fieldset>
+        <legend>Add records</legend>
+        <dl>
+            <dt><label class="field_opt" for="packages__${len(data.get('packages', []))}__name">Dataset</label></dt>
+            <dd><input class="autocomplete-dataset" id="datasets__${len(data.get('packages', []))}__name" name="packages__${len(data.get('packages', []))}__name" type="text" /></dd>
+        </dl>
+    </fieldset>
+
+    <div class="submit">
+        <input id="save" name="save" type="submit" value="Save" />
+    </div>
+
+</form>
