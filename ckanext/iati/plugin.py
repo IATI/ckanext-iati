@@ -41,6 +41,9 @@ class IatiForms(SingletonPlugin):
         map.connect('/dataset/new', controller=package_controller, action='new')
         map.connect('/dataset/edit/{id}', controller=package_controller, action='edit')
 
+        map.connect('/group/new', controller=group_controller, action='new')
+        map.connect('/group/edit/{id}', controller=group_controller, action='edit')
+
         return map
 
     def after_map(self, map):
