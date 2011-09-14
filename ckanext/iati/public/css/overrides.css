@@ -560,6 +560,21 @@ a, a:link {
   color:#536FA1;
 }
 
+/*-------- Form errors --------*/
+
+.error-explanation {
+    border: 1px solid red;
+    background-color: #FFE0E0;
+    padding: 0.5em;
+    margin-bottom: 1em;
+}
+
+.field_error{
+    margin-top: 0;
+    color: red
+}
+
+
 /*-------- Flash messages --------*/
 
 /*-------- Wordpress Specific --------*/

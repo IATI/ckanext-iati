@@ -5,7 +5,7 @@
     xmlns:xi="http://www.w3.org/2001/XInclude">
 
     <div class="error-explanation" py:if="error_summary">
-        <h2>Errors in form</h2>
+        <h3>Errors in form</h3>
         <p>The form contains invalid entries:</p>
         <ul>
             <li py:for="key, error in error_summary.items()">${"%s: %s" % (key, error)}</li>

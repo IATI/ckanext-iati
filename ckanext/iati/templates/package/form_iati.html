@@ -1,11 +1,11 @@
-<form id="package-edit" class="package_create_form ckan" method="post"
+<form id="package-edit" method="post"
     py:attrs="{'class':'has-errors'} if errors else {}"
     xmlns:i18n="http://genshi.edgewall.org/i18n"
     xmlns:py="http://genshi.edgewall.org/"
     xmlns:xi="http://www.w3.org/2001/XInclude">
-
+    
     <div class="error-explanation" py:if="error_summary">
-        <h2>Errors in form</h2>
+        <h3>Errors in form</h3>
         <p>The form contains invalid entries:</p>
         <ul>
             <li py:for="key, error in error_summary.items()">${"%s: %s" % (key, error)}</li>
@@ -16,7 +16,7 @@
         <legend>Basic information </legend>
         <dl>
             <dt><label class="field_req" for="name">Name *</label></dt>
-            <dd><input id="name" maxlength="100" name="name" type="text" value="${data.get('name', '')}" /></dd>
+            <dd><input id="name" name="name" type="text" value="${data.get('name', '')}" /></dd>
             <dd class="field_error" py:if="errors.get('name', '')">${errors.get('name', '')}</dd>
             <dd class="instructions basic">A unique identifier for the activity record.</dd>
             <dd class="instructions further">It should be broadly humanly readable, in the spirit of Semantic Web URIs. Only use an acronym if it is widely recognised. Renaming is possible but discouraged.</dd>
