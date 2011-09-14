@@ -931,7 +931,7 @@ msgstr ""
 #: ckan/templates/layout_base.html:99
 #: ckan/templates/package/search.html:14
 msgid "Add a Dataset"
-msgstr "Add a record"
+msgstr "Register a New IATI Activity Record"
 
 #: ckan/templates/layout_base.html:101
 #: ckan/templates/home/about.html:6
