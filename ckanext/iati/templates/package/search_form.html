@@ -13,6 +13,7 @@
     country_options = [(o, h.country_name(o) + " (%s)" % n) for o, n in global_facets.get('extras_country', {}).items() if o != ""]
     groups_options = [(o, h.group_title(o) + " (%s)" % n) for o, n in global_facets.get('groups', {}).items() if o != ""]
     types_options = [(o, o + " (%s)" % n) for o, n in global_facets.get('groups_types', {}).items() if o != ""]
+    file_types_options = [(o, h.file_type_title(o) + " (%s)" % n) for o, n in global_facets.get('extras_file_type', {}).items() if o != ""]
 
     country_options.sort(key=lambda name: name[1])
     country_options.insert(0,any)
@@ -20,6 +21,8 @@
     groups_options.insert(0,any)
     types_options.sort(key=lambda name: name[1])
     types_options.insert(0,any)
+    file_types_options.sort(key=lambda name: name[1])
+    file_types_options.insert(0,any)
 
   ?>
   <table border="0" class="facets">
@@ -35,6 +38,11 @@
         <td>Country:</td>
         <td>${h.select('extras_country', dict(c.fields).get('extras_country', '') if c.facets else '',  country_options)}</td>
     </tr>
+    <tr>
+        <td>File type:</td>
+        <td>${h.select('extras_file_type', dict(c.fields).get('extras_file_type', '') if c.facets else '',  file_types_options)}</td>
+    </tr>
+
   </table>
   
    <input type="submit" value="Search" class="button" />

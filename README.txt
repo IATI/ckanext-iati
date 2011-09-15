@@ -59,7 +59,7 @@ wordpresser.proxy_host = http://iatiregistry.wordpress.org/
 
 # Use solr and facet over specific fields:
 search_backend = solr
-search.facets = groups groups_types extras_country
+search.facets = groups groups_types extras_country extras_file_type
 
 (Don't forget to also add a 'solr_url').
 

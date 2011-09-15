@@ -42,6 +42,16 @@
 
             <dt><label class="field_opt" for="department">Department</label></dt>
             <dd><input id="department" name="department" size="40" type="text" value="${data.get('department', '')}" /></dd>
+
+            <dt><label class="field_opt" for="state">File type</label></dt>
+            <dd>
+                <select id="file_type" name="file_type">
+                    <option py:attrs="{'selected': 'selected' if data.get('file_type') == 'activity' else None}" value="activity">Activity</option>
+                    <option py:attrs="{'selected': 'selected' if data.get('file_type') == 'organization' else None}" value="organization">Organization</option>
+                </select>
+            </dd>
+
+
         </dl>
     </fieldset>
 
