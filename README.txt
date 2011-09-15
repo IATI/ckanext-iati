@@ -4,7 +4,7 @@ International Aid Transparency Initiative Registry Extensions to CKAN
 * Publisher Model
 * Institutional Authorization
 * Previews
-* Solr facets by institution type
+* Solr facets by institution type, recipient country and file type
 * Custom forms and theme
 
 
@@ -46,17 +46,13 @@ iati.email = activation@iatiregistry.org
 # File preview service URL (notice the token that will be replaced with the file URL):
 iati.preview_service = http://dev.yipl.com.np/iati/tools/public/api/activityviewer?xmlUrl=%s
 
-# Custom package and group form:
-package_form = iati_package
-group_form = iati_group
-
 ckan.site_title = IATI Registry
 
 # Used in approval mails, make sure its correct:
 ckan.site_url = http://iati.test.ckan.net
 
 # Add any other plugins you want to use:
-ckan.plugins = iati_theme iati_approval iati_group_authz iati_package_authz  wordpresser
+ckan.plugins = iati_theme iati_forms iati_approval iati_group_authz iati_package_authz wordpresser synchronous_search
 
 # Use a proxy wordpress to provide help & about pages (etc)
 wordpresser.proxy_host = http://iatiregistry.wordpress.org/
@@ -67,10 +63,6 @@ search.facets = groups groups_types extras_country
 
 (Don't forget to also add a 'solr_url').
 
-4) Note that currently there are no hooks in place to update the
-indexes when a Group/Publisher is updated.  Therefore we currently rely on a dirty hack to keep the indexes roughly up to date: a cron job to update indexes daily, thus:
-
-   . /etc/ckan/testing/pyenv/bin/activate && paster  --plugin=ckan search-index -c /etc/ckan/testing/testing.ini rebuild && deactivate
 
 Overall workflow for IATI
 =========================
@@ -80,7 +72,7 @@ Publishers
 
 (1) All packages are released by IATI publishers, normal users cannot submit 
 packages. Publishers (CKAN Entity: Group, renamed in a custom i18n) themselves 
-are typed as one of "Donor", "Community" or "Recipient". The type is stored 
+are typed as one of "Primary Source" or "Secondary Source". The type is stored 
 as a "type" extra on the group and then folded into each indexed package via 
 a monkey-patched as_dict() method on Package. This allows us to facet over 
 packages associated with a specific type of Publisher.
@@ -108,9 +100,7 @@ Packages
 
 (4) Packages can only be created by those that are both registered as users 
 and a member of at least one active publisher. This is checked via a helpers.py 
-monkey patch "am_authorized_with_publisher" (ckanext.iati.patch) and through a 
-custom AtLeastOneGroupSelectField used in the package form 
-(ckanext.iati.forms.package). 
+monkey patch "am_authorized_with_publisher" (ckanext.iati.patch). 
 
 (5) When a package is created, a post-creation hook is used to replace its 
 default authorization mode is changed: the individual user is removed as a 
@@ -123,24 +113,13 @@ Metadata schema and data previews
 ---------------------------------
 
 (6) The custom form for IATI contains a series of specific fields, one of which 
-is the country. A list of available countries is in ckanext.iati.forms.country 
+is the country. A list of available countries is in ckanext.iati.controllers.country 
 and it should be extended with geographic regions as this seems to be the only 
 level of reporting some entities (e.g. Hewlett) do. 
 
 (7) The IATI license has not yet been added to the license selection drop-down.
 
 (8) Most of the more specific form fields could easily be derived from the IATI 
-report data itself (which we need to read anyways, see below). 
-
-(9) When a package is saved, a post-save hook will generate a preview and store 
-it as a hidden extra to the package. This preview is created for each resource 
-and presented through a javascript expansion field on the package view page. The 
-preview is produced by loading the referenced file into LXML and then running it 
-through an XSLT sheet produced by DevInit and hacked into shape by us 
-(ckanext.iati.preview). A somewhat cleaner mechanism might be the experimental 
-XML parser for IATI activities in test/xml.py. This could also mention some of 
-the form fields mentioned above.
-
-
+report data itself. 
 
 
