@@ -13,7 +13,7 @@
     country_options = [(o, h.country_name(o) + " (%s)" % n) for o, n in global_facets.get('extras_country', {}).items() if o != ""]
     groups_options = [(o, h.group_title(o) + " (%s)" % n) for o, n in global_facets.get('groups', {}).items() if o != ""]
     types_options = [(o, o + " (%s)" % n) for o, n in global_facets.get('groups_types', {}).items() if o != ""]
-    file_types_options = [(o, h.file_type_title(o) + " (%s)" % n) for o, n in global_facets.get('extras_file_type', {}).items() if o != ""]
+    file_types_options = [(o, h.file_type_title(o) + " (%s)" % n) for o, n in global_facets.get('extras_filetype', {}).items() if o != ""]
 
     country_options.sort(key=lambda name: name[1])
     country_options.insert(0,any)

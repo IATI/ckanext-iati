@@ -35,7 +35,7 @@ class PackageIatiController(PackageController):
         schema = package_form_schema()
         schema.update({
             'department': [unicode,convert_to_extras,ignore_missing],
-            'file_type': [convert_to_extras],
+            'filetype': [convert_to_extras],
             'country': [convert_to_extras, ignore_missing],
             'donors': [unicode, convert_from_comma_list, convert_to_extras, ignore_missing],
             'donors_type': [unicode, convert_from_comma_list, convert_to_extras, ignore_missing],
@@ -55,7 +55,7 @@ class PackageIatiController(PackageController):
         schema = package_form_schema()
         schema.update({
             'department': [convert_from_extras,ignore_missing],
-            'file_type': [convert_from_extras, ignore_missing],
+            'filetype': [convert_from_extras, ignore_missing],
             'country': [convert_from_extras, ignore_missing],
             'donors': [ignore_missing, convert_from_extras, convert_to_comma_list],
             'donors_type': [ignore_missing, convert_from_extras, convert_to_comma_list],
