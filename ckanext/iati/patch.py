@@ -4,7 +4,6 @@ from controllers.countries import COUNTRIES
 import ckan.lib.helpers as h
 import ckan.authz as authz
 from ckan.lib.base import *
-from ckan.model import Package
 
 from ckanext.iati.controllers.group_schema import fields
 
@@ -12,14 +11,16 @@ log = logging.getLogger(__name__)
 
 ######### 
 log.warn("Monkey-patching package serialization format!")
+from ckan.lib.dictization import model_dictize
 
-old = Package.as_dict
-def as_dict_with_groups_types(self):
-    _dict = old(self)
-    _dict['groups_types'] = "".join([g.extras.get('type', '') for g in self.groups])
+old2 = model_dictize.package_dictize
+def package_dictize_with_group_types(pkg,context):
+    _dict = old2(pkg,context)
+    _dict['groups_types'] = "".join([g.extras.get('type', '') for g in pkg.groups])
     return _dict
 
-Package.as_dict = as_dict_with_groups_types
+model_dictize.package_dictize = package_dictize_with_group_types
+
 ######### 
 
 FILE_TYPES = {
