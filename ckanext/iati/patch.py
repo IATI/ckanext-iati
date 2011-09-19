@@ -25,7 +25,7 @@ model_dictize.package_dictize = package_dictize_with_group_types
 
 FILE_TYPES = {
     'activity':'Activity',
-    'organization':'Organization',
+    'organisation':'Organisation',
 }
 
 
