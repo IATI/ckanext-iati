@@ -33,15 +33,8 @@
             <dd class="instructions basic">A short descriptive title for the data set.</dd>
             <dd class="instructions further">It should not be a description though - save that for the Notes field. Do not give a trailing full stop.</dd>
 
-            <dt><label class="field_opt" for="author">Contact</label></dt>
-            <dd><input id="author" name="author" type="text" value="${data.get('author', '')}" /></dd>
-            <dd class="instructions basic">The name of the main contact, for enquiries about this particular dataset, using the e-mail address in the following field.</dd>
-
             <dt><label class="field_opt" for="author_email">Contact e-mail</label></dt>
             <dd><input id="author_email" name="author_email" type="text" value="${data.get('author_email', '')}" /></dd>
-
-            <dt><label class="field_opt" for="department">Department</label></dt>
-            <dd><input id="department" name="department" size="40" type="text" value="${data.get('department', '')}" /></dd>
 
             <dt><label class="field_opt" for="state">File type</label></dt>
             <dd>
@@ -100,18 +93,6 @@
                 </select>
                 </py:with>
             </dd>
-
-            <dt><label class="field_opt" for="donors">Donors</label></dt>
-            <dd><input id="donors" name="donors" type="text" value="${data.get('donors', '')}" /></dd>
-            <dd class="instructions basic">Separate multiple entries using commas.</dd>
-
-            <dt><label class="field_opt" for="donors_type">Donor type</label></dt>
-            <dd><input id="donors_type" name="donors_type" type="text" value="${data.get('donors_type', '')}" /></dd>
-            <dd class="instructions basic">Separate multiple entries using commas.</dd>
-
-            <dt><label class="field_opt" for="donors_country">Donor country</label></dt>
-            <dd><input id="donors_country" name="donors_country" type="text" value="${data.get('donors_country', '')}" /></dd>
-            <dd class="instructions basic">Separate multiple entries using commas.</dd>
 
             <dt><label class="field_opt" for="record_updated">Record updated</label></dt>
             <dd><input id="record_updated" name="record_updated" size="40" type="text" value="${data.get('record_updated', '')}" /></dd>

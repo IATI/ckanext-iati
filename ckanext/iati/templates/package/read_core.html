@@ -89,13 +89,7 @@
     <table width="100%">
       <tbody>
         ${details_item('File Type', h.file_type_title(c.pkg.extras.get('filetype', '-')))}
-        ${details_item('Contact', c.pkg_author_link)}
-        <!--${details_item('Maintainer', c.pkg_maintainer_link)}
-        ${details_item('Version', c.pkg.version)}-->
-        ${details_list('Donors', c.pkg.extras.get('donors', '-'))}
-        ${details_list('Donor types', c.pkg.extras.get('donors_type', []))}
-        ${details_list('Donor countries', [h.country_name(x) for x in c.pkg.extras.get('donors_country', [])])}
-        ${details_item('Recipient Country', h.country_name(c.pkg.extras.get('country', '(Unknown)')))}
+       ${details_item('Recipient Country', h.country_name(c.pkg.extras.get('country', '(Unknown)')))}
 
         ${details_asbool('Verified', c.pkg.extras.get('verified', False))}
         ${details_asbool('Archive File', c.pkg.extras.get('archive_file', False))}

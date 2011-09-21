@@ -34,12 +34,8 @@ class PackageIatiController(PackageController):
     def _form_to_db_schema(self):
         schema = package_form_schema()
         schema.update({
-            'department': [unicode,convert_to_extras,ignore_missing],
             'filetype': [convert_to_extras],
             'country': [convert_to_extras, ignore_missing],
-            'donors': [unicode, convert_from_comma_list, convert_to_extras, ignore_missing],
-            'donors_type': [unicode, convert_from_comma_list, convert_to_extras, ignore_missing],
-            'donors_country': [unicode, convert_from_comma_list, convert_to_extras, ignore_missing],
             'record_updated': [date_to_db, convert_to_extras,ignore_missing],
             'data_updated': [date_to_db, convert_to_extras,ignore_missing],
             'activity_period-from': [date_to_db, convert_to_extras,ignore_missing],
@@ -54,12 +50,8 @@ class PackageIatiController(PackageController):
     def _db_to_form_schema(self):
         schema = package_form_schema()
         schema.update({
-            'department': [convert_from_extras,ignore_missing],
             'filetype': [convert_from_extras, ignore_missing],
             'country': [convert_from_extras, ignore_missing],
-            'donors': [ignore_missing, convert_from_extras, convert_to_comma_list],
-            'donors_type': [ignore_missing, convert_from_extras, convert_to_comma_list],
-            'donors_country': [ignore_missing, convert_from_extras, convert_to_comma_list],
             'record_updated': [convert_from_extras,ignore_missing, date_to_form],
             'data_updated': [convert_from_extras,ignore_missing, date_to_form],
             'activity_period-from': [convert_from_extras,ignore_missing, date_to_form],
