@@ -5,6 +5,7 @@ from logging import getLogger
 from ckan.plugins import implements, SingletonPlugin
 from ckan.plugins import IRoutes
 from ckan.plugins import IConfigurer
+from ckan.plugins import IActions
 
 import ckanext.iati
 
@@ -51,4 +52,17 @@ class IatiForms(SingletonPlugin):
 
     def update_config(self, config):
         configure_template_directory(config, 'templates')
+
+class IatiActions(SingletonPlugin):
+
+    implements(IActions)
+
+    def get_actions(self):
+        from ckanext.iati.logic.action.get import (package_show as package_show_iati,
+                                                   package_show_rest as package_show_rest_iati)
+
+        return {
+            'package_show':package_show_iati,
+            'package_show_rest':package_show_rest_iati
+        }
 

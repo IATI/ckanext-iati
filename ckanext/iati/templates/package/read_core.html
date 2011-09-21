@@ -62,6 +62,28 @@
         </tr>
     </py:def>
 
+    <py:def function="details_extras_item(label, key, default)">
+        <tr py:if="[e['key'] for e in c.pkg_dict['extras'] if e['key'] == key]">
+          <td class="package-label">
+            ${label}
+          </td>
+          <py:with vars="value = [e['value'] for e in c.pkg_dict['extras'] if e['key'] == key and e['value'] is not None and len(e['value']) > 0][0]">
+          <py:choose>
+              <py:when test="value">
+              <td class="package-details">
+                ${value}
+              </td>
+              </py:when>
+              <py:otherwise>
+              <td class="package-details">
+                ${default}
+                </td>
+              </py:otherwise>
+          </py:choose>
+          </py:with>
+        </tr>
+    </py:def>
+
     <py:def function="details_asbool(label, value)">
         <tr>
           <td class="package-label">
@@ -88,12 +110,13 @@
     <h4>Details</h4>
     <table width="100%">
       <tbody>
+
+        ${details_extras_item('Publisher Type','groups_types','-')}
         ${details_item('File Type', h.file_type_title(c.pkg.extras.get('filetype', '-')))}
-       ${details_item('Recipient Country', h.country_name(c.pkg.extras.get('country', '(Unknown)')))}
+        ${details_item('Recipient Country', h.country_name(c.pkg.extras.get('country', '(Unknown)')))}
 
         ${details_asbool('Verified', c.pkg.extras.get('verified', False))}
         ${details_asbool('Archive File', c.pkg.extras.get('archive_file', False))}
-        ${details_item('Department', c.pkg.extras.get('department', '-'))}
 
         ${details_item('Data updated', c.pkg.extras.get('data_updated', '-'))}
         ${details_item('Record updated', c.pkg.extras.get('record_updated', '-'))}

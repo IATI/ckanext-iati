@@ -10,27 +10,19 @@ from ckanext.iati.controllers.group_schema import fields
 
 log = logging.getLogger(__name__)
 
-######### 
+#########
 log.warn("Monkey-patching package serialization format!")
+
+# This needs to be done until the search indexing uses the logic
+# functions (See #1352)
 
 old_as_dict = Package.as_dict
 def as_dict_with_groups_types(self):
     _dict = old_as_dict(self)
-    _dict['groups_types'] = "".join([g.extras.get('type', '') for g in self.groups])
+    _dict['extras']['publishertype'] = ''.join([g.extras.get('type', '') for g in self.groups])
     return _dict
 
 Package.as_dict = as_dict_with_groups_types
-
-from ckan.lib.dictization import model_dictize
-
-old_package_dictize = model_dictize.package_dictize
-def package_dictize_with_group_types(pkg,context):
-    _dict = old_package_dictize(pkg,context)
-    _dict['groups_types'] = "".join([g.extras.get('type', '') for g in pkg.groups])
-    return _dict
-
-model_dictize.package_dictize = package_dictize_with_group_types
-
 ######### 
 
 FILE_TYPES = {
