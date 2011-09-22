@@ -43,6 +43,7 @@ class PackageIatiController(PackageController):
             'activity_count': [integer,convert_to_extras,ignore_missing],
             'archive_file': [checkbox_value, convert_to_extras,ignore_missing],
             'verified': [checkbox_value, convert_to_extras,ignore_missing],
+            'language': [convert_to_extras, ignore_missing],
         })
 
         return schema
@@ -59,6 +60,7 @@ class PackageIatiController(PackageController):
             'activity_count': [convert_from_extras,ignore_missing],
             'archive_file': [convert_from_extras,ignore_missing],
             'verified': [convert_from_extras,ignore_missing],
+            'language': [convert_from_extras, ignore_missing],
         })
 
         return schema

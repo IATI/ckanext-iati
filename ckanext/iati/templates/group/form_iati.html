@@ -47,6 +47,31 @@
                 </select>
             </dd>
 
+            <dt><label class="field_opt" for="publisher_organization_type">Organization Type</label></dt> 
+            <dd>
+                <select id="publisher_organization_type" name="publisher_organization_type">
+                    <py:for each="value, title in c.organization_types">
+                        <option value="${value}" py:attrs="{'selected': 'selected' if data.get('organization_type', '') == value else None}" >${title}</option>
+                    </py:for>
+
+                </select>
+            </dd>
+            <dd class="instructions basic"></dd>
+
+            <dt><label class="field_opt" for="publisher_country">Country</label></dt>
+            <dd>
+                <py:with vars="country = data.get('publisher_country','')">
+                <select id="publisher_country" name="publisher_country">
+                    <py:for each="name,id in c.countries">
+                    <option value="${id}" py:attrs="{'selected': 'selected' if country == id else None}">${name}</option>
+                    </py:for>
+                </select>
+                </py:with>
+            </dd>
+
+            <dt><label class="field_opt" for="publisher_iati_id">IATI Identifier</label></dt>
+            <dd><input id="publisher_iati_id" name="publisher_iati_id" type="text" value="${data.get('publisher_iati_id', '')}" /></dd>
+
             <py:choose>
                 <py:when test="c.is_sysadmin">
                     <dt><label class="field_opt" for="state">State</label></dt> 

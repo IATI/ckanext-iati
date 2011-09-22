@@ -50,6 +50,12 @@
       </table>
       <table py:otherwise=""><tr><th>Resources</th><td>None given for this package.</td></tr></table>
       </py:choose>
+    
+    <?python
+        extras = {}
+        for extra in c.pkg_dict['extras']:
+            extras[extra['key']] = extra['value']
+    ?>
 
     <py:def function="details_item(label, value)">
         <tr py:if="value is not None and len(value) > 0">
@@ -62,24 +68,23 @@
         </tr>
     </py:def>
 
-    <py:def function="details_extras_item(label, key, default)">
-        <tr py:if="[e['key'] for e in c.pkg_dict['extras'] if e['key'] == key]">
+    <py:def function="details_extras_item(label, key, default, func = None)">
+        <tr py:if="key in extras.keys()">
           <td class="package-label">
             ${label}
           </td>
-          <py:with vars="value = [e['value'] for e in c.pkg_dict['extras'] if e['key'] == key and e['value'] is not None and len(e['value']) > 0][0]">
+          <py:with vars="value = extras[key] if extras[key] is not None and len(extras[key]) > 0 else None">
+          <td class="package-details">
           <py:choose>
               <py:when test="value">
-              <td class="package-details">
-                ${value}
-              </td>
+                ${func(value) if func else value}
               </py:when>
               <py:otherwise>
-              <td class="package-details">
                 ${default}
-                </td>
               </py:otherwise>
           </py:choose>
+
+          </td>
           </py:with>
         </tr>
     </py:def>
@@ -111,15 +116,20 @@
     <table width="100%">
       <tbody>
 
-        ${details_extras_item('Publisher Type','groups_types','-')}
-        ${details_item('File Type', h.file_type_title(c.pkg.extras.get('filetype', '-')))}
-        ${details_item('Recipient Country', h.country_name(c.pkg.extras.get('country', '(Unknown)')))}
+        ${details_extras_item('File Type', 'filetype', '-', h.file_type_title)}
+        ${details_extras_item('Language','language','-')}
+        ${details_extras_item('Recipient Country', 'country', '(Unknown)', h.country_name)}
+
+        ${details_extras_item('Publisher Type','publishertype','-')}
+        ${details_extras_item('Publisher Organization Type','publisher_organization_type','-',h.organization_type_title)}
+        ${details_extras_item('Publisher Identifier','publisher_iati_id','-')}
+        ${details_extras_item('Publisher Country','publisher_country','(Unknown)',h.country_name)}
 
         ${details_asbool('Verified', c.pkg.extras.get('verified', False))}
         ${details_asbool('Archive File', c.pkg.extras.get('archive_file', False))}
 
-        ${details_item('Data updated', c.pkg.extras.get('data_updated', '-'))}
-        ${details_item('Record updated', c.pkg.extras.get('record_updated', '-'))}
+        ${details_extras_item('Data updated', 'data_updated', '-')}
+        ${details_extras_item('Record updated', 'record_updated', '-')}
 
         <tr>
           <td class="package-label">

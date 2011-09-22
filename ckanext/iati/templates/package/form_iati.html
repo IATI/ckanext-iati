@@ -102,6 +102,10 @@
             <dd><input id="data_updated" name="data_updated" size="40" type="text" value="${data.get('data_updated', '')}"/></dd>
             <dd class="instructions basic">Acceptable formats: 'DD/MM/YYYY HH:MM', 'DD/MM/YYYY', 'MM/YYYY', 'YYYY'.</dd>
 
+            <dt><label class="field_opt" for="record_updated">Language</label></dt>
+            <dd><input id="language" name="language" size="40" type="text" value="${data.get('language', '')}" /></dd>
+            <dd class="instructions basic">The ISO 639-1 code for the language of the file (e.g. 'en')</dd>
+
             <dt><label class="field_opt" for="license_id">License</label></dt>
             <dd>
                 <select id="license_id" name="license_id">
