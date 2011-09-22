@@ -32,8 +32,9 @@
             <dt><label class="field_req" for="type">Source</label></dt> 
             <dd>
                 <select id="type" name="type">
-                    <option value="Primary source" py:attrs="{'selected': 'selected' if data.get('type', '') == 'Primary source' else None}">Primary source</option>
-                    <option value="Secondary source" py:attrs="{'selected': 'selected' if data.get('type', '') == 'Secondary source' else None}">Secondary source</option>
+                    <py:for each="value, title in c.publisher_source_types">
+                        <option value="${value}" py:attrs="{'selected': 'selected' if data.get('type', '') == value else None}" >${title}</option>
+                    </py:for>
                 </select>
             </dd> 
             

@@ -7,6 +7,7 @@ from ckan.lib.base import *
 from ckan.model import Package
 
 from ckanext.iati.controllers.group_schema import fields
+from ckanext.iati.lists import ORGANIZATION_TYPES, COUNTRIES, PUBLISHER_SOURCE_TYPES, FILE_TYPES
 
 log = logging.getLogger(__name__)
 
@@ -25,12 +26,6 @@ def as_dict_with_groups_types(self):
 Package.as_dict = as_dict_with_groups_types
 ######### 
 
-from ckanext.iati.controllers.group_iati import ORGANIZATION_TYPES
-
-FILE_TYPES = {
-    'activity':'Activity',
-    'organisation':'Organisation',
-}
 
 
 # TODO move this to helpers proper
@@ -44,17 +39,14 @@ def group_title(name):
         name = group.title
     return name
 
-def file_type_title(name):
-    if name in FILE_TYPES.keys():
-        return FILE_TYPES[name]
-    else:
-        return name
+def file_type_title(code):
+    return dict(FILE_TYPES).get(code, code)
+
+def publisher_type_title(code):
+    return dict(PUBLISHER_SOURCE_TYPES).get(code, code)
 
 def organization_type_title(code):
-    for k,v in ORGANIZATION_TYPES:
-        if k == code:
-            return v
-    return code
+    return dict(ORGANIZATION_TYPES).get(code, code)
 
 def am_authorized_with_publisher(c, action, domain_object=None):
     from ckan import model
@@ -86,6 +78,7 @@ h.country_name = country_name
 h.group_title = group_title
 h.file_type_title = file_type_title
 h.organization_type_title = organization_type_title
+h.publisher_type_title = publisher_type_title
 h.publisher_record_fields = fields
 h.my_group = my_group
 h.my_group_license = my_group_license
