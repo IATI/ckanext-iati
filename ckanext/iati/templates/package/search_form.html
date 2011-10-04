@@ -6,7 +6,7 @@
     from ckan.model import Package
 
     global_query = query_for(Package)
-    global_query.run(facet_by=g.facets)
+    global_query.run({'facet.field':g.facets})
     global_facets = global_query.facets
 
     any = ('', 'Any')
