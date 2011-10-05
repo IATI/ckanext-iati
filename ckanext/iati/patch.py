@@ -1,6 +1,5 @@
 import logging
 import re
-from controllers.countries import COUNTRIES
 import ckan.lib.helpers as h
 import ckan.authz as authz
 from ckan.lib.base import *
