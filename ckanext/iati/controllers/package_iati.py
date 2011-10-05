@@ -16,7 +16,7 @@ from ckan.logic.converters import convert_from_extras, convert_to_extras, date_t
 from ckan.lib.navl.dictization_functions import Missing, Invalid
 from ckan.lib.field_types import DateType, DateConvertError
 
-from countries import COUNTRIES
+from ckanext.iati.lists import COUNTRIES
 
 class PackageIatiController(PackageController):
 
