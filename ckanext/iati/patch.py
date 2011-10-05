@@ -20,7 +20,7 @@ old_as_dict = Package.as_dict
 def as_dict_with_groups_types(self):
 #    import pdb; pdb.set_trace()
     _dict = old_as_dict(self)
-    _dict['extras']['publishertype'] = ''.join([g.extras.get('type', '') for g in self.groups])
+    _dict['extras']['publishertype'] = ''.join([g.extras.get('type', '') for g in self.groups if g])
     return _dict
 
 Package.as_dict = as_dict_with_groups_types
@@ -30,7 +30,7 @@ old_package_to_api1 = model_dictize.package_to_api1
 
 def package_to_api1_with_groups_types(pkg,context):
     _dict = old_package_to_api1(pkg,context) 
-    _dict['extras']['publishertype'] = ''.join([g.extras.get('type', '') for g in pkg.groups])
+    _dict['extras']['publishertype'] = ''.join([g.extras.get('type', '') for g in pkg.groups if g])
     return _dict
 
 model_dictize.package_to_api1 = package_to_api1_with_groups_types
