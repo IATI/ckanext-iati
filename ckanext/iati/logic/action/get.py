@@ -13,7 +13,7 @@ def package_show(context, data_dict):
             {'key': 'publisher_iati_id', 'value': group.extras.get('publisher_iati_id', '')},
         ]
     
-    package_dict['extras'].extend(new_extras)
+        package_dict['extras'].extend(new_extras)
 
     return package_dict
 
@@ -30,7 +30,7 @@ def package_show_rest(context, data_dict):
             'publisher_iati_id':group.extras.get('publisher_iati_id', ''),
         }
 
-    package_dict['extras'].update(new_extras)
+        package_dict['extras'].update(new_extras)
 
     return package_dict
 
