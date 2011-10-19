@@ -1,0 +1,22 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  py:strip="">
+
+  <py:def function="page_title">CSV Export</py:def>
+  <div py:match="content">
+
+    <h2 class="head">CSV Export</h2>
+
+    <div>Select a Publisher to download all its records in CSV format.</div>
+    <hr class="cleared" />
+    <ul>
+    <py:for each="group in c.groups">
+        <li><a href="/csv/download/${group['name']}" >${group['title']}</a></li>
+    </py:for>
+    </ul>
+  </div>
+
+
+  <xi:include href="../layout.html" />
+</html>
