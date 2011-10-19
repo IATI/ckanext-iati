@@ -52,8 +52,9 @@ class IatiPackageAuthzExtension(SingletonPlugin):
         if len(package.groups) == 0:
             # invalid for iati, but lets not drop our privs and pants over this. 
             return 
-        model.clear_user_roles(package)
-        model.setup_default_user_roles(package, [])
+        #Commenting out as it conflicts with 888ed50c098d 
+        #model.clear_user_roles(package)
+        #model.setup_default_user_roles(package, [])
         self._sync_authz_groups(package)
   
     def edit(self, package):
