@@ -4,6 +4,7 @@ from ckan import model
 from ckan.lib.navl.validators import ignore_missing, not_empty
 from ckan.lib.navl.dictization_functions import Invalid
 
+from ckan.logic.validators import ignore_not_admin
 from ckan.logic.schema import group_form_schema
 from ckan.logic.converters import convert_from_extras, convert_to_extras
 from ckan.controllers.group import GroupController
@@ -27,6 +28,7 @@ class GroupIatiController(GroupController):
     def _form_to_db_schema(self):
         schema = group_form_schema()
         schema.update({
+            'state': [ignore_not_admin],
             'type': [not_empty, convert_to_extras],
             'license_id': [convert_to_extras],
             'publisher_iati_id': [convert_to_extras, ignore_missing],
@@ -53,6 +55,7 @@ class GroupIatiController(GroupController):
     def _db_to_form_schema(self):
         schema = group_form_schema()
         schema.update({
+            'state': [ignore_not_admin],
             'type': [convert_from_extras],
             'license_id': [convert_from_extras],
             'publisher_country': [convert_from_extras],
