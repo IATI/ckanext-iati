@@ -52,6 +52,7 @@ class IatiForms(SingletonPlugin):
 
     def update_config(self, config):
         configure_template_directory(config, 'templates')
+        configure_public_directory(config, 'public')
 
 class IatiActions(SingletonPlugin):
 
