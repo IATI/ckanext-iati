@@ -7,6 +7,20 @@ from ckan.plugins import implements, SingletonPlugin, IGroupController, IPackage
 log = logging.getLogger(__name__)
 
 
+def get_user_administered_groups(user_name):
+    user = model.User.get(user_name)
+    if not user:
+        raise ValueError(user)
+
+    q = model.Session.query(model.GroupRole).filter_by(user=user,role=model.Role.ADMIN)
+
+    groups = []
+    for group_role in q.all():
+        if group_role.group.state == 'active':
+            groups.append(group_role.group.id)
+
+    return groups
+
 def _get_group_authz_group(group):
     """ For each group, we're adding an authorization group with the same settings 
         that can then be set as the owner for new packages. """
