@@ -9,12 +9,18 @@
     <h2 class="head">CSV Export</h2>
 
     <div>Select a Publisher to download all its records in CSV format.</div>
+    <div><strong>Warning:</strong>For publishers with a large number of datasets it may take a while to generate the CSV file. Please be patient.</div>
     <hr class="cleared" />
-    <ul>
-    <py:for each="group in c.groups">
-        <li><a href="/csv/download/${group['name']}" >${group['title']}</a></li>
-    </py:for>
-    </ul>
+    <table class="groups">
+        <tr><th>Title</th><th>Number of datasets</th><th></th></tr>
+        <py:for each="group in c.groups">
+            <tr>
+                <td>${group['display_name']}</td>
+                <td>${group['packages']}</td>
+                <td><a href="${h.url_for(controller='ckanext.iati.controllers.spreadsheet:CSVController', action='download', publisher=group['name'])}">Download</a></td>
+            </tr>
+        </py:for>
+    </table>
   </div>
 
 
