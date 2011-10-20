@@ -48,7 +48,10 @@ class IatiForms(SingletonPlugin):
         csv_controller = 'ckanext.iati.controllers.spreadsheet:CSVController'
         map.connect('/csv/download', controller=csv_controller, action='download')
         map.connect('/csv/download/{publisher}', controller=csv_controller, action='download')
-        map.connect('/csv/upload', controller=csv_controller, action='upload')
+        map.connect('/csv/upload', controller=csv_controller, action='upload',
+                    conditions=dict(method=['GET']))
+        map.connect('/csv/upload', controller=csv_controller, action='upload',
+                    conditions=dict(method=['POST']))
 
         return map
 

@@ -1,3 +1,4 @@
+import logging
 import csv
 import StringIO
 
@@ -5,8 +6,11 @@ from ckan import model
 from ckan.lib.base import c, request, response, config, h, redirect, render, abort,  BaseController
 from ckan.lib.helpers import json
 from ckan.authz import Authorizer
-from ckan.logic import get_action, NotFound
+from ckan.logic import get_action, NotFound, ValidationError, NotAuthorized
 from ckanext.iati.authz import get_user_administered_groups
+
+log = logging.getLogger(__name__)
+
 
 class CSVController(BaseController):
 
@@ -27,28 +31,32 @@ class CSVController(BaseController):
             ('verification-status','extras', 'verified'),
             ('default-language','extras', 'language')
             ]
+    
+    def __before__(self, action, **params):
+        super(CSVController,self).__before__(action, **params)
 
-    def download(self,publisher=None):
         if not c.user:
             abort(403,'Permission denied')
 
-        context = {'model':model,'user': c.user or c.author}
-
-        is_sysadmin = Authorizer().is_sysadmin(c.user)
+        self.is_sysadmin = Authorizer().is_sysadmin(c.user)
 
         # Groups of which the logged user is admin
-        authz_groups = get_user_administered_groups(c.user)
+        self.authz_groups = get_user_administered_groups(c.user)
 
+    def download(self,publisher=None):
+
+        context = {'model':model,'user': c.user or c.author}
+        
         if publisher and publisher != 'all':
             try:
                 group = get_action('group_show')(context, {'id':publisher})
             except NotFound:
                 abort(404, 'Publisher not found')
 
-            if not group['id'] in authz_groups and not is_sysadmin:
+            if not group['id'] in self.authz_groups and not self.is_sysadmin:
                 abort(403,'Permission denied for this publisher group')
 
-        if is_sysadmin:
+        if self.is_sysadmin:
             if publisher:
                 # Return CSV for provided publisher
                 output = self.write_csv_file(publisher)
@@ -60,15 +68,15 @@ class CSVController(BaseController):
             if publisher and publisher != 'all':
                 # Return CSV for provided publisher (we already checked the permissions)
                 output = self.write_csv_file(publisher)
-            elif len(authz_groups) == 1:
+            elif len(self.authz_groups) == 1:
                 # Return directly CSV for publisher
-                output = self.write_csv_file(authz_groups[0])
-            elif len(authz_groups) > 1:
+                output = self.write_csv_file(self.authz_groups[0])
+            elif len(self.authz_groups) > 1:
                 # Show list of available publishers for this user
                 groups = get_action('group_list')(context, {'all_fields':True})
                 c.groups = []
                 for group in groups:
-                    if group['id'] in authz_groups:
+                    if group['id'] in self.authz_groups:
                         c.groups.append(group)
 
                 return render('csv/index.html')
@@ -77,13 +85,23 @@ class CSVController(BaseController):
                 abort(403,'Permission denied')
 
 
-        file_name = publisher if publisher else authz_groups[0]
+        file_name = publisher if publisher else self.authz_groups[0]
         response.headers['Content-type'] = 'text/csv'
         response.headers['Content-disposition'] = 'attachment;filename=%s.csv' % file_name
         return output
 
     def upload(self):
-        return "UPLOAD CSV"
+        if request.method == 'GET':
+            return render('csv/upload.html')
+        elif request.method == 'POST':
+            csv_file = request.POST['file']
+            
+            added, updated, errors = self.read_csv_file(csv_file)
+            c.added = added
+            c.updated = updated
+            c.errors = errors
+            return 'Packages added: %i, Packages updated: %i, Errors: %s'  % \
+                (added,updated,', '.join(errors))
 
     def write_csv_file(self,publisher):
         context = {'model':model,'user': c.user or c.author}
@@ -133,6 +151,86 @@ class CSVController(BaseController):
 
         return output
 
+    def read_csv_file(self,csv_file):
+        fieldnames = [n[0] for n in self.csv_mapping]
+        #reader = csv.DictReader(csv_file.file,fieldnames=fieldnames)
+        #TODO: separator
+        reader = csv.DictReader(csv_file.file)
+
+        counts = {'added': 0, 'updated': 0}
+        errors = []
+        for i,row in enumerate(reader):
+            try:
+                # Check mandatory fields
+                if not row['registry-publisher-id']:
+                     raise ValueError('Publisher not defined')
+                
+                # TODO: Check permissions on group
+                     
+                if not row['registry-file-id']:
+                    raise ValueError('File id not defined')
+                # TODO: Check name convention
+
+                package_dict = self.get_package_dict_from_row(row)
+                self.create_or_update_package(package_dict,counts)
+            except ValueError,e:
+                errors.append('Error in row %i: %s' % (i+1,str(e)))
+            except NotAuthorized,e:
+                errors.append('Error in row %i: Not authorized to publish to this group (%s)' % (i+1,row['registry-publisher-id']))
+
+        return counts['added'], counts['updated'], errors
+
+    def get_package_dict_from_row(self,row):
+        package = {}
+        for fieldname, entity, key in self.csv_mapping:
+            value = row[fieldname]
+            if value:
+                if entity == 'groups':
+                    package['groups'] = [value]
+                elif entity == 'resources':
+                    if not 'resources' in package:
+                       package['resources'] = [{}]
+                    package['resources'][0][key] = value
+                elif entity == 'extras':
+                    if not 'extras' in package:
+                       package['extras'] = {}
+                    package['extras'][key] = value
+                else:
+                    package[key] = value
+        return package
+
+    def create_or_update_package(self, package_dict, counts = None):
+        try:
+
+            context = {
+                'model': model,
+                'session': model.Session,
+                'user': c.user,
+                'api_version':'1'
+            }
+
+            # Check if package exists
+            data_dict = {}
+            data_dict['id'] = package_dict['name']
+            try:
+                existing_package_dict = get_action('package_show')(context, data_dict)
+                # Update package
+
+                log.info('Package with name "%s" exists and will be updated' % package_dict['name'])
+                context.update({'id':existing_package_dict['id']})
+                package_dict.update({'id':existing_package_dict['id']})
+                updated_package = get_action('package_update_rest')(context, package_dict)
+                if counts:
+                    counts['updated'] += 1
+            except NotFound:
+                # Package needs to be created
+                log.info('Package with name "%s" does not exist and will be created' % package_dict['name'])
+                new_package = get_action('package_create_rest')(context, package_dict)
+                if counts:
+                    counts['added'] += 1
+
+        except ValidationError,e:
+            raise ValueError(str(e))
 
 
 
