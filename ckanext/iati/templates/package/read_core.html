@@ -37,7 +37,7 @@
 
     <py:choose test="">
       <table py:when="c.pkg.resources" width="100%">
-        <tr><th>URL</th><th>Format</th><th>Preview</th></tr>
+        <tr><th>URL</th><th>Format</th><th py:if="config.get('iati.preview_service','')">Preview</th></tr>
         <py:for each="res in c.pkg.resources">
           <tr>
             <td><a href="${res.url}" target="_blank">Download</a></td>
