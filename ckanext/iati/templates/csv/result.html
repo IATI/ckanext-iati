@@ -1,0 +1,42 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  py:strip="">
+    <py:def function="page_title">CSV Import Results</py:def>
+    <div py:match="content">
+
+        <h2 class="head">CSV Import Results</h2>
+
+        <div>CSV file <strong>${c.file_name}</strong> imported.</div>
+        <hr class="cleared" />
+        <h3>Summary</h3>
+        <ul>
+            <li><a href="#added">Datasets created: ${len(c.added)}</a></li>
+            <li><a href="#updated">Datasets updated: ${len(c.updated)}</a></li>
+            <li><a href="#errors">Errors found: ${len(c.errors)}</a></li>
+        </ul>
+        <h3><a name="added">Datasets added</a></h3>
+        <ul>
+        <py:for each="pkg in c.added">
+            <li><a href="${h.url_for(controller='package', action='read', id=pkg)}">${g.site_url}${h.url_for(controller='package', action='read', id=pkg)}</a></li>
+        </py:for>
+        </ul>
+
+        <h3><a name="updated">Datasets updated</a></h3>
+        <ul>
+        <py:for each="pkg in c.updated">
+            <li><a href="${h.url_for(controller='package', action='read', id=pkg)}">${g.site_url}${h.url_for(controller='package', action='read', id=pkg)}</a></li>
+        </py:for>
+        </ul>
+
+        <h3><a name="errors">Errors found</a></h3>
+        <ul>
+        <py:for each="error in c.errors">
+            <li>${error}</li>
+        </py:for>
+        </ul>
+
+        </div>
+
+    <xi:include href="../layout.html" />
+</html>

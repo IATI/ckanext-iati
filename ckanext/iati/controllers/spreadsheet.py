@@ -31,7 +31,7 @@ class CSVController(BaseController):
             ('verification-status','extras', 'verified'),
             ('default-language','extras', 'language')
             ]
-    
+
     def __before__(self, action, **params):
         super(CSVController,self).__before__(action, **params)
 
@@ -46,7 +46,7 @@ class CSVController(BaseController):
     def download(self,publisher=None):
 
         context = {'model':model,'user': c.user or c.author}
-        
+
         if publisher and publisher != 'all':
             try:
                 group = get_action('group_show')(context, {'id':publisher})
@@ -95,13 +95,16 @@ class CSVController(BaseController):
             return render('csv/upload.html')
         elif request.method == 'POST':
             csv_file = request.POST['file']
-            
+            c.file_name = csv_file.filename
+
             added, updated, errors = self.read_csv_file(csv_file)
             c.added = added
             c.updated = updated
             c.errors = errors
-            return 'Packages added: %i, Packages updated: %i, Errors: %s'  % \
-                (added,updated,', '.join(errors))
+
+            return render('csv/result.html')
+            return 'Packages added: %s<br/> Packages updated: %s<br/> Errors: %s<br/>'  % \
+                ('<br/> '.join(added),'<br/> '.join(updated),'<br/> '.join(errors))
 
     def write_csv_file(self,publisher):
         context = {'model':model,'user': c.user or c.author}
@@ -157,16 +160,16 @@ class CSVController(BaseController):
         #TODO: separator
         reader = csv.DictReader(csv_file.file)
 
-        counts = {'added': 0, 'updated': 0}
+        counts = {'added': [], 'updated': []}
         errors = []
         for i,row in enumerate(reader):
             try:
                 # Check mandatory fields
                 if not row['registry-publisher-id']:
                      raise ValueError('Publisher not defined')
-                
+
                 # TODO: Check permissions on group
-                     
+
                 if not row['registry-file-id']:
                     raise ValueError('File id not defined')
                 # TODO: Check name convention
@@ -221,13 +224,13 @@ class CSVController(BaseController):
                 package_dict.update({'id':existing_package_dict['id']})
                 updated_package = get_action('package_update_rest')(context, package_dict)
                 if counts:
-                    counts['updated'] += 1
+                    counts['updated'].append(updated_package['name'])
             except NotFound:
                 # Package needs to be created
                 log.info('Package with name "%s" does not exist and will be created' % package_dict['name'])
                 new_package = get_action('package_create_rest')(context, package_dict)
                 if counts:
-                    counts['added'] += 1
+                    counts['added'].append(new_package['name'])
 
         except ValidationError,e:
             raise ValueError(str(e))
