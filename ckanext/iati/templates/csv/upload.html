@@ -1,0 +1,27 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  py:strip="">
+    <py:def function="page_title">CSV Import</py:def>
+    <div py:match="content">
+
+        <h2 class="head">CSV Import</h2>
+
+        <div>Please provide a CSV file.</div>
+        <div>Template?</div>
+        <hr class="cleared" />
+        <form id="csv-upload" action="/csv/upload" method="POST" enctype="multipart/form-data">
+        <dl>
+            <dt><label for="file">CSV file</label></dt>
+            <dd><input type="file" id="file" name="file"/></dd>
+        </dl>
+        <div class="submit">
+            <input id="upload" name="upload" type="submit" value="Upload" />
+        </div>
+
+        </form>
+
+    </div>
+
+    <xi:include href="../layout.html" />
+</html>
