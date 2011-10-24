@@ -106,7 +106,7 @@ class CSVController(BaseController):
             c.updated = updated
             c.errors = errors
 
-            log.info('CSV export finished: file %s, %i added, %i updated, %i errors' % \
+            log.info('CSV import finished: file %s, %i added, %i updated, %i errors' % \
                     (c.file_name,len(c.added),len(c.updated),len(c.errors)))
 
             return render('csv/result.html')
@@ -161,9 +161,14 @@ class CSVController(BaseController):
 
     def read_csv_file(self,csv_file):
         fieldnames = [n[0] for n in self.csv_mapping]
-        #reader = csv.DictReader(csv_file.file,fieldnames=fieldnames)
-        #TODO: separator
-        reader = csv.DictReader(csv_file.file)
+
+        # Try to sniff the file dialect
+        dialect = csv.Sniffer().sniff(csv_file.file.read(1024))
+        csv_file.file.seek(0)
+        reader = csv.DictReader(csv_file.file, dialect=dialect)
+
+        log.debug('Starting reading file %s (delimiter "%s", escapechar "%s")' %
+                    (csv_file.filename,dialect.delimiter,dialect.escapechar))
 
         context = {'model':model,'user': c.user or c.author, 'api_verion':'1'}
         groups= get_action('group_list')(context, {})
