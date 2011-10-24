@@ -189,7 +189,7 @@ class CSVController(BaseController):
                 parts = name.split('-')
                 group_name = parts[0] if len(parts) == 2 else '-'.join(parts[:-1])
                 if not group_name or not group_name in groups:
-                    raise ValueError('Dataset name does not follow the convention <publisher>-<code>: "%s"' % group_name)
+                    raise ValueError('Dataset name does not follow the convention <publisher>-<code>: "%s"' % name)
 
                 package_dict = self.get_package_dict_from_row(row)
                 self.create_or_update_package(package_dict,counts)
