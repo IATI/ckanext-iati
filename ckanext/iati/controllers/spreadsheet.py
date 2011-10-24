@@ -102,9 +102,10 @@ class CSVController(BaseController):
             c.updated = updated
             c.errors = errors
 
+            log.info('CSV export finished: file %s, %i added, %i updated, %i errors' % \
+                    (c.file_name,len(c.added),len(c.updated),len(c.errors)))
+
             return render('csv/result.html')
-            return 'Packages added: %s<br/> Packages updated: %s<br/> Errors: %s<br/>'  % \
-                ('<br/> '.join(added),'<br/> '.join(updated),'<br/> '.join(errors))
 
     def write_csv_file(self,publisher):
         context = {'model':model,'user': c.user or c.author}
@@ -160,6 +161,9 @@ class CSVController(BaseController):
         #TODO: separator
         reader = csv.DictReader(csv_file.file)
 
+        context = {'model':model,'user': c.user or c.author, 'api_verion':'1'}
+        groups= get_action('group_list')(context, {})
+
         counts = {'added': [], 'updated': []}
         errors = []
         for i,row in enumerate(reader):
@@ -170,14 +174,24 @@ class CSVController(BaseController):
 
                 if not row['registry-file-id']:
                     raise ValueError('File id not defined')
-                # TODO: Check name convention
+
+                # Check name convention
+                name = row['registry-file-id']
+                parts = name.split('-')
+                group_name = parts[0] if len(parts) == 2 else '-'.join(parts[:-1])
+                if not group_name or not group_name in groups:
+                    raise ValueError('Dataset name does not follow the convention <publisher>-<code>: "%s"' % group_name)
 
                 package_dict = self.get_package_dict_from_row(row)
                 self.create_or_update_package(package_dict,counts)
             except ValueError,e:
-                errors.append('Error in row %i: %s' % (i+1,str(e)))
+                msg = 'Error in row %i: %s' % (i+1,str(e))
+                log.error(msg)
+                errors.append(msg)
             except NotAuthorized,e:
-                errors.append('Error in row %i: Not authorized to publish to this group (%s)' % (i+1,row['registry-publisher-id']))
+                msg = 'Error in row %i: Not authorized to publish to this group: %s' % (i+1,row['registry-publisher-id'])
+                log.error(msg)
+                errors.append(msg)
 
         return counts['added'], counts['updated'], errors
 
@@ -216,21 +230,23 @@ class CSVController(BaseController):
             data_dict['id'] = package_dict['name']
             try:
                 existing_package_dict = get_action('package_show')(context, data_dict)
-                # Update package
 
+                # Update package
                 log.info('Package with name "%s" exists and will be updated' % package_dict['name'])
+
                 context.update({'id':existing_package_dict['id']})
                 package_dict.update({'id':existing_package_dict['id']})
                 updated_package = get_action('package_update_rest')(context, package_dict)
                 if counts:
                     counts['updated'].append(updated_package['name'])
+                log.debug('Package with name "%s" updated' % package_dict['name'])
             except NotFound:
                 # Package needs to be created
                 log.info('Package with name "%s" does not exist and will be created' % package_dict['name'])
                 new_package = get_action('package_create_rest')(context, package_dict)
                 if counts:
                     counts['added'].append(new_package['name'])
-
+                log.debug('Package with name "%s" created' % package_dict['name'])
         except ValidationError,e:
             raise ValueError(str(e))
 
