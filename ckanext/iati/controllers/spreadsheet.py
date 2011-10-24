@@ -91,6 +91,10 @@ class CSVController(BaseController):
         return output
 
     def upload(self):
+        if not self.is_sysadmin and not self.authz_groups:
+            # User does not have permissions on any publisher
+            abort(403,'Permission denied')
+
         if request.method == 'GET':
             return render('csv/upload.html')
         elif request.method == 'POST':
