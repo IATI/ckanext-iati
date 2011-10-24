@@ -87,7 +87,7 @@ class CSVController(BaseController):
 
         file_name = publisher if publisher else self.authz_groups[0]
         response.headers['Content-type'] = 'text/csv'
-        response.headers['Content-disposition'] = 'attachment;filename=%s.csv' % file_name
+        response.headers['Content-disposition'] = 'attachment;filename=%s.csv' % str(file_name)
         return output
 
     def upload(self):
