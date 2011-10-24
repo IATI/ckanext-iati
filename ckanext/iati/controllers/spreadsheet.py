@@ -168,8 +168,6 @@ class CSVController(BaseController):
                 if not row['registry-publisher-id']:
                      raise ValueError('Publisher not defined')
 
-                # TODO: Check permissions on group
-
                 if not row['registry-file-id']:
                     raise ValueError('File id not defined')
                 # TODO: Check name convention
@@ -186,20 +184,21 @@ class CSVController(BaseController):
     def get_package_dict_from_row(self,row):
         package = {}
         for fieldname, entity, key in self.csv_mapping:
-            value = row[fieldname]
-            if value:
-                if entity == 'groups':
-                    package['groups'] = [value]
-                elif entity == 'resources':
-                    if not 'resources' in package:
-                       package['resources'] = [{}]
-                    package['resources'][0][key] = value
-                elif entity == 'extras':
-                    if not 'extras' in package:
-                       package['extras'] = {}
-                    package['extras'][key] = value
-                else:
-                    package[key] = value
+            if fieldname in row:
+                value = row[fieldname]
+                if value:
+                    if entity == 'groups':
+                        package['groups'] = [value]
+                    elif entity == 'resources':
+                        if not 'resources' in package:
+                           package['resources'] = [{}]
+                        package['resources'][0][key] = value
+                    elif entity == 'extras':
+                        if not 'extras' in package:
+                           package['extras'] = {}
+                        package['extras'][key] = value
+                    else:
+                        package[key] = value
         return package
 
     def create_or_update_package(self, package_dict, counts = None):
