@@ -53,6 +53,11 @@ class IatiForms(SingletonPlugin):
         map.connect('/csv/upload', controller=csv_controller, action='upload',
                     conditions=dict(method=['POST']))
 
+
+        # Redirects needed after updating the datasets name for some of the publishers
+        map.redirect('/dataset/wb-{code}','/dataset/worldbank-{code}',_redirect_code='301 Moved Permanently')
+        map.redirect('/dataset/minbuza_{code}','/dataset/minbuza_nl-{code}',_redirect_code='301 Moved Permanently')
+
         return map
 
     def after_map(self, map):

@@ -5,6 +5,7 @@ from ckan import model
 from ckan.controllers.package import PackageController
 from ckan.authz import Authorizer
 
+from ckan.logic import get_action
 from ckan.logic.schema import package_form_schema
 from ckan.lib.navl.validators import (ignore_missing,
                                       not_empty,
@@ -12,6 +13,7 @@ from ckan.lib.navl.validators import (ignore_missing,
                                       ignore,
                                       keep_extras,
                                      )
+from ckan.lib.navl.dictization_functions import unflatten
 from ckan.logic.converters import convert_from_extras, convert_to_extras, date_to_db, date_to_form
 from ckan.lib.navl.dictization_functions import Missing, Invalid
 from ckan.lib.field_types import DateType, DateConvertError
@@ -45,6 +47,8 @@ class PackageIatiController(PackageController):
             'verified': [checkbox_value, convert_to_extras,ignore_missing],
             'language': [convert_to_extras, ignore_missing],
         })
+
+        schema['name'].append(iati_dataset_name)
 
         return schema
 
@@ -86,7 +90,7 @@ class PackageIatiController(PackageController):
             url = url.replace('<NAME>', pkgname)
         else:
             url = h.url_for(controller='package', action='read', id=pkgname)
-        redirect(url)        
+        redirect(url)
 
     # End hooks
 
@@ -104,11 +108,11 @@ class PackageIatiController(PackageController):
 
 
 def convert_to_comma_list(value, context):
-     
+
     return ', '.join(json.loads(value))
 
 def convert_from_comma_list(value, context):
-     
+
     return [x.strip() for x in value.split(',') if len(x)]
 
 def checkbox_value(value,context):
@@ -123,4 +127,22 @@ def integer(value,context):
         except ValueError,e:
             raise Invalid(str(e))
         return value
+
+def iati_dataset_name(key,data,errors,context):
+
+    unflattened = unflatten(data)
+    value = data[key]
+    for grp in unflattened['groups']:
+        if grp['id']:
+            group_id = grp['id']
+            break
+    group = get_action('group_show')(context,{'id':group_id})
+    group_name = group['name']
+
+    parts = value.split('-')
+    code_part = parts[-1]
+    group_part = parts[0] if len(parts) == 2 else '-'.join(parts[:-1])
+    if not code_part or not group_part or not group_part == group_name:
+        errors[key].append('Dataset name does not follow the convention <publisher>-<code>: "%s" (using publisher %s)' % (value,group_name))
+
 
