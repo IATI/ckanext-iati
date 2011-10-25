@@ -57,7 +57,7 @@ class IatiForms(SingletonPlugin):
         # Redirects needed after updating the datasets name for some of the publishers
         map.redirect('/dataset/wb-{code}','/dataset/worldbank-{code}',_redirect_code='301 Moved Permanently')
         map.redirect('/dataset/minbuza_activities','/dataset/minbuza_nl-activities',_redirect_code='301 Moved Permanently')
-        map.redirect('/dataset/minbuza_organization','/dataset/minbuza_nl-organisation',_redirect_code='301 Moved Permanently')
+        map.redirect('/dataset/minbuza_organisation','/dataset/minbuza_nl-organisation',_redirect_code='301 Moved Permanently')
 
         return map
 
