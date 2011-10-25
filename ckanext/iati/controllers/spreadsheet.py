@@ -133,8 +133,11 @@ class CSVController(BaseController):
 
             packages.sort()
             for pkg in packages:
-
-                package = get_action('package_show_rest')(context,{'id':pkg})
+                try:
+                    package = get_action('package_show_rest')(context,{'id':pkg})
+                except NotAuthorized:
+                    log.warn('User %s not authorized to read package %s' % (c.user, pkg))
+                    continue
                 if package:
                     row = {}
                     for fieldname, entity, key in self.csv_mapping:
