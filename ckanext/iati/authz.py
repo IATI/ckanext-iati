@@ -74,8 +74,9 @@ class IatiGroupAuthzExtension(SingletonPlugin):
                 IatiPackageAuthzExtension._sync_authz_groups(package)
     
     def create(self, group):
-        model.clear_user_roles(group)
-        model.setup_default_user_roles(group, [])
+        #Commenting out as it conflicts with 888ed50c098d 
+        #model.clear_user_roles(group)
+        #model.setup_default_user_roles(group, [])
         _get_group_authz_group(group)  
         self._sync_packages(group)
     
