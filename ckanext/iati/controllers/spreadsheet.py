@@ -211,20 +211,23 @@ class CSVController(BaseController):
         package = {}
         for fieldname, entity, key in self.csv_mapping:
             if fieldname in row:
+                # If value is None (empty cell), property will be set to blank
                 value = row[fieldname]
-                if value:
-                    if entity == 'groups':
-                        package['groups'] = [value]
-                    elif entity == 'resources':
-                        if not 'resources' in package:
-                           package['resources'] = [{}]
-                        package['resources'][0][key] = value
-                    elif entity == 'extras':
-                        if not 'extras' in package:
-                           package['extras'] = {}
-                        package['extras'][key] = value
-                    else:
-                        package[key] = value
+                if entity == 'groups':
+                    if not value:
+                        # This has already been checked
+                        raise ValueError('Publisher not defined')
+                    package['groups'] = [value]
+                elif entity == 'resources':
+                    if not 'resources' in package:
+                       package['resources'] = [{}]
+                    package['resources'][0][key] = value
+                elif entity == 'extras':
+                    if not 'extras' in package:
+                       package['extras'] = {}
+                    package['extras'][key] = value
+                else:
+                    package[key] = value
         return package
 
     def create_or_update_package(self, package_dict, counts = None):
