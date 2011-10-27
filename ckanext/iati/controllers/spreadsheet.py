@@ -7,30 +7,37 @@ from ckan.lib.base import c, request, response, config, h, redirect, render, abo
 from ckan.lib.helpers import json
 from ckan.authz import Authorizer
 from ckan.logic import get_action, NotFound, ValidationError, NotAuthorized
+from ckan.logic.converters import date_to_db
+from ckan.logic.validators import int_validator
+from ckan.lib.navl.validators import not_empty
+from ckan.lib.navl.dictization_functions import validate
 from ckanext.iati.authz import get_user_administered_groups
+
+from ckanext.iati.logic.validators import iati_dataset_name_from_csv, file_type_validator
+from ckanext.iati.logic.converters import iso_date
 
 log = logging.getLogger(__name__)
 
+CSV_MAPPING = [
+        ('registry-publisher-id', 'groups', 'name', [not_empty]),
+        ('registry-file-id', 'package', 'name', [not_empty, iati_dataset_name_from_csv]),
+        ('title', 'package', 'title', []),
+        ('contact-email', 'package', 'author_email', []),
+        ('source-url', 'resources', 'url', []),
+        ('format', 'resources', 'format', []),
+        ('file-type','extras', 'filetype', [file_type_validator]),
+        ('recipient-country','extras', 'country', []),
+        ('activity-period-start','extras', 'activity_period-from', [iso_date]),
+        ('activity-period-end','extras', 'activity_period-to', [iso_date]),
+        ('last-updated-datetime','extras', 'data_updated', [iso_date]),
+        ('generated-datetime','extras', 'record_updated', [iso_date]),
+        ('activity-count','extras', 'activity_count', [int_validator]),
+        ('verification-status','extras', 'verified', []),
+        ('default-language','extras', 'language', [])
+        ]
 
 class CSVController(BaseController):
 
-    csv_mapping = [
-            ('registry-publisher-id', 'groups', 'name'),
-            ('registry-file-id', 'package', 'name'),
-            ('title', 'package', 'title'),
-            ('contact-email', 'package', 'author_email'),
-            ('source-url', 'resources', 'url'),
-            ('format', 'resources', 'format'),
-            ('file-type','extras', 'filetype'),
-            ('recipient-country','extras', 'country'),
-            ('activity-period-start','extras', 'activity_period-from'),
-            ('activity-period-end','extras', 'activity_period-to'),
-            ('last-updated-datetime','extras', 'data_updated'),
-            ('generated-datetime','extras', 'record_updated'),
-            ('activity-count','extras', 'activity_count'),
-            ('verification-status','extras', 'verified'),
-            ('default-language','extras', 'language')
-            ]
 
     def __before__(self, action, **params):
         super(CSVController,self).__before__(action, **params)
@@ -104,6 +111,7 @@ class CSVController(BaseController):
             added, updated, errors = self.read_csv_file(csv_file)
             c.added = added
             c.updated = updated
+
             c.errors = errors
 
             log.info('CSV import finished: file %s, %i added, %i updated, %i errors' % \
@@ -126,9 +134,9 @@ class CSVController(BaseController):
 
         output = ''
         try:
-            fieldnames = [n[0] for n in self.csv_mapping]
+            fieldnames = [f[0] for n in CSV_MAPPING]
             writer = csv.DictWriter(f, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
-            headers = dict( (n[0],n[0]) for n in self.csv_mapping )
+            headers = dict( (f[0],f[0]) for n in CSV_MAPPING )
             writer.writerow(headers)
 
             packages.sort()
@@ -140,7 +148,7 @@ class CSVController(BaseController):
                     continue
                 if package:
                     row = {}
-                    for fieldname, entity, key in self.csv_mapping:
+                    for fieldname, entity, key in CSV_MAPPING:
                         value = None
                         if entity == 'groups':
                             if len(package['groups']):
@@ -163,7 +171,7 @@ class CSVController(BaseController):
         return output
 
     def read_csv_file(self,csv_file):
-        fieldnames = [n[0] for n in self.csv_mapping]
+        fieldnames = [f[0] for f in CSV_MAPPING]
 
         # Try to sniff the file dialect
         dialect = csv.Sniffer().sniff(csv_file.file.read(1024))
@@ -177,46 +185,46 @@ class CSVController(BaseController):
         groups= get_action('group_list')(context, {})
 
         counts = {'added': [], 'updated': []}
-        errors = []
+        errors = {}
         for i,row in enumerate(reader):
+            row_index = str(i + 1)
+            errors[row_index] = {}
             try:
-                # Check mandatory fields
-                if not row['registry-publisher-id']:
-                     raise ValueError('Publisher not defined')
-
-                if not row['registry-file-id']:
-                    raise ValueError('File id not defined')
-
-                # Check name convention
-                name = row['registry-file-id']
-                parts = name.split('-')
-                group_name = parts[0] if len(parts) == 2 else '-'.join(parts[:-1])
-                if not group_name or not group_name in groups:
-                    raise ValueError('Dataset name does not follow the convention <publisher>-<code>: "%s"' % name)
+                # We will now run the IATI specific validation, CKAN core will
+                # run the default one later on
+                schema = dict([(f[0],f[3]) for f in CSV_MAPPING])
+                row, row_errors = validate(row,schema)
+                if row_errors:
+                    for key, msgs in row_errors.iteritems():
+                        log.error('Error in row %i: %s: %s' % (i+1,key,str(msgs)))
+                        errors[row_index][key] = msgs
+                    continue
 
                 package_dict = self.get_package_dict_from_row(row)
                 self.create_or_update_package(package_dict,counts)
-            except ValueError,e:
-                msg = 'Error in row %i: %s' % (i+1,str(e))
-                log.error(msg)
-                errors.append(msg)
-            except NotAuthorized,e:
-                msg = 'Error in row %i: Not authorized to publish to this group: %s' % (i+1,row['registry-publisher-id'])
-                log.error(msg)
-                errors.append(msg)
 
+                del errors[row_index]
+            except ValidationError,e:
+                iati_keys = dict([(f[2],f[0]) for f in CSV_MAPPING])
+                for key, msgs in e.error_dict.iteritems():
+                    iati_key = iati_keys[key]
+                    log.error('Error in row %i: %s: %s' % (i+1,iati_key,str(msgs)))
+                    errors[row_index][iati_key] = msgs
+            except NotAuthorized,e:
+                msg = 'Not authorized to publish to this group: %s' % row['registry-publisher-id']
+                log.error('Error in row %i: %s' % msg)
+                errors[row_index]['registry-publisher-id'] = [msg]
+
+        errors = sorted(errors.iteritems())
         return counts['added'], counts['updated'], errors
 
     def get_package_dict_from_row(self,row):
         package = {}
-        for fieldname, entity, key in self.csv_mapping:
+        for fieldname, entity, key, v in CSV_MAPPING:
             if fieldname in row:
                 # If value is None (empty cell), property will be set to blank
                 value = row[fieldname]
                 if entity == 'groups':
-                    if not value:
-                        # This has already been checked
-                        raise ValueError('Publisher not defined')
                     package['groups'] = [value]
                 elif entity == 'resources':
                     if not 'resources' in package:
@@ -231,40 +239,34 @@ class CSVController(BaseController):
         return package
 
     def create_or_update_package(self, package_dict, counts = None):
+
+        context = {
+            'model': model,
+            'session': model.Session,
+            'user': c.user,
+            'api_version':'1'
+        }
+
+        # Check if package exists
+        data_dict = {}
+        data_dict['id'] = package_dict['name']
         try:
+            existing_package_dict = get_action('package_show')(context, data_dict)
 
-            context = {
-                'model': model,
-                'session': model.Session,
-                'user': c.user,
-                'api_version':'1'
-            }
+            # Update package
+            log.info('Package with name "%s" exists and will be updated' % package_dict['name'])
 
-            # Check if package exists
-            data_dict = {}
-            data_dict['id'] = package_dict['name']
-            try:
-                existing_package_dict = get_action('package_show')(context, data_dict)
-
-                # Update package
-                log.info('Package with name "%s" exists and will be updated' % package_dict['name'])
-
-                context.update({'id':existing_package_dict['id']})
-                package_dict.update({'id':existing_package_dict['id']})
-                updated_package = get_action('package_update_rest')(context, package_dict)
-                if counts:
-                    counts['updated'].append(updated_package['name'])
-                log.debug('Package with name "%s" updated' % package_dict['name'])
-            except NotFound:
-                # Package needs to be created
-                log.info('Package with name "%s" does not exist and will be created' % package_dict['name'])
-                new_package = get_action('package_create_rest')(context, package_dict)
-                if counts:
-                    counts['added'].append(new_package['name'])
-                log.debug('Package with name "%s" created' % package_dict['name'])
-        except ValidationError,e:
-            raise ValueError(str(e))
-
-
-
+            context.update({'id':existing_package_dict['id']})
+            package_dict.update({'id':existing_package_dict['id']})
+            updated_package = get_action('package_update_rest')(context, package_dict)
+            if counts:
+                counts['updated'].append(updated_package['name'])
+            log.debug('Package with name "%s" updated' % package_dict['name'])
+        except NotFound:
+            # Package needs to be created
+            log.info('Package with name "%s" does not exist and will be created' % package_dict['name'])
+            new_package = get_action('package_create_rest')(context, package_dict)
+            if counts:
+                counts['added'].append(new_package['name'])
+            log.debug('Package with name "%s" created' % package_dict['name'])
 

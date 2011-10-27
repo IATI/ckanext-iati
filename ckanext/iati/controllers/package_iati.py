@@ -13,12 +13,12 @@ from ckan.lib.navl.validators import (ignore_missing,
                                       ignore,
                                       keep_extras,
                                      )
-from ckan.lib.navl.dictization_functions import unflatten
+from ckan.logic.validators import int_validator
 from ckan.logic.converters import convert_from_extras, convert_to_extras, date_to_db, date_to_form
-from ckan.lib.navl.dictization_functions import Missing, Invalid
-from ckan.lib.field_types import DateType, DateConvertError
 
 from ckanext.iati.lists import COUNTRIES
+from ckanext.iati.logic.validators import iati_dataset_name
+from ckanext.iati.logic.converters import convert_from_comma_list, convert_to_comma_list, checkbox_value
 
 class PackageIatiController(PackageController):
 
@@ -42,7 +42,7 @@ class PackageIatiController(PackageController):
             'data_updated': [date_to_db, convert_to_extras,ignore_missing],
             'activity_period-from': [date_to_db, convert_to_extras,ignore_missing],
             'activity_period-to': [date_to_db, convert_to_extras,ignore_missing],
-            'activity_count': [integer,convert_to_extras,ignore_missing],
+            'activity_count': [int_validator,convert_to_extras,ignore_missing],
             'archive_file': [checkbox_value, convert_to_extras,ignore_missing],
             'verified': [checkbox_value, convert_to_extras,ignore_missing],
             'language': [convert_to_extras, ignore_missing],
@@ -105,44 +105,5 @@ class PackageIatiController(PackageController):
                 groups = groups - set(package.groups)
 
         return [{'id':group.id,'name':group.name, 'title':group.title} for group in groups if group.state==model.State.ACTIVE]
-
-
-def convert_to_comma_list(value, context):
-
-    return ', '.join(json.loads(value))
-
-def convert_from_comma_list(value, context):
-
-    return [x.strip() for x in value.split(',') if len(x)]
-
-def checkbox_value(value,context):
-
-    return 'yes' if not isinstance(value, Missing) else 'no'
-
-def integer(value,context):
-
-    if not value == '':
-        try:
-            value = int(value)
-        except ValueError,e:
-            raise Invalid(str(e))
-        return value
-
-def iati_dataset_name(key,data,errors,context):
-
-    unflattened = unflatten(data)
-    value = data[key]
-    for grp in unflattened['groups']:
-        if grp['id']:
-            group_id = grp['id']
-            break
-    group = get_action('group_show')(context,{'id':group_id})
-    group_name = group['name']
-
-    parts = value.split('-')
-    code_part = parts[-1]
-    group_part = parts[0] if len(parts) == 2 else '-'.join(parts[:-1])
-    if not code_part or not group_part or not group_part == group_name:
-        errors[key].append('Dataset name does not follow the convention <publisher>-<code>: "%s" (using publisher %s)' % (value,group_name))
 
 
