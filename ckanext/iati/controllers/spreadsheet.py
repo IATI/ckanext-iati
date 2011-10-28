@@ -215,7 +215,7 @@ class CSVController(BaseController):
                     errors[row_index][iati_key] = msgs
             except NotAuthorized,e:
                 msg = 'Not authorized to publish to this group: %s' % row['registry-publisher-id']
-                log.error('Error in row %i: %s' % msg)
+                log.error('Error in row %i: %s' % (i+1,msg))
                 errors[row_index]['registry-publisher-id'] = [msg]
 
         errors = sorted(errors.iteritems())
