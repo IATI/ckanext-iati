@@ -1,7 +1,8 @@
 from ckan.logic import get_action
-from ckan.lib.navl.dictization_functions import unflatten
+from ckan.lib.navl.dictization_functions import unflatten, Invalid
+from ckan.lib.field_types import DateType, DateConvertError
 
-from ckanext.iati.lists import FILE_TYPES
+from ckanext.iati.lists import FILE_TYPES, COUNTRIES
 
 def iati_dataset_name(key,data,errors,context):
 
@@ -40,8 +41,37 @@ def iati_dataset_name_from_csv(key,data,errors,context):
 def file_type_validator(key,data,errors, context=None):
     value = data.get(key)
 
-    allowed_values = [t[0] for t in FILE_TYPES] 
-    if not value or not value in allowed_values:
+    allowed_values = [t[0] for t in FILE_TYPES]
+    if not value in allowed_values:
         errors[key].append('File type must be one of [%s]' % ', '.join(allowed_values))
 
+def db_date(value, context):
+    try:
+        timedate_dict = DateType.parse_timedate(value, 'db')
+    except DateConvertError, e:
+        # Cannot parse
+        raise Invalid(str(e))
+    try:
+        value = DateType.format(timedate_dict, 'db')
+    except DateConvertError, e:
+        # Values out of range
+        raise Invalid(str(e))
+
+    return value
+
+def yes_no(value,context):
+
+    value = value.lower()
+    if not value in ['yes','no']:
+        raise Invalid('Value must be one of [yes, no]')
+
+    return value
+
+def country_code(value,context):
+
+    value = value.upper()
+    if not value in [c[0] for c in COUNTRIES]:
+        raise Invalid('Unknown country code "%s"' % value)
+
+    return value
 

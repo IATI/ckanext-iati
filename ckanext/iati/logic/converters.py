@@ -12,11 +12,3 @@ def checkbox_value(value,context):
 
     return 'yes' if not isinstance(value, Missing) else 'no'
 
-def iso_date(value,context):
-    from ckan.lib.field_types import DateType, DateConvertError
-    try:
-        value = DateType.iso_to_db(value)
-    except DateConvertError, e:
-        raise Invalid(str(e))
-    return value
-

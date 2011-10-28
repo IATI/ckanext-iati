@@ -9,12 +9,15 @@ from ckan.authz import Authorizer
 from ckan.logic import get_action, NotFound, ValidationError, NotAuthorized
 from ckan.logic.converters import date_to_db
 from ckan.logic.validators import int_validator
-from ckan.lib.navl.validators import not_empty
+from ckan.lib.navl.validators import not_empty, ignore_empty
 from ckan.lib.navl.dictization_functions import validate
 from ckanext.iati.authz import get_user_administered_groups
 
-from ckanext.iati.logic.validators import iati_dataset_name_from_csv, file_type_validator
-from ckanext.iati.logic.converters import iso_date
+from ckanext.iati.logic.validators import (iati_dataset_name_from_csv, 
+                                           file_type_validator,
+                                           db_date,
+                                           yes_no,
+                                           country_code)
 
 log = logging.getLogger(__name__)
 
@@ -25,14 +28,14 @@ CSV_MAPPING = [
         ('contact-email', 'package', 'author_email', []),
         ('source-url', 'resources', 'url', []),
         ('format', 'resources', 'format', []),
-        ('file-type','extras', 'filetype', [file_type_validator]),
-        ('recipient-country','extras', 'country', []),
-        ('activity-period-start','extras', 'activity_period-from', [iso_date]),
-        ('activity-period-end','extras', 'activity_period-to', [iso_date]),
-        ('last-updated-datetime','extras', 'data_updated', [iso_date]),
-        ('generated-datetime','extras', 'record_updated', [iso_date]),
-        ('activity-count','extras', 'activity_count', [int_validator]),
-        ('verification-status','extras', 'verified', []),
+        ('file-type','extras', 'filetype', [ignore_empty, file_type_validator]),
+        ('recipient-country','extras', 'country', [ignore_empty, country_code]),
+        ('activity-period-start','extras', 'activity_period-from', [ignore_empty, db_date]),
+        ('activity-period-end','extras', 'activity_period-to', [ignore_empty, db_date]),
+        ('last-updated-datetime','extras', 'data_updated', [ignore_empty, db_date]),
+        ('generated-datetime','extras', 'record_updated', [ignore_empty, db_date]),
+        ('activity-count','extras', 'activity_count', [ignore_empty,int_validator]),
+        ('verification-status','extras', 'verified', [ignore_empty,yes_no]),
         ('default-language','extras', 'language', [])
         ]
 
