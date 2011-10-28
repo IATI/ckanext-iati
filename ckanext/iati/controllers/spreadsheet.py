@@ -137,9 +137,9 @@ class CSVController(BaseController):
 
         output = ''
         try:
-            fieldnames = [f[0] for n in CSV_MAPPING]
+            fieldnames = [n[0] for n in CSV_MAPPING]
             writer = csv.DictWriter(f, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
-            headers = dict( (f[0],f[0]) for n in CSV_MAPPING )
+            headers = dict( (n[0],n[0]) for n in CSV_MAPPING )
             writer.writerow(headers)
 
             packages.sort()
@@ -151,7 +151,7 @@ class CSVController(BaseController):
                     continue
                 if package:
                     row = {}
-                    for fieldname, entity, key in CSV_MAPPING:
+                    for fieldname, entity, key, v in CSV_MAPPING:
                         value = None
                         if entity == 'groups':
                             if len(package['groups']):
