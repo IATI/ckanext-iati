@@ -9,7 +9,7 @@ from ckan.authz import Authorizer
 from ckan.logic import get_action, NotFound, ValidationError, NotAuthorized
 from ckan.logic.converters import date_to_db
 from ckan.logic.validators import int_validator
-from ckan.lib.navl.validators import not_empty, ignore_empty
+from ckan.lib.navl.validators import not_empty, ignore_empty, not_missing
 from ckan.lib.navl.dictization_functions import validate
 from ckanext.iati.authz import get_user_administered_groups
 
@@ -190,6 +190,11 @@ class CSVController(BaseController):
 
         log.debug('Starting reading file %s (delimiter "%s", escapechar "%s")' %
                     (csv_file.filename,dialect.delimiter,dialect.escapechar))
+
+        # Check if all columns are present
+        if not sorted(reader.fieldnames) == sorted(fieldnames):
+            error = {'file': 'Missing columns: %s' % ' ,'.join([f for f in fieldnames if f not in reader.fieldnames])}
+            return [], [], [('1',error)]
 
         context = {'model':model,'user': c.user or c.author, 'api_verion':'1'}
         groups= get_action('group_list')(context, {})
