@@ -57,7 +57,7 @@ class CSVController(BaseController):
 
         context = {'model':model,'user': c.user or c.author}
 
-        if publisher and publisher != 'all':
+        if publisher and publisher not in ['all','template']:
             try:
                 group = get_action('group_show')(context, {'id':publisher})
             except NotFound:
@@ -131,6 +131,9 @@ class CSVController(BaseController):
         try:
             if publisher == 'all':
                 packages = get_action('package_list')(context, {})
+            elif publisher == 'template':
+                # Just return an empty CSV file with just the headers
+                packages = []
             else:
                 group = get_action('group_show')(context, {'id':publisher})
                 packages = [pkg['id'] for pkg in group['packages']]
