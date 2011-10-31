@@ -109,6 +109,10 @@ class CSVController(BaseController):
             return render('csv/upload.html')
         elif request.method == 'POST':
             csv_file = request.POST['file']
+
+            if not csv_file:
+                abort(403,'No file provided')
+
             c.file_name = csv_file.filename
 
             added, updated, errors = self.read_csv_file(csv_file)
