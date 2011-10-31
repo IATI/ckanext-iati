@@ -110,7 +110,7 @@ class CSVController(BaseController):
         elif request.method == 'POST':
             csv_file = request.POST['file']
 
-            if not csv_file:
+            if not hasattr(csv_file,'filename'):
                 abort(403,'No file provided')
 
             c.file_name = csv_file.filename
