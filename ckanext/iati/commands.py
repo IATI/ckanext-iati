@@ -1,4 +1,5 @@
 import os
+import datetime
 from lxml import etree
 import requests
 import json
@@ -12,6 +13,7 @@ from ckanext.archiver import tasks
 import logging
 
 log = logging.getLogger(__name__)
+
 
 class Archiver(CkanCommand):
     '''
@@ -38,6 +40,8 @@ class Archiver(CkanCommand):
         if not self.args or self.args[0] in ['--help', '-h', 'help']:
             print Archiver.__doc__
             return
+
+        t1 = datetime.datetime.now()
 
         cmd = self.args[0]
         self._load_config()
@@ -148,7 +152,10 @@ class Archiver(CkanCommand):
                         updated_package = get_action('package_update_rest')(context,package)
                         log.info('Package %s updated with new extras' % package['name'])
                         updated = updated + 1
-            log.info('Done. Updated %i packages' % updated)
+
+            t2 = datetime.datetime.now()
+
+            log.info('Done. Updated %i packages. Total time: %s' % (updated,str(t2 - t1)))
         else:
             log.error('Command %s not recognized' % (cmd,))
 
