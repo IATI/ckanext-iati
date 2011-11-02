@@ -579,10 +579,13 @@ a, a:link {
 /*-------- Flash messages --------*/
 
 /*-------- Wordpress Specific --------*/
-
+/*
 .type-page 
-
-
 ul {
     list-style-type: none
 }
+*/
+.type-page ul {
+    list-style-type: circle
+}
+
