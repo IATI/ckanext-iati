@@ -111,7 +111,7 @@ class CSVController(BaseController):
             csv_file = request.POST['file']
 
             if not hasattr(csv_file,'filename'):
-                abort(403,'No file provided')
+                abort(400,'No CSV file provided')
 
             c.file_name = csv_file.filename
 
@@ -183,10 +183,15 @@ class CSVController(BaseController):
     def read_csv_file(self,csv_file):
         fieldnames = [f[0] for f in CSV_MAPPING]
 
-        # Try to sniff the file dialect
-        dialect = csv.Sniffer().sniff(csv_file.file.read(1024))
-        csv_file.file.seek(0)
-        reader = csv.DictReader(csv_file.file, dialect=dialect)
+        try:
+            # Try to sniff the file dialect
+            dialect = csv.Sniffer().sniff(csv_file.file.read(1024))
+            csv_file.file.seek(0)
+
+            reader = csv.DictReader(csv_file.file, dialect=dialect)
+        except csv.Error,e:
+            abort(400,'Error reading CSV file: %s' % str(e))
+
 
         log.debug('Starting reading file %s (delimiter "%s", escapechar "%s")' %
                     (csv_file.filename,dialect.delimiter,dialect.escapechar))
