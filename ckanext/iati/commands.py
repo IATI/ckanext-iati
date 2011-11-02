@@ -12,8 +12,7 @@ from ckan.lib.helpers import date_str_to_datetime
 from ckanext.archiver import tasks
 import logging
 
-log = logging.getLogger(__name__)
-
+log = logging.getLogger('iati_archiver')
 
 class Archiver(CkanCommand):
     '''
@@ -65,11 +64,11 @@ class Archiver(CkanCommand):
             data_formats = tasks.DATA_FORMATS
             data_formats.append('iati-xml')
 
+            log.info('IATI Archiver: starting  %s' % str(t1))
             log.info('Number of datasets to archive: %d' % len(packages))
             updated = 0
             for package_id in packages:
                 package = get_action('package_show_rest')(context,{'id': package_id})
-
 
                 is_activity_package = (package['extras']['filetype'] == 'activity') if 'filetype' in package['extras'] else 'activity'
 
@@ -89,10 +88,10 @@ class Archiver(CkanCommand):
                             # * But only the first time a file is downloaded!?
                             result = _download_resource(context,resource,data_formats=data_formats)
                         else:
-                            log.error('Invalid resource URL: %s' % str(e))
+                            log.error('Invalid resource URL for dataset %s: %s' % (package['name'],str(e)))
                             continue
-                    except tasks.DownloadError:
-                        log.error('Error downloading resource: %s' % str(e))
+                    except tasks.DownloadError,e:
+                        log.error('Error downloading resource for dataset %s: %s' % (package['name'],str(e)))
                         continue
 
                     if 'zip' in result['headers']['content-type']:
@@ -155,7 +154,7 @@ class Archiver(CkanCommand):
 
             t2 = datetime.datetime.now()
 
-            log.info('Done. Updated %i packages. Total time: %s' % (updated,str(t2 - t1)))
+            log.info('IATI Archiver: Done. Updated %i packages. Total time: %s' % (updated,str(t2 - t1)))
         else:
             log.error('Command %s not recognized' % (cmd,))
 
