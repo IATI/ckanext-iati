@@ -6,7 +6,7 @@
     <div py:match="content">
 
         <h2 class="head">CSV Import</h2>
-        <div>
+        <div class="listdiv">
         <ul>
             <li>IATI requires that you create a registry record for each file of IATI-xml data that you publish.</li>
             <li>You may use this import utility to register or update the metadata of these records</li>
@@ -31,12 +31,14 @@
             </form>
         </fieldset>
         <h3>Warning:</h3>
+        <div class="listdiv">
         <ul>
             <li>For publishers with a large number of datasets it may take a while to upload the CSV file. Please be patient.</li>
             <li>You may only upload records that contain your authorised registry-publisher-idi.</li>
             <li>This import will overwrite all fields in each record specified in the file. Blank cells in the file will overwrite existing data.</li>
             <li>This import will not delete records in the registry. To delete a record follow the instructions <a href="http://iatiregistry.org/help_delete">here</a>.</li>
         </ul>
+        </div>
     </div>
 
     <xi:include href="../layout.html" />
