@@ -35,6 +35,6 @@ setup(name='ckanextiati',
       
       [paste.paster_command]
       create-iati-fixtures = ckanext.iati.fixtures:CreateIatiFixtures
-      
+      iati-archiver=ckanext.iati.commands:Archiver
       """,
       )

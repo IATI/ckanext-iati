@@ -66,6 +66,12 @@ class PackageIatiController(PackageController):
             'verified': [convert_from_extras,ignore_missing],
             'language': [convert_from_extras, ignore_missing],
         })
+        # Remove isodate validator
+        schema['resources'].update({
+            'last_modified': [ignore_missing],
+            'cache_last_updated': [ignore_missing],
+            'webstore_last_updated': [ignore_missing]
+        })
 
         return schema
 
