@@ -23,13 +23,10 @@ copy of CKAN:
 1) Install the extension from its source repository (a Debian package 
 is not available at this time):
 
-(env)$ pip install -e hg+https://okfn@bitbucket.org/okfn/ckanext-solr#egg=ckanext-solr
 (env)$ pip install -e hg+https://okfn@bitbucket.org/okfn/ckanextiati#egg=ckanextiati
 
-(Solr is a requirement but also available in packaged form).
-
-You probably also want to install the ckanext-solr and
-ckanext-wordpresser packages.  See their respective documentation for
+You probably also want to install the ckanext-wordpresser and
+ckanext-archiver packages.  See their respective documentation for
 install notes.
 
 2) Copy or symlink the modified Solr schema.xml into the Solr core 
@@ -63,6 +60,10 @@ search.facets = groups groups_types extras_country extras_file_type
 
 (Don't forget to also add a 'solr_url').
 
+# User credentials used in the archiver
+iati.admin_user.name = <user_name>
+iati.admin_user.api_key = <api_key>
+ 
 
 Overall workflow for IATI
 =========================
@@ -123,3 +124,12 @@ level of reporting some entities (e.g. Hewlett) do.
 report data itself. 
 
 
+Archiver command
+================
+
+The extension includes a paster command that will download all IATI XML files
+(i.e. all resources), parse them and extract a couple of variables, which will
+be stored in extras. To run it you must install ckanext-archiver. To run the
+command, assuming you are on the ckanextiati directory::
+
+    paster iati-archiver update --config=../ckan/development.ini
