@@ -5,6 +5,7 @@ from ckan import model
 from ckan.controllers.package import PackageController
 from ckan.authz import Authorizer
 
+from ckan.logic import get_action
 from ckan.logic.schema import package_form_schema
 from ckan.lib.navl.validators import (ignore_missing,
                                       not_empty,
@@ -12,11 +13,12 @@ from ckan.lib.navl.validators import (ignore_missing,
                                       ignore,
                                       keep_extras,
                                      )
+from ckan.logic.validators import int_validator
 from ckan.logic.converters import convert_from_extras, convert_to_extras, date_to_db, date_to_form
-from ckan.lib.navl.dictization_functions import Missing, Invalid
-from ckan.lib.field_types import DateType, DateConvertError
 
 from ckanext.iati.lists import COUNTRIES
+from ckanext.iati.logic.validators import iati_dataset_name
+from ckanext.iati.logic.converters import convert_from_comma_list, convert_to_comma_list, checkbox_value
 
 class PackageIatiController(PackageController):
 
@@ -40,11 +42,13 @@ class PackageIatiController(PackageController):
             'data_updated': [date_to_db, convert_to_extras,ignore_missing],
             'activity_period-from': [date_to_db, convert_to_extras,ignore_missing],
             'activity_period-to': [date_to_db, convert_to_extras,ignore_missing],
-            'activity_count': [integer,convert_to_extras,ignore_missing],
+            'activity_count': [int_validator,convert_to_extras,ignore_missing],
             'archive_file': [checkbox_value, convert_to_extras,ignore_missing],
             'verified': [checkbox_value, convert_to_extras,ignore_missing],
             'language': [convert_to_extras, ignore_missing],
         })
+
+        schema['name'].append(iati_dataset_name)
 
         return schema
 
@@ -61,6 +65,12 @@ class PackageIatiController(PackageController):
             'archive_file': [convert_from_extras,ignore_missing],
             'verified': [convert_from_extras,ignore_missing],
             'language': [convert_from_extras, ignore_missing],
+        })
+        # Remove isodate validator
+        schema['resources'].update({
+            'last_modified': [ignore_missing],
+            'cache_last_updated': [ignore_missing],
+            'webstore_last_updated': [ignore_missing]
         })
 
         return schema
@@ -86,7 +96,7 @@ class PackageIatiController(PackageController):
             url = url.replace('<NAME>', pkgname)
         else:
             url = h.url_for(controller='package', action='read', id=pkgname)
-        redirect(url)        
+        redirect(url)
 
     # End hooks
 
@@ -102,25 +112,4 @@ class PackageIatiController(PackageController):
 
         return [{'id':group.id,'name':group.name, 'title':group.title} for group in groups if group.state==model.State.ACTIVE]
 
-
-def convert_to_comma_list(value, context):
-     
-    return ', '.join(json.loads(value))
-
-def convert_from_comma_list(value, context):
-     
-    return [x.strip() for x in value.split(',') if len(x)]
-
-def checkbox_value(value,context):
-
-    return 'yes' if not isinstance(value, Missing) else 'no'
-
-def integer(value,context):
-
-    if not value == '':
-        try:
-            value = int(value)
-        except ValueError,e:
-            raise Invalid(str(e))
-        return value
 
