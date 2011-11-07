@@ -45,8 +45,9 @@
         <dl>
         <py:for each="num, group in enumerate(data.get('groups', []))">
             <?python
-            authorized_group = [group_authz for group_authz in c.groups_authz if group_authz['id'] == group['id']]
-            authorized_group = authorized_group[0] if authorized_group else None
+            if 'id' in group:
+                authorized_group = [group_authz for group_authz in c.groups_authz if group_authz['id'] == group['id']]
+                authorized_group = authorized_group[0] if authorized_group else None
             ?>
 
             <dt py:if="'id' in group">

@@ -580,11 +580,12 @@ a, a:link {
 
 /*-------- Wordpress Specific --------*/
 
-.type-page 
-
-
-ul {
+.type-page ul {
     list-style-type: none
+}
+
+.listdiv ul {
+    list-style-type: circle
 }
 
 .entry-content ol {

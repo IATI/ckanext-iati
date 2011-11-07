@@ -45,6 +45,20 @@ class IatiForms(SingletonPlugin):
         map.connect('/group/new', controller=group_controller, action='new')
         map.connect('/group/edit/{id}', controller=group_controller, action='edit')
 
+        csv_controller = 'ckanext.iati.controllers.spreadsheet:CSVController'
+        map.connect('/csv/download', controller=csv_controller, action='download')
+        map.connect('/csv/download/{publisher}', controller=csv_controller, action='download')
+        map.connect('/csv/upload', controller=csv_controller, action='upload',
+                    conditions=dict(method=['GET']))
+        map.connect('/csv/upload', controller=csv_controller, action='upload',
+                    conditions=dict(method=['POST']))
+
+
+        # Redirects needed after updating the datasets name for some of the publishers
+        map.redirect('/dataset/wb-{code}','/dataset/worldbank-{code}',_redirect_code='301 Moved Permanently')
+        map.redirect('/dataset/minbuza_activities','/dataset/minbuza_nl-activities',_redirect_code='301 Moved Permanently')
+        map.redirect('/dataset/minbuza_organisation','/dataset/minbuza_nl-organisation',_redirect_code='301 Moved Permanently')
+
         return map
 
     def after_map(self, map):
