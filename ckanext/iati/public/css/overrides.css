@@ -586,3 +586,8 @@ a, a:link {
 ul {
     list-style-type: none
 }
+
+.entry-content ol {
+    margin-left: 4em;
+    font-size: 12px;
+}
