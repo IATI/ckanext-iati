@@ -72,7 +72,7 @@ class Archiver(CkanCommand):
 
                 is_activity_package = (package['extras']['filetype'] == 'activity') if 'filetype' in package['extras'] else 'activity'
 
-                log.info('Archiving dataset: %s (%d resources)' % (package.get('name'), len(package.get('resources', []))))
+                log.debug('Archiving dataset: %s (%d resources)' % (package.get('name'), len(package.get('resources', []))))
                 for resource in package.get('resources', []):
 
                     if not resource.get('url',''):
@@ -149,7 +149,7 @@ class Archiver(CkanCommand):
                     if update:
                         context['id'] = package['id']
                         updated_package = get_action('package_update_rest')(context,package)
-                        log.info('Package %s updated with new extras' % package['name'])
+                        log.debug('Package %s updated with new extras' % package['name'])
                         updated = updated + 1
 
             t2 = datetime.datetime.now()
