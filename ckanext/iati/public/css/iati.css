@@ -338,3 +338,9 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
     margin-top: -20px;
     margin-bottom: 20px;
 }
+
+.field-xml{
+    font-weight: normal;
+    font-size: smaller;
+    font-style: italic;
+}

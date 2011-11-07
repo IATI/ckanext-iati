@@ -1,4 +1,4 @@
-<form id="group-edit" action="" method="post" 
+<form id="group-edit" action="" method="post"
     py:attrs="{'class':'has-errors'} if errors else {}"
     xmlns:i18n="http://genshi.edgewall.org/i18n"
     xmlns:py="http://genshi.edgewall.org/"
@@ -11,34 +11,31 @@
             <li py:for="key, error in error_summary.items()">${"%s: %s" % (key, error)}</li>
         </ul>
     </div>
-    
+
     <fieldset>
-        <legend>Basic information</legend> 
+        <legend>Basic information</legend>
         <dl>
-            <dt><label class="field_req" for="name">Unique Name (required) *</label></dt> 
+            <dt><label class="field_req" for="name">Publisher Id (required) *</label><div class="field-xml">[registry-publisher-id]</div></dt>
             <dd><input id="name" name="name" type="text" value="${data.get('name', '')}" /></dd>
             <dd class="field_error" py:if="errors.get('name', '')">${errors.get('name', '')}</dd>
-            <dd class="instructions basic"><strong>Unique identifier</strong> for group.<br/>2+ chars, lowercase, using only 'a-z0-9' and '-_'</dd> 
-            <script type="text/javascript"> 
-                //<![CDATA[
-                $(document).ready(function () { if (!$('#preview').length) { $("#name").focus();}});
-                //]]>
-            </script>
-            
-            <dt><label class="field_opt" for="title">Title</label></dt> 
+            <dd class="instructions basic"><strong>Unique identifier</strong> for publisher. Where possible use a short abbreviation of your organisation's name. 2+ chars, lowercase, using only 'a-z0-9' and '-_'.</dd>
+
+            <dt><label class="field_opt" for="title">Publisher Name</label></dt>
             <dd><input id="title" name="title" type="text" value="${data.get('title', '')}" /></dd>
             <dd class="field_error" py:if="errors.get('title', '')">${errors.get('title', '')}</dd>
+            <dd class="instructions basic">The Name of the Organisation publishing the data.</dd>
 
-            <dt><label class="field_req" for="type">Source</label></dt> 
+            <dt><label class="field_req" for="type">Source</label></dt>
             <dd>
                 <select id="type" name="type">
                     <py:for each="value, title in c.publisher_source_types">
                         <option value="${value}" py:attrs="{'selected': 'selected' if data.get('type', '') == value else None}" >${title}</option>
                     </py:for>
                 </select>
-            </dd> 
-            
-            <dt><label class="field_opt" for="license_id">License</label></dt> 
+            </dd>
+            <dd class="instructions basic">Primary - publishers authorised to report their own (or associated organisations') data. Secondary - publishers reporting the activities of other organisations.</dd>
+
+            <dt><label class="field_opt" for="license_id">License</label></dt>
             <dd>
                 <select id="license_id" name="license_id">
                     <py:for each="licence_desc, licence_id in c.licences">
@@ -47,8 +44,10 @@
 
                 </select>
             </dd>
+            <dd class="instructions basic">Choose from the dropdown the appropriate licence under which your data is being published. For more information on IATI's licensing guidelines go to <a href="http://iatistandard.org/standard/licencing">http://iatistandard.org/standard/licencing</a>.</dd>
 
-            <dt><label class="field_opt" for="publisher_organization_type">Organization Type</label></dt> 
+
+            <dt><label class="field_opt" for="publisher_organization_type">Organisation Type</label></dt>
             <dd>
                 <select id="publisher_organization_type" name="publisher_organization_type">
                     <py:for each="value, title in c.organization_types">
@@ -57,7 +56,7 @@
 
                 </select>
             </dd>
-            <dd class="instructions basic"></dd>
+            <dd class="instructions basic">Choose from the dropdown the organisation type that best describes the publisher.</dd>
 
             <dt><label class="field_opt" for="publisher_country">Country</label></dt>
             <dd>
@@ -69,13 +68,15 @@
                 </select>
                 </py:with>
             </dd>
+            <dd class="instructions basic">Choose from the dropdown the country in which the publisher is legally incorporated. Multilateral and regional organisations may choose a region at the bottom of the list.</dd>
 
             <dt><label class="field_opt" for="publisher_iati_id">IATI Identifier</label></dt>
             <dd><input id="publisher_iati_id" name="publisher_iati_id" type="text" value="${data.get('publisher_iati_id', '')}" /></dd>
+            <dd class="instructions basic">The organisation identifier used in the IATI-xml files to identify the reporting organisation. (&lt;reporting-org ref="!!!"&gt;).</dd>
 
             <py:choose>
                 <py:when test="c.is_sysadmin">
-                    <dt><label class="field_opt" for="state">State</label></dt> 
+                    <dt><label class="field_opt" for="state">State</label></dt>
                     <dd>
                         <select id="state" name="state">
                             <option py:attrs="{'selected': 'selected' if data.get('state') == 'active' else None}" value="active">active</option>
@@ -83,6 +84,8 @@
                             <option py:attrs="{'selected': 'selected' if data.get('state') == 'pending' else None}" value="pending">pending</option>
                         </select>
                     </dd>
+                    <dd class="instructions basic">Choose from dropdown: active - publisher record is visibile on the Registry; pending - for editing prior to publication; deleted.</dd>
+
                 </py:when>
             </py:choose>
 
@@ -90,64 +93,64 @@
     </fieldset>
 
     <fieldset>
-        <legend>Details</legend> 
+        <legend>Details</legend>
         <dl>
 
             <dt><label class="field_opt" for="publisher_contact">Contact</label></dt>
-            <dd><textarea id="publisher_contact" name="publisher_contact">${data.get('publisher_contact', '')}</textarea></dd> 
-            <dd class="instructions basic">Contact details for publisher</dd>
- 
-            <dt><label class="field_opt" for="publisher_description">Description</label></dt> 
-            <dd><textarea id="publisher_description" name="publisher_description">${data.get('publisher_description', '')}</textarea></dd> 
-            <dd class="instructions basic">General description of publisher's role and activities</dd>
+            <dd><textarea id="publisher_contact" name="publisher_contact">${data.get('publisher_contact', '')}</textarea></dd>
+            <dd class="instructions basic">Contact details for publisher.</dd>
 
-            <dt><label class="field_opt" for="publisher_agencies">Organisations / agencies covered</label></dt> 
-            <dd><textarea id="publisher_agencies" name="publisher_agencies">${data.get('publisher_agencies', '')}</textarea></dd> 
-            <dd class="instructions basic">Whose activities does this publisher publish?</dd>
+            <dt><label class="field_opt" for="publisher_description">Description</label></dt>
+            <dd><textarea id="publisher_description" name="publisher_description">${data.get('publisher_description', '')}</textarea></dd>
+            <dd class="instructions basic">General description of publisher's role and activities.</dd>
 
-            <dt><label class="field_opt" for="publisher_timeliness">Timeliness of Data</label></dt> 
-            <dd><textarea id="publisher_timeliness" name="publisher_timeliness">${data.get('publisher_timeliness','')}</textarea></dd> 
-            <dd class="instructions basic">How up do date is the data when published?</dd> 
+            <dt><label class="field_opt" for="publisher_agencies">Organisations / agencies covered</label></dt>
+            <dd><textarea id="publisher_agencies" name="publisher_agencies">${data.get('publisher_agencies', '')}</textarea></dd>
+            <dd class="instructions basic">Which organisations/agencies does your IATI data cover?  (What % of your total development flows does this cover? What is missing?).</dd>
 
-            <dt><label class="field_opt" for="publisher_frequency">Frequency of publication</label></dt> 
+            <dt><label class="field_opt" for="publisher_timeliness">Timeliness of Data</label></dt>
+            <dd><textarea id="publisher_timeliness" name="publisher_timeliness">${data.get('publisher_timeliness','')}</textarea></dd>
+            <dd class="instructions basic">How soon after data is captured and available internally will data be published?</dd>
+
+            <dt><label class="field_opt" for="publisher_frequency">Frequency of publication</label></dt>
             <dd><textarea id="publisher_frequency" name="publisher_frequency">${data.get('publisher_frequency','')}</textarea></dd>
             <dd class="instructions basic">How often is IATI data refreshed? Monthly/Quarterly?</dd>
 
             <dt><label class="field_opt" for="publisher_units">Units of Aid</label></dt>
-            <dd><textarea id="publisher_units" name="publisher_units">${data.get('publisher_units','')}</textarea></dd> 
-            <dd class="instructions basic">A description of any hierarchical reporting units used and how they are applied</dd>
+            <dd><textarea id="publisher_units" name="publisher_units">${data.get('publisher_units','')}</textarea></dd>
+            <dd class="instructions basic">How is an activity defined e.g. projects and programmes, or some other structure? Do you have multi-tiered project structures e.g. projects and sub-projects or components? At which level/s do you intend to publish details?).</dd>
 
-            <dt><label class="field_opt" for="publisher_segmentation">Segmentation of Published Data</label></dt> 
+            <dt><label class="field_opt" for="publisher_segmentation">Segmentation of Published Data</label></dt>
             <dd><textarea id="publisher_segmentation" name="publisher_segmentation">${data.get('publisher_segmentation','')}</textarea></dd>
-            <dd class="instructions basic">Is IATI data published by country, regions?</dd>
+            <dd class="instructions basic">Is IATI data published in separate files per country or region?</dd>
 
-            <dt><label class="field_opt" for="publisher_refs">Data Definitions and References</label></dt> 
-            <dd><textarea id="publisher_refs" name="publisher_refs">${data.get('publisher_refs','')}</textarea></dd> 
-            <dd class="instructions basic">Links to guides, explanations, codelists on the publisher's own site that clarify their data</dd> 
+            <dt><label class="field_opt" for="publisher_refs">Data Definitions and References</label></dt>
+            <dd><textarea id="publisher_refs" name="publisher_refs">${data.get('publisher_refs','')}</textarea></dd>
+            <dd class="instructions basic">Links to guides, explanations, codelists on the publisher's own site that clarify their data.</dd>
 
-            <dt><label class="field_opt" for="publisher_field_exclusions">Field Exclusions</label></dt> 
-            <dd><textarea id="publisher_field_exclusions" name="publisher_field_exclusions">${data.get('publisher_field_exclusions','')}</textarea></dd> 
-            <dd class="instructions basic">What fields does the publisher never use - and for what reason</dd> 
+            <dt><label class="field_opt" for="publisher_field_exclusions">Field Exclusions</label></dt>
+            <dd><textarea id="publisher_field_exclusions" name="publisher_field_exclusions">${data.get('publisher_field_exclusions','')}</textarea></dd>
+            <dd class="instructions basic">What fields recommended in the standard do you never use - and for what reason.</dd>
 
-            <dt><label class="field_opt" for="publisher_record_exclusions">Record Exclusions</label></dt> 
-            <dd><textarea id="publisher_record_exclusions" name="publisher_record_exclusions">${data.get('publisher_record_exclusions','')}</textarea></dd> 
-            <dd class="instructions basic">What are the policies for excluding particular activities, or parts of an activity's data?</dd> 
+            <dt><label class="field_opt" for="publisher_record_exclusions">Record Exclusions</label></dt>
+            <dd><textarea id="publisher_record_exclusions" name="publisher_record_exclusions">${data.get('publisher_record_exclusions','')}</textarea></dd>
+            <dd class="instructions basic">What are your policies for excluding particular activities, or parts of an activity's data?</dd>
 
-            <dt><label class="field_opt" for="publisher_thresholds">Thresholds</label></dt> 
-            <dd><textarea id="publisher_thresholds" name="publisher_thresholds">${data.get('publisher_thresholds','')}</textarea></dd> 
-            <dd class="instructions basic">What are the thresholds below which data or whole activities are not published?</dd> 
+            <dt><label class="field_opt" for="publisher_thresholds">Thresholds</label></dt>
+            <dd><textarea id="publisher_thresholds" name="publisher_thresholds">${data.get('publisher_thresholds','')}</textarea></dd>
+            <dd class="instructions basic">What are the thresholds below which data or whole activities are not published?</dd>
 
-            <dt><label class="field_opt" for="publisher_constraints">Other Constraints</label></dt> 
-            <dd><textarea id="publisher_constraints" name="publisher_constraints">${data.get('publisher_constraints','')}</textarea></dd> 
-            <dd class="instructions basic">Other policies that restrict full compliance with the standard</dd> 
-            
-            <dt><label class="field_opt" for="publisher_data_quality">Data Quality</label></dt> 
-            <dd><textarea id="publisher_data_quality" name="publisher_data_quality">${data.get('publisher_data_quality','')}</textarea></dd> 
-            <dd class="instructions basic">Publisher's comment on the status and accuracyof the data - audited/verified, operational/sub to change, etc</dd> 
-             
-            <dt><label class="field_opt" for="publisher_ui">User Interface</label></dt> 
-            <dd><textarea id="publisher_ui" name="publisher_ui">${data.get('publisher_ui','')}</textarea></dd> 
-            <dd class="instructions basic">Link to publisher's own public user activity interface</dd> 
+            <dt><label class="field_opt" for="publisher_constraints">Other Constraints</label></dt>
+            <dd><textarea id="publisher_constraints" name="publisher_constraints">${data.get('publisher_constraints','')}</textarea></dd>
+            <dd class="instructions basic">Other policies or circumstances that restrict your full compliance with the standard.</dd>
+
+            <dt><label class="field_opt" for="publisher_data_quality">Data Quality</label></dt>
+            <dd><textarea id="publisher_data_quality" name="publisher_data_quality">${data.get('publisher_data_quality','')}</textarea></dd>
+            <dd class="instructions basic">Publisher's comment on the status and accuracyof the data - audited/verified, operational/sub to change, etc</dd>
+
+            <dt><label class="field_opt" for="publisher_ui">User Interface</label></dt>
+            <dd><textarea id="publisher_ui" name="publisher_ui">${data.get('publisher_ui','')}</textarea></dd>
+            <dd class="instructions basic">Will IATI data be accessible for end users through an existing or a new user interface on your website?</dd>
         </dl>
     </fieldset>
 
@@ -161,7 +164,7 @@
         </dl>
         <p py:if="not data.get('packages')">There are no records currently in this group.</p>
     </fieldset>
-    
+
     <fieldset>
         <legend>Add records</legend>
         <dl>

@@ -588,3 +588,7 @@ a, a:link {
     list-style-type: circle
 }
 
+.entry-content ol {
+    margin-left: 4em;
+    font-size: 12px;
+}

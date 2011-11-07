@@ -3,7 +3,7 @@
     xmlns:i18n="http://genshi.edgewall.org/i18n"
     xmlns:py="http://genshi.edgewall.org/"
     xmlns:xi="http://www.w3.org/2001/XInclude">
-    
+
     <div class="error-explanation" py:if="error_summary">
         <h3>Errors in form</h3>
         <p>The form contains invalid entries:</p>
@@ -15,36 +15,28 @@
     <fieldset>
         <legend>Basic information </legend>
         <dl>
-            <dt><label class="field_req" for="name">Name *</label></dt>
+            <dt><label class="field_req" for="name">File Id *</label><div class="field-xml">[registry-file-id]</div></dt>
             <dd><input id="name" name="name" type="text" value="${data.get('name', '')}" /></dd>
             <dd class="field_error" py:if="errors.get('name', '')">${errors.get('name', '')}</dd>
-            <dd class="instructions basic">A unique identifier for the activity record.</dd>
-            <dd class="instructions further">It should be broadly humanly readable, in the spirit of Semantic Web URIs. Only use an acronym if it is widely recognised. Renaming is possible but discouraged.</dd>
-            <dd class="hints">2+ characters, lowercase, using only 'a-z0-9' and '-_'</dd>
-            <script type="text/javascript">
-                //<![CDATA[
-                $(document).ready(function () { if (!$('#preview').length) {$("#name").focus(); } });
-                //]]>
-            </script>
+            <dd class="instructions basic">A unique identifier for the activity record. It must be prefixed with your Publisher Id and a hyphen. It is recommended that you use "org" for your organisation file and the country or region code for segmented activity datasets. 2+ characters, lowercase, using only 'a-z0-9' and '-_' . (eg dfid-ao, wb-org, unops-998).</dd>
 
-            <dt><label class="field_opt" for="title">Title </label></dt>
+            <dt><label class="field_opt" for="title">Title </label><div class="field-xml">[title]</div></dt>
             <dd><input id="title" name="title" type="text" value="${data.get('title', '')}" /></dd>
             <dd class="field_error" py:if="errors.get('title', '')">${errors.get('title', '')}</dd>
-            <dd class="instructions basic">A short descriptive title for the data set.</dd>
-            <dd class="instructions further">It should not be a description though - save that for the Notes field. Do not give a trailing full stop.</dd>
+            <dd class="instructions basic">The title of the dataset. It should not be a description though - save that for the Notes field. Do not give a trailing full stop.</dd>
 
-            <dt><label class="field_opt" for="author_email">Contact e-mail</label></dt>
+            <dt><label class="field_opt" for="author_email">Contact e-mail</label><div class="field-xml">[contact-email]</div></dt>
             <dd><input id="author_email" name="author_email" type="text" value="${data.get('author_email', '')}" /></dd>
+            <dd class="instructions basic">A contact address for anyone wishing to query you about your data.</dd>
 
-            <dt><label class="field_opt" for="state">File type</label></dt>
+            <dt><label class="field_opt" for="state">File type</label><div class="field-xml">[file-type]</div></dt>
             <dd>
                 <select id="filetype" name="filetype">
                     <option py:attrs="{'selected': 'selected' if data.get('filetype') == 'activity' else None}" value="activity">Activity</option>
                     <option py:attrs="{'selected': 'selected' if data.get('filetype') == 'organisation' else None}" value="organisation">Organisation</option>
                 </select>
             </dd>
-
-
+            <dd class="instructions basic">Choose from dropdown. Either "Activity" or "Organisation".</dd>
         </dl>
     </fieldset>
 
@@ -77,6 +69,7 @@
             </select>
             </dd>
             <dd py:if="not c.groups_available">Cannot add any publisher.</dd>
+            <dd class="instructions basic">Choose your own Publisher Name from the Dropdown. Your Publisher record needs to have been created and authorised by the Registry administrator before you can publish datsets.</dd>
         </dl>
 
     </fieldset>
@@ -84,7 +77,7 @@
     <fieldset>
         <legend>Details</legend>
         <dl>
-            <dt><label class="field_opt" for="country">Recipient country</label></dt>
+            <dt><label class="field_opt" for="country">Recipient country</label><div class="field-xml">[recipient-country]</div></dt>
             <dd>
                 <py:with vars="country = data.get('country','')">
                 <select id="country" name="country">
@@ -94,18 +87,19 @@
                 </select>
                 </py:with>
             </dd>
+            <dd class="instructions basic">Select the country or region (listed below the countries in the dropdown).</dd>
 
-            <dt><label class="field_opt" for="record_updated">Record updated</label></dt>
+            <dt><label class="field_opt" for="record_updated">Record updated</label><div class="field-xml">[generated-datetime]</div></dt>
             <dd><input id="record_updated" name="record_updated" size="40" type="text" value="${data.get('record_updated', '')}" /></dd>
-            <dd class="instructions basic">Acceptable formats: 'DD/MM/YYYY HH:MM', 'DD/MM/YYYY', 'MM/YYYY', 'YYYY'.</dd>
+            <dd class="instructions basic">The date on which this metadata was last updated. Acceptable formats: 'DD/MM/YYYY HH:MM', 'DD/MM/YYYY', 'MM/YYYY', 'YYYY'.</dd>
 
-            <dt><label class="field_opt" for="data_updated">Data updated</label></dt>
+            <dt><label class="field_opt" for="data_updated">Data updated</label><div class="field-xml">[last-updated-datetime]</div></dt>
             <dd><input id="data_updated" name="data_updated" size="40" type="text" value="${data.get('data_updated', '')}"/></dd>
-            <dd class="instructions basic">Acceptable formats: 'DD/MM/YYYY HH:MM', 'DD/MM/YYYY', 'MM/YYYY', 'YYYY'.</dd>
+            <dd class="instructions basic">The date on which the linked file was last updated. Acceptable formats: 'DD/MM/YYYY HH:MM', 'DD/MM/YYYY', 'MM/YYYY', 'YYYY'.</dd>
 
-            <dt><label class="field_opt" for="record_updated">Language</label></dt>
+            <dt><label class="field_opt" for="record_updated">Language</label><div class="field-xml">[default-language]</div></dt>
             <dd><input id="language" name="language" size="40" type="text" value="${data.get('language', '')}" /></dd>
-            <dd class="instructions basic">The ISO 639-1 code for the language of the file (e.g. 'en')</dd>
+            <dd class="instructions basic">The ISO 639-1 code for the default language of the file (e.g. 'en').</dd>
 
             <dt><label class="field_opt" for="license_id">License</label></dt>
             <dd>
@@ -115,7 +109,7 @@
                     </py:for>
                 </select>
             </dd>
-            <dd class="instructions basic">The licence under which the dataset is released.</dd>
+            <dd class="instructions basic">Choose from the dropdown the appropriate licence under which your data is being published. This will  already contain the licence specified in your publisher record, For more information on IATI's licensing guidelines go to <a href="http://iatistandard.org/standard/licencing">http://iatistandard.org/standard/licencing</a>.</dd>
 
             <dt><label class="field_opt" for="tags">Tags</label></dt>
             <dd>
@@ -164,28 +158,29 @@
         </table>
 
         <div class="instructions basic">The files containing the data or address of the APIs for accessing it.</div>
-        <div class="instructions further"><br /><b>URL:</b> This is the Internet link directly to the data - by selecting this link in a web browser, the user will immediately download the full dataset. Note that datasets are not hosted on this site, but by the publisher of the data.<br /> <b>Format:</b> This should give the file format in which the data is supplied. (i.e. IATI-XML)<br /><b>Description</b> Any information you want to add to describe the resource.<br /></div>
+        <div class="instructions further"><br /><b>URL:</b> <span class="field-xml">[source-url]</span> This is the Internet link directly to the data - by selecting this link in a web browser, the user will immediately download the full dataset. Note that datasets are not hosted on this site, but by the publisher of the data.<br /> <b>Format:</b> <span class="field-xml">[format]</span>This should give the file format in which the data is supplied. IATI-compliant data should specify "IATI-XML".<br /><b>Description</b> Any information you want to add to describe the resource.<br /></div>
         <div class="field_error" py:if="errors.get('resources', '')">Dataset resource(s) incomplete.</div>
     </fieldset>
 
     <fieldset>
         <legend>Verification and Analysis </legend>
         <dl>
-            <dt><label class="field_opt" for="activity_period">Activitiy Period</label></dt>
+            <dt><label class="field_opt" for="activity_period">Activitiy Period</label><div class="field-xml">[activiy-period-start -<br/>activity-period-end]</div></dt>
             <dd>
                 <input class="short" id="activity_period-from" name="activity_period-from" type="text" value="${data.get('activity_period-from', '')}" /> -
                 <input class="short" id="activity_period-to" name="activity_period-to" type="text" value="${data.get('activity_period-to', '')}" />
             </dd>
-            <dd class="instructions basic">Acceptable formats: 'DD/MM/YYYY HH:MM', 'DD/MM/YYYY', 'MM/YYYY', 'YYYY'.</dd>
+            <dd class="instructions basic">The earliest and latest dates reported for the starting and ending of activities within this dataset. Acceptable formats: 'DD/MM/YYYY HH:MM', 'DD/MM/YYYY', 'MM/YYYY', 'YYYY'.</dd>
 
-            <dt><label class="field_opt" for="activity_count">Num. Activities</label></dt>
+            <dt><label class="field_opt" for="activity_count">Num. Activities</label><div class="field-xml">[activity-count]</div></dt>
             <dd><input id="activity_count" name="activity_count" size="40" type="text" value="${data.get('activity_count', '')}"/></dd>
+            <dd class="instructions basic">A count of the number of activities reported.</dd>
 
             <dt><label class="field_opt" for="archive_file">Archive</label></dt>
             <dd><input id="archive_file" name="archive_file" size="40" type="checkbox" py:attrs="{'checked': 'checked' if data.get('archive_file','') == 'yes' else None}" /></dd>
             <py:choose>
                 <py:when test="c.is_sysadmin">
-                <dt><label class="field_opt" for="verified">Verification</label></dt>
+                <dt><label class="field_opt" for="verified">Verification</label><div class="field-xml">[verification-status]</div></dt>
                 <dd><input id="verified" name="verified" size="40" type="checkbox" py:attrs="{'checked': 'checked' if data.get('verified','') == 'yes' else None}" /></dd>
 
                 <dt><label class="field_opt" for="state">State</label></dt>
@@ -198,7 +193,7 @@
                 </dd>
                 </py:when>
             </py:choose>
-
+            <dd class="instructions basic">Choose from the dropdown: "active" - published; "pending" - pre-publication; "deleted"</dd>
         </dl>
     </fieldset>
 
