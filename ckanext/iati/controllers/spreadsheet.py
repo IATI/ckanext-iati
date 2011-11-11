@@ -95,7 +95,7 @@ class CSVController(BaseController):
                 abort(403,'Permission denied')
 
 
-        file_name = publisher if publisher else self.authz_groups[0]
+        file_name = publisher if publisher else 'iati-registry-records'
         response.headers['Content-type'] = 'text/csv'
         response.headers['Content-disposition'] = 'attachment;filename=%s.csv' % str(file_name)
         return output
