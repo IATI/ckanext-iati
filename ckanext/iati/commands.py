@@ -135,7 +135,7 @@ class Archiver(CkanCommand):
                             format = '%Y-%m-%d %H:%M' if (date.hour and date.minute) else '%Y-%m-%d'
                             new_extras['data_updated'] = date.strftime(format)
                         except (ValueError,TypeError),e:
-                            log.error('Wrong date format for data_updated: %s' % str(e))
+                            log.error('Wrong date format for data_updated for dataset %s: %s' % (package['name'],str(e)))
 
 
                     update = False
