@@ -25,9 +25,6 @@ class GroupIatiController(GroupController):
         c.publisher_source_types = PUBLISHER_SOURCE_TYPES
         c.countries = [(v, k) for k, v in COUNTRIES]
 
-        c.show_publisher_info = not (request.environ['pylons.routes_dict']['action'] == 'authz')
-
-
     def _form_to_db_schema(self):
         schema = group_form_schema()
         schema.update({
