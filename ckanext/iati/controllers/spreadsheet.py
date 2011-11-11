@@ -213,7 +213,7 @@ class CSVController(BaseController):
                 # We will now run the IATI specific validation, CKAN core will
                 # run the default one later on
                 schema = dict([(f[0],f[3]) for f in CSV_MAPPING])
-                row, row_errors = validate(row,schema)
+                row, row_errors = validate(row,schema,context)
                 if row_errors:
                     for key, msgs in row_errors.iteritems():
                         log.error('Error in row %i: %s: %s' % (i+1,key,str(msgs)))
@@ -232,6 +232,10 @@ class CSVController(BaseController):
                     errors[row_index][iati_key] = msgs
             except NotAuthorized,e:
                 msg = 'Not authorized to publish to this group: %s' % row['registry-publisher-id']
+                log.error('Error in row %i: %s' % (i+1,msg))
+                errors[row_index]['registry-publisher-id'] = [msg]
+            except NotFound,e:
+                msg = 'Publisher not found: %s' % row['registry-publisher-id']
                 log.error('Error in row %i: %s' % (i+1,msg))
                 errors[row_index]['registry-publisher-id'] = [msg]
 

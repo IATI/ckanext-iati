@@ -29,8 +29,9 @@ def iati_dataset_name_from_csv(key,data,errors,context):
     if not 'registry-publisher-id' in unflattened:
         errors[key].append('Publisher name missing')
         return
-
-    group_name = unflattened['registry-publisher-id']
+    # Ask for the group details to ensure it actually exists
+    group = get_action('group_show')(context,{'id':unflattened['registry-publisher-id']})
+    group_name = group['name']
 
     parts = value.split('-')
     code_part = parts[-1]
