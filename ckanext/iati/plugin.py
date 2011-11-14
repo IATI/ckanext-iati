@@ -2,10 +2,13 @@ import os
 
 from logging import getLogger
 
+from ckan.model import Package, Group
 from ckan.plugins import implements, SingletonPlugin
 from ckan.plugins import IRoutes
 from ckan.plugins import IConfigurer
 from ckan.plugins import IActions
+from ckan.plugins import IGroupController
+from ckan.plugins import IPackageController
 
 import ckanext.iati
 
@@ -80,4 +83,35 @@ class IatiActions(SingletonPlugin):
             'package_show':package_show_iati,
             'package_show_rest':package_show_rest_iati
         }
+
+class IatiLicenseOverride(SingletonPlugin):
+
+    implements(IGroupController,inherit=True)
+    implements(IPackageController,inherit=True)
+
+    def _override_license(self,group):
+        group_license_id = group.extras.get('license_id')
+
+        if group.packages and group_license_id:
+            # Check if license changed
+            if group.packages[0].license_id != group_license_id:
+                for package in group.packages:
+                    package.license_id = group_license_id
+
+    def create(self,entity):
+        if isinstance(entity,Package):
+            # Assign group's license to the newly created package
+            group = entity.groups[0] if len(entity.groups) else None
+            if group and group.extras.get('license_id'):
+                entity.license_id = group.extras.get('license_id')
+
+        elif isinstance(entity,Group):
+            self._override_license(entity)
+
+    def edit(self,entity):
+        if isinstance(entity,Package):
+            # Licenses are only handled at the group level
+            pass
+        elif isinstance(entity,Group):
+            self._override_license(entity)
 

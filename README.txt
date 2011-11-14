@@ -49,7 +49,7 @@ ckan.site_title = IATI Registry
 ckan.site_url = http://iati.test.ckan.net
 
 # Add any other plugins you want to use:
-ckan.plugins = iati_forms iati_approval iati_group_authz iati_package_authz wordpresser synchronous_search
+ckan.plugins = iati_forms iati_approval iati_group_authz iati_package_authz iati_license_override wordpresser synchronous_search
 
 # Use a proxy wordpress to provide help & about pages (etc)
 wordpresser.proxy_host = http://iatiregistry.wordpress.org/

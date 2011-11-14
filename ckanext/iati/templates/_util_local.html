@@ -9,7 +9,7 @@
         standard package listing -->
   <ul py:def="package_list_local(packages)" class="packages">
     <li py:for="package in packages"
-        class="${'fullyopen' if (package.isopen and package.resources) else None}">
+        class="${'fullyopen' if ((package.isopen if isinstance(package.isopen,bool) else package.isopen()) and package.resources) else None}">
         <div class="header">
 			<span class="title">
 				${h.link_to(package.title or package.name, h.url_for(controller='package', action='read', id=package.name))}
@@ -26,7 +26,7 @@
           </ul>
         </py:if>
         <ul class="openness">
-          <py:if test="package.isopen">
+          <py:if test="package.isopen if isinstance(package.isopen,bool) else package.isopen()">
             <li>
               <a href="http://opendefinition.org/okd/" title="This package satisfies the Open Definition.">
                   <img src="http://assets.okfn.org/images/ok_buttons/od_80x15_blue.png" alt="[Open Data]" />
@@ -38,7 +38,7 @@
               </a>
             </li>
           </py:if>
-          <py:if test="not package.isopen">
+          <py:if test="not (package.isopen if isinstance(package.isopen,bool) else package.isopen())">
             <li>
               <span class="closed">
                 ${h.icon('lock')} Not Openly Licensed
