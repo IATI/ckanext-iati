@@ -51,7 +51,7 @@
             <dd>
                 <select id="publisher_organization_type" name="publisher_organization_type">
                     <py:for each="value, title in c.organization_types">
-                        <option value="${value}" py:attrs="{'selected': 'selected' if data.get('organization_type', '') == value else None}" >${title}</option>
+                        <option value="${value}" py:attrs="{'selected': 'selected' if data.get('publisher_organization_type', '') == value else None}" >${title}</option>
                     </py:for>
 
                 </select>
