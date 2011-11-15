@@ -23,7 +23,7 @@ copy of CKAN:
 1) Install the extension from its source repository (a Debian package 
 is not available at this time):
 
-(env)$ pip install -e hg+https://okfn@bitbucket.org/okfn/ckanextiati#egg=ckanextiati
+(env)$ pip install -e git+https://github.com/okfn/ckanext-iati#egg=ckanext-iati
 
 You probably also want to install the ckanext-wordpresser and
 ckanext-archiver packages.  See their respective documentation for
@@ -130,6 +130,6 @@ Archiver command
 The extension includes a paster command that will download all IATI XML files
 (i.e. all resources), parse them and extract a couple of variables, which will
 be stored in extras. To run it you must install ckanext-archiver. To run the
-command, assuming you are on the ckanextiati directory::
+command, assuming you are on the ckanext-iati directory::
 
     paster iati-archiver update --config=../ckan/development.ini

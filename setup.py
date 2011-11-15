@@ -3,7 +3,7 @@ import sys, os
 
 version = '0.3'
 
-setup(name='ckanextiati',
+setup(name='ckanext-iati',
       version=version,
       description="CKAN Extension Code for the IATI Registry",
       long_description="""\
