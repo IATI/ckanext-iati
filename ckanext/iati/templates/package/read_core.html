@@ -16,11 +16,11 @@
     </div>
 
     <div class="tags">
-      <div py:if="len(c.pkg.tags)" class="item-list">
-        Tags: ${tag_list(c.pkg.tags)}
+      <div py:if="len(c.pkg.tags)"  class="dataset-page-header">
+        Tags: ${tag_list_local(c.pkg.tags)}
       </div>
-      <div py:if="len(c.pkg.groups)" class="item-list">
-        <span title="A curated collection of packages">Group:</span>
+      <div py:if="len(c.pkg.groups)" class="dataset-page-header">
+        <span title="Publisher of this dataset">Publisher:</span>
         <ul>
           <li py:for="group in c.pkg.groups">
           <a href="${h.url_for(controller='group', action='read', id=group.name)}">${group.title}</a>

@@ -592,3 +592,11 @@ a, a:link {
     margin-left: 4em;
     font-size: 12px;
 }
+
+/*-------- Other --------*/
+
+.gravatar{
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 10px auto;
+}
