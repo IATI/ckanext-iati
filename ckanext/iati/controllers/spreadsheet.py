@@ -173,6 +173,9 @@ class CSVController(BaseController):
                             if key in package:
                                 value = package[key]
                         row[fieldname] = value
+
+                        if fieldname == 'title':
+                            row['title'] = row['title'].encode('utf-8')
                     writer.writerow(row)
             output = f.getvalue()
         finally:
@@ -274,6 +277,8 @@ class CSVController(BaseController):
         # Check if package exists
         data_dict = {}
         data_dict['id'] = package_dict['name']
+
+        package_dict['title'] = package_dict['title'].decode('utf-8')
         try:
             existing_package_dict = get_action('package_show')(context, data_dict)
 
@@ -282,6 +287,7 @@ class CSVController(BaseController):
 
             context.update({'id':existing_package_dict['id']})
             package_dict.update({'id':existing_package_dict['id']})
+
             updated_package = get_action('package_update_rest')(context, package_dict)
             if counts:
                 counts['updated'].append(updated_package['name'])
