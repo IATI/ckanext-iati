@@ -600,3 +600,14 @@ a, a:link {
     height: 120px;
     margin: 0 auto 10px auto;
 }
+
+
+#user-search #q{
+    width: 200px;
+    margin-right: 20px;
+}
+
+#tag-search #q{
+    width: 200px;
+    margin-right: 20px;
+}
