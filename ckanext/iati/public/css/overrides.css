@@ -12,6 +12,7 @@
 }
 
 #topbar {
+  padding-top: 2px;
   background:#E5EFF1;
   height:20px;
 }
@@ -279,7 +280,7 @@ h3#reply-title {
 /*-------- Home menu --------*/
 
 body.home {
-  background:url(/images/home-grad.png) repeat-x 0px 269px;
+  background:url(/images/home-grad.png) repeat-x 0px 271px;
 }
 
 body.home #wrapper{
