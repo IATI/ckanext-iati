@@ -6,36 +6,6 @@
   <py:def function="page_title">Home</py:def>
 
   <py:def function="optional_head">
-  <script src="/scripts/jquery.tagcloud.js"></script>
-  <script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-      $.fn.tagcloud.defaults = {
-        size: {start: 10, end: 32, unit: "pt"}, 
-        color: {start: '#af8', end: '#f52'}
-      };
-      $("#tagcloud a").tagcloud();
-    })
-  </script>
-  <style type="text/css">
-    #tagcloud * {
-      display: inline-block;
-      vertical-align: middle;
-			line-height: 0.9;
-    }
-
-    #tagcloud a {
-      text-decoration: none;
-    }
-
-    #tagcloud a:hover {
-      text-decoration: underline;
-    }
-
-    #tagcloud {
-      margin: 25px auto;
-      text-align: center;
-    }
-  </style>
   <link rel="stylesheet" href="/css/overrides.css" type="text/css" media="screen, print" />
   <link rel="stylesheet" href="/fonts/fonts.css" type="text/css" media="screen, print" />
   <meta http-equiv="X-UA-Compatible" content="IE=7" />
@@ -45,10 +15,6 @@
 
         <div class="page type-page hentry">
           <div class="entry-content">
-            <div id="minornavigation">
-              <minornavigation></minornavigation>
-            </div>
-            <!-- support both options for defining content -->
             <div>
     <h1>Welcome to the IATI registry <span>The online repository of IATI raw data links</span></h1>
     <div id="id-like-to">
@@ -110,8 +76,6 @@ An organisation publishes IATI files onto their own website. It submits a link t
 	  </p>
           </div><!-- .entry-content -->
         </div>
-        <div id="comments">
-        </div><!-- #comments -->
       </div> <!-- #content -->
 
 
