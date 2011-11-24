@@ -55,6 +55,9 @@
             <py:if test="config.get('iati.preview_service','')">
                  | ${h.link_to('Preview file',  config.get('iati.preview_service') % package.resources[0].url, target='_blank')}
             </py:if>
+            <py:if test="config.get('iati.csv_service','')">
+                 | ${h.link_to('Download as CSV',  config.get('iati.csv_service') % package.resources[0].url, target='_blank')}
+            </py:if>
         </py:if>
     </div>
     </li>
