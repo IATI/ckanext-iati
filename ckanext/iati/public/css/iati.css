@@ -352,3 +352,48 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
 .dataset-page-header li{
   margin-right: 5px;
 }
+
+
+/*------- Home ------------*/
+
+.intro{
+    font-size: 15px;
+}
+
+
+/*------- Apps ------------*/
+
+
+#apps {
+    width: 100%;
+    margin-top: 2.5em;
+}
+
+.app {
+    float: left;
+    margin-right: 2.5em;
+    margin-bottom: 1em;
+    min-width: 250px;
+    width: 270px;
+}
+.app p{
+    margin-bottom: 2em;
+}
+.app img {
+    -moz-box-shadow: 3px 3px 3px #888;
+    -webkit-box-shadow: 3px 3px 3px #888;
+    box-shadow: 3px 3px 3px #888
+}
+
+.app .title{
+    font-size: 1.5em;
+    margin-top: 1em;
+}
+
+.app .by{
+    font-size: 0.8em;
+    margin-bottom: 0.5em;
+}
+
+
+

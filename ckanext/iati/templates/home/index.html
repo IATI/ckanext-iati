@@ -1,83 +1,61 @@
-<html xmlns:py="http://genshi.edgewall.org/"
-  xmlns:i18n="http://genshi.edgewall.org/i18n"
-  xmlns:xi="http://www.w3.org/2001/XInclude"
-  py:strip="">
+<?xml version="1.0"?>
+<html xmlns:py="http://genshi.edgewall.org/" xmlns:i18n="http://genshi.edgewall.org/i18n" xmlns:xi="http://www.w3.org/2001/XInclude" py:strip="">
+    <py:def function="page_title">Home</py:def>
+    <py:def function="optional_head">
+        <link rel="stylesheet" href="/css/overrides.css" type="text/css" media="screen, print"/>
+        <link rel="stylesheet" href="/fonts/fonts.css" type="text/css" media="screen, print"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=7"/>
+    </py:def>
+    <py:def function="body_class">home</py:def>
 
-  <py:def function="page_title">Home</py:def>
-
-  <py:def function="optional_head">
-  <link rel="stylesheet" href="/css/overrides.css" type="text/css" media="screen, print" />
-  <link rel="stylesheet" href="/fonts/fonts.css" type="text/css" media="screen, print" />
-  <meta http-equiv="X-UA-Compatible" content="IE=7" />
-  </py:def>
-  <py:def function="body_class">home</py:def>
-  <div py:match="content">
-
+    <div py:match="content">
         <div class="page type-page hentry">
-          <div class="entry-content">
-            <div>
-    <h1>Welcome to the IATI registry <span>The online repository of IATI raw data links</span></h1>
-    <div id="id-like-to">
-      I'd like to
-    </div>
-      <div id="home-options">
-        <ul>
-          <li>
-            <img id="news-image" src="/images/home-news.png"/>
-            <h1>
-              <em>Catch up</em><br/>
-              With the latest <b>IATI</b> news
-            </h1>
-            <p>
-              Visit aidtransparency.net to read about IATI and learn about new developments.
-            </p>
-            <a class="go" href="http://aidtransparency.net">Go &raquo;</a>
-          </li>
-          <li>
-            <img src="/images/home-search.png"/>
-            <h1>
-              <em>Find</em><br/>
-              <b>IATI</b>-compliant data
-            </h1>
-            <p>
-              By searching the IATI registry.
-            </p>
-            <a class="go" href="/package">Go &raquo;</a>
-          </li>
-          <li>
-            <img src="/images/home-visualise.png"/>
-            <h1>
-              <em>Use</em><br/>
-              Data with third party tools
-            </h1>
-            <p>
-              Learn about applications to visualise and manipulate the IATI datasets.
-            </p>
-            <a class="go" href="/using-iati-data">Go &raquo;</a>
-          </li>
-          <li>
-            <img src="/images/home-learn.png"/>
-            <h1>
-              <em>Learn</em><br/>
-              About the <b>IATI</b> standard
-            </h1>
-            <p>
-              Get to grips with the technical side of IATI.
-            </p>
-            <a class="go" href="http://iatistandard.org">Go &raquo;</a>
-          </li>
-        </ul>
-      </div>
-	  </div>
-	  <h1>What is the IATI registry?</h1>
-	  <p class="two-col">
-      IATI data is open, standardised and flexible -it can be freely converted into the appropriate format for a particular need. From its raw form, a technical user can transform IATI data into tables, spreadsheets, web applications, printed documents or data visualisations. The IATI Registry acts as a foundation for other tools and services built to take advantage of aid information.<br/>
-An organisation publishes IATI files onto their own website. It submits a link to their IATI files to this centralised service and the registry adds them to the catalogue. Users and infomediaries can use this site to find, use and stay updated on data from different publishers. Whenever an organisation updates or adds new IATI files, they let the registry know. It then automatically updates the catalogue and lets users know there's fresh data.
-	  </p>
-          </div><!-- .entry-content -->
+            <div class="entry-content">
+                <div>
+                    <h1>Welcome to the IATI registry <span>The online repository of IATI raw data links</span></h1>
+                    <p class="intro">
+                        The IATI Registry contains links to raw data in the IATI XML format. The data itself is not held within the registry, it is
+                        published on publishers own websites. The registry simply provides links to this data, and a basic preview function for each
+                        data file published. Learn more <strong><a href="http://iatiregistry.org/about-2" rel="about">here</a></strong>.
+                    </p>
+
+                    <div class="top-tag top-tag-left">Access the registry</div>
+                    <div class="top-tag top-tag-right">Access other IATI sites</div>
+
+                    <div id="home-options">
+                        <ul>
+                            <li class="home-option-left">
+                                <div id="search">
+                                    <h1><a href="/dataset"><em>IATI Registry</em></a></h1>
+                                    <p><b>Find</b> raw IATI-compliant data in the Registry</p>
+                                </div>
+                                <div>
+                                    <h2><em>${len(c.groups)}</em> <a href="/group">organizations</a> have published so far</h2>
+                                    <p>
+                                        The registry began registering data during 2011. It is early
+                                        days and the number of publishers is growing all the time.
+                                    </p>
+                                </div>
+                            </li>
+                            <li class="home-option-right">
+                                <div id="news">
+                                    <h1><a href="http://aidtransparency.net"><em>About IATI</em></a></h1>
+                                    <p>Find out more about the initiative and catch up on news on <b>aidtransprency.net</b>.</p>
+                                </div>
+                                <div id="learn">
+                                    <h1><a href="http://iatistandard.org"><em>IATI Standard</em></a></h1>
+                                    <p>Learn more about the IATI standard on <b>iatistandard.org</b>.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <xi:include href="apps.html"/>
+            </div>  <!-- .entry-content -->
         </div>
-      </div> <!-- #content -->
+    </div> <!-- #content -->
 
+    <xi:include href="layout.html"/>
 
-  <xi:include href="layout.html" />
 </html>

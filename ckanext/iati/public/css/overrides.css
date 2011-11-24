@@ -280,7 +280,7 @@ h3#reply-title {
 /*-------- Home menu --------*/
 
 body.home {
-  background:url(/images/home-grad.png) repeat-x 0px 271px;
+    background:url(/images/home-grad.png) repeat-x 0px 350px;
 }
 
 body.home #wrapper{
@@ -288,10 +288,25 @@ body.home #wrapper{
 }
 
 #home-options {
-  height:350px;
+  height:300px;
   width:940px;
-  margin:25px auto 34px auto;
+  margin:8px auto 30px auto;
   position:relative;
+}
+
+#home-options #search {
+  background: url(/images/home-search.png) no-repeat top left;
+  padding-left: 100px;
+  margin-top: 30px;
+  height: 100px
+}
+
+#home-options #news {
+  background:url(/images/home-news.png) no-repeat top left;
+}
+
+#home-options #learn {
+  background:url(/images/home-learn.png) no-repeat top left;
 }
 
 #home-options ul {
@@ -301,12 +316,17 @@ body.home #wrapper{
 }
 
 #home-options ul li {
-  width:235px;
+  width:470px;
   background:url(/images/home-dots.png) no-repeat right;
   display:block;
   float:left;
-  height:350px;
-  text-align:center;
+  margin-top: 20px;
+}
+
+#home-options .home-option-right div{
+    margin-top: 30px;
+    margin-left: 30px;
+    padding-left: 70px;
 }
 
 #home-options ul li img,
@@ -325,8 +345,8 @@ body.home #wrapper{
   text-transform:uppercase;
   font-size:20px;
   color:#666 !important;
-  line-height:1.2em;
-  margin-bottom:4px !important;
+  line-height:1em;
+  margin-bottom: 0px !important;
 }
 
 #home-options ul li h1 b {
@@ -339,40 +359,45 @@ body.home #wrapper{
   color:#8A993D !important;
   font-size:50px;
   line-height:50px;
-  background:url(/images/home-arrow.png) no-repeat right 4px;
+  background:url(/images/home-arrow.png) no-repeat right top;
   display:inline-block;
   padding-right:40px;
 }
 
-#home-options ul li p {
-  font-size:13px;
-  width:190px;
-  margin-left:23px;
-  margin-top:0px;
-  height:65px;
-  line-height:22px;
+#home-options ul li h1 a:hover {
+  border-bottom: 2px dashed #8A993D;
 }
 
-#home-options ul li a.go {
-  background:#536FA1;
-  -moz-border-radius:5px;
-  -webkit-border-radius:5px;
-  border-radius:5px;
-  padding:7px 10px 0px 10px;
-  color:#FFF;
-  text-decoration:none;
+#home-options .home-option-right h1 em{
+  font-size:40px;
+  line-height:50px;
+  background:url(/images/home-arrow.png) no-repeat right top;
+}
+
+#home-options ul li h2 {
   font-family:'BebasNeueRegular', Arial, Verdana, sans-serif;
   text-transform:uppercase;
-  font-size:21px;
-  line-height:19px;
-  border-bottom:solid 3px #3E5379;
-  display:inline-block; 
-  letter-spacing:1px;
+  font-size:30px;
+  color:#666 !important;
+  line-height:1.2em;
+  margin-bottom:4px !important;
+  margin-top: 10px !important;
 }
 
-#home-options ul li a.go:active {
-  border-bottom:solid 1px #3E5379;
-  margin-top:2px;
+#home-options ul li h2 em{
+    font-size: 50px;
+    font-style: normal;
+}
+
+#home-options ul li h2 a{
+  color:#8A993D !important;
+}
+
+#home-options ul li p {
+  font-size:15px;
+  margin-right: 10px;
+  margin-top:0px;
+  line-height:22px;
 }
 
 div#footer {
@@ -415,20 +440,28 @@ p.two-col {
 	text-align:justify;
 }
 
-#id-like-to {
+.top-tag {
+  display: inline;
   font-family:'MuseoSlab500', 'Times New Roman', serif;
   color:#fff;
   background:#536FA1;
-  display:block;
-  width:85px;
+  width:200px;
   position:relative;
-  top:-3px;
-  left:-20px;
+  top:18px;
   text-transform:uppercase;
-  padding:2px 6px;
-  margin:-6px 0px -40px -0px;
+  padding:6px 6px;
+  margin-top: 35px; 
+  margin-bottom: -40px;
   z-index:999;
   text-align:center;
+}
+
+.top-tag-left{
+  left:-20px;
+}
+
+.top-tag-right{
+  left:310px;
 }
 
 
