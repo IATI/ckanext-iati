@@ -93,11 +93,11 @@
         <span class="ckan_logged_in" style="display: none;">
                 <strong>${h.icon('user')} <span id="ckan_user_name">username</span></strong>
                 <br/>
-                <a href="${h.url_for(controller='user',action='me',id=None)}">My account</a>
+                <a href="${h.url_for(controller='user',action='me')}">My account</a>
           &middot; <a href="/user/logout">Logout</a>
         </span>
         <span class="ckan_logged_out">
-                <a href="${h.url_for(controller='user',action='login', id=None)}">Login</a>
+                <a href="${h.url_for(controller='user',action='login')}">Login</a>
         </span>
       </div>
 
@@ -109,29 +109,29 @@
       </div> 
       <div class="menu">
         <ul>
-          <li>${h.nav_link(c, _('Home'), controller='home', action='index', id=None)}
+          <li>${h.nav_link(c, _('Home'), controller='home', action='index')}
           <ul class="children">
-            <li class="page_item">${h.subnav_link(c, _('Newsfeed'), controller='revision', action=None, id=None)}</li>
+            <li class="page_item">${h.subnav_link(c, _('Newsfeed'), controller='revision', action=None)}</li>
           </ul>
         </li>
         <li><a href="/package">${_('Data')}</a>
           <ul class="children">
             <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
-              ${h.subnav_link(c, _('Register'), controller='package', action='new', id=None)}
+              ${h.subnav_link(c, _('Register'), controller='package', action='new')}
             </li>
             <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
-              ${h.subnav_link(c, _('Download current records'), controller='ckanext.iati.controllers.spreadsheet:CSVController', action='download', id=None)}
+              ${h.subnav_link(c, _('Download current records'), controller='ckanext.iati.controllers.spreadsheet:CSVController', action='download')}
             </li>
             <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
-              ${h.subnav_link(c, _('Upload CSV file'), controller='ckanext.iati.controllers.spreadsheet:CSVController', action='upload', id=None)}
+              ${h.subnav_link(c, _('Upload CSV file'), controller='ckanext.iati.controllers.spreadsheet:CSVController', action='upload')}
             </li>
 
             </ul>
         </li>
-        <li>${h.nav_link(c, _('Groups'), controller='group', action='index', id=None)}
+        <li>${h.nav_link(c, _('Groups'), controller='group', action='index')}
           <ul class="children">
             <li class="page_item" py:if="h.am_authorized(c, actions.GROUP_CREATE)">
-            ${h.subnav_link(c, _('Create a new group'), controller='group', action='new', id=None)}
+            ${h.subnav_link(c, _('Create a new group'), controller='group', action='new')}
             </li>
           </ul>
         </li>
