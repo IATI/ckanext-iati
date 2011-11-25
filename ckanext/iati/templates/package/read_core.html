@@ -3,6 +3,12 @@
   py:strip=""
   >
   <xi:include href="../_util.html" />
+    <?python
+        extras = {}
+        for extra in c.pkg_dict['extras']:
+            extras[extra['key']] = extra['value']
+    ?>
+
 
   <div class="package">
     <h2 class="head">
@@ -37,26 +43,29 @@
 
     <py:choose test="">
       <table py:when="c.pkg.resources" width="100%">
-        <tr><th>URL</th><th>Format</th><th py:if="config.get('iati.preview_service','')">Preview</th></tr>
+        <tr>
+            <th>URL</th>
+            <th>Format</th>
+            <th py:if="config.get('iati.preview_service','') and extras['filetype'] != 'organisation'">Preview</th>
+            <th py:if="config.get('iati.csv_service','') and extras['filetype'] != 'organisation'">Download as CSV</th>
+        </tr>
         <py:for each="res in c.pkg.resources">
           <tr>
             <td><a href="${res.url}" target="_blank">Download</a></td>
             <td>${res.format}</td>
-            <td py:if="config.get('iati.preview_service','')">
+            <td py:if="config.get('iati.preview_service','') and extras['filetype'] != 'organisation'">
                 ${h.link_to('preview',  config.get('iati.preview_service') % res.url, target='_blank')}
             </td>
+            <td py:if="config.get('iati.csv_service','') and extras['filetype'] != 'organisation'">
+                ${h.link_to('CSV',  config.get('iati.csv_service') % res.url, target='_blank')}
+            </td>
+
         </tr>
         </py:for>
       </table>
       <table py:otherwise=""><tr><th>Resources</th><td>None given for this package.</td></tr></table>
       </py:choose>
     
-    <?python
-        extras = {}
-        for extra in c.pkg_dict['extras']:
-            extras[extra['key']] = extra['value']
-    ?>
-
     <py:def function="details_item(label, value)">
         <tr py:if="value is not None and len(value) > 0">
           <td class="package-label">
