@@ -52,15 +52,18 @@
         ${h.link_to('View Metadata', h.url_for(controller='package', action='read', id=package.name))}
         <py:if test="package.resources">
              | ${h.link_to('Download file', package.resources[0].url,target='_blank')}
+                     ${img_new_window()}
             <?python
                 file_type = [e['value'] for e in package['extras'] if e['key'] == 'filetype']
                 file_type = h.json.loads(file_type[0]) if file_type else None
             ?>
             <py:if test="config.get('iati.preview_service','') and file_type and file_type != 'organisation'">
                  | ${h.link_to('Preview file',  config.get('iati.preview_service') % package.resources[0].url, target='_blank')}
+                     ${img_new_window()}
             </py:if>
             <py:if test="config.get('iati.csv_service','') and file_type and file_type != 'organisation'">
                  | ${h.link_to('Download as CSV',  config.get('iati.csv_service') % package.resources[0].url, target='_blank')}
+                     ${img_new_window()}
             </py:if>
         </py:if>
     </div>
@@ -75,6 +78,8 @@
     </li>
   </ul>
 
+  <!--! Small inline icon for links that open in new windows -->
+  <img py:def="img_new_window()" class="new_window" src="/images/new_window.png" alt="(New window)" title="The link will open in a new window" />
 
 </html>
 
