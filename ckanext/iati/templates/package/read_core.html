@@ -7,6 +7,8 @@
         extras = {}
         for extra in c.pkg_dict['extras']:
             extras[extra['key']] = extra['value']
+
+        is_organisation = ('filetype' in extras and extras['filetype'] == 'organisation')
     ?>
 
 
@@ -46,18 +48,18 @@
         <tr>
             <th>URL</th>
             <th>Format</th>
-            <th py:if="config.get('iati.preview_service','') and extras['filetype'] != 'organisation'">Preview</th>
-            <th py:if="config.get('iati.csv_service','') and extras['filetype'] != 'organisation'">Download as CSV</th>
+            <th py:if="config.get('iati.preview_service','') and not is_organisation">Preview</th>
+            <th py:if="config.get('iati.csv_service','') and not is_organisation">Download as CSV</th>
         </tr>
         <py:for each="res in c.pkg.resources">
           <tr>
             <td><a href="${res.url}" target="_blank">Download</a> ${img_new_window()}</td>
             <td>${res.format}</td>
-            <td py:if="config.get('iati.preview_service','') and extras['filetype'] != 'organisation'">
+            <td py:if="config.get('iati.preview_service','') and not is_organisation">
                 ${h.link_to('preview',  config.get('iati.preview_service') % res.url, target='_blank')}
                 ${img_new_window()}
             </td>
-            <td py:if="config.get('iati.csv_service','') and extras['filetype'] != 'organisation'">
+            <td py:if="config.get('iati.csv_service','') and not is_organisation">
                 ${h.link_to('CSV',  config.get('iati.csv_service') % res.url, target='_blank')}
                 ${img_new_window()}
             </td>
