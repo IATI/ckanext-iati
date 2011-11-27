@@ -111,10 +111,10 @@
         <ul>
           <li>${h.nav_link(c, _('Home'), controller='home', action='index')}
           <ul class="children">
-            <li class="page_item">${h.subnav_link(c, _('Newsfeed'), controller='revision', action=None)}</li>
+            <li class="page_item">${h.subnav_link(c, _('Newsfeed'), controller='revision', action='list')}</li>
           </ul>
         </li>
-        <li><a href="/package">${_('Data')}</a>
+        <li><a href="/dataset">${_('Data')}</a>
           <ul class="children">
             <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
               ${h.subnav_link(c, _('Register'), controller='package', action='new')}
