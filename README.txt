@@ -15,7 +15,7 @@ Since the IATI extension does influcence CKAN in a number of sensitive
 points, it should only be used against tested versions. The latest 
 release known to be compatible is: 
 
-  1.3.3b, Debian-packaged
+  1.5.1
 
 The installation has the following steps, assuming you have a running 
 copy of CKAN:
@@ -29,24 +29,19 @@ You probably also want to install the ckanext-wordpresser and
 ckanext-archiver packages.  See their respective documentation for
 install notes.
 
-2) Copy or symlink the modified Solr schema.xml into the Solr core 
-´´conf/´´ directory, remove any existing index and restart Solr. 
-
-NB: IATI uses a customized search index schema to accomodate the 
-groups_types field not present in generic CKAN.
-
-3) Add the following configuration options to your .ini file:
+2) Add the following configuration options to your .ini file:
 
 # Approval message sender email: 
 iati.email = activation@iatiregistry.org 
 
-# File preview service URL (notice the token that will be replaced with the file URL):
-iati.preview_service = http://dev.yipl.com.np/iati/tools/public/api/activityviewer?xmlUrl=%s
+# File preview and CSV services URL (notice the token that will be replaced with the file URL):
+iati.preview_service = http://tools.aidinfolabs.org/showmydata/index.php?url=%s
+iati.csv_service = http://tools.aidinfolabs.org/csv/direct_from_registry/?xml=%s
 
 ckan.site_title = IATI Registry
 
 # Used in approval mails, make sure its correct:
-ckan.site_url = http://iati.test.ckan.net
+ckan.site_url = http://iatiregistry.org
 
 # Add any other plugins you want to use:
 ckan.plugins = iati_forms iati_approval iati_group_authz iati_package_authz iati_license_override wordpresser synchronous_search
@@ -55,8 +50,7 @@ ckan.plugins = iati_forms iati_approval iati_group_authz iati_package_authz iati
 wordpresser.proxy_host = http://iatiregistry.wordpress.org/
 
 # Use solr and facet over specific fields:
-search_backend = solr
-search.facets = groups groups_types extras_country extras_file_type
+search.facets = groups extras_publishertype extras_country extras_filetype
 
 (Don't forget to also add a 'solr_url').
 
