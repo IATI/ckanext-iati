@@ -50,7 +50,7 @@ ckan.plugins = iati_forms iati_approval iati_group_authz iati_package_authz iati
 wordpresser.proxy_host = http://iatiregistry.wordpress.org/
 
 # Use solr and facet over specific fields:
-search.facets = groups extras_publishertype extras_country extras_filetype
+search.facets = groups publishertype country filetype
 
 (Don't forget to also add a 'solr_url').
 
