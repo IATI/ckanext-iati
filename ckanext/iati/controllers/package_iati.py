@@ -8,6 +8,7 @@ from ckan.authz import Authorizer
 from ckan.logic import get_action
 from ckan.logic.schema import package_form_schema
 from ckan.lib.navl.validators import (ignore_missing,
+                                      ignore_empty,
                                       not_empty,
                                       empty,
                                       ignore,
@@ -17,7 +18,7 @@ from ckan.logic.validators import int_validator
 from ckan.logic.converters import convert_from_extras, convert_to_extras, date_to_db, date_to_form
 
 from ckanext.iati.lists import COUNTRIES
-from ckanext.iati.logic.validators import iati_dataset_name
+from ckanext.iati.logic.validators import iati_dataset_name, db_date
 from ckanext.iati.logic.converters import convert_from_comma_list, convert_to_comma_list, checkbox_value
 
 class PackageIatiController(PackageController):
@@ -38,10 +39,10 @@ class PackageIatiController(PackageController):
         schema.update({
             'filetype': [convert_to_extras],
             'country': [convert_to_extras, ignore_missing],
-            'record_updated': [date_to_db, convert_to_extras,ignore_missing],
-            'data_updated': [date_to_db, convert_to_extras,ignore_missing],
-            'activity_period-from': [date_to_db, convert_to_extras,ignore_missing],
-            'activity_period-to': [date_to_db, convert_to_extras,ignore_missing],
+            'record_updated': [ignore_missing, ignore_empty, db_date, convert_to_extras],
+            'data_updated': [ignore_missing, ignore_empty, db_date, convert_to_extras],
+            'activity_period-from': [ignore_missing, ignore_empty, db_date, convert_to_extras],
+            'activity_period-to': [ignore_missing, ignore_empty, db_date, convert_to_extras],
             'activity_count': [int_validator,convert_to_extras,ignore_missing],
             'archive_file': [checkbox_value, convert_to_extras,ignore_missing],
             'verified': [checkbox_value, convert_to_extras,ignore_missing],
@@ -57,10 +58,10 @@ class PackageIatiController(PackageController):
         schema.update({
             'filetype': [convert_from_extras, ignore_missing],
             'country': [convert_from_extras, ignore_missing],
-            'record_updated': [convert_from_extras,ignore_missing, date_to_form],
-            'data_updated': [convert_from_extras,ignore_missing, date_to_form],
-            'activity_period-from': [convert_from_extras,ignore_missing, date_to_form],
-            'activity_period-to': [convert_from_extras,ignore_missing, date_to_form],
+            'record_updated': [convert_from_extras,ignore_missing],
+            'data_updated': [convert_from_extras,ignore_missing],
+            'activity_period-from': [convert_from_extras,ignore_missing],
+            'activity_period-to': [convert_from_extras,ignore_missing],
             'activity_count': [convert_from_extras,ignore_missing],
             'archive_file': [convert_from_extras,ignore_missing],
             'verified': [convert_from_extras,ignore_missing],

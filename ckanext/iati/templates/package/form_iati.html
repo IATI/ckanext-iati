@@ -4,6 +4,10 @@
     xmlns:py="http://genshi.edgewall.org/"
     xmlns:xi="http://www.w3.org/2001/XInclude">
 
+
+    <?python
+       date_formats_helper = "Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'."
+    ?>
     <div class="error-explanation" py:if="error_summary">
         <h3>Errors in form</h3>
         <p>The form contains invalid entries:</p>
@@ -91,11 +95,11 @@
 
             <dt><label class="field_opt" for="record_updated">Record updated</label><div class="field-xml">[generated-datetime]</div></dt>
             <dd><input id="record_updated" name="record_updated" size="40" type="text" value="${data.get('record_updated', '')}" /></dd>
-            <dd class="instructions basic">The date on which this metadata was last updated. Acceptable formats: 'DD/MM/YYYY HH:MM', 'DD/MM/YYYY', 'MM/YYYY', 'YYYY'.</dd>
+            <dd class="instructions basic">The date on which this metadata was last updated. ${date_formats_helper}</dd>
 
             <dt><label class="field_opt" for="data_updated">Data updated</label><div class="field-xml">[last-updated-datetime]</div></dt>
             <dd><input id="data_updated" name="data_updated" size="40" type="text" value="${data.get('data_updated', '')}"/></dd>
-            <dd class="instructions basic">The date on which the linked file was last updated. Acceptable formats: 'DD/MM/YYYY HH:MM', 'DD/MM/YYYY', 'MM/YYYY', 'YYYY'.</dd>
+            <dd class="instructions basic">The date on which the linked file was last updated. ${date_formats_helper}</dd>
 
             <dt><label class="field_opt" for="record_updated">Language</label><div class="field-xml">[default-language]</div></dt>
             <dd><input id="language" name="language" size="40" type="text" value="${data.get('language', '')}" /></dd>
@@ -160,7 +164,7 @@
                 <input class="short" id="activity_period-from" name="activity_period-from" type="text" value="${data.get('activity_period-from', '')}" /> -
                 <input class="short" id="activity_period-to" name="activity_period-to" type="text" value="${data.get('activity_period-to', '')}" />
             </dd>
-            <dd class="instructions basic">The earliest and latest dates reported for the starting and ending of activities within this dataset. Acceptable formats: 'DD/MM/YYYY HH:MM', 'DD/MM/YYYY', 'MM/YYYY', 'YYYY'.</dd>
+            <dd class="instructions basic">The earliest and latest dates reported for the starting and ending of activities within this dataset. ${date_formats_helper}</dd>
 
             <dt><label class="field_opt" for="activity_count">Num. Activities</label><div class="field-xml">[activity-count]</div></dt>
             <dd><input id="activity_count" name="activity_count" size="40" type="text" value="${data.get('activity_count', '')}"/></dd>
