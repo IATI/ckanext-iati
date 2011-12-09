@@ -53,7 +53,7 @@
         </tr>
         <py:for each="res in c.pkg.resources">
           <tr>
-            <td><a href="${res.url}" target="_blank">Download</a> ${img_new_window()}</td>
+            <td><a href="${res.url}" target="_blank">Download</a> <span py:if="res.size" class="file-size">(${h.format_file_size(res.size)})</span> ${img_new_window()}</td>
             <td>${res.format}</td>
             <td py:if="config.get('iati.preview_service','') and not is_organisation">
                 ${h.link_to('preview',  config.get('iati.preview_service') % res.url, target='_blank')}
