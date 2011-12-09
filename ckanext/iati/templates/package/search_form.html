@@ -14,6 +14,7 @@
     groups_options = [(o, h.group_title(o) + " (%s)" % n) for o, n in global_facets.get('groups', {}).items() if o != ""]
     types_options = [(o, h.publisher_type_title(o) + " (%s)" % n) for o, n in global_facets.get('publishertype', {}).items() if o != ""]
     file_types_options = [(o, h.file_type_title(o) + " (%s)" % n) for o, n in global_facets.get('filetype', {}).items() if o != ""]
+    organization_types_options = [(o, h.organization_type_title(o) + " (%s)" % n) for o, n in global_facets.get('publisher_organization_type', {}).items() if o != ""]
 
     country_options.sort(key=lambda name: name[1])
     country_options.insert(0,any)
@@ -23,9 +24,11 @@
     types_options.insert(0,any)
     file_types_options.sort(key=lambda name: name[1])
     file_types_options.insert(0,any)
+    organization_types_options.sort(key=lambda name: name[1])
+    organization_types_options.insert(0,any)
 
   ?>
-  <table border="0" class="facets">
+  <table class="facets">
     <tr>
         <td>Source:</td>
         <td>${h.select('publishertype', dict(c.fields).get('publishertype', '') if c.facets else '', types_options)}</td>
@@ -34,6 +37,11 @@
         <td>Publisher:</td>
         <td>${h.select('groups', dict(c.fields).get('groups', '') if c.facets else '', groups_options)}</td>
     </tr>
+    <tr>
+        <td>Organisation type:</td>
+        <td>${h.select('publisher_organization_type', dict(c.fields).get('publisher_organization_type', '') if c.facets else '',  organization_types_options)}</td>
+    </tr>
+
     <tr>
         <td>Country:</td>
         <td>${h.select('country', dict(c.fields).get('country', '') if c.facets else '',  country_options)}</td>

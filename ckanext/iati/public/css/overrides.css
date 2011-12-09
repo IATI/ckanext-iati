@@ -470,13 +470,13 @@ p.two-col {
 #package-search .facets tr td {
   color: #2C4F87 !important;
   font-family: 'MuseoSlab500', 'Times New Roman', serif;
-  font-size: 16px;
+  font-size: 14px;
   vertical-align:middle;
-  padding:10px 0px;
+  padding: 5px 0px;
 }
 
 #package-search .facets tr td:first-child {
-  width: 100px !important;
+  width: 150px !important;
 }
 
 #package-search .facets {
@@ -497,12 +497,13 @@ p.two-col {
   color: #2C4F87;
   font-family: 'MuseoSlab500', 'Times New Roman', serif;
   font-size: 17px;
-  padding: 7px 0px;
-  width: 500px;
+  padding: 7px 3px;
+  width: 530px;
 }
 
 #package-search .facets select {
   border:auto;
+  font-size: 0.9em;
 }
 
 .entry-content select {
@@ -626,6 +627,8 @@ a, a:link {
     margin-left: 4em;
     font-size: 12px;
 }
+
+
 
 /*-------- Other --------*/
 
