@@ -13,7 +13,7 @@
   </py:match>
 
   <div py:match="content">
-    <h2>Search ${g.site_title}</h2>
+    <h2>Search the ${g.site_title}</h2>
     
     <xi:include href="search_form.html" />
     
@@ -21,7 +21,7 @@
         <p i18n:msg="item_count"><strong>There was an error while searching.</strong> 
             Please try another search term.</p>
       </py:if>
-      <py:if test="c.q">      
+      <py:if test="request.params">      
         <h4 i18n:msg="item_count"><strong>${c.page.item_count}</strong> packages found</h4>            
      </py:if>
       ${package_list_local(c.page.items)}

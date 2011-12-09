@@ -467,6 +467,10 @@ p.two-col {
 
 /*-------- Search form --------*/
 
+#package-search {
+    margin-bottom: 15px;
+}
+
 #package-search .facets tr td {
   color: #2C4F87 !important;
   font-family: 'MuseoSlab500', 'Times New Roman', serif;
@@ -536,7 +540,7 @@ p.two-col {
 }
 
 ul.packages {
-  margin-top:40px;
+  margin-top: 20px;
 }
 
 ul.packages > li {
