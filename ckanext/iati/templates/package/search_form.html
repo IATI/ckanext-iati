@@ -1,4 +1,9 @@
-<form id="package-search" class="package-search" action="${h.url_for(controller='package', action='search', id=None)}" method="GET">
+<form id="package-search"
+    class="package-search"
+    action="${h.url_for(controller='package', action='search', id=None)}"
+    method="GET"
+    xmlns:py="http://genshi.edgewall.org/"
+>
   <input type="search" class="search" name="q" value="${c.q}" />
  
   <?python
@@ -9,48 +14,31 @@
     global_query.run({'facet.field':g.facets})
     global_facets = global_query.facets
 
+    search_facets = [
+        ('publishertype',h.publisher_type_title, 'Source'),
+        ('groups',h.group_title, 'Publisher'),
+        ('publisher_organization_type',h.organization_type_title, 'Organisation type'),
+        ('country',h.country_name, 'Country'),
+        ('filetype',h.file_type_title, 'File type'),
+    ]
+    options = {}
+    for facet,helper,title in search_facets:
+        options[facet] = [(o, helper(o) + " (%s)" % n) for o, n in global_facets.get(facet, {}).items() if o != ""]
+
     any = ('', 'Any')
-    country_options = [(o, h.country_name(o) + " (%s)" % n) for o, n in global_facets.get('country', {}).items() if o != ""]
-    groups_options = [(o, h.group_title(o) + " (%s)" % n) for o, n in global_facets.get('groups', {}).items() if o != ""]
-    types_options = [(o, h.publisher_type_title(o) + " (%s)" % n) for o, n in global_facets.get('publishertype', {}).items() if o != ""]
-    file_types_options = [(o, h.file_type_title(o) + " (%s)" % n) for o, n in global_facets.get('filetype', {}).items() if o != ""]
-    organization_types_options = [(o, h.organization_type_title(o) + " (%s)" % n) for o, n in global_facets.get('publisher_organization_type', {}).items() if o != ""]
+    def sort_and_insert_any(options):
+        options.sort(key=lambda name: name[1])
+        options.insert(0,any)
 
-    country_options.sort(key=lambda name: name[1])
-    country_options.insert(0,any)
-    groups_options.sort(key=lambda name: name[1])
-    groups_options.insert(0,any)
-    types_options.sort(key=lambda name: name[1])
-    types_options.insert(0,any)
-    file_types_options.sort(key=lambda name: name[1])
-    file_types_options.insert(0,any)
-    organization_types_options.sort(key=lambda name: name[1])
-    organization_types_options.insert(0,any)
-
+    for facet,facet_options in options.iteritems():
+        sort_and_insert_any(facet_options)   
   ?>
+
   <table class="facets">
-    <tr>
-        <td>Source:</td>
-        <td>${h.select('publishertype', dict(c.fields).get('publishertype', '') if c.facets else '', types_options)}</td>
+    <tr py:for="facet,helper,title in search_facets">
+        <td>${title}:</td>
+        <td>${h.select(facet, dict(c.fields).get(facet, '') if c.facets else '', options[facet])}</td>
     </tr>
-    <tr>
-        <td>Publisher:</td>
-        <td>${h.select('groups', dict(c.fields).get('groups', '') if c.facets else '', groups_options)}</td>
-    </tr>
-    <tr>
-        <td>Organisation type:</td>
-        <td>${h.select('publisher_organization_type', dict(c.fields).get('publisher_organization_type', '') if c.facets else '',  organization_types_options)}</td>
-    </tr>
-
-    <tr>
-        <td>Country:</td>
-        <td>${h.select('country', dict(c.fields).get('country', '') if c.facets else '',  country_options)}</td>
-    </tr>
-    <tr>
-        <td>File type:</td>
-        <td>${h.select('filetype', dict(c.fields).get('filetype', '') if c.facets else '',  file_types_options)}</td>
-    </tr>
-
   </table>
   
    <input type="submit" value="Search" class="button" />
