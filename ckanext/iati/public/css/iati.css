@@ -396,4 +396,7 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
 }
 
 
-
+/*------- Dataset listing ------------*/
+.file-size{
+    font-size: small;
+}

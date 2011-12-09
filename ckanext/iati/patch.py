@@ -83,6 +83,18 @@ def my_group_license():
     group = my_group()
     return group and group.extras.get('license_id', '')
 
+def format_file_size(size):
+    if size is None:
+        return None
+    try:
+        size = float(size)
+    except ValueError,e:
+        return None
+
+    for label in ['bytes','KB','MB','GB','TB']:
+        if size < 1024.0:
+            return "%3.1f%s" % (size, label)
+        size /= 1024.0
 
 h.am_authorized_with_publisher = am_authorized_with_publisher
 h.country_name = country_name
@@ -93,4 +105,4 @@ h.publisher_type_title = publisher_type_title
 h.publisher_record_fields = fields
 h.my_group = my_group
 h.my_group_license = my_group_license
-
+h.format_file_size = format_file_size
