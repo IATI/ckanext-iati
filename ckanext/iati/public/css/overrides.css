@@ -545,8 +545,9 @@ ul.packages {
 
 ul.packages > li {
   border-left-width:0px;
-  margin:8px 0px;
-  border-bottom-color:#CCC;
+  margin:0px;
+  padding: 12px 5px 5px 5px;
+  border-bottom: none;
 }
 
 ul.packages li div.header a {

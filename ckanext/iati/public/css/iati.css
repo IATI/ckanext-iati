@@ -282,11 +282,6 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
 	margin-bottom: 0.0em;
 }
 
-.package-result-links {
-    margin-top: 0.5em;
-    font-size: 0.9em;
-}
-
 .iati_preview {
 	display: none; 
 }
@@ -399,4 +394,18 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
 /*------- Dataset listing ------------*/
 .file-size{
     font-size: small;
+}
+
+.package-result-links {
+    margin-top: 0.5em;
+    font-size: 0.9em;
+}
+
+.package-result-details {
+    font-size: x-small;
+}
+
+.bg-color {
+    background-color: #ECF3F5
+
 }
