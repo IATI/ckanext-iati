@@ -103,6 +103,20 @@
     </li>
   </ul>
 
+  <!--! List of dataset groups: pass in a collection of dataset groups
+        and this renders the standard group listing. Same as the above, but using dictionaries -->
+
+  <table py:def="group_list_from_dict_local(groups)" class="groups">
+    <tr><th>Publisher</th><th>Organization type</th><th>Datasets</th></tr>
+    <py:for each="group in groups">
+    <tr>
+      <td><a href="${h.url_for(controller='group', action='read', id=group['name'])}">${group['display_name']}</a></td>
+      <td>${h.get_organization_type(group['id'])}</td>
+      <td>${group['packages']}</td>
+    </tr>
+    </py:for>
+  </table>
+
   <!--! Small inline icon for links that open in new windows -->
   <img py:def="img_new_window()" class="new_window" src="/images/new_window.png" alt="(New window)" title="The link will open in a new window" />
 

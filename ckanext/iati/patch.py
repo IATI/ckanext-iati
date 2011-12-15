@@ -59,6 +59,14 @@ def publisher_type_title(code):
 def organization_type_title(code):
     return dict(ORGANIZATION_TYPES).get(code, code)
 
+def get_organization_type(group_id):
+    group = model.Group.get(group_id)
+    if group:
+        org_type = group.extras.get('publisher_organization_type')
+        if org_type:
+            return organization_type_title(org_type)
+    return ''
+
 def am_authorized_with_publisher(c, action, domain_object=None):
     from ckan import model
     from ckan.authz import Authorizer
@@ -106,3 +114,4 @@ h.publisher_record_fields = fields
 h.my_group = my_group
 h.my_group_license = my_group_license
 h.format_file_size = format_file_size
+h.get_organization_type = get_organization_type
