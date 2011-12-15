@@ -110,29 +110,29 @@
       </div> 
       <div class="menu">
         <ul>
-          <li>${h.nav_link(c, _('Home'), controller='home', action='index')}
+          <li><a href="/">${_('Home')}</a>
           <ul class="children">
-            <li class="page_item">${h.subnav_link(c, _('Newsfeed'), controller='revision', action='list')}</li>
+            <li class="page_item"><a href="/revision">Newsfeed</a></li>
           </ul>
         </li>
         <li><a href="/dataset">${_('Data')}</a>
           <ul class="children">
             <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
-              ${h.subnav_link(c, _('Register'), controller='package', action='new')}
+                <a href="/dataset/new">Register</a>
             </li>
             <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
-              ${h.subnav_link(c, _('Download current records'), controller='ckanext.iati.controllers.spreadsheet:CSVController', action='download')}
+                <a href="/csv/download">Download current records</a>
             </li>
             <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
-              ${h.subnav_link(c, _('Upload CSV file'), controller='ckanext.iati.controllers.spreadsheet:CSVController', action='upload')}
+                <a href="/csv/upload">Upload CSV file</a>
             </li>
 
             </ul>
         </li>
-        <li>${h.nav_link(c, _('Groups'), controller='group', action='index')}
+        <li><a href="/publisher">Publishers</a>
           <ul class="children">
             <li class="page_item" py:if="h.am_authorized(c, actions.GROUP_CREATE)">
-            ${h.subnav_link(c, _('Create a new group'), controller='group', action='new')}
+                <a href="/publisher/new">Create a new publisher</a>
             </li>
           </ul>
         </li>

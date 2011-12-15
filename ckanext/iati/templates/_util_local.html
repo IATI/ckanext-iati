@@ -110,7 +110,7 @@
     <tr><th>Publisher</th><th>Organization type</th><th>Datasets</th></tr>
     <py:for each="group in groups">
     <tr>
-      <td><a href="${h.url_for(controller='group', action='read', id=group['name'])}">${group['display_name']}</a></td>
+      <td><a href="/publisher/${group['name']}">${group['display_name']}</a></td>
       <td>${h.get_organization_type(group['id'])}</td>
       <td>${group['packages']}</td>
     </tr>

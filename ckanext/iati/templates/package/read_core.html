@@ -31,7 +31,7 @@
         <span title="Publisher of this dataset">Publisher:</span>
         <ul>
           <li py:for="group in c.pkg.groups">
-          <a href="${h.url_for(controller='group', action='read', id=group.name)}">${group.title}</a>
+          <a href="/publisher/${group.name}">${group.title}</a>
           </li>
         </ul>
       </div>

@@ -45,8 +45,25 @@ class IatiForms(SingletonPlugin):
         map.connect('/dataset/new', controller=package_controller, action='new')
         map.connect('/dataset/edit/{id}', controller=package_controller, action='edit')
 
-        map.connect('/group/new', controller=group_controller, action='new')
-        map.connect('/group/edit/{id}', controller=group_controller, action='edit')
+        map.redirect('/group/{url:.*}', '/publisher/{url}')
+        map.redirect('/publishers', '/publisher')
+        map.redirect('/publishers/{url:.*}', '/publisher/{url}')
+        map.connect('/publisher', controller=group_controller, action='index')
+        map.connect('/publisher/list', controller=group_controller, action='list')
+        map.connect('/publisher/new', controller=group_controller, action='new')
+        map.connect('/publisher/{action}/{id}', controller=group_controller,
+            requirements=dict(action='|'.join([
+            'edit',
+            'authz',
+            'history'
+            ]))
+            )
+        map.connect('/publisher/{id}', controller=group_controller, action='read')
+
+        map.redirect('/api/{ver:1|2|3}/rest/publisher', '/api/{ver}/rest/group')
+        map.redirect('/api/rest/publisher', '/api/rest/group')
+        map.redirect('/api/{ver:1|2|3}/rest/publisher/{url:.*}', '/api/{ver}/rest/group/{url:.*}')
+        map.redirect('/api/rest/publisher/{url:.*}', '/api/rest/group/{url:.*}')
 
         csv_controller = 'ckanext.iati.controllers.spreadsheet:CSVController'
         map.connect('/csv/download', controller=csv_controller, action='download')
