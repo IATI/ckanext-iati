@@ -45,7 +45,8 @@ class IatiForms(SingletonPlugin):
         map.connect('/dataset/new', controller=package_controller, action='new')
         map.connect('/dataset/edit/{id}', controller=package_controller, action='edit')
 
-        map.redirect('/group/{url:.*}', '/publisher/{url}')
+        map.redirect('/group/{url:.*}', '/publisher/{url}', _redirect_code='301 Moved Permanently')
+        map.redirect('/group', '/publisher', _redirect_code='301 Moved Permanently')
         map.redirect('/publishers', '/publisher')
         map.redirect('/publishers/{url:.*}', '/publisher/{url}')
         map.connect('/publisher', controller=group_controller, action='index')
