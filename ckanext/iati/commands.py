@@ -9,7 +9,6 @@ from ckan.logic import get_action
 from ckan import model
 
 from ckan.lib.helpers import date_str_to_datetime
-from ckanext.archiver import tasks
 import logging
 
 log = logging.getLogger('iati_archiver')
@@ -61,6 +60,8 @@ class Archiver(CkanCommand):
             else:
                 packages = get_action('package_list')(context, {})
 
+            from ckanext.archiver import tasks
+            
             data_formats = tasks.DATA_FORMATS
             data_formats.append('iati-xml')
 
@@ -159,7 +160,9 @@ class Archiver(CkanCommand):
             log.error('Command %s not recognized' % (cmd,))
 
 def _download_resource(context,resource, max_content_length=50000000, url_timeout=30,data_formats=['xml','iati-xml']):
-
+    
+    from ckanext.archiver import tasks
+    
     # get the resource and archive it
     #logger.info("Resource identified as data file, attempting to archive")
     res = requests.get(resource['url'], timeout = url_timeout)
