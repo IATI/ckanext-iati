@@ -1,4 +1,5 @@
 import os
+import sys
 import datetime
 from lxml import etree
 import requests
@@ -12,6 +13,16 @@ from ckan.lib.helpers import date_str_to_datetime
 import logging
 
 log = logging.getLogger('iati_archiver')
+
+import cgitb
+import warnings
+def text_traceback():
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        res = 'the original traceback:'.join(
+            cgitb.text(sys.exc_info()).split('the original traceback:')[1:]
+        ).strip()
+    return res
 
 class Archiver(CkanCommand):
     '''
@@ -61,13 +72,14 @@ class Archiver(CkanCommand):
                 packages = get_action('package_list')(context, {})
 
             from ckanext.archiver import tasks
-            
+
             data_formats = tasks.DATA_FORMATS
             data_formats.append('iati-xml')
 
             log.info('IATI Archiver: starting  %s' % str(t1))
             log.info('Number of datasets to archive: %d' % len(packages))
             updated = 0
+            consecutive_errors = 0
             for package_id in packages:
                 package = get_action('package_show_rest')(context,{'id': package_id})
 
@@ -94,6 +106,17 @@ class Archiver(CkanCommand):
                     except tasks.DownloadError,e:
                         log.error('Error downloading resource for dataset %s: %s' % (package['name'],str(e)))
                         continue
+                    except Exception,e:
+                        consecutive_errors = consecutive_errors + 1
+                        log.error('Error downloading resource for dataset %s: %s' % (package['name'],str(e)))
+                        log.error(text_traceback())
+                        if consecutive_errors > 5:
+                            log.error('Too many errors, aborting...')
+                            sys.exit(1)
+                        else:
+                            continue
+                    else:
+                        consecutive_errors = 0
 
                     if 'zip' in result['headers']['content-type']:
                         # Skip zipped files for now
@@ -101,10 +124,11 @@ class Archiver(CkanCommand):
                         continue
 
                     file_path = result['saved_file']
-                    f = open(file_path,'r')
-                    xml = f.read()
-                    f.close()
+
+                    with open(file_path, 'r') as f:
+                        xml = f.read()
                     os.remove(file_path)
+
                     try:
                         tree = etree.fromstring(xml)
                     except etree.XMLSyntaxError,e:
@@ -160,9 +184,9 @@ class Archiver(CkanCommand):
             log.error('Command %s not recognized' % (cmd,))
 
 def _download_resource(context,resource, max_content_length=50000000, url_timeout=30,data_formats=['xml','iati-xml']):
-    
+
     from ckanext.archiver import tasks
-    
+
     # get the resource and archive it
     #logger.info("Resource identified as data file, attempting to archive")
     res = requests.get(resource['url'], timeout = url_timeout)
