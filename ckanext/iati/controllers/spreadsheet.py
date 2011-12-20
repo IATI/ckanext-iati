@@ -13,9 +13,9 @@ from ckan.lib.navl.validators import not_empty, ignore_empty, not_missing
 from ckan.lib.navl.dictization_functions import validate
 from ckanext.iati.authz import get_user_administered_groups
 
-from ckanext.iati.logic.validators import (iati_dataset_name_from_csv, 
+from ckanext.iati.logic.validators import (iati_dataset_name_from_csv,
                                            file_type_validator,
-                                           db_date,
+                                           date_from_csv,
                                            yes_no,
                                            country_code)
 
@@ -30,10 +30,10 @@ CSV_MAPPING = [
         ('format', 'resources', 'format', []),
         ('file-type','extras', 'filetype', [ignore_empty, file_type_validator]),
         ('recipient-country','extras', 'country', [ignore_empty, country_code]),
-        ('activity-period-start','extras', 'activity_period-from', [ignore_empty, db_date]),
-        ('activity-period-end','extras', 'activity_period-to', [ignore_empty, db_date]),
-        ('last-updated-datetime','extras', 'data_updated', [ignore_empty, db_date]),
-        ('generated-datetime','extras', 'record_updated', [ignore_empty, db_date]),
+        ('activity-period-start','extras', 'activity_period-from', [ignore_empty, date_from_csv]),
+        ('activity-period-end','extras', 'activity_period-to', [ignore_empty, date_from_csv]),
+        ('last-updated-datetime','extras', 'data_updated', [ignore_empty, date_from_csv]),
+        ('generated-datetime','extras', 'record_updated', [ignore_empty, date_from_csv]),
         ('activity-count','extras', 'activity_count', [ignore_empty,int_validator]),
         ('verification-status','extras', 'verified', [ignore_empty,yes_no]),
         ('default-language','extras', 'language', [])
@@ -115,7 +115,7 @@ class CSVController(BaseController):
 
             c.file_name = csv_file.filename
 
-            added, updated, errors = self.read_csv_file(csv_file)
+            added, updated, errors = self.read_csv_file(csv_file.file)
             c.added = added
             c.updated = updated
 
@@ -183,29 +183,35 @@ class CSVController(BaseController):
 
         return output
 
-    def read_csv_file(self,csv_file):
+    def read_csv_file(self,csv_file,context=None):
         fieldnames = [f[0] for f in CSV_MAPPING]
 
         try:
             # Try to sniff the file dialect
-            dialect = csv.Sniffer().sniff(csv_file.file.read(1024))
-            csv_file.file.seek(0)
+            dialect = csv.Sniffer().sniff(csv_file.read(1024),delimiters=[',',';','\t'])
+        except csv.Error:
+            # If there was an error, I'll bet you a pint it's an Excel file
+            dialect = csv.excel
 
-            reader = csv.DictReader(csv_file.file, dialect=dialect)
+        csv_file.seek(0)
+        try:
+            reader = csv.DictReader(csv_file, dialect=dialect)
+
+            # Check if all columns are present
+            if not sorted(reader.fieldnames) == sorted(fieldnames):
+                error = {'file': 'Missing columns: %s' % ', '.join([f for f in fieldnames if f not in reader.fieldnames])}
+                return [], [], [('1',error)]
+
         except csv.Error,e:
-            abort(400,'Error reading CSV file: %s' % str(e))
-
-
-        log.debug('Starting reading file %s (delimiter "%s", escapechar "%s")' %
-                    (csv_file.filename,dialect.delimiter,dialect.escapechar))
-
-        # Check if all columns are present
-        if not sorted(reader.fieldnames) == sorted(fieldnames):
-            error = {'file': 'Missing columns: %s' % ' ,'.join([f for f in fieldnames if f not in reader.fieldnames])}
+            error = {'file': 'Error reading CSV file: %s' % str(e)}
             return [], [], [('1',error)]
 
-        context = {'model':model,'user': c.user or c.author, 'api_verion':'1'}
-        groups= get_action('group_list')(context, {})
+
+        log.debug('Starting reading CSV file (delimiter "%s", escapechar "%s")' %
+                    (dialect.delimiter,dialect.escapechar))
+
+        if not context:
+            context = {'model':model, 'session':model.Session, 'user': c.user or c.author, 'api_version':'1'}
 
         counts = {'added': [], 'updated': []}
         errors = {}
@@ -224,7 +230,7 @@ class CSVController(BaseController):
                     continue
 
                 package_dict = self.get_package_dict_from_row(row)
-                self.create_or_update_package(package_dict,counts)
+                self.create_or_update_package(package_dict,counts,context=context)
 
                 del errors[row_index]
             except ValidationError,e:
@@ -265,14 +271,14 @@ class CSVController(BaseController):
                     package[key] = value
         return package
 
-    def create_or_update_package(self, package_dict, counts = None):
-
-        context = {
-            'model': model,
-            'session': model.Session,
-            'user': c.user,
-            'api_version':'1'
-        }
+    def create_or_update_package(self, package_dict, counts = None, context = None):
+        if not context:
+            context = {
+                'model': model,
+                'session': model.Session,
+                'user': c.user,
+                'api_version':'1'
+            }
 
         # Check if package exists
         data_dict = {}

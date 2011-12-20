@@ -26,9 +26,10 @@ def iati_dataset_name_from_csv(key,data,errors,context):
     unflattened = unflatten(data)
     value = data[key]
 
-    if not 'registry-publisher-id' in unflattened:
+    if not unflattened.get('registry-publisher-id',None):
         errors[key].append('Publisher name missing')
         return
+
     # Ask for the group details to ensure it actually exists
     group = get_action('group_show')(context,{'id':unflattened['registry-publisher-id']})
     group_name = group['name']
@@ -45,6 +46,22 @@ def file_type_validator(key,data,errors, context=None):
     allowed_values = [t[0] for t in FILE_TYPES]
     if not value in allowed_values:
         errors[key].append('File type must be one of [%s]' % ', '.join(allowed_values))
+
+def date_from_csv(value, context):
+    try:
+        # Try first with DD/MM/YYYY, etc
+        value = DateType.form_to_db(value)
+    except DateConvertError, e:
+        # If not try YYYY-MM-DD
+        try:
+            value = db_date(value,context)
+        except Invalid, e:
+            if 'cannot parse' in e.error.lower():
+                msg = "Cannot parse db date '%s'. Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY' \
+                        or 'DD/MM/YYYY HH:MM', 'DD/MM/YYYY', 'MM/YYYY'" % (value)
+                raise Invalid(msg)
+            raise e
+    return value
 
 def db_date(value, context):
     try:

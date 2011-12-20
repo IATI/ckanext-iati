@@ -34,9 +34,12 @@
         <div class="listdiv">
         <ul>
             <li>For publishers with a large number of datasets it may take a while to upload the CSV file. Please be patient.</li>
-            <li>You may only upload records that contain your authorised registry-publisher-idi.</li>
+            <li>You may only upload records that contain your authorised registry-publisher-id.</li>
             <li>This import will overwrite all fields in each record specified in the file. Blank cells in the file will overwrite existing data.</li>
             <li>This import will not delete records in the registry. To delete a record follow the instructions <a href="http://iatiregistry.org/help_delete">here</a>.</li>
+            <li>Excel users be aware that by default Excel does not quote fields when exporting a file to CSV. In this case the delimiter <strong>must</strong>
+            be a comma in order for the file to get properly imported. If the fields are quoted, the allowed delimiters are comma, semicolon and tab.</li>
+            <li>If you keep getting import errors, check if any of the fields (specially the URL) contain special characters. If this is the case, these fields should be quoted.</li>
         </ul>
         </div>
     </div>
