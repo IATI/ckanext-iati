@@ -9,7 +9,7 @@ from ckan import model
 from ckan.model import Session
 from ckan.lib.base import BaseController, c, request, response, json, abort
 from ckan.lib.helpers import date_str_to_datetime
-from ckan.logic import get_action
+from ckan.logic import get_action, NotFound
 
 from ckanext.iati.lists import COUNTRIES, ORGANIZATION_TYPES
 
@@ -37,8 +37,7 @@ class FeedController(BaseController):
 
     def country(self,id,format='atom'):
 
-        country_title = dict(COUNTRIES).get(id,None)
-
+        country_title = dict(COUNTRIES).get(id)
         if not country_title:
             abort(404,'Country or area not found')
 
@@ -47,7 +46,7 @@ class FeedController(BaseController):
 
         return self.output_feed(results,
                     feed_title = u'IATI Registry - %s' % country_title,
-                    feed_description = u'Recently created or updated datasets on the IATI Registry for country: %s' % country_title,
+                    feed_description = u'Recently created or updated datasets on the IATI Registry for country: "%s"' % country_title,
                     feed_link = u'%s/dataset?country=%s' % (self.base_url,id),
                     feed_guid = u'tag:iatiregistry.org,2011:/feeds/country/%s.%s' % (id,format),
                     format=format,
@@ -55,9 +54,42 @@ class FeedController(BaseController):
 
 
     def publisher(self,id,format='atom'):
-        pass
+
+        try:
+            context = {'model': model, 'session': model.Session,
+               'user': c.user or c.author}
+            group_dict = get_action('group_show')(context,{'id':id})
+        except NotFound:
+            abort(404,'Publisher not found')
+
+        data_dict = {'q': 'groups: %s' % id }
+        results= package_search(data_dict)
+
+        return self.output_feed(results,
+                    feed_title = u'IATI Registry - %s' % group_dict['title'],
+                    feed_description = u'Recently created or updated datasets on the IATI Registry by publisher: "%s"' % group_dict['title'],
+                    feed_link = u'%s/dataset?groups=%s' % (self.base_url,id),
+                    feed_guid = u'tag:iatiregistry.org,2011:/feeds/publisher/%s.%s' % (id,format),
+                    format=format,
+                )
+
+
     def organisation_type(self,id,format='atom'):
-        pass
+
+        organisation_type_title = dict(ORGANIZATION_TYPES).get(id)
+        if not organisation_type_title:
+            abort(404,'Unknown organisation type')
+
+        data_dict = {'q': 'publisher_organization_type: %s' % id }
+        results= package_search(data_dict)
+
+        return self.output_feed(results,
+                    feed_title = u'IATI Registry - %s' % organisation_type_title,
+                    feed_description = u'Recently created or updated datasets on the IATI Registry by organisations of type: "%s"' % organisation_type_title,
+                    feed_link = u'%s/dataset?publisher_organization_type=%s' % (self.base_url,id),
+                    feed_guid = u'tag:iatiregistry.org,2011:/feeds/organization_type/%s.%s' % (id,format),
+                    format=format,
+                )
 
     def general(self,format='atom'):
         data_dict = {'q': '*:*' }
@@ -89,7 +121,7 @@ class FeedController(BaseController):
 
         return self.output_feed(results,
                     feed_title = u'IATI Registry - Custom query',
-                    feed_description = u'Recently created or updated datasets on the IATI Registry. Custom query: "%s"' % q,
+                    feed_description = u'Recently created or updated datasets on the IATI Registry. Custom query: \'%s\'' % q,
                     feed_link = u'%s/dataset?%s' % (self.base_url,search_url_params),
                     feed_guid = u'tag:iatiregistry.org,2011:/feeds/custom.%s?%s' % (format,search_url_params),
                     format=format,
@@ -98,40 +130,22 @@ class FeedController(BaseController):
 
 
     def output_feed(self,results,
-                         feed_title=u'IATI Regsitry',
-                         feed_description=u'IATI Regsitry',
+                         feed_title=u'IATI Registry',
+                         feed_description=u'IATI Registry',
                          feed_link=u'http://iatiregistry.org/dataset',
                          feed_guid=u'tag:iatiregistry.org,2011:/feeds',
                          format='atom'):
-        '''
-        q = request.params.get('q', u'')
-        limit = 20
-        for (param, value) in request.params.items():
-            if not param in ['q', 'page','format'] \
-                    and len(value) and not param.startswith('_'):
-                q += ' %s: "%s"' % (param, value)
 
-        context = {'model': model, 'session': model.Session,
-                   'user': c.user or c.author}
-
-        data_dict = {
-            'q':q,
-            'rows':limit,
-            'sort':'metadata_modified desc'
-        }
-
-        query = get_action('package_search')(context,data_dict)
-        '''
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author}
 
 
         if format == 'rss':
-            feed_class = Rss201rev2Feed
+            FeedClass = Rss201rev2Feed
         else:
-            feed_class = Atom1Feed
+            FeedClass = Atom1Feed
 
-        feed = feed_class(
+        feed = FeedClass(
             title=feed_title,
             link=feed_link,
             description=feed_description,
@@ -145,13 +159,12 @@ class FeedController(BaseController):
         def item_id(pkg_id,metadata_modified):
             return 'tag:iatiregistry.org,%s:%s' % (metadata_modified,pkg_id)
 
-
         for pkg in results:
             # We need extra details, not present in the search results
             pkg_rest = get_action('package_show_rest')(context,{'id':pkg['id']})
 
             # All datasets should have a group, but just in case
-            publisher = pkg['groups'][0]['title'] if len(pkg['groups']) else 'unknown'
+            publisher = pkg['groups'][0]['title'] if len(pkg['groups']) else u'Unknown'
             publisher_link = u'%s/publisher/%s' % (self.base_url,pkg['groups'][0]['name']) if len(pkg['groups']) else u''
 
             feed.add_item(
