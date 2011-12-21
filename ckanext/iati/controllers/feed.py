@@ -162,7 +162,7 @@ class FeedController(BaseController):
                     unique_id=item_id(pkg['id'],pkg_rest['metadata_modified']),
                     author_name=publisher,
                     author_link=publisher_link,
-                    categories=pkg['tags'],
+                    categories=pkg_rest['tags'],
                     enclosure=Enclosure(
                         u'%s/api/rest/dataset/%s' % (self.base_url,pkg['name']),
                         unicode(len(json.dumps(pkg_rest))),
