@@ -39,18 +39,11 @@ class IatiForms(SingletonPlugin):
     def before_map(self, map):
         package_controller = 'ckanext.iati.controllers.package_iati:PackageIatiController'
         group_controller = 'ckanext.iati.controllers.group_iati:GroupIatiController'
-        feed_controller = 'ckanext.iati.controllers.feed:FeedController'
 
         map.redirect('/package/new','/dataset/new')
         map.redirect('/package/edit/{id}','/dataset/edit/{id}')
         map.connect('/dataset/new', controller=package_controller, action='new')
         map.connect('/dataset/edit/{id}', controller=package_controller, action='edit')
-
-        map.connect('/feeds/registry.{format:atom|rss}', controller=feed_controller, action='general')
-        map.connect('/feeds/country/{id}.{format:atom|rss}', controller=feed_controller, action='country')
-        map.connect('/feeds/publisher/{id}.{format:atom|rss}', controller=feed_controller, action='publisher')
-        map.connect('/feeds/organisation_type/{id}.{format:atom|rss}', controller=feed_controller, action='organisation_type')
-        map.connect('/feeds/custom.{format:atom|rss}', controller=feed_controller, action='custom')
 
         map.redirect('/group/{url:.*}', '/publisher/{url}', _redirect_code='301 Moved Permanently')
         map.redirect('/group', '/publisher', _redirect_code='301 Moved Permanently')
@@ -139,4 +132,22 @@ class IatiLicenseOverride(SingletonPlugin):
             pass
         elif isinstance(entity,Group):
             self._override_license(entity)
+
+class IatiFeeds(SingletonPlugin):
+
+    implements(IRoutes)
+
+    def before_map(self, map):
+        feed_controller = 'ckanext.iati.controllers.feed:FeedController'
+
+        map.connect('/feeds/registry.{format:atom|rss}', controller=feed_controller, action='general')
+        map.connect('/feeds/country/{id}.{format:atom|rss}', controller=feed_controller, action='country')
+        map.connect('/feeds/publisher/{id}.{format:atom|rss}', controller=feed_controller, action='publisher')
+        map.connect('/feeds/organisation_type/{id}.{format:atom|rss}', controller=feed_controller, action='organisation_type')
+        map.connect('/feeds/custom.{format:atom|rss}', controller=feed_controller, action='custom')
+
+        return map
+
+    def after_map(self, map):
+        return map
 
