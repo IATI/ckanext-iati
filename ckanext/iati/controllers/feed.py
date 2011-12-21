@@ -1,5 +1,5 @@
 
-import datetime 
+import datetime
 
 from webhelpers.feedgenerator import Atom1Feed,Rss201rev2Feed,Enclosure
 from pylons import config
@@ -7,7 +7,7 @@ from urllib import urlencode
 
 from ckan import model
 from ckan.model import Session
-from ckan.lib.base import BaseController, c, request, response, json
+from ckan.lib.base import BaseController, c, request, response, json, abort
 from ckan.lib.helpers import date_str_to_datetime
 from ckan.logic import get_action
 
@@ -22,10 +22,10 @@ def package_search(data_dict):
 
     if not 'sort' in data_dict:
         data_dict['sort'] = 'metadata_modified desc'
- 
+
     if not 'rows' in data_dict:
         data_dict['rows'] = ITEMS_LIMIT
-   
+
 
     query = get_action('package_search')(context,data_dict)
 
@@ -55,13 +55,47 @@ class FeedController(BaseController):
 
 
     def publisher(self,id,format='atom'):
-        pass    
+        pass
     def organisation_type(self,id,format='atom'):
         pass
+
     def general(self,format='atom'):
-        pass
+        data_dict = {'q': '*:*' }
+        results= package_search(data_dict)
+
+        return self.output_feed(results,
+                    feed_title = u'IATI Registry',
+                    feed_description = u'Recently created or updated datasets on the IATI Registry',
+                    feed_link = u'%s/dataset' % (self.base_url),
+                    feed_guid = u'tag:iatiregistry.org,2011:/feeds/registry.%s' % (format),
+                    format=format,
+                )
+
+
     def custom(self,format='atom'):
-        pass
+
+        q = request.params.get('q', u'')
+        search_params = {}
+        for (param, value) in request.params.items():
+            if not param in ['q', 'page','format'] \
+                    and len(value) and not param.startswith('_'):
+                search_params[param] = value
+                q += ' %s: "%s"' % (param, value)
+
+        search_url_params = urlencode(search_params)
+
+        data_dict = { 'q':q }
+        results= package_search(data_dict)
+
+        return self.output_feed(results,
+                    feed_title = u'IATI Registry - Custom query',
+                    feed_description = u'Recently created or updated datasets on the IATI Registry. Custom query: "%s"' % q,
+                    feed_link = u'%s/dataset?%s' % (self.base_url,search_url_params),
+                    feed_guid = u'tag:iatiregistry.org,2011:/feeds/custom.%s?%s' % (format,search_url_params),
+                    format=format,
+                )
+
+
 
     def output_feed(self,results,
                          feed_title=u'IATI Regsitry',
@@ -110,7 +144,7 @@ class FeedController(BaseController):
 
         def item_id(pkg_id,metadata_modified):
             return 'tag:iatiregistry.org,%s:%s' % (metadata_modified,pkg_id)
-        
+
 
         for pkg in results:
             # We need extra details, not present in the search results
