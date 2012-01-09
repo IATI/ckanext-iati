@@ -104,17 +104,26 @@
   </ul>
 
   <!--! List of dataset groups: pass in a collection of dataset groups
-        and this renders the standard group listing. Same as the above, but using dictionaries -->
+        and this renders the standard group listing. Same as the above, but using dictionaries.
+        Also modified for the table sorter plugin -->
 
-  <table py:def="group_list_from_dict_local(groups)" class="groups">
-    <tr><th>Publisher</th><th>Organization type</th><th>Datasets</th></tr>
+  <table py:def="group_list_from_dict_local(groups)" class="groups" id="groups">
+    <thead>
+        <tr>
+            <th title="Sort by publisher name">Publisher</th>
+            <th title="Sort by organisation type">Organisation type</th>
+            <th title="Sort by number of published datasets">Datasets</th>
+        </tr>
+    </thead>
+    <tbody>
     <py:for each="group in groups">
-    <tr>
-      <td><a href="/publisher/${group['name']}">${group['display_name']}</a></td>
-      <td>${h.get_organization_type(group['id'])}</td>
-      <td>${group['packages']}</td>
-    </tr>
+        <tr>
+          <td><a href="/publisher/${group['name']}">${group['display_name']}</a></td>
+          <td>${h.get_organization_type(group['id'])}</td>
+          <td>${group['packages']}</td>
+        </tr>
     </py:for>
+    </tbody>
   </table>
 
   <!--! Small inline icon for links that open in new windows -->

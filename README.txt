@@ -127,3 +127,13 @@ be stored in extras. To run it you must install ckanext-archiver. To run the
 command, assuming you are on the ckanext-iati directory::
 
     paster iati-archiver update --config=../ckan/development.ini
+
+
+Notes
+=====
+
+This extension uses the _TableSorter jQuery plugin by Christian Bach,
+released under the _MIT license.
+
+.. _TableSorter: http://tablesorter.com
+.. _MIT: http://www.opensource.org/licenses/mit-license.php

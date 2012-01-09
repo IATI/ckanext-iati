@@ -415,3 +415,20 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
 
 }
 
+
+/* ------ Table sorter ----------- */
+
+.groups .header{
+    cursor: pointer;
+    padding-left: 20px !important;
+}
+
+.headerSortDown {
+    color: black !important;
+    background: transparent url(../images/desc.png) left center no-repeat;
+}
+
+.headerSortUp {
+    color: black !important;
+    background: transparent url(../images/asc.png) left center no-repeat;
+}
