@@ -18,7 +18,7 @@
             <dt><label class="field_req" for="name">Publisher Id (required) *</label><div class="field-xml">[registry-publisher-id]</div></dt>
             <dd><input id="name" name="name" type="text" value="${data.get('name', '')}" /></dd>
             <dd class="field_error" py:if="errors.get('name', '')">${errors.get('name', '')}</dd>
-            <dd class="instructions basic"><strong>Unique identifier</strong> for publisher. Where possible use a short abbreviation of your organisation's name. 2+ chars, lowercase, using only 'a-z0-9' and '-_'.</dd>
+            <dd class="instructions basic"><strong>Unique identifier</strong> for publisher. Where possible use a short abbreviation of your organisation's name. 2+ chars, lowercase, using only 'a-z0-9' and '_'.</dd>
 
             <dt><label class="field_opt" for="title">Publisher Name</label></dt>
             <dd><input id="title" name="title" type="text" value="${data.get('title', '')}" /></dd>

@@ -22,7 +22,7 @@
             <dt><label class="field_req" for="name">File Id *</label><div class="field-xml">[registry-file-id]</div></dt>
             <dd><input id="name" name="name" type="text" value="${data.get('name', '')}" /></dd>
             <dd class="field_error" py:if="errors.get('name', '')">${errors.get('name', '')}</dd>
-            <dd class="instructions basic">A unique identifier for the activity record. It must be prefixed with your Publisher Id and a hyphen. It is recommended that you use "org" for your organisation file and the country or region code for segmented activity datasets. 2+ characters, lowercase, using only 'a-z0-9' and '-_' . (eg dfid-ao, wb-org, unops-998).</dd>
+            <dd class="instructions basic">A unique identifier for the activity record. It must be prefixed with your Publisher Id and a hyphen. It is recommended that you use "org" for your organisation file and the country or region code for segmented activity datasets. 2+ characters, lowercase, using only 'a-z0-9' and '_' . (eg dfid-ao, wb-org, unops-998).</dd>
 
             <dt><label class="field_opt" for="title">Title </label><div class="field-xml">[title]</div></dt>
             <dd><input id="title" name="title" type="text" value="${data.get('title', '')}" /></dd>
