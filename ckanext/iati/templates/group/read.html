@@ -1,46 +1,46 @@
 <html xmlns:py="http://genshi.edgewall.org/"
-  xmlns:i18n="http://genshi.edgewall.org/i18n"
-  xmlns:xi="http://www.w3.org/2001/XInclude"
-  py:strip="">
-  
-  <py:def function="page_title">${c.group.title or c.group.name} - Groups</py:def>
+    xmlns:i18n="http://genshi.edgewall.org/i18n"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    py:strip="">
 
-  <div py:match="content">
-   <div class="group">
-    <h2 class="head">
-      <py:if test="not c.group.title">
-        <em>No Title</em>
-      </py:if>
+    <py:def function="page_title">${c.group.title or c.group.name} - Groups</py:def>
 
-      ${c.group.title}
-      <span class="name">(${c.group.extras.get('type', _('Type unknown'))})</span>
-    </h2>
+    <py:def function="optional_feed()">
+        <link rel="alternate" type="application/atom+xml" title="${g.site_title} - ${c.group.title} (Atom)" href="/feed/publisher/${c.group.name}.atom" />
+        <link rel="alternate" type="application/rss+xml" title="${g.site_title} - ${c.group.title} (RSS)" href="/feed/publisher/${c.group.name}.rss" />
+    </py:def>
 
-    <div class="description">
-        <py:if test="c.group.state == 'pending'">
-            <div style="color: white; background: #ff8000; padding: 1em;">
-                This publisher is pending administrator approval. Until it is approved, it is hidden from
-                site visitors and it cannot publish activity records.
+    <div py:match="content">
+        <div class="group">
+            <h2 class="head">
+                <py:if test="not c.group.title"><em>No Title</em> </py:if>
+                ${c.group.title}
+                <span class="name">(${c.group.extras.get('type', _('Type unknown'))})</span>
+            </h2>
+
+            <div class="description">
+                <py:if test="c.group.state == 'pending'">
+                    <div style="color: white; background: #ff8000; padding: 1em;">
+                        This publisher is pending administrator approval. Until it is approved, it is hidden from
+                        site visitors and it cannot publish activity records.
+                    </div>
+                </py:if>
             </div>
-        </py:if>
+
+            <h3>Packages:</h3>
+            ${c.page.pager()}
+            ${package_list_local(c.page.items)}
+            ${c.page.pager()}
+            <p i18n:msg="item_count">There are ${c.page.item_count} packages in this group.</p>
+
+            <py:if test="c.group_admins">
+                <h3>Administrators:</h3>
+                <ul py:for="admin in c.group_admins">
+                    <li><a href="${h.url_for(controller='user',action='read',id=admin.id)}">${h.linked_user(admin)}</a></li>
+                </ul>
+            </py:if>
+        </div>
     </div>
 
-    <h3>Packages:</h3>
-    ${c.page.pager()}
-    ${package_list_local(c.page.items)}
-    ${c.page.pager()}
-    <p i18n:msg="item_count">There are ${c.page.item_count} packages in this group.</p>
-    
-    <py:if test="c.group_admins">
-      <h3>Administrators:</h3> 
-        <ul py:for="admin in c.group_admins">
-          <li><a href="${h.url_for(controller='user',action='read',id=admin.id)}">${h.linked_user(admin)}</a></li>
-        </ul>
-    </py:if>
-   </div>
-  </div>
-
-  <xi:include href="layout.html" />
+    <xi:include href="layout.html" />
 </html>
-
-

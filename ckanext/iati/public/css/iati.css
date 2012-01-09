@@ -353,6 +353,16 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
   margin-right: 5px;
 }
 
+#publisher-feeds p {
+    margin-top: -21px;
+}
+
+#publisher-feeds img {
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+
 
 /*------- Home ------------*/
 
