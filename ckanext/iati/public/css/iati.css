@@ -353,8 +353,16 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
   margin-right: 5px;
 }
 
-#publisher-feeds div {
-    margin-top: -21px;
+.feed-box h2 {
+    margin-bottom: 0 !important;
+}
+
+.feed-box p {
+    margin-top: 20px;
+}
+
+.feed-box div {
+    margin-top: 5px;
     background: transparent url('../images/feed.png') center left no-repeat;
     padding-left: 25px;
 }
