@@ -353,15 +353,11 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
   margin-right: 5px;
 }
 
-#publisher-feeds p {
+#publisher-feeds div {
     margin-top: -21px;
+    background: transparent url('../images/feed.png') center left no-repeat;
+    padding-left: 25px;
 }
-
-#publisher-feeds img {
-    vertical-align: middle;
-    margin-right: 10px;
-}
-
 
 
 /*------- Home ------------*/

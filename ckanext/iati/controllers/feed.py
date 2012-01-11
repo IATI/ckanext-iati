@@ -1,7 +1,7 @@
 
 import datetime
 
-from webhelpers.feedgenerator import Atom1Feed,Rss201rev2Feed,Enclosure
+from webhelpers.feedgenerator import Atom1Feed,Enclosure
 from pylons import config
 from urllib import urlencode
 
@@ -139,20 +139,13 @@ class FeedController(BaseController):
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author}
 
-
-        if format == 'rss':
-            FeedClass = Rss201rev2Feed
-        else:
-            FeedClass = Atom1Feed
-
-        feed = FeedClass(
+        feed = Atom1Feed(
             title=feed_title,
             link=feed_link,
             description=feed_description,
             language=u'en',
             author_name=u'IATI Registry',
             author_link=u'http://iatiregistry.org',
-            feed_copyright="http://creativecommons.org/licenses/by-sa/3.0/",
             feed_guid=feed_guid
             )
 

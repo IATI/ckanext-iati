@@ -6,8 +6,7 @@
     <py:def function="page_title">${c.group.title or c.group.name} - Groups</py:def>
 
     <py:def function="optional_feed()">
-        <link rel="alternate" type="application/atom+xml" title="${g.site_title} - ${c.group.title} (Atom)" href="/feed/publisher/${c.group.name}.atom" />
-        <link rel="alternate" type="application/rss+xml" title="${g.site_title} - ${c.group.title} (RSS)" href="/feed/publisher/${c.group.name}.rss" />
+        <link rel="alternate" type="application/atom+xml" title="${g.site_title} - ${c.group.title}" href="/feed/publisher/${c.group.name}.atom" />
     </py:def>
 
     <div py:match="content">

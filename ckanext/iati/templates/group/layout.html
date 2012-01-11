@@ -33,9 +33,9 @@
 
     <div py:if="c.group and c.action != 'authz'" class="box" id="publisher-feeds">
         <h2>Follow publisher</h2>
-        <p>
-        <img src="/images/feed.png" alt="Feeds" /> <a href="/feed/publisher/${c.group.name}.atom">Atom</a> / <a href="/feed/publisher/${c.group.name}.rss">RSS</a>
-        </p>
+        <div>
+            <a href="/feed/publisher/${c.group.name}.atom">Subscribe</a>
+        </div>
     </div>
 
     <div py:if="c.action == 'index'" class="box">
