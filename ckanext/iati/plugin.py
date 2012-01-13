@@ -133,3 +133,21 @@ class IatiLicenseOverride(SingletonPlugin):
         elif isinstance(entity,Group):
             self._override_license(entity)
 
+class IatiFeeds(SingletonPlugin):
+
+    implements(IRoutes)
+
+    def before_map(self, map):
+        feed_controller = 'ckanext.iati.controllers.feed:FeedController'
+
+        map.connect('/feed/registry.{format:atom}', controller=feed_controller, action='general')
+        map.connect('/feed/country/{id}.{format:atom}', controller=feed_controller, action='country')
+        map.connect('/feed/publisher/{id}.{format:atom}', controller=feed_controller, action='publisher')
+        map.connect('/feed/organisation_type/{id}.{format:atom}', controller=feed_controller, action='organisation_type')
+        map.connect('/feed/custom.{format:atom}', controller=feed_controller, action='custom')
+
+        return map
+
+    def after_map(self, map):
+        return map
+
