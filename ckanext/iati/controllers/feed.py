@@ -160,10 +160,18 @@ class FeedController(BaseController):
             publisher = pkg['groups'][0]['title'] if len(pkg['groups']) else u'Unknown'
             publisher_link = u'%s/publisher/%s' % (self.base_url,pkg['groups'][0]['name']) if len(pkg['groups']) else u''
 
+            # We don't want to get into revisions, but at least show if it's a new or updated dataset
+            if pkg_rest['metadata_modified'] > pkg_rest['metadata_created']:
+                status = 'updated'
+            elif pkg_rest['metadata_modified'] == pkg_rest['metadata_created']:
+                status = 'created'
+            else:
+                status = '' # Something went wrong
+
             feed.add_item(
-                    title=pkg['title'],
+                    title= '%s [%s]' % (pkg['title'],status),
                     link= u'%s/dataset/%s' % (self.base_url,pkg['name']),
-                    description=pkg['title'],
+                    description='%s [%s]' % (pkg['title'],status),
                     pubdate=date_str_to_datetime(pkg_rest['metadata_modified']),
                     unique_id=item_id(pkg['id'],pkg_rest['metadata_modified']),
                     author_name=publisher,
