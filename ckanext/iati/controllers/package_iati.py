@@ -110,7 +110,7 @@ class PackageIatiController(PackageController):
             package = c.pkg
             if package:
                 groups = groups - set(package.groups)
-
-        return [{'id':group.id,'name':group.name, 'title':group.title} for group in groups if group.state==model.State.ACTIVE]
+        groups = [{'id':group.id,'name':group.name, 'title':group.title} for group in groups if group.state==model.State.ACTIVE]
+        return sorted(groups, key=lambda k : k['title'])
 
 
