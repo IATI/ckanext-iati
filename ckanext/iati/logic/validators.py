@@ -8,6 +8,12 @@ def iati_dataset_name(key,data,errors,context):
 
     unflattened = unflatten(data)
     value = data[key]
+
+    if not 'groups' in unflattened:
+         errors[key].append('Publisher name missing.' \
+                 ' Please select a publisher from the list.')
+         return
+
     for grp in unflattened['groups']:
         if grp['id']:
             group_id = grp['id']
