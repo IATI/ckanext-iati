@@ -75,6 +75,7 @@ class Archiver(CkanCommand):
 
             data_formats = tasks.DATA_FORMATS
             data_formats.append('iati-xml')
+            data_formats.append('application/xml')
 
             log.info('IATI Archiver: starting  %s' % str(t1))
             log.info('Number of datasets to archive: %d' % len(packages))
@@ -92,6 +93,7 @@ class Archiver(CkanCommand):
                         log.error('Resource for dataset %s does not have URL' % package['name'])
                         continue
 
+                    old_size = resource.get('size')
                     try:
                         result = tasks.download(context,resource,data_formats=data_formats)
                     except tasks.LinkCheckerError,e:
@@ -122,6 +124,11 @@ class Archiver(CkanCommand):
                         # Skip zipped files for now
                         log.info('Skipping zipped file for dataset %s ' % package.get('name'))
                         continue
+
+                    update = False
+
+                    if old_size != resource.get('size'):
+                        update = True
 
                     file_path = result['saved_file']
 
@@ -163,7 +170,6 @@ class Archiver(CkanCommand):
                             log.error('Wrong date format for data_updated for dataset %s: %s' % (package['name'],str(e)))
 
 
-                    update = False
                     for key,value in new_extras.iteritems():
                         if value and (not key in package['extras'] or value != package['extras'][key]):
                             update = True
