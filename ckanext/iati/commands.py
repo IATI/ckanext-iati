@@ -98,10 +98,14 @@ class Archiver(CkanCommand):
                         result = tasks.download(context,resource,data_formats=data_formats)
                     except tasks.LinkCheckerError,e:
                         if 'method not allowed' in str(e).lower():
-                            # The DFID server does not support HEAD requests*,
-                            # so we need to handle the download manually
-                            # * But only the first time a file is downloaded!?
-                            result = _download_resource(context,resource,data_formats=data_formats)
+                            try:
+                                # The DFID server does not support HEAD requests*,
+                                # so we need to handle the download manually
+                                # * But only the first time a file is downloaded!?
+                                result = _download_resource(context,resource,data_formats=data_formats)
+                            except tasks.DownloadError,e:
+                                log.error('Error downloading resource for dataset %s: %s' % (package['name'],str(e)))
+                                continue
                         else:
                             log.error('Invalid resource URL for dataset %s: %s' % (package['name'],str(e)))
                             continue
@@ -189,25 +193,51 @@ class Archiver(CkanCommand):
         else:
             log.error('Command %s not recognized' % (cmd,))
 
-def _download_resource(context,resource, max_content_length=50000000, url_timeout=30,data_formats=['xml','iati-xml']):
+
+def _download_resource(context,resource,
+             max_content_length=50000000, url_timeout=30,
+             data_formats=['xml','iati-xml','application/xml']):
 
     from ckanext.archiver import tasks
 
-    # get the resource and archive it
-    #logger.info("Resource identified as data file, attempting to archive")
     res = requests.get(resource['url'], timeout = url_timeout)
-
     headers = res.headers
+
     resource_format = resource['format'].lower()
-    ct = headers.get('content-type', '').lower()
+    ct = tasks._clean_content_type( headers.get('content-type', '').lower() )
     cl = headers.get('content-length')
 
-    resource_changed = (resource.get('mimetype') != ct) or (resource.get('size') != cl)
-    if resource_changed:
+    if resource.get('mimetype') != ct:
+        resource_changed = True
         resource['mimetype'] = ct
+
+    # this is to store the size in case there is an error, but the real size check
+    # is done after dowloading the data file, with its real length
+    if cl is not None and (resource.get('size') != cl):
+        resource_changed = True
         resource['size'] = cl
 
+    # make sure resource content-length does not exceed our maximum
+    if cl and int(cl) >= max_content_length:
+        if resource_changed:
+            tasks._update_resource(context, resource)
+        # record fact that resource is too large to archive
+        raise tasks.DownloadError("Content-length %s exceeds maximum allowed value %s" %
+            (cl, max_content_length))
+
+    # check that resource is a data file
+    if not (resource_format in data_formats or ct.lower() in data_formats):
+        if resource_changed:
+            tasks._update_resource(context, resource)
+        raise tasks.DownloadError("Of content type %s, not downloading" % ct)
+
+    # archive the resource
     length, hash, saved_file = tasks._save_resource(resource, res, max_content_length)
+
+    # check if resource size changed
+    if unicode(length) != resource.get('size'):
+        resource_changed = True
+        resource['size'] = unicode(length)
 
     # check that resource did not exceed maximum size when being saved
     # (content-length header could have been invalid/corrupted, or not accurate
@@ -221,12 +251,18 @@ def _download_resource(context,resource, max_content_length=50000000, url_timeou
         raise tasks.DownloadError("Content-length after streaming reached maximum allowed value of %s" %
             max_content_length)
 
-    # update the resource metadata in CKAN
-    resource['hash'] = hash
-    tasks._update_resource(context, resource)
+    # update the resource metadata in CKAN if the resource has changed
+    if resource.get('hash') != hash:
+        resource['hash'] = hash
+        try:
+            # This may fail for archiver.update() as a result of the resource
+            # not yet existing, but is necessary for dependant extensions.
+            tasks._update_resource(context, resource)
+        except:
+            pass
 
     return {'length': length,
-            'hash' :hash,
+            'hash' : hash,
             'headers': headers,
             'saved_file': saved_file}
 
