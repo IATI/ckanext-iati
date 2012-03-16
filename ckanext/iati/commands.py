@@ -1,28 +1,8 @@
 import os
 import sys
-import datetime
-from lxml import etree
-import requests
-import json
-from pylons import config
 from ckan.lib.cli import CkanCommand
-from ckan.logic import get_action
-from ckan import model
 
-from ckan.lib.helpers import date_str_to_datetime
-import logging
-
-log = logging.getLogger('iati_archiver')
-
-import cgitb
-import warnings
-def text_traceback():
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        res = 'the original traceback:'.join(
-            cgitb.text(sys.exc_info()).split('the original traceback:')[1:]
-        ).strip()
-    return res
+from ckanext.iati.archiver import run as run_archiver
 
 class Archiver(CkanCommand):
     '''
@@ -50,219 +30,16 @@ class Archiver(CkanCommand):
             print Archiver.__doc__
             return
 
-        t1 = datetime.datetime.now()
-
         cmd = self.args[0]
         self._load_config()
-        # TODO: use this when it gets to default ckan
-        # username = get_action('get_site_user')({'model': model, 'ignore_auth': True}, {})
-        context = {
-            'model': model,
-            'session':model.Session,
-            'site_url':config.get('ckan.site_url'),
-            'user': config.get('iati.admin_user.name'),
-            'apikey': config.get('iati.admin_user.api_key')
-        }
 
         if cmd == 'update':
-            if len(self.args) > 1:
-                packages = [unicode(self.args[1])]
+            package = unicode(self.args[1]) if len(self.args) > 1 else None
 
-            else:
-                packages = get_action('package_list')(context, {})
-
-            from ckanext.archiver import tasks
-
-            data_formats = tasks.DATA_FORMATS
-            data_formats.append('iati-xml')
-            data_formats.append('application/xml')
-
-            log.info('IATI Archiver: starting  %s' % str(t1))
-            log.info('Number of datasets to archive: %d' % len(packages))
-            updated = 0
-            consecutive_errors = 0
-            for package_id in packages:
-                package = get_action('package_show_rest')(context,{'id': package_id})
-
-                is_activity_package = (package['extras']['filetype'] == 'activity') if 'filetype' in package['extras'] else 'activity'
-
-                log.debug('Archiving dataset: %s (%d resources)' % (package.get('name'), len(package.get('resources', []))))
-                for resource in package.get('resources', []):
-
-                    if not resource.get('url',''):
-                        log.error('Resource for dataset %s does not have URL' % package['name'])
-                        continue
-
-                    old_size = resource.get('size')
-                    try:
-                        result = tasks.download(context,resource,data_formats=data_formats)
-                    except tasks.LinkCheckerError,e:
-                        if 'method not allowed' in str(e).lower():
-                            try:
-                                # The DFID server does not support HEAD requests*,
-                                # so we need to handle the download manually
-                                # * But only the first time a file is downloaded!?
-                                result = _download_resource(context,resource,data_formats=data_formats)
-                            except tasks.DownloadError,e:
-                                log.error('Error downloading resource for dataset %s: %s' % (package['name'],str(e)))
-                                continue
-                        else:
-                            log.error('Invalid resource URL for dataset %s: %s' % (package['name'],str(e)))
-                            continue
-                    except tasks.DownloadError,e:
-                        log.error('Error downloading resource for dataset %s: %s' % (package['name'],str(e)))
-                        continue
-                    except Exception,e:
-                        consecutive_errors = consecutive_errors + 1
-                        log.error('Error downloading resource for dataset %s: %s' % (package['name'],str(e)))
-                        log.error(text_traceback())
-                        if consecutive_errors > 5:
-                            log.error('Too many errors, aborting...')
-                            sys.exit(1)
-                        else:
-                            continue
-                    else:
-                        consecutive_errors = 0
-
-                    if 'zip' in result['headers']['content-type']:
-                        # Skip zipped files for now
-                        log.info('Skipping zipped file for dataset %s ' % package.get('name'))
-                        continue
-
-                    update = False
-
-                    if old_size != resource.get('size'):
-                        update = True
-
-                    file_path = result['saved_file']
-
-                    with open(file_path, 'r') as f:
-                        xml = f.read()
-                    os.remove(file_path)
-
-                    try:
-                        tree = etree.fromstring(xml)
-                    except etree.XMLSyntaxError,e:
-                        log.error('Could not parse XML file for dataset %s: %s' % (package['name'],str(e)))
-                        continue
-
-                    new_extras = {}
-                    if is_activity_package:
-                        # Number of activities (activity_count extra)
-                        new_extras['activity_count'] = int(tree.xpath('count(//iati-activity)'))
-
-                    # Last updated date (data_updated extra)
-                    if is_activity_package:
-                        xpath = 'iati-activity/@last-updated-datetime'
-                    else:
-                        xpath = 'iati-organisation/@last-updated-datetime'
-                    dates = tree.xpath(xpath) or []
-
-                    sorted(dates,reverse=True)
-                    last_updated_date = dates[0] if len(dates) else None
-
-                    # Check dates
-                    if last_updated_date:
-                        # Get rid of the microseconds
-                        if '.' in last_updated_date:
-                            last_updated_date = last_updated_date[:last_updated_date.find('.')]
-                        try:
-                            date = date_str_to_datetime(last_updated_date)
-                            format = '%Y-%m-%d %H:%M' if (date.hour and date.minute) else '%Y-%m-%d'
-                            new_extras['data_updated'] = date.strftime(format)
-                        except (ValueError,TypeError),e:
-                            log.error('Wrong date format for data_updated for dataset %s: %s' % (package['name'],str(e)))
-
-
-                    for key,value in new_extras.iteritems():
-                        if value and (not key in package['extras'] or value != package['extras'][key]):
-                            update = True
-                            old_value = package['extras'][key] if key in package['extras'] else '""'
-                            log.info('Updated extra %s for dataset %s: %s -> %s' % (key,package['name'],old_value,value))
-                            package['extras'][key] = value
-
-                    if update:
-                        context['id'] = package['id']
-                        updated_package = get_action('package_update_rest')(context,package)
-                        log.debug('Package %s updated with new extras' % package['name'])
-                        updated = updated + 1
-
-            t2 = datetime.datetime.now()
-
-            log.info('IATI Archiver: Done. Updated %i packages. Total time: %s' % (updated,str(t2 - t1)))
+            result = run_archiver(package)
+            if not result:
+                sys.exit(1)
         else:
             log.error('Command %s not recognized' % (cmd,))
 
-
-def _download_resource(context,resource,
-             max_content_length=50000000, url_timeout=30,
-             data_formats=['xml','iati-xml','application/xml']):
-
-    from ckanext.archiver import tasks
-
-    res = requests.get(resource['url'], timeout = url_timeout)
-    headers = res.headers
-
-    resource_format = resource['format'].lower()
-    ct = tasks._clean_content_type( headers.get('content-type', '').lower() )
-    cl = headers.get('content-length')
-
-    if resource.get('mimetype') != ct:
-        resource_changed = True
-        resource['mimetype'] = ct
-
-    # this is to store the size in case there is an error, but the real size check
-    # is done after dowloading the data file, with its real length
-    if cl is not None and (resource.get('size') != cl):
-        resource_changed = True
-        resource['size'] = cl
-
-    # make sure resource content-length does not exceed our maximum
-    if cl and int(cl) >= max_content_length:
-        if resource_changed:
-            tasks._update_resource(context, resource)
-        # record fact that resource is too large to archive
-        raise tasks.DownloadError("Content-length %s exceeds maximum allowed value %s" %
-            (cl, max_content_length))
-
-    # check that resource is a data file
-    if not (resource_format in data_formats or ct.lower() in data_formats):
-        if resource_changed:
-            tasks._update_resource(context, resource)
-        raise tasks.DownloadError("Of content type %s, not downloading" % ct)
-
-    # archive the resource
-    length, hash, saved_file = tasks._save_resource(resource, res, max_content_length)
-
-    # check if resource size changed
-    if unicode(length) != resource.get('size'):
-        resource_changed = True
-        resource['size'] = unicode(length)
-
-    # check that resource did not exceed maximum size when being saved
-    # (content-length header could have been invalid/corrupted, or not accurate
-    # if resource was streamed)
-    #
-    # TODO: remove partially archived file in this case
-    if length >= max_content_length:
-        if resource_changed:
-            tasks._update_resource(context, resource)
-        # record fact that resource is too large to archive
-        raise tasks.DownloadError("Content-length after streaming reached maximum allowed value of %s" %
-            max_content_length)
-
-    # update the resource metadata in CKAN if the resource has changed
-    if resource.get('hash') != hash:
-        resource['hash'] = hash
-        try:
-            # This may fail for archiver.update() as a result of the resource
-            # not yet existing, but is necessary for dependant extensions.
-            tasks._update_resource(context, resource)
-        except:
-            pass
-
-    return {'length': length,
-            'hash' : hash,
-            'headers': headers,
-            'saved_file': saved_file}
 
