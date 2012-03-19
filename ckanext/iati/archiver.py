@@ -139,9 +139,9 @@ def run(package_id=None):
 
 
             for key,value in new_extras.iteritems():
-                if value and (not key in package['extras'] or value != package['extras'][key]):
+                if value and (not key in package['extras'] or unicode(value) != unicode(package['extras'][key])):
                     update = True
-                    old_value = package['extras'][key] if key in package['extras'] else '""'
+                    old_value = unicode(package['extras'][key]) if key in package['extras'] else '""'
                     log.info('Updated extra %s for dataset %s: %s -> %s' % (key,package['name'],old_value,value))
                     package['extras'][unicode(key)] = unicode(value)
 
@@ -178,6 +178,8 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
             # * But only the first time a file is downloaded!?
             res = requests.get(resource['url'], timeout = url_timeout)
             headers = res.headers
+        else:
+            raise
 
 
     resource_format = resource['format'].lower()
@@ -243,7 +245,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
 
 
     return {'length': length,
-            'hash' : hash,
+            'hash' : resource_hash,
             'headers': headers,
             'saved_file': saved_file}
 
