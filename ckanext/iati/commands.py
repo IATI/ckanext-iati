@@ -11,9 +11,9 @@ class Archiver(CkanCommand):
 
     Usage:
 
-        paster iati-archiver update [{package-id}]
-           - Archive all activity files or just those belonging to a specific package
-             if a package id is provided
+        paster iati-archiver update [-p {publisher-id}] [{package-id}]
+           - Archive all activity files or just those belonging to a specific
+             package or publisher.
 
     '''
     summary = __doc__.split('\n')[0]
@@ -21,6 +21,13 @@ class Archiver(CkanCommand):
     min_args = 0
     max_args = 2
     pkg_names = []
+
+    def __init__(self,name):
+
+        super(Archiver,self).__init__(name)
+
+        self.parser.add_option('-p', '--publisher', dest='publisher',
+            action='store', default=None, help='Archive datasets only from this publisher')
 
     def command(self):
         '''
@@ -34,9 +41,9 @@ class Archiver(CkanCommand):
         self._load_config()
 
         if cmd == 'update':
-            package = unicode(self.args[1]) if len(self.args) > 1 else None
-
-            result = run_archiver(package)
+            package_id = unicode(self.args[1]) if len(self.args) > 1 else None
+            publisher_id = self.options.publisher
+            result = run_archiver(package_id, publisher_id)
             if not result:
                 sys.exit(1)
         else:

@@ -30,7 +30,7 @@ MAX_CONTENT_LENGTH = 50000000
 URL_TIMEOUT=30
 DATA_FORMATS = ['xml','iati-xml','application/xml']
 
-def run(package_id=None):
+def run(package_id=None,publisher_id=None):
 
     # TODO: use this when it gets to default ckan
     # username = get_action('get_site_user')({'model': model, 'ignore_auth': True}, {})
@@ -45,7 +45,11 @@ def run(package_id=None):
     if package_id:
         package_ids = [package_id]
     else:
-        package_ids = get_action('package_list')(context, {})
+        if publisher_id:
+            packages = get_action('group_package_show')(context, {'id':publisher_id})
+            package_ids = [p['name'] for p in packages]
+        else:
+            package_ids = get_action('package_list')(context, {})
 
     t1 = datetime.datetime.now()
 
