@@ -92,9 +92,12 @@ def run(package_id=None,publisher_id=None):
             else:
                 consecutive_errors = 0
 
+            file_path = result['saved_file']
+
             if 'zip' in result['headers']['content-type']:
                 # Skip zipped files for now
                 log.info('Skipping zipped file for dataset %s ' % package.get('name'))
+                os.remove(file_path)
                 continue
 
             update = False
@@ -102,7 +105,6 @@ def run(package_id=None,publisher_id=None):
             if old_hash != resource.get('hash'):
                 update = True
 
-            file_path = result['saved_file']
 
             with open(file_path, 'r') as f:
                 xml = f.read()
