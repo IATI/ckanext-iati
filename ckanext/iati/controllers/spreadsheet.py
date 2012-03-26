@@ -33,7 +33,6 @@ CSV_MAPPING = [
         ('activity-period-start','extras', 'activity_period-from', [ignore_empty, date_from_csv]),
         ('activity-period-end','extras', 'activity_period-to', [ignore_empty, date_from_csv]),
         ('last-updated-datetime','extras', 'data_updated', [ignore_empty, date_from_csv]),
-        ('generated-datetime','extras', 'record_updated', [ignore_empty, date_from_csv]),
         ('activity-count','extras', 'activity_count', [ignore_empty,int_validator]),
         ('verification-status','extras', 'verified', [ignore_empty,yes_no]),
         ('default-language','extras', 'language', [])
@@ -115,14 +114,15 @@ class CSVController(BaseController):
 
             c.file_name = csv_file.filename
 
-            added, updated, errors = self.read_csv_file(csv_file.file)
+            added, updated, warnings, errors = self.read_csv_file(csv_file.file)
             c.added = added
             c.updated = updated
 
             c.errors = errors
+            c.warnings = warnings
 
-            log.info('CSV import finished: file %s, %i added, %i updated, %i errors' % \
-                    (c.file_name,len(c.added),len(c.updated),len(c.errors)))
+            log.info('CSV import finished: file %s, %i added, %i updated, %i warnings, %i errors' % \
+                    (c.file_name,len(c.added),len(c.updated),len(c.warnings),len(c.errors)))
 
             return render('csv/result.html')
 
@@ -186,6 +186,8 @@ class CSVController(BaseController):
     def read_csv_file(self,csv_file,context=None):
         fieldnames = [f[0] for f in CSV_MAPPING]
 
+        warnings = {}
+
         try:
             # Try to sniff the file dialect
             dialect = csv.Sniffer().sniff(csv_file.read(1024),delimiters=[',',';','\t'])
@@ -198,13 +200,19 @@ class CSVController(BaseController):
             reader = csv.DictReader(csv_file, dialect=dialect)
 
             # Check if all columns are present
-            if not sorted(reader.fieldnames) == sorted(fieldnames):
-                error = {'file': 'Missing columns: %s' % ', '.join([f for f in fieldnames if f not in reader.fieldnames])}
-                return [], [], [('1',error)]
+            missing_columns = [f for f in fieldnames if f not in reader.fieldnames]
+            if len(missing_columns):
+                error = {'file': 'Missing columns: %s' % ', '.join(sorted(missing_columns))}
+                return [], [], [], [('1',error)]
+
+            surplus_columns = [f for f in reader.fieldnames if f not in fieldnames]
+            if len(surplus_columns):
+                warnings['1'] = {}
+                warnings['1']['file'] = 'Ignoring extra columns: %s' % ', '.join(sorted(surplus_columns))
 
         except csv.Error,e:
             error = {'file': 'Error reading CSV file: %s' % str(e)}
-            return [], [], [('1',error)]
+            return [], [], [], [('1',error)]
 
 
         log.debug('Starting reading CSV file (delimiter "%s", escapechar "%s")' %
@@ -248,8 +256,10 @@ class CSVController(BaseController):
                 log.error('Error in row %i: %s' % (i+1,msg))
                 errors[row_index]['registry-publisher-id'] = [msg]
 
+
+        warnings = sorted(warnings.iteritems())
         errors = sorted(errors.iteritems())
-        return counts['added'], counts['updated'], errors
+        return counts['added'], counts['updated'], warnings, errors
 
     def get_package_dict_from_row(self,row):
         package = {}

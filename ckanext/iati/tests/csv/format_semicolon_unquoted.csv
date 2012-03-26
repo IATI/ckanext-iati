@@ -1,5 +1,4 @@
-registry-publisher-id;registry-file-id;title;contact-email;source-url;format;file-type;recipient-country;activity-period-start;activity-period-end;last-updated-datetime;generated-datetime;activity-count;verification-status;default-language
-test-publisher;test-publisher-vu;Test Publisher Activity File Vanuatu;;http://www.Test Publisher.gov.au/data/Test Publisher_IATI_Activities_VU.xml;IATI-XML;activity;VU;2008-07-01;2016-12-31;2011-08-29;2011-08-29;16;;
-test-publisher;test-publisher-vn;Test Publisher Activity File Viet Nam;;http://www.Test Publisher.gov.au/data/Test Publisher_IATI_Activities_VN.xml;IATI-XML;activity;VN;2008-07-01;2017-06-30;2011-08-29;2011-08-29;15;;
-test-publisher;test-publisher-sb;Test Publisher Activity File Solomon Islands;;http://www.Test Publisher.gov.au/data/Test Publisher_IATI_Activities_SB.xml;IATI-XML;activity;SB;2008-07-01;2015-12-31;2011-08-29;2011-08-29;26;;
-
+registry-publisher-id;registry-file-id;title;contact-email;source-url;format;file-type;recipient-country;activity-period-start;activity-period-end;last-updated-datetime;activity-count;verification-status;default-language
+test-publisher;test-publisher-vu;Test Publisher Activity File Vanuatu;;http://www.Test Publisher.gov.au/data/Test Publisher_IATI_Activities_VU.xml;IATI-XML;activity;VU;2008-07-01;2016-12-31;2011-08-29;16;;
+test-publisher;test-publisher-vn;Test Publisher Activity File Viet Nam;;http://www.Test Publisher.gov.au/data/Test Publisher_IATI_Activities_VN.xml;IATI-XML;activity;VN;2008-07-01;2017-06-30;2011-08-29;15;;
+test-publisher;test-publisher-sb;Test Publisher Activity File Solomon Islands;;http://www.Test Publisher.gov.au/data/Test Publisher_IATI_Activities_SB.xml;IATI-XML;activity;SB;2008-07-01;2015-12-31;2011-08-29;26;;

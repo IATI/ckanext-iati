@@ -142,7 +142,7 @@
         ${details_asbool('Archive File', c.pkg.extras.get('archive_file', False))}
 
         ${details_extras_item('Data updated', 'data_updated', '-')}
-        ${details_extras_item('Record updated', 'record_updated', '-')}
+        ${details_item('Record updated',h.render_datetime(c.pkg.metadata_modified) , '-')}
 
         <tr>
           <td class="package-label">

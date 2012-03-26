@@ -93,15 +93,11 @@
             </dd>
             <dd class="instructions basic">Select the country or region (listed below the countries in the dropdown).</dd>
 
-            <dt><label class="field_opt" for="record_updated">Record updated</label><div class="field-xml">[generated-datetime]</div></dt>
-            <dd><input id="record_updated" name="record_updated" size="40" type="text" value="${data.get('record_updated', '')}" /></dd>
-            <dd class="instructions basic">The date on which this metadata was last updated. ${date_formats_helper}</dd>
-
             <dt><label class="field_opt" for="data_updated">Data updated</label><div class="field-xml">[last-updated-datetime]</div></dt>
             <dd><input id="data_updated" name="data_updated" size="40" type="text" value="${data.get('data_updated', '')}"/></dd>
             <dd class="instructions basic">The date on which the linked file was last updated. ${date_formats_helper}</dd>
 
-            <dt><label class="field_opt" for="record_updated">Language</label><div class="field-xml">[default-language]</div></dt>
+            <dt><label class="field_opt" for="language">Language</label><div class="field-xml">[default-language]</div></dt>
             <dd><input id="language" name="language" size="40" type="text" value="${data.get('language', '')}" /></dd>
             <dd class="instructions basic">The ISO 639-1 code for the default language of the file (e.g. 'en').</dd>
 

@@ -13,6 +13,7 @@
         <ul>
             <li><a href="#added">Datasets created: ${len(c.added)}</a></li>
             <li><a href="#updated">Datasets updated: ${len(c.updated)}</a></li>
+            <li><a href="#warnings">Warnings found: ${len(c.warnings)}</a></li>
             <li><a href="#errors">Errors found: ${len(c.errors)}</a></li>
         </ul>
         <h3><a name="added">Datasets added</a></h3>
@@ -31,6 +32,23 @@
             <li><a href="${h.url_for(controller='package', action='read', id=pkg)}">${g.site_url}${h.url_for(controller='package', action='read', id=pkg)}</a></li>
         </py:for>
         <py:if test="not c.updated">
+            <li><i>None</i></li>
+        </py:if>
+
+        </ul>
+
+        <h3><a name="warnings">Warnings</a></h3>
+        <ul>
+        <py:for each="row,fields in c.warnings">
+            <li>Line ${row}:
+                <ul>
+                <py:for each="field,msgs in fields.iteritems()">
+                    <li><strong>${field}</strong>: ${msgs}</li>
+                </py:for>
+                </ul>
+            </li>
+        </py:for>
+        <py:if test="not c.warnings">
             <li><i>None</i></li>
         </py:if>
 

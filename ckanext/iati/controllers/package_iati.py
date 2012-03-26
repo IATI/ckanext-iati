@@ -39,7 +39,6 @@ class PackageIatiController(PackageController):
         schema.update({
             'filetype': [convert_to_extras],
             'country': [convert_to_extras, ignore_missing],
-            'record_updated': [ignore_missing, ignore_empty, db_date, convert_to_extras],
             'data_updated': [ignore_missing, ignore_empty, db_date, convert_to_extras],
             'activity_period-from': [ignore_missing, ignore_empty, db_date, convert_to_extras],
             'activity_period-to': [ignore_missing, ignore_empty, db_date, convert_to_extras],
@@ -58,7 +57,6 @@ class PackageIatiController(PackageController):
         schema.update({
             'filetype': [convert_from_extras, ignore_missing],
             'country': [convert_from_extras, ignore_missing],
-            'record_updated': [convert_from_extras,ignore_missing],
             'data_updated': [convert_from_extras,ignore_missing],
             'activity_period-from': [convert_from_extras,ignore_missing],
             'activity_period-to': [convert_from_extras,ignore_missing],
