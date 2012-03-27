@@ -31,7 +31,7 @@
       
     </div>
 
-    <div py:if="c.group and c.action != 'authz'" class="box feed-box" id="publisher-feeds">
+    <div py:if="c.group and c.group.state == 'active' and c.action != 'authz'" class="box feed-box" id="publisher-feeds">
         <h2>Follow publisher</h2>
         <div>
             <a href="/feed/publisher/${c.group.name}.atom">Subscribe</a>
