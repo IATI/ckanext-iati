@@ -304,6 +304,8 @@ class CSVController(BaseController):
             context.update({'id':existing_package_dict['id']})
             package_dict.update({'id':existing_package_dict['id']})
 
+            context['message'] = 'CSV import: update dataset %s' % package_dict['name']
+
             updated_package = get_action('package_update_rest')(context, package_dict)
             if counts:
                 counts['updated'].append(updated_package['name'])
@@ -311,6 +313,9 @@ class CSVController(BaseController):
         except NotFound:
             # Package needs to be created
             log.info('Package with name "%s" does not exist and will be created' % package_dict['name'])
+
+            context['message'] = 'CSV import: create dataset %s' % package_dict['name']
+
             new_package = get_action('package_create_rest')(context, package_dict)
             if counts:
                 counts['added'].append(new_package['name'])

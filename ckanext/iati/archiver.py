@@ -153,6 +153,7 @@ def run(package_id=None,publisher_id=None):
 
             if update:
                 context['id'] = package['id']
+                context['message'] = 'Daily archiver: update dataset %s' % package['name']
                 updated_package = get_action('package_update_rest')(context,package)
                 log.debug('Package %s updated with new extras' % package['name'])
                 updated = updated + 1
