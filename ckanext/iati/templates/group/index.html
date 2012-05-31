@@ -5,7 +5,6 @@
   
   <py:def function="page_title">Publishers</py:def>
   <py:def function="page_heading">Publishers</py:def>
-  
   <div py:match="content">
       <script>
         $(document).ready(function(){
@@ -13,9 +12,10 @@
         });
       </script>
 
-    ${c.page.pager()}
-    ${group_list_from_dict_local(c.page.items)}
-    ${c.page.pager()}
+  <!--!  Show the full results, as paginated results can't be sorted -->
+  <!--!  ${c.page.pager()}-->
+    ${group_list_from_dict_local(c.page.collection)}
+  <!--!  ${c.page.pager()}-->
   </div>
   <xi:include href="layout.html" />
 </html>
