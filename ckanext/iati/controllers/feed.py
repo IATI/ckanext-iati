@@ -9,7 +9,7 @@ from ckan import model
 from ckan.model import Session
 from ckan.lib.base import BaseController, c, request, response, json, abort
 from ckan.lib.helpers import date_str_to_datetime
-from ckan.logic import get_action, NotFound
+from ckan.logic import get_action, NotFound, NotAuthorized
 
 from ckanext.iati.lists import COUNTRIES, ORGANIZATION_TYPES
 
@@ -61,6 +61,9 @@ class FeedController(BaseController):
             group_dict = get_action('group_show')(context,{'id':id})
         except NotFound:
             abort(404,'Publisher not found')
+        except NotAuthorized:
+            abort(401,'NotAuthorized')
+
 
         data_dict = {'q': 'groups: %s' % id }
         results= package_search(data_dict)
