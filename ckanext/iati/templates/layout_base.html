@@ -93,9 +93,34 @@
           </li>
         </ul>
         <ul class="menu-main">
-          <li><a href="/">Home</a></li>
-          <li><a href="/dataset">Data</a></li>
-          <li><a href="/publisher">Publishers</a></li>
+          <li>
+            <a href="/">Home</a>
+            <ul class="children">
+              <li class="page_item"><a href="/revision">Newsfeed</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="/dataset">Data</a>
+            <ul class="children">
+              <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
+                <a href="/dataset/new">Register</a>
+              </li>
+              <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
+                <a href="/csv/download">Download current records</a>
+              </li>
+              <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
+                <a href="/csv/upload">Upload CSV file</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="/publisher">Publishers</a>
+            <ul class="children">
+              <li class="page_item" py:if="h.am_authorized(c, actions.GROUP_CREATE)">
+                  <a href="/publisher/new">Create a new publisher</a>
+              </li>
+            </ul>
+          </li>
           <li id="menu-item-45" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-45"><a href="/using-iati-data">Using IATI Data</a></li>
           <li id="menu-item-37" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-37"><a href="/about-2">About</a></li>
           <li id="menu-item-12" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12"><a href="/help">Help</a></li>

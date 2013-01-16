@@ -239,6 +239,40 @@ a:visited {
 #main-nav ul.menu-main li:last-child a, #main-nav ul.menu-main li.left-adjacent a {
     background-image: none;
 }
+#main-nav ul.menu-main li:hover a {
+    background: white;
+    color: #0098db;
+    text-decoration: none;
+}
+#main-nav ul.menu-main .children {
+    display: none;
+    position: absolute;
+    margin: 0;
+    background-color: #0098db;
+    border-radius: 0 0 3px 3px;
+    z-index: 1;
+}
+#main-nav ul.menu-main .children li {
+    float: none;
+    display: block;
+}
+#main-nav ul.menu-main .children li a {
+    color: #FFF;
+    border-bottom: 1px solid #2d79af;
+    background-image: none;
+    background-color: transparent;
+}
+#main-nav ul.menu-main .children li:last-child a {
+    border-bottom-width: 0;
+    border-radius: 0 0 3px 3px;
+}
+#main-nav ul.menu-main .children li a:hover {
+    background-color: #c4e1f5;
+    color: #0098db;
+}
+#main-nav ul.menu-main li:hover .children {
+    display: block;
+}
 
 
 #top-bar {
