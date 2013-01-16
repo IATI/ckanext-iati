@@ -8,56 +8,46 @@
     </py:def>
     <py:def function="body_class">home</py:def>
 
-    <div py:match="content">
-        <div class="page type-page hentry">
-            <div class="entry-content">
-                <div>
-                    <h1>Welcome to the IATI registry <span>The online repository of IATI raw data links</span></h1>
-                    <p class="intro">
-                        The IATI Registry contains links to raw data in the IATI XML format. The data itself is not held within the registry, it is
-                        published on publishers own websites. The registry simply provides links to this data, and a basic preview function for each
-                        data file published. Learn more <strong><a href="http://iatiregistry.org/about-2" rel="about">here</a></strong>.
-                    </p>
-
-                    <div class="top-tag top-tag-left">Access the registry</div>
-                    <div class="top-tag top-tag-right">Access other IATI sites</div>
-
-                    <div id="home-options">
-                        <ul>
-                            <li class="home-option-left">
-                                <div id="search">
-                                    <h1><a href="/dataset"><em>IATI Registry</em></a></h1>
-                                    <p><b>Find</b> raw IATI-compliant data in the Registry</p>
-                                </div>
-                                <div>
-                                    <?python
-                                        active_groups = [grp for grp in c.groups if grp['state'] == 'active' and grp['packages'] > 0]
-                                    ?>
-                                    <h2><em>${len(active_groups)}</em> <a href="/publisher">organizations</a> have published so far</h2>
-                                    <p>
-                                        The registry began registering data during 2011. It is early
-                                        days and the number of publishers is growing all the time.
-                                    </p>
-                                </div>
-                            </li>
-                            <li class="home-option-right">
-                                <div id="news">
-                                    <h1><a href="http://aidtransparency.net"><em>About IATI</em></a></h1>
-                                    <p>Find out more about the initiative and catch up on news on <b>aidtransprency.net</b>.</p>
-                                </div>
-                                <div id="learn">
-                                    <h1><a href="http://iatistandard.org"><em>IATI Standard</em></a></h1>
-                                    <p>Learn more about the IATI standard on <b>iatistandard.org</b>.</p>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <xi:include href="apps.html"/>
-            </div>  <!-- .entry-content -->
+    <div py:match="pre_content">
+        <div id="home-strapline">
+            <h1>Welcome to <strong>IATI Data Registry</strong>, the online repository of IATI raw data in XML format.</h1>
         </div>
-    </div> <!-- #content -->
+        <div id="home-icons">
+            <div id="home-icon-panels">
+                <div class="icon registry">
+                    <h2><a href="/dataset">IATI Registry</a></h2>
+                    <div id="panel-search-registry">
+                        <a href="/dataset">Search the Registry</a>
+                    </div>
+                    <p>The Registry provides links to data and a basic preview function</p>
+                </div>
+                <div class="icon detail">
+                    <?python
+                        active_groups = [grp for grp in c.groups if grp['state'] == 'active' and grp['packages'] > 0]
+                    ?>
+                    <h2><a href="/publisher">IATI Publishers</a></h2>
+                    <div id="number-publishers">
+                        <span id="total-number-publishers">${len(active_groups)}</span> Organizations have published so far
+                    </div>
+                    <p>The Registry began registering data in 2011, with the number of publishers increasing all of the time.<br />
+                       <a href="/publisher">View list of publishers</a></p>
+                </div>
+                <div class="icon support">
+                    <h2><a href="/help.html">Help</a></h2>
+                    <p>This section are to assist publishers of IATI data.</p>
+                    <ul>
+                        <li><a href="/help">How do I register my data?</a></li>
+                        <li><a href="/help">Why do I have to wait for my Publisher record to be authorised?</a></li>
+                        <li><a href="mailto:support@iatistandard.org">Can't find the answer to your question? Ask for help.</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div py:match="content">
+        <xi:include href="apps.html"/>
+    </div> 
 
     <xi:include href="layout.html"/>
 
