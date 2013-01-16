@@ -97,7 +97,7 @@ a:hover {
 #site-title a,
 #site-title a:link, #site-title a:visited {
   font-weight:normal;
-  color: #333;
+  color: #6e6e6e;
 }
 
 /* hide the main twentyten image */
@@ -174,7 +174,7 @@ a:hover {
 }
 
 #access ul li a:hover {
-  color: #333;
+  color: #6e6e6e;
 }
 
 #access ul ul a {
@@ -183,20 +183,20 @@ a:hover {
 #access li:hover > a,
 #access ul ul :hover > a {
 	background: #fff;
-	color: #333;
+	color: #6e6e6e;
 }
 #access ul li.current_page_item > a,
 #access ul li.current-menu-ancestor > a,
 #access ul li.current-menu-item > a,
 #access ul li.current-menu-parent > a {
-	color: #333;
+	color: #6e6e6e;
 }
 * html #access ul li.current_page_item a,
 * html #access ul li.current-menu-ancestor a,
 * html #access ul li.current-menu-item a,
 * html #access ul li.current-menu-parent a,
 * html #access ul li a:hover {
-	color: #333;
+	color: #6e6e6e;
 	cursor: default;
   font-weight: bold;
 }
@@ -226,7 +226,7 @@ a:hover {
 #primary .widget-container
 {
   background: #f9f2ce;
-  color: #333;
+  color: #6e6e6e;
   margin: 0 0 1em 0;
   padding: 10px;
 	border: 1px solid #ebd897;
@@ -960,7 +960,7 @@ p.atom-feed-link.package-history-link {
 #revision.widget-container
 {
   background: #f9f2ce;
-  color: #333;
+  color: #6e6e6e;
   margin: 0 0 1em 0;
   padding: 10px;
 	border: 1px solid #ebd897;
@@ -993,7 +993,7 @@ ul.userlist li.user {
 }
 
 ul.userlist li ul span.edits {
-  color: #333;
+  color: #6e6e6e;
   font-size: 110%;
   font-weight: bold;
   margin-left: 3px;

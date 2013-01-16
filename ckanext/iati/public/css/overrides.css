@@ -44,43 +44,15 @@
   color:#536FA1;
 }
 
-#header {
-  background:url(/images/header.png);
-  padding:0px;
-  margin-bottom:10px;
-}
-
-#masthead {
-  width:940px;
-  height:150px;
-  padding:0px;
-  margin:0px auto;
-}
-
-#branding h1 {
-  float:none !important;
-}
-
-div#branding h1#site-title a {
-  margin:0px !important;
-  font-size:20px;
-  line-height:100%;
-}
-
-#branding a img {
-  border-top: 0px solid black;
-  border-bottom: 0px solid black;
-  display: block;
-  float: none;
-  margin:20px 0px 25px 0px;
-  width:269px;
-  height:70px;
-  max-height:70px;
-}
-
 #main {
-  padding-top:22px;
+  padding-top:35px;
   overflow:visible;
+    *zoom: 1;
+}
+#main:after, #main:after, #main:after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 #container {
@@ -159,7 +131,7 @@ div#access ul li a:hover { border-bottom: 1px dashed #fff; background:transparen
 
 div#access ul li a {
   font-weight: normal;
-  font-family:'MuseoSlab500', 'Times New Roman', serif;
+  font-family: arial, sans-serif;
   font-size:14px;
   text-transform:uppercase;
   color: #fff;
@@ -191,7 +163,7 @@ div#access ul li:first-child a {
 
 span.ckan_logged_in {
   display:block;
-  margin-top:-21px;
+  /*margin-top:-21px;*/
 }
 
 /*-------- Login controls -------*/
@@ -214,7 +186,7 @@ h1, h2, h3,
 #content .entry-title,
 #content .package h3, 
 #content .package h4 {
-  font-family:'MuseoSlab500', 'Times New Roman', serif;
+  font-family: arial, sans-serif;
   font-weight:normal;
 }
 
@@ -222,13 +194,13 @@ h1, h2,
 #content .entry-title,
 #content .package h3, 
 #content .package h4 {
-  color: #2C4F87 !important;
+  color: #0098DB !important;
   font-size: 25px;
   letter-spacing: 0px;
   line-height: 33px;
   margin: 0 0 24px !important;
-  text-transform: uppercase;
-  background:transparent !important;
+  text-transform: none;
+  /*background:transparent !important;*/
 }
 
 #content .entry-title {
@@ -243,7 +215,7 @@ h1, h2,
 
 h1 span {
   text-transform:none;
-  color:#333;
+  color:#6e6e6e;
   font-size:15px;
 }
 
@@ -254,9 +226,9 @@ h1 span {
 }
 
 h3#reply-title {
-  font-family:'MuseoSlab500', 'Times New Roman', serif;
+  font-family: arial, sans-serif;
   font-weight:normal; 
-  color: #2C4F87 !important;
+  color: #0098DB !important;
   font-size: 25px !important;
   letter-spacing: 0px !important;
   line-height: 33px !important;
@@ -271,21 +243,13 @@ h3#reply-title {
 }
 
 #commentform label {
-  color: #2C4F87 !important;
-  font-family: 'MuseoSlab500', 'Times New Roman', serif;
+  color: #0098DB !important;
+  font-family: arial, sans-serif;
   font-size: 16px;
   padding:10px 0px;
 }
 
 /*-------- Home menu --------*/
-
-body.home {
-    background:url(/images/home-grad.png) repeat-x 0px 350px;
-}
-
-body.home #wrapper{
- background:transparent; 
-}
 
 #home-options {
   height:300px;
@@ -402,7 +366,7 @@ body.home #wrapper{
 
 div#footer {
   padding-right:0px;
-  background:#333;
+  background:#6e6e6e;
   margin-bottom:0px;
   padding:12px 0px 10px 0px;
   color:#fff;
@@ -425,11 +389,6 @@ div#site-info {
   font-weight:normal;
 }
 
-p {
-  font-size:13px;
-  line-height:20px;
-}
-
 p.two-col {
   -moz-column-count: 2;
 	-moz-column-gap: 40px;
@@ -442,7 +401,7 @@ p.two-col {
 
 .top-tag {
   display: inline;
-  font-family:'MuseoSlab500', 'Times New Roman', serif;
+  font-family: arial, sans-serif;
   color:#fff;
   background:#536FA1;
   width:200px;
@@ -472,8 +431,8 @@ p.two-col {
 }
 
 #package-search .facets tr td {
-  color: #2C4F87 !important;
-  font-family: 'MuseoSlab500', 'Times New Roman', serif;
+  color: #0098DB !important;
+  font-family: arial, sans-serif;
   font-size: 14px;
   vertical-align:middle;
   padding: 5px 0px;
@@ -495,11 +454,10 @@ p.two-col {
 
 #package-search input.search {
   border-color: #AAAAAA #DDDDDD #DDDDDD #AAAAAA;
-  border-radius: 5px 5px 5px 5px;
   border-style: solid;
   border-width: 1px;
-  color: #2C4F87;
-  font-family: 'MuseoSlab500', 'Times New Roman', serif;
+  color: #0098DB;
+  font-family: arial, sans-serif;
   font-size: 17px;
   padding: 7px 3px;
   width: 530px;
@@ -518,18 +476,14 @@ p.two-col {
 #content input[type=submit],
 #content input[type=submit]:hover {
   float:none;
-  background: none repeat scroll 0 0 #536FA1;
-  border-bottom: 3px solid #3E5379;
-  border-radius: 5px 5px 5px 5px;
-  color: #FFFFFF;
+  background: #0098DB;
+  color: #fff;
   display: inline-block;
-  font-family: 'BebasNeueRegular', Arial, Verdana, sans-serif;
-  font-size: 21px;
-  letter-spacing: 1px;
-  line-height: 19px;
-  padding: 7px 10px 0;
+  font-family: arial, Verdana, sans-serif;
+  font-size: 17px;
+  line-height: 17px;
+  padding: 7px 10px;
   text-decoration: none;
-  text-transform: uppercase;
   font-weight:normal;
 }
 
@@ -546,13 +500,13 @@ ul.packages {
 ul.packages > li {
   border-left-width:0px;
   margin:0px;
-  padding: 12px 5px 5px 5px;
+  padding: 12px 10px 10px 10px;
   border-bottom: none;
 }
 
 ul.packages li div.header a {
-  color: #2C4F87;
-  font-family: 'MuseoSlab500', 'Times New Roman', serif;
+  color: #0098DB;
+  font-family: arial, sans-serif;
   font-size: 18px;
   font-weight: normal;
 }
@@ -566,38 +520,34 @@ ul.packages li ul.openness .closed {
 }
 
 /*-------- Pagers --------*/
+.pager{
+    padding: 20px 0;
+    line-height: 15px;
+    font-size: 15px;
+    text-align: right;
+}
+.pager a:hover, .pager a:active {
+    background:#E3EFF3;
+    color:#0098DB;
+}
 
 .pager span.pager_curpage {
-    background: none repeat scroll 0 0 #536FA1;
-    border-style:none;
-    color: #FFFFFF;
-    font-weight: normal;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-}
-
-a, a:link {
-    color: #536FA1;
-}
-
-.pager span, .pager a {
-    border: none;
-    color: #536FA1;
-    font-family: 'BebasNeueRegular', Arial, sans-serif;
-    font-size: 20px;
-    font-weight: normal;
-    margin: 0;
-    padding: 5px 5px 0;
-    text-decoration: none;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
+    color: white;
+    background-color: #303030;
 }
 
 .pager a:hover, .pager a:active {
-  background:#E3EFF3;
+  background:#e3e3e3;
   color:#536FA1;
+}
+.pager  a,
+.pager  span {
+    border: none;
+    margin-right: 1px;
+    padding: 7px 15px;
+    text-decoration: none;
+    color: #303030;
+    background-color: #f0f0f0;
 }
 
 /*-------- Form --------*/

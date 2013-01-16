@@ -69,7 +69,7 @@ button img, .buttons a img {
 
 button:hover, .buttons a:hover {
 	border: 1px solid #ccc;
-	color: #333;
+	color: #6e6e6e;
 	background-color: #f0f0f0;
 }
 
