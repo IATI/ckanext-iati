@@ -1,7 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html
-  xmlns="http://www.w3.org/1999/xhtml"
   xmlns:i18n="http://genshi.edgewall.org/i18n"
   xmlns:py="http://genshi.edgewall.org/"
   xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -36,6 +34,8 @@
   <link rel="stylesheet" href="/css/ie.css" type="text/css" media="screen, print" />
   <![endif]-->
 
+  <script src="/scripts/modernizr-2.6.1.min.js"></script>
+  <script src="/scripts/selectivizr.min.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
   <script src="http://assets.okfn.org/ext/jquery.cookie/jquery.cookie.min.js"></script>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>
@@ -65,82 +65,83 @@
 
 <body class="${value_of('body_class', default=lambda: c.body_class)()}">
 
-<div id="wrapper" class="hfeed">
-  <div id="topbar">
-    <ul>
-      <li><a class="active" href="http://iatiregistry.org/">IATI Data</a></li>
-      <li><a href="http://www.iatistandard.org/">IATI Standard</a></li>
-      <li><a href="http://www.aidtransparency.net/">Aid Transparency</a></li>
+  <div id="wrapper" class="hfeed">
 
-      <li><a href="http://www.aidtransparency.net/iati-websites">IATI Sites:</a></li>
-
-    </ul>
-  </div>
-  <div id="header">
-  <div id="masthead">
-    <div id="branding" role="banner">
-       <h1 id="site-title">
-       <a href="${url('home')}" title="${g.site_title} Home">
-            <img src="/images/iati-logo.png" alt="${g.site_title} Logo" title="${g.site_title} Logo" style="display: inline;" />
-            <div id="logo_text">IATI Registry</div>
-        </a>
-      </h1>
-    </div> <!-- /branding -->
-
-    <div id="top-bar">
-      <div id="top-bar-login">
-        <span class="ckan_logged_in" style="display: none;">
-                <strong>${h.icon('user')} <span id="ckan_user_name">username</span></strong>
-                <br/>
-                <a href="${h.url_for(controller='user',action='me')}">My account</a>
-          &middot; <a href="/user/logout">Logout</a>
-        </span>
-        <span class="ckan_logged_out">
-                <a href="${h.url_for(controller='user',action='login')}">Login</a>
-          &middot; <a href="/user/register">Register</a>
-        </span>
+    <div id="header">
+      <div class="header-wrapper">
+        <a id="logo" href="${url('home')}" title="${g.site_title} Home">IATI Registry</a>
       </div>
-
-    </div><!-- /top-bar -->
-
-    <div id="access" role="navigation">
-      <div class="skip-link screen-reader-text">
-        <a href="#content" title="Skip to content">Skip to content</a>
-      </div> 
-      <div class="menu">
-        <ul>
-          <li><a href="/">${_('Home')}</a>
-          <ul class="children">
-            <li class="page_item"><a href="/revision">Newsfeed</a></li>
-          </ul>
-        </li>
-        <li><a href="/dataset">${_('Data')}</a>
-          <ul class="children">
-            <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
-                <a href="/dataset/new">Register</a>
-            </li>
-            <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
-                <a href="/csv/download">Download current records</a>
-            </li>
-            <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
-                <a href="/csv/upload">Upload CSV file</a>
-            </li>
-
+      <nav id="main-nav" class="nav" role="navigation">
+        <h3 class="assistive-text">Main menu</h3>
+        <div class="skip-link">
+          <a class="assistive-text" href="#content" title="Skip to primary content">
+            Skip to primary content
+          </a>
+        </div>
+        <ul class="iati-family">
+          <li class="transparency">
+            <a href="http://www.aidtransparency.net/">Aid Transparency</a>
+          </li>
+          <li class="standard">
+            <a href="http://www.iatistandard.org/">IATI Standard</a>
+          </li>
+          <li class="registry">
+            <a href="http://iatiregistry.org/">IATI Registry / Data</a>
+          </li>
+          <li class="community">
+            <a href="http://support.iatistandard.org/">IATI Community</a>
+          </li>
+        </ul>
+        <ul class="menu-main">
+          <li>
+            <a href="/">Home</a>
+            <ul class="children">
+              <li class="page_item"><a href="/revision">Newsfeed</a></li>
             </ul>
-        </li>
-        <li><a href="/publisher">Publishers</a>
-          <ul class="children">
-            <li class="page_item" py:if="h.am_authorized(c, actions.GROUP_CREATE)">
-                <a href="/publisher/new">Create a new publisher</a>
-            </li>
-          </ul>
-        </li>
-      </ul>
-      </div> <!-- .menu -->
-    </div> <!-- #access -->
+          </li>
+          <li>
+            <a href="/dataset">Data</a>
+            <ul class="children">
+              <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
+                <a href="/dataset/new">Register</a>
+              </li>
+              <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
+                <a href="/csv/download">Download current records</a>
+              </li>
+              <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
+                <a href="/csv/upload">Upload CSV file</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="/publisher">Publishers</a>
+            <ul class="children">
+              <li class="page_item" py:if="h.am_authorized(c, actions.GROUP_CREATE)">
+                  <a href="/publisher/new">Create a new publisher</a>
+              </li>
+            </ul>
+          </li>
+          <li id="menu-item-45" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-45"><a href="/using-iati-data">Using IATI Data</a></li>
+          <li id="menu-item-37" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-37"><a href="/about-2">About</a></li>
+          <li id="menu-item-12" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12"><a href="/help">Help</a></li>
+        </ul>
+        <div id="top-bar">
+          <div id="top-bar-login">
+            <span class="ckan_logged_in" style="display: none;">
+              <span id="ckan_user_name" style="display: none;">username</span>
+              <a href="${h.url_for(controller='user',action='me')}">My account</a>
+              <a href="/user/logout">Logout</a>
+            </span>
+            <span class="ckan_logged_out">
+              <a href="${h.url_for(controller='user',action='login')}">Login</a>
+              <a href="/user/register">Register</a>
+            </span>
+          </div>
+        </div>
+      </nav>
+    </div>
 
-  </div><!-- #masthead -->
-  </div><!-- #header -->  
+    <pre_content></pre_content>
 
   <div id="main">
       <py:with vars="messages = list(h._flash.pop_messages())">
