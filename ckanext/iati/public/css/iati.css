@@ -469,7 +469,6 @@ body #content textarea {
 #content .package h3, 
 #content .package h4 { 
 	color: #fff;
-	background-color: #0098db;
 }
 
 #navigation li a,
@@ -742,7 +741,7 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
 }
 
 #publisher-dialog dt{
-    background-color: #0098db;
+    background-color: #ECF3F5;
     padding: 5px;
     margin-bottom: 5px;
     font-family: arial, sans-serif;
