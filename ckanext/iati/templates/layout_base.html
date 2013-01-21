@@ -14,16 +14,16 @@
   <meta http-equiv="X-UA-Compatible" content="IE=7" />
   <link rel="shortcut icon" href="/images/favicon.ico"></link>
   <link rel="alternate" type="application/atom+xml" title="${g.site_title}" href="/feed/registry.atom" />
- 
+
  <py:choose>
   <py:when test="defined('optional_feed')">
     ${optional_feed()}
   </py:when>
   </py:choose>
 
-  <style type="text/css"> 
+  <style type="text/css">
     @import url(http://openbiblio.net/wp-content/themes/twentyten/style.css);
-  </style> 
+  </style>
   <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/ui-lightness/jquery-ui.css" type="text/css" media="screen, print" />
   <link rel="stylesheet" href="/css/style.ckan.css" type="text/css" media="screen, print" />
   <link rel="stylesheet" href="/css/iati.css" type="text/css" media="screen, print" />
@@ -152,13 +152,13 @@
       </div>
       </py:with>
 
-    <div id="container"> 
-      <div id="content" role="main"> 
+    <div id="container">
+      <div id="content" role="main">
 
         <div class="page type-page hentry">
           <div class="entry-content">
             <div id="minornavigation">
-              <minornavigation></minornavigation> 
+              <minornavigation></minornavigation>
             </div>
             <h2 py:if="defined('page_heading')" class="page_heading">${page_heading()}</h2>
             <!-- support both options for defining content -->
@@ -189,21 +189,26 @@
     </div><!-- #primary .widget-area -->
 
   </div><!-- #main -->
-  
-<div id="footer" role="contentinfo"> 
+
+  <div id="pre-footer">
+    <xi:include href="pre_footer.html"/>
+  </div>
+
+
+<div id="footer" role="contentinfo">
   <div id="colophon">
 
     <div id="site-info">
-      <a href="${url('/')}" title="${g.site_title}" rel="home">IATI Registry</a> &middot; 
+      <a href="${url('/')}" title="${g.site_title}" rel="home">IATI Registry</a> &middot;
         <!--
-        <a href="http://aidtransparency.net">Aid Transparency Project</a> &middot; 
+        <a href="http://aidtransparency.net">Aid Transparency Project</a> &middot;
         <a href="http://iatistandard.org">Reporting Standard</a> &middot;
         -->
         powered by <a href="http://ckan.org">CKAN</a>
     </div><!-- #site-info -->
 
   </div><!-- #colophon -->
-</div><!-- #footer --> 
+</div><!-- #footer -->
 </div><!-- #wrapper -->
 
 <!--! No need to load GA in development -->
