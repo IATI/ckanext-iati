@@ -895,3 +895,8 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
     display: block;
     margin-top: 40px;
 }
+
+.user-icon a img {
+    margin-right: 5px;
+    vertical-align: -3px;
+}
