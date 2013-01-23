@@ -35,7 +35,7 @@
     <ul class="userlist">
      <li py:for="user in c.page.items" class="user">
         <ul>
-          <li class="username">
+          <li class="username user-icon">
           ${h.linked_user(user['name'], maxlength=20)}
           </li>
           <li class="created">

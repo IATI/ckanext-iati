@@ -32,10 +32,11 @@
             ${c.page.pager()}
             <p i18n:msg="item_count">There are ${c.page.item_count} packages in this group.</p>
 
+
             <py:if test="c.group_admins">
                 <h3>Administrators:</h3>
                 <ul py:for="admin in c.group_admins">
-                    <li><a href="${h.url_for(controller='user',action='read',id=admin.id)}">${h.linked_user(admin)}</a></li>
+                    <li class="user-icon"><a href="${h.url_for(controller='user',action='read',id=admin.id)}">${h.linked_user(admin)}</a></li>
                 </ul>
             </py:if>
         </div>
