@@ -896,7 +896,7 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
     margin-top: 40px;
 }
 
-#content .user-icon a img {
+#content .user-icon {
     margin-right: 5px;
     vertical-align: -3px;
 }
