@@ -38,19 +38,20 @@
   <script type="text/javascript">
   //<![CDATA[
     $(document).ready(function() {
+        var page = location.pathname.split("/")[1];
+        var menu_item = (page == "" || page == "revision") ? $("#menu-item-home") : (page == "csv")  ? $("#menu-item-dataset") : $("#menu-item-" + page);
+        menu_item.addClass("current_page_item current-menu-item page_item");
+
         var ckan_user = $.cookie("ckan_display_name");
         if (ckan_user) {
             $("#ckan_user_name")[0].innerHTML = ckan_user;
             $(".ckan_logged_out").hide();
             $(".ckan_logged_in").show();
+          }
+        var license_selector = $('#package-edit dd select[id*="license_id"]')
+        if (license_selector && !license_selector.val()) {
+          license_selector.val("${h.my_group_license()}")
         }
-    });
-
-    $(document).ready(function(){
-      var license_selector = $('#package-edit dd select[id*="license_id"]')
-      if (license_selector && !license_selector.val()) {
-        license_selector.val("${h.my_group_license()}")
-       }
     });
   //]]>
   </script>
@@ -74,6 +75,7 @@
             Skip to primary content
           </a>
         </div>
+
         <ul class="iati-family">
           <li class="transparency">
             <a href="http://www.aidtransparency.net/">Aid Transparency</a>
@@ -89,13 +91,13 @@
           </li>
         </ul>
         <ul class="menu-main">
-          <li>
+          <li id="menu-item-home">
             <a href="/">Home</a>
             <ul class="children">
               <li class="page_item"><a href="/revision">Newsfeed</a></li>
             </ul>
           </li>
-          <li>
+          <li id="menu-item-dataset">
             <a href="/dataset">Data</a>
             <ul class="children">
               <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
@@ -109,7 +111,7 @@
               </li>
             </ul>
           </li>
-          <li>
+          <li id="menu-item-publisher" >
             <a href="/publisher">Publishers</a>
             <ul class="children">
               <li class="page_item" py:if="h.am_authorized(c, actions.GROUP_CREATE)">
@@ -117,9 +119,9 @@
               </li>
             </ul>
           </li>
-          <li id="menu-item-45" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-45"><a href="/using-iati-data">Using IATI Data</a></li>
-          <li id="menu-item-37" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-37"><a href="/about-2">About</a></li>
-          <li id="menu-item-12" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12"><a href="/help">Help</a></li>
+          <li id="menu-item-using-iati-data" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-45"><a href="/using-iati-data">Using IATI Data</a></li>
+          <li id="menu-item-about-2" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-37"><a href="/about-2">About</a></li>
+          <li id="menu-item-help" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12"><a href="/help">Help</a></li>
         </ul>
         <div id="top-bar">
           <div id="top-bar-login">
@@ -139,7 +141,8 @@
 
     <pre_content></pre_content>
 
-  <div id="main">
+    <div id="main">
+
       <py:with vars="messages = list(h._flash.pop_messages())">
       <div class="flash-banner-box" py:if="len(messages)">
         <div class="flash-banner ${m.category}" py:for="m in messages">
@@ -147,9 +150,9 @@
         </div>
       </div>
       </py:with>
-
     <div id="container">
       <div id="content" role="main">
+
 
         <div class="page type-page hentry">
           <div class="entry-content">
