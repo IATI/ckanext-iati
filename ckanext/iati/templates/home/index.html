@@ -22,12 +22,9 @@
                     <p>The Registry provides links to data and a basic preview function</p>
                 </div>
                 <div class="icon detail">
-                    <?python
-                        active_groups = [grp for grp in c.groups if grp['state'] == 'active' and grp['packages'] > 0]
-                    ?>
                     <h2><a href="/publisher">IATI Publishers</a></h2>
                     <div id="number-publishers">
-                        <span id="total-number-publishers">${len(active_groups)}</span> Organisations have published so far
+                        <span id="total-number-publishers">${c.num_publishers}</span> Organisations have published so far
                     </div>
                     <p>The Registry began registering data in 2011, with the number of publishers increasing all of the time.<br />
                        <a href="/publisher">View list of publishers</a></p>

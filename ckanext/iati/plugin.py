@@ -37,8 +37,11 @@ class IatiForms(SingletonPlugin):
     implements(IConfigurer)
 
     def before_map(self, map):
+        home_controller = 'ckanext.iati.controllers.home_iati:HomeIatiController'
         package_controller = 'ckanext.iati.controllers.package_iati:PackageIatiController'
         group_controller = 'ckanext.iati.controllers.group_iati:GroupIatiController'
+
+        map.connect('/', controller=home_controller, action='index')
 
         map.redirect('/package/new','/dataset/new')
         map.redirect('/package/edit/{id}','/dataset/edit/{id}')
