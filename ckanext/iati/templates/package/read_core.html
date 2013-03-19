@@ -12,11 +12,22 @@
     ?>
 
 
-  <div class="package">
     <h2 class="head">
+      <div py:if="c.pkg.state == 'deleted'" class="flash-banner-box" style="padding-top: 10px">
+        <div class="flash-banner error">
+        This dataset has been deleted.
+        </div>
+      </div>
+      <div py:if="c.pkg.state == 'pending'" class="flash-banner-box" style="padding-top: 10px">
+        <div class="flash-banner notice">
+        This dataset is in a pending state.
+        </div>
+      </div>
+
       ${c.pkg.title}
       <span class="name">(${c.pkg.name})</span>
     </h2>
+
     <div class="url" py:if="c.pkg.url">
       <p>
         ${c.pkg_url_link}
@@ -192,6 +203,5 @@
     </ul>
 
     <hr class="cleared" />
-  </div>
 
 </html>
