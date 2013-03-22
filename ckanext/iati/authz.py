@@ -111,8 +111,6 @@ class IatiGroupAuthzExtension(SingletonPlugin):
                 # Notify users that the publisher has been activated
                 send_activation_notification_email(group)
 
-        import pdb; pdb.set_trace()
-
     def delete(self, group):
         _get_group_authz_group(group)
         self._sync_packages(group)
