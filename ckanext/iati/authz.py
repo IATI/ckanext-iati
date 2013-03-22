@@ -1,8 +1,12 @@
 import logging
+from urlparse import urljoin
+from pylons import config
 import ckan.model as model
 from ckan.authz import Authorizer
 
 from ckan.plugins import implements, SingletonPlugin, IGroupController, IPackageController
+
+from ckanext.iati.emailer import send_email
 
 log = logging.getLogger(__name__)
 
@@ -98,6 +102,17 @@ class IatiGroupAuthzExtension(SingletonPlugin):
         _get_group_authz_group(group)
         self._sync_packages(group)
 
+        # Check if the state has changed from 'pending' to 'active'
+        old_revision = model.Session.query(model.GroupRevision) \
+                            .filter(model.GroupRevision.revision_id==group.revision.id) \
+                            .first()
+        if old_revision:
+            if old_revision.state == u'pending' and group.state == u'active':
+                # Notify users that the publisher has been activated
+                send_activation_notification_email(group)
+
+        import pdb; pdb.set_trace()
+
     def delete(self, group):
         _get_group_authz_group(group)
         self._sync_packages(group)
@@ -106,8 +121,36 @@ class IatiGroupAuthzExtension(SingletonPlugin):
         authz_group = _get_group_authz_group(group_role.group)
         if group_role.user:
             model.add_user_to_authorization_group(group_role.user, authz_group, group_role.role)
-    
+
     def authz_remove_role(group, group_role):
         authz_group = _get_group_authz_group(group_role.group)
         if group_role.user and model.user_in_authorization_group(group_role.user, authz_group):
             model.remove_user_from_authorization_group(group_role.user, authz_group)
+
+publisher_activation_body_template = '''
+Dear {user_name},
+
+The publisher that you created on the IATI Registry ({group_title}) has been approved.
+It is now public and you can start adding data to the Registry.
+
+ {group_link}
+
+Best regards,
+
+ The IATI Registry
+'''
+
+
+def send_activation_notification_email(group):
+
+    users = Authorizer().get_admins(group)
+
+    subject = config.get('iati.publisher_activation_email_subject', 'IATI Registry Publisher Activation')
+    group_link = urljoin(config.get('ckan.site_url', 'http://iatiregistry.org'),
+                             '/publisher/' + group.name)
+
+    for user in users:
+        if user.email:
+            content = publisher_activation_body_template.format(user_name=user.name,
+                    group_title=group.title, group_link=group_link)
+            send_email(content, subject, user.email)
