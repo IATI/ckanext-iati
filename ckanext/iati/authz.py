@@ -2,6 +2,7 @@ import logging
 from urlparse import urljoin
 from pylons import config
 import ckan.model as model
+from ckan.lib import helpers as h
 from ckan.authz import Authorizer
 
 from ckan.plugins import implements, SingletonPlugin, IGroupController, IPackageController
@@ -110,6 +111,7 @@ class IatiGroupAuthzExtension(SingletonPlugin):
             if old_revision.state == u'pending' and group.state == u'active':
                 # Notify users that the publisher has been activated
                 send_activation_notification_email(group)
+                h.flash_success('Publisher activated, a notification email has been sent to its administrators.')
 
     def delete(self, group):
         _get_group_authz_group(group)
