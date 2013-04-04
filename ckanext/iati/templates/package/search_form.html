@@ -16,6 +16,7 @@
 
     search_facets = [
         ('publishertype',h.publisher_type_title, 'Source'),
+        ('secondary_publisher',lambda x: x, 'Secondary Publisher'),
         ('groups',h.group_title, 'Publisher'),
         ('publisher_organization_type',h.organization_type_title, 'Organisation type'),
         ('country',h.country_name, 'Country'),
