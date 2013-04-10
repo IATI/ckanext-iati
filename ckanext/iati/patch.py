@@ -59,6 +59,9 @@ def publisher_type_title(code):
 def organization_type_title(code):
     return dict(ORGANIZATION_TYPES).get(code, code)
 
+def issue_title(code):
+    return code.replace('-', ' ').title()
+
 def get_organization_type(group_id):
     group = model.Group.get(group_id)
     if group:
@@ -110,6 +113,7 @@ h.group_title = group_title
 h.file_type_title = file_type_title
 h.organization_type_title = organization_type_title
 h.publisher_type_title = publisher_type_title
+h.issue_title = issue_title
 h.publisher_record_fields = fields
 h.my_group = my_group
 h.my_group_license = my_group_license
