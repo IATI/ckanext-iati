@@ -37,7 +37,6 @@
     <py:if test="im_a_sysadmin and not c.is_myself">
       <p><b>Note:</b> Only the own user and sysadmins can see these details.</p>
       <ul>
-        <li>This user's API key is: ${c.user_dict['apikey']}</li>
         <li>This user's email is: ${c.user_dict['email']}</li>
       </ul>
     </py:if>
