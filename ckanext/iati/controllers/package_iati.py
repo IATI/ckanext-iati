@@ -47,6 +47,9 @@ class PackageIatiController(PackageController):
             'verified': [checkbox_value, convert_to_extras,ignore_missing],
             'language': [convert_to_extras, ignore_missing],
             'secondary_publisher': [convert_to_extras, ignore_missing],
+            'issue_type': [convert_to_extras, ignore_missing],
+            'issue_message': [convert_to_extras, ignore_missing],
+            'issue_date': [convert_to_extras, ignore_missing],
         })
 
         schema['name'].append(iati_dataset_name)
@@ -66,6 +69,10 @@ class PackageIatiController(PackageController):
             'verified': [convert_from_extras,ignore_missing],
             'language': [convert_from_extras, ignore_missing],
             'secondary_publisher': [convert_from_extras, ignore_missing],
+            'issue_type': [convert_from_extras, ignore_missing],
+            'issue_message': [convert_from_extras, ignore_missing],
+            'issue_date': [convert_from_extras, ignore_missing],
+
         })
         # Remove isodate validator
         schema['resources'].update({
