@@ -848,6 +848,26 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
 }
 
 
+/*------- Dataset issues ------------*/
+
+.issue {
+  margin-top: 5px;
+  border: 1px solid orange;
+  background: #FAFA93 url('../images/icons/error.png') no-repeat 5px 5px;
+  padding: 5px 5px 5px 25px;
+  font-size: small;
+}
+
+.issue .type {
+  font-weight: bold;
+}
+
+.issue .date {
+  font-style: italic;
+}
+
+
+
 /* ------ Table sorter ----------- */
 
 .groups .header{

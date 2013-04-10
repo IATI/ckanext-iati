@@ -34,6 +34,10 @@
       </p>
     </div>
 
+    <py:if test="'issue_type' in extras # and h.check_access('package_update', {'id': c.pkg_dict['id'], 'user': c.user})">
+      ${dataset_issue_box(c.pkg_dict)}
+    </py:if>
+
     <div class="tags">
       <div py:if="len(c.pkg.tags)"  class="dataset-page-header">
         Tags: ${tag_list_local(c.pkg.tags)}
