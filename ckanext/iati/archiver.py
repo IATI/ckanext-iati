@@ -262,7 +262,9 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
         raise tasks.DownloadError("Of content type %s, not downloading" % ct)
 
     # get the resource and archive it
-    res = requests.get(resource['url'], timeout = url_timeout)
+    # TODO: remove the Accept-Encoding limitation after upgrading
+    # archiver and requests
+    res = requests.get(resource['url'], timeout = url_timeout, headers={'Accept-Encoding':''})
     length, hash, saved_file = tasks._save_resource(resource, res, max_content_length)
 
     # check if resource size changed
