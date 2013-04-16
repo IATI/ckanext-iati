@@ -171,7 +171,7 @@ def archive_package(package_id, context, consecutive_errors=0):
         if 'issue_type' in package['extras']:
             for key in ['issue_type', 'issue_message', 'issue_date']:
                 if key in package['extras']:
-                    del package['extras']['key']
+                    del package['extras'][key]
 
         if update:
             return update_package(context, package)
