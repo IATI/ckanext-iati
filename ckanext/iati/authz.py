@@ -127,17 +127,32 @@ class IatiGroupAuthzExtension(SingletonPlugin):
         if group_role.user and model.user_in_authorization_group(group_role.user, authz_group):
             model.remove_user_from_authorization_group(group_role.user, authz_group)
 
+
 publisher_activation_body_template = '''
 Dear {user_name},
 
-The publisher that you created on the IATI Registry ({group_title}) has been approved.
-It is now public and you can start adding data to the Registry.
+Congratulations, the publisher that you created on the IATI Registry ({group_title}) has been approved.
 
  {group_link}
 
+Please ensure that the details published for this record are correct and informative, as the IATI community rely on this information.
+
+You can also start adding data to the Registry in the form of packages that link to IATI data.
+
+Individual files can be added via: {site_url}/dataset/new
+Multiple files can be added via a CSV upload function: {site_url}/csv/upload
+An API is also available for more technical access: {site_url}/registry-api
+
+Should you have any queries or support need, then please consult the IATI community which includes knowledge base articles and the ability to ask questions of the support team: http://support.iatistandard.org
+
+
 Best regards,
 
- The IATI Registry
+The International Aid Transparency (IATI) Team
+
+
+About this email: this email was sent to {user_email} as it has been associated with the IATI Registry publisher {group_title}.  If you think this was mistaken, please contact support@iatistandard.org
+
 '''
 
 
@@ -146,12 +161,14 @@ def send_activation_notification_email(group):
     users = Authorizer().get_admins(group)
 
     subject = config.get('iati.publisher_activation_email_subject', 'IATI Registry Publisher Activation')
-    group_link = urljoin(config.get('ckan.site_url', 'http://iatiregistry.org'),
-                             '/publisher/' + group.name)
+
+    site_url = config.get('ckan.site_url', 'http://iatiregistry.org')
+    group_link = urljoin(site_url, '/publisher/' + group.name)
 
     for user in users:
         if user.email:
             user_name = user.fullname or user.name
             content = publisher_activation_body_template.format(user_name=user_name,
-                    group_title=group.title, group_link=group_link)
+                    group_title=group.title, group_link=group_link, user_email=user.email,
+                    site_url=site_url)
             send_email(content, subject, user.email)
