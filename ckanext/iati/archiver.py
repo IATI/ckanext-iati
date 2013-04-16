@@ -169,6 +169,7 @@ def archive_package(package_id, context, consecutive_errors=0):
         # At this point, any previous issues should be resolved, delete the issue extras
         # to mark them as resolved
         if 'issue_type' in package['extras']:
+            update = True
             for key in ['issue_type', 'issue_message', 'issue_date']:
                 if key in package['extras']:
                     del package['extras'][key]
