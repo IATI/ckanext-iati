@@ -186,9 +186,9 @@ def save_package_issue(context, data_dict, issue_type, issue_message):
         log.info('Dataset {0} still has the same issue ({1} - {2}), skipping...'.format(data_dict['name'], issue_type, issue_message))
         return None
     else:
-        data_dict['extras']['issue_type'] = issue_type
-        data_dict['extras']['issue_message'] = issue_message
-        data_dict['extras']['issue_date'] = datetime.datetime.now().isoformat()
+        data_dict['extras']['issue_type'] = unicode(issue_type)
+        data_dict['extras']['issue_message'] = unicode(issue_message)
+        data_dict['extras']['issue_date'] = unicode(datetime.datetime.now().isoformat())
 
         log.error('Issue found for dataset {0}: {1} - {2}'.format(data_dict['name'], issue_type, issue_message))
 
