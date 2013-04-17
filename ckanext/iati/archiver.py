@@ -7,6 +7,8 @@ from lxml import etree
 import requests
 import json
 from pylons import config
+
+from dateutil.parser import parse as date_parser
 from ckan.logic import get_action
 from ckan import model
 
@@ -151,14 +153,12 @@ def archive_package(package_id, context, consecutive_errors=0):
 
         # Check dates
         if last_updated_date:
-            # Get rid of the microseconds
-            if '.' in last_updated_date:
-                last_updated_date = last_updated_date[:last_updated_date.find('.')]
             try:
-                date = date_str_to_datetime(last_updated_date)
+                date = date_parser(last_updated_date)
                 format = '%Y-%m-%d %H:%M' if (date.hour and date.minute) else '%Y-%m-%d'
                 new_extras['data_updated'] = date.strftime(format)
-            except (ValueError,TypeError),e:
+
+            except ValueError:
                 log.error('Wrong date format for data_updated for dataset %s: %s' % (package['name'],str(e)))
 
 
