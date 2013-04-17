@@ -28,7 +28,7 @@ def text_traceback():
 # Max content-length of archived files, larger files will be ignored
 MAX_CONTENT_LENGTH = 50000000
 URL_TIMEOUT=30
-DATA_FORMATS = ['xml','iati-xml','application/xml']
+DATA_FORMATS = ['xml','iati-xml','application/xml', 'text/xml']
 
 def run(package_id=None,publisher_id=None):
 
@@ -125,10 +125,14 @@ def archive_package(package_id, context, consecutive_errors=0):
             xml = f.read()
         os.remove(file_path)
 
+        # This should have been catched by the link checked, but just in case
+        if re.sub('<!doctype(.*)>', '', xml.lower()[:100]).strip().startswith('<html'):
+            return save_package_issue(context, package, 'xml-error', 'File is an HTML document')
+
         try:
             tree = etree.fromstring(xml)
         except etree.XMLSyntaxError, e:
-            return save_package_issue(context, package, 'xml-error', 'Could not parse XML file')
+            return save_package_issue(context, package, 'xml-error', 'Could not parse XML file: {0}'.format(str(e)[:200]))
 
         new_extras = {}
         if is_activity_package:
@@ -256,7 +260,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
             (cl, max_content_length))
 
     # check that resource is a data file
-    if not (resource_format in data_formats or ct.lower() in data_formats):
+    if not ct.lower() in data_formats:
         if resource_changed:
             tasks._update_resource(context, resource)
         raise tasks.DownloadError("Of content type %s, not downloading" % ct)
