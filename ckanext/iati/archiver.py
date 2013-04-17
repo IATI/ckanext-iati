@@ -109,7 +109,7 @@ def archive_package(package_id, context, consecutive_errors=0):
 
         file_path = result['saved_file']
 
-        if 'zip' in result['headers']['content-type']:
+        if 'zip' in result['headers'].get('content-type', ''):
             # Skip zipped files for now
             log.info('Skipping zipped file for dataset %s ' % package.get('name'))
             os.remove(file_path)
