@@ -696,6 +696,13 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
 	margin-bottom: 0.0em;
 }
 
+#package-search .admin .disclaimer{
+  color: red;
+  margin-top: 3px;
+  font-style: italic;
+  font-size: x-small;
+}
+
 .iati_preview {
 	display: none; 
 }

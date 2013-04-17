@@ -72,7 +72,7 @@
         </div>
     </py:if>
 
-	<py:if test="get_extra(package, 'issue_type', None) #and h.check_access('package_update', {'id': package.id, 'user': c.user})">
+	<py:if test="get_extra(package, 'issue_type', None)">
       ${dataset_issue_box(package)}
     </py:if>
 

@@ -34,7 +34,7 @@
       </p>
     </div>
 
-    <py:if test="'issue_type' in extras # and h.check_access('package_update', {'id': c.pkg_dict['id'], 'user': c.user})">
+    <py:if test="extras.get('issue_type', None)">
       ${dataset_issue_box(c.pkg_dict)}
     </py:if>
 

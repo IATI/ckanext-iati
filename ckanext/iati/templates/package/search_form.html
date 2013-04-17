@@ -7,8 +7,13 @@
   <input type="search" class="search" name="q" value="${c.q}" />
 
   <?python
+
+    #TODO: All this should go to helpers
+
     from ckan.lib.search import query_for, SearchError
     from ckan.model import Package
+    from ckan.authz import Authorizer
+    im_a_sysadmin = Authorizer().is_sysadmin(c.user)
 
     global_query = query_for(Package)
     global_query.run({'facet.field':g.facets})
@@ -41,10 +46,23 @@
   ?>
 
   <table class="facets">
-    <tr py:for="facet,helper,title in search_facets" class="${'admin' if facet == 'issue_type' else None}">
-        <td>${title}:</td>
-        <td>${h.select(facet, dict(c.fields).get(facet, '') if c.facets else '', options[facet])}</td>
-    </tr>
+    <py:for each="facet,helper,title in search_facets">
+      <py:if test="facet != 'issue_type'">
+        <tr>
+            <td>${title}:</td>
+            <td>${h.select(facet, dict(c.fields).get(facet, '') if c.facets else '', options[facet])}</td>
+        </tr>
+      </py:if>
+    </py:for>
+    <py:if test="im_a_sysadmin">
+      <tr class="admin">
+          <td>Issues:</td>
+          <td>
+            ${h.select('issue_type', dict(c.fields).get(facet, '') if c.facets else '', options['issue_type'])}
+            <div class="disclaimer">Only sysadmins can see this filter</div>
+          </td>
+      </tr>
+    </py:if>
   </table>
 
    <input type="submit" value="Search" class="button" />
