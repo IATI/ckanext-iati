@@ -86,7 +86,7 @@ def issues_report_csv(context, data_dict):
     site_url = config.get('ckan.site_url', 'http://iatiregistry.org')
 
     with open(tmp_file_path, 'w') as f:
-        field_names = ['publisher', 'dataset', 'issue_type', 'issue_date', 'issue_message', 'url']
+        field_names = ['publisher', 'dataset', 'url', 'issue_type', 'issue_date', 'issue_message']
         writer = csv.DictWriter(f, fieldnames=field_names, quoting=csv.QUOTE_ALL)
         writer.writerow(dict( (n,n) for n in field_names ))
         for publisher, datasets in issues.iteritems():
@@ -95,10 +95,10 @@ def issues_report_csv(context, data_dict):
                 writer.writerow({
                     'publisher': publisher,
                     'dataset': dataset['name'],
+                    'url': url,
                     'issue_type': get_extra(dataset, 'issue_type', ''),
                     'issue_date': get_extra(dataset, 'issue_date', ''),
                     'issue_message': get_extra(dataset, 'issue_message', ''),
-                    'url': url,
                 })
 
         return {
