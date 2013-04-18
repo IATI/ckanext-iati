@@ -30,7 +30,7 @@ def text_traceback():
 # Max content-length of archived files, larger files will be ignored
 MAX_CONTENT_LENGTH = 50000000
 URL_TIMEOUT=30
-DATA_FORMATS = ['xml','iati-xml','application/xml', 'text/xml']
+DATA_FORMATS = ['xml','iati-xml','application/xml', 'text/xml', 'text/html']
 
 def run(package_id=None,publisher_id=None):
 
@@ -105,9 +105,17 @@ def archive_package(package_id, context, consecutive_errors=0):
         try:
             result = download(context,resource,data_formats=DATA_FORMATS)
         except tasks.LinkCheckerError, e:
-            return save_package_issue(context, package, 'url-error', str(e))
+            if 'URL unobtainable: HTTP' in str(e):
+                message = str(e)[:str(e).find(' on')]
+            else:
+                message = str(e)
+            return save_package_issue(context, package, 'url-error', message)
         except tasks.DownloadError, e:
-            return save_package_issue(context, package, 'download-error', str(e))
+            if 'exceeds maximum allowed value' in str(e):
+                message = 'File too big, not downloading'
+            else:
+                message = str(e)
+            return save_package_issue(context, package, 'download-error', message)
 
         file_path = result['saved_file']
 
@@ -127,7 +135,6 @@ def archive_package(package_id, context, consecutive_errors=0):
             xml = f.read()
         os.remove(file_path)
 
-        # This should have been catched by the link checked, but just in case
         if re.sub('<!doctype(.*)>', '', xml.lower()[:100]).strip().startswith('<html'):
             return save_package_issue(context, package, 'xml-error', 'File is an HTML document')
 
