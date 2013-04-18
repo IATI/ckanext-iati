@@ -2,6 +2,7 @@ import sys
 import os
 import datetime
 import hashlib
+import socket
 import re
 from lxml import etree
 import requests
@@ -116,6 +117,8 @@ def archive_package(package_id, context, consecutive_errors=0):
             else:
                 message = str(e)
             return save_package_issue(context, package, 'download-error', message)
+        except socket.timeout:
+            return save_package_issue(context, package, 'download-error', 'URL timeout')
 
         file_path = result['saved_file']
 
