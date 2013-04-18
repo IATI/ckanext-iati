@@ -38,10 +38,7 @@
         options.insert(0,any)
 
     for facet,facet_options in options.iteritems():
-        if facet == 'issue_type':
-          sort_and_insert_any(facet_options, any=('','No issues'))
-        else:
-          sort_and_insert_any(facet_options)
+        sort_and_insert_any(facet_options)
 
   ?>
 
