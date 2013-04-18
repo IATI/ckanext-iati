@@ -5,8 +5,9 @@ from logging import getLogger
 from ckan.model import Package, Group
 from ckan.plugins import implements, SingletonPlugin
 from ckan.plugins import IRoutes
-from ckan.plugins import IConfigurer
 from ckan.plugins import IActions
+from ckan.plugins import IConfigurer
+from ckan.plugins import IAuthFunctions
 from ckan.plugins import IGroupController
 from ckan.plugins import IPackageController
 
@@ -77,6 +78,8 @@ class IatiForms(SingletonPlugin):
         map.connect('/csv/upload', controller=csv_controller, action='upload',
                     conditions=dict(method=['POST']))
 
+        reports_controller = 'ckanext.iati.controllers.reports:ReportsController'
+        map.connect('/report/issues', controller=reports_controller, action='issues_report')
 
         # Redirects needed after updating the datasets name for some of the publishers
         map.redirect('/dataset/wb-{code}','/dataset/worldbank-{code}',_redirect_code='301 Moved Permanently')
@@ -95,15 +98,24 @@ class IatiForms(SingletonPlugin):
 class IatiActions(SingletonPlugin):
 
     implements(IActions)
+    implements(IAuthFunctions)
 
     def get_actions(self):
-        from ckanext.iati.logic.action.get import (package_show as package_show_iati,
-                                                   package_show_rest as package_show_rest_iati)
+        from ckanext.iati.logic.action import get as get_iati
 
         return {
-            'package_show':package_show_iati,
-            'package_show_rest':package_show_rest_iati
+            'package_show': get_iati.package_show,
+            'package_show_rest': get_iati.package_show_rest,
+            'issues_report_csv': get_iati.issues_report_csv,
         }
+
+    def get_auth_functions(self):
+        from ckanext.iati.logic import auth as auth_iati
+
+        return {
+            'issues_report_csv': auth_iati.issues_report_csv,
+        }
+
 
 class IatiLicenseOverride(SingletonPlugin):
 

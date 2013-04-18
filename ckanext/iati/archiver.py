@@ -6,13 +6,13 @@ import re
 from lxml import etree
 import requests
 import json
+
 from pylons import config
 
 from dateutil.parser import parse as date_parser
 from ckan.logic import get_action
 from ckan import model
 
-from ckan.lib.helpers import date_str_to_datetime
 import logging
 
 log = logging.getLogger('iati_archiver')
@@ -305,4 +305,3 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
             'hash' : resource_hash,
             'headers': headers,
             'saved_file': saved_file}
-
