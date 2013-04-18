@@ -29,23 +29,23 @@ from ckan.lib.dictization import model_dictize
 old_package_to_api1 = model_dictize.package_to_api1
 
 def package_to_api1_with_groups_types(pkg,context):
-    _dict = old_package_to_api1(pkg,context) 
+    _dict = old_package_to_api1(pkg,context)
     _dict['extras']['publishertype'] = ''.join([g.extras.get('type', '') for g in pkg.groups if g])
     return _dict
 
 model_dictize.package_to_api1 = package_to_api1_with_groups_types
 
-######### 
+#########
 
 
 
 # TODO move this to helpers proper
 def country_name(code):
     return dict(COUNTRIES).get(code, code)
-    
+
 def group_title(name):
     from ckan import model
-    group = model.Group.by_name(name) 
+    group = model.Group.by_name(name)
     if group is not None:
         name = group.title
     return name
@@ -80,6 +80,11 @@ def am_authorized_with_publisher(c, action, domain_object=None):
     if q.count() < 1:
         return False
     return True
+
+def am_a_sysadmin():
+
+    return authz.Authorizer().is_sysadmin(c.user)
+
 
 def my_group():
     user = model.User.by_name(c.user)
@@ -119,3 +124,4 @@ h.my_group = my_group
 h.my_group_license = my_group_license
 h.format_file_size = format_file_size
 h.get_organization_type = get_organization_type
+h.am_a_sysadmin = am_a_sysadmin

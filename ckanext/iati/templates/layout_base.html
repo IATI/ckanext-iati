@@ -109,6 +109,9 @@
               <li class="page_item" py:if="h.am_authorized_with_publisher(c, actions.PACKAGE_CREATE)">
                 <a href="/csv/upload">Upload CSV file</a>
               </li>
+              <li class="page_item" py:if="h.am_a_sysadmin()">
+                <a href="/report/issues">Issues report</a>
+              </li>
             </ul>
           </li>
           <li id="menu-item-publisher" >

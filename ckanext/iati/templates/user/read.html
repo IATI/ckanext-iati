@@ -2,11 +2,6 @@
   xmlns:xi="http://www.w3.org/2001/XInclude"
   py:strip="">
 
-  <?python
-    from ckan.authz import Authorizer
-    im_a_sysadmin = Authorizer().is_sysadmin(c.user)
-  ?>
-
   <py:def function="page_title">${c.user_dict['display_name']} - User</py:def>
   <py:def function="page_heading">${c.user_dict['display_name']}</py:def>
   <py:def function="body_class">user-view</py:def>
@@ -34,7 +29,7 @@
       </ul>
     </py:if>
 
-    <py:if test="im_a_sysadmin and not c.is_myself">
+    <py:if test="h.am_a_sysadmin() and not c.is_myself">
       <p><b>Note:</b> Only the own user and sysadmins can see these details.</p>
       <ul>
         <li>This user's email is: ${c.user_dict['email']}</li>
