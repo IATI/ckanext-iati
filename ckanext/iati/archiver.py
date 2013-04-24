@@ -270,7 +270,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
             (cl, max_content_length))
 
     # check that resource is a data file
-    if not ct.lower() in data_formats:
+    if not ct.lower().strip('"') in data_formats:
         if resource_changed:
             tasks._update_resource(context, resource)
         raise tasks.DownloadError("Of content type %s, not downloading" % ct)
