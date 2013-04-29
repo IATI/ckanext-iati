@@ -34,6 +34,10 @@
       </p>
     </div>
 
+    <py:if test="extras.get('issue_type', None)">
+      ${dataset_issue_box(c.pkg_dict)}
+    </py:if>
+
     <div class="tags">
       <div py:if="len(c.pkg.tags)"  class="dataset-page-header">
         Tags: ${tag_list_local(c.pkg.tags)}
@@ -43,6 +47,7 @@
         <ul>
           <li py:for="group in c.pkg.groups">
           <a href="/publisher/${group.name}">${group.title}</a>
+          <span py:if="'secondary_publisher' in extras and len(extras['secondary_publisher'])">(Published on behalf of <i>${extras['secondary_publisher']}</i>)</span>
           </li>
         </ul>
       </div>

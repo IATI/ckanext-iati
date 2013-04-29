@@ -696,6 +696,13 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
 	margin-bottom: 0.0em;
 }
 
+#package-search .admin .disclaimer{
+  color: red;
+  margin-top: 3px;
+  font-style: italic;
+  font-size: x-small;
+}
+
 .iati_preview {
 	display: none; 
 }
@@ -846,6 +853,26 @@ COMMENTED OUT - Nick Mason 10/6/2011 - Better to have default styles here
     background-color: #ECF3F5
 
 }
+
+
+/*------- Dataset issues ------------*/
+
+.issue {
+  margin-top: 5px;
+  border: 1px solid orange;
+  background: #FAFA93 url('../images/icons/error.png') no-repeat 5px 5px;
+  padding: 5px 5px 5px 25px;
+  font-size: small;
+}
+
+.issue .type {
+  font-weight: bold;
+}
+
+.issue .date {
+  font-style: italic;
+}
+
 
 
 /* ------ Table sorter ----------- */

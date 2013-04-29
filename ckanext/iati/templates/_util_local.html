@@ -12,6 +12,8 @@
     def get_extra(package, key, default=None):
         value = [e['value'] for e in package['extras'] if e['key'] == key]
         value = value[0] if value else default
+        if isinstance(value, basestring) and value[:1] == '"':
+          value = h.json.loads(value)
         return value
 
     i = 0
@@ -57,8 +59,6 @@
             res = package['resources'][0]
             num_activities = get_extra(package,'activity_count')
             data_updated = get_extra(package,'data_updated')
-            if data_updated :
-                data_updated = h.json.loads(data_updated)
         ?>
 
         <div class="package-result-details">
@@ -71,6 +71,11 @@
             </py:if>
         </div>
     </py:if>
+
+	<py:if test="get_extra(package, 'issue_type', None)">
+      ${dataset_issue_box(package)}
+    </py:if>
+
 	<div class="package-result-links">
         ${h.link_to('View Metadata', h.url_for(controller='package', action='read', id=package.name))}
         <py:if test="package.resources">
@@ -128,6 +133,14 @@
 
   <!--! Small inline icon for links that open in new windows -->
   <img py:def="img_new_window()" class="new_window" src="/images/new_window.png" alt="(New window)" title="The link will open in a new window" />
+
+  <div py:def="dataset_issue_box(package)" class="issue">
+    <div>
+      <span class="type">${h.issue_title(get_extra(package, 'issue_type', ''))}</span>
+      <span class="date">(${h.render_datetime(get_extra(package, 'issue_date', ''))})</span>
+    </div>
+    <span class="message">${get_extra(package, 'issue_message', '')}</span>
+  </div>
 
 </html>
 

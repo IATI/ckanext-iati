@@ -5,8 +5,11 @@
     xmlns:py="http://genshi.edgewall.org/"
 >
   <input type="search" class="search" name="q" value="${c.q}" />
- 
+
   <?python
+
+    #TODO: All this should go to helpers
+
     from ckan.lib.search import query_for, SearchError
     from ckan.model import Package
 
@@ -16,31 +19,47 @@
 
     search_facets = [
         ('publishertype',h.publisher_type_title, 'Source'),
+        ('secondary_publisher',lambda x: x, 'Secondary Publisher'),
         ('groups',h.group_title, 'Publisher'),
         ('publisher_organization_type',h.organization_type_title, 'Organisation type'),
         ('country',h.country_name, 'Country'),
         ('filetype',h.file_type_title, 'File type'),
+        ('issue_type', h.issue_title, 'Issues'),
     ]
     options = {}
     for facet,helper,title in search_facets:
         options[facet] = [(o, helper(o) + " (%s)" % n) for o, n in global_facets.get(facet, {}).items() if o != ""]
 
-    any = ('', 'Any')
-    def sort_and_insert_any(options):
+    default_any = ('', 'Any')
+    def sort_and_insert_any(options, any=default_any):
         options.sort(key=lambda name: name[1])
         options.insert(0,any)
 
     for facet,facet_options in options.iteritems():
-        sort_and_insert_any(facet_options)   
+        sort_and_insert_any(facet_options)
+
   ?>
 
   <table class="facets">
-    <tr py:for="facet,helper,title in search_facets">
-        <td>${title}:</td>
-        <td>${h.select(facet, dict(c.fields).get(facet, '') if c.facets else '', options[facet])}</td>
-    </tr>
+    <py:for each="facet,helper,title in search_facets">
+      <py:if test="facet != 'issue_type'">
+        <tr>
+            <td>${title}:</td>
+            <td>${h.select(facet, dict(c.fields).get(facet, '') if c.facets else '', options[facet])}</td>
+        </tr>
+      </py:if>
+    </py:for>
+    <py:if test="h.am_a_sysadmin()">
+      <tr class="admin">
+          <td>Issues:</td>
+          <td>
+            ${h.select('issue_type', dict(c.fields).get(facet, '') if c.facets else '', options['issue_type'])}
+            <div class="disclaimer">Only sysadmins can see this filter</div>
+          </td>
+      </tr>
+    </py:if>
   </table>
-  
+
    <input type="submit" value="Search" class="button" />
    <div style="clear: both;"></div>
 </form>

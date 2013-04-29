@@ -35,7 +35,8 @@ CSV_MAPPING = [
         ('last-updated-datetime','extras', 'data_updated', [ignore_empty, date_from_csv]),
         ('activity-count','extras', 'activity_count', [ignore_empty,int_validator]),
         ('verification-status','extras', 'verified', [ignore_empty,yes_no]),
-        ('default-language','extras', 'language', [])
+        ('default-language','extras', 'language', []),
+        ('secondary-publisher', 'extras', 'secondary_publisher', []),
         ]
 
 class CSVController(BaseController):

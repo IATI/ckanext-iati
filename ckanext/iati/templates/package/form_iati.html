@@ -16,6 +16,10 @@
         </ul>
     </div>
 
+    <input id="issue_type" name="issue_type" type="hidden" value="${data.get('issue_type', '')}" />
+    <input id="issue_message" name="issue_message" type="hidden" value="${data.get('issue_message', '')}" />
+    <input id="issue_date" name="issue_date" type="hidden" value="${data.get('issue_date', '')}" />
+
     <fieldset>
         <legend>Basic information </legend>
         <dl>
@@ -74,8 +78,12 @@
             </dd>
             <dd py:if="not c.groups_available">Cannot add any publisher.</dd>
             <dd class="instructions basic">Choose your own Publisher Name from the Dropdown. Your Publisher record needs to have been created and authorised by the Registry administrator before you can publish datsets.</dd>
-        </dl>
 
+            <dt><label class="field_opt" for="secondary_publisher">Secondary Publisher</label></dt>
+            <dd><input id="language" name="secondary_publisher" size="40" type="text" value="${data.get('secondary_publisher', '')}" /></dd>
+            <dd class="instructions basic">The publisher this dataset is published on behalf of.</dd>
+
+        </dl>
     </fieldset>
 
     <fieldset>

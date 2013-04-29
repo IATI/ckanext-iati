@@ -46,7 +46,7 @@ class IatiGroupApprovalExtension(SingletonPlugin):
     def compose_message(self, group, admin):
         from pylons import config, c
         group_link = urljoin(config.get('ckan.site_url', 'http://iatiregistry.org'), 
-                             '/group/' + group.name)
+                             '/publisher/' + group.name)
         body_args = {'admin_name': admin.display_name,
                      'user_name': c.author,
                      'group_title': group.title,
@@ -80,4 +80,3 @@ class IatiGroupApprovalExtension(SingletonPlugin):
         if (not c.user) or (not Authorizer.is_sysadmin(c.user)):
             group.state = model.State.PENDING
             self.notify_admins(group)
-    

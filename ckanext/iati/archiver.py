@@ -2,15 +2,18 @@ import sys
 import os
 import datetime
 import hashlib
+import socket
 import re
 from lxml import etree
 import requests
 import json
+
 from pylons import config
+
+from dateutil.parser import parse as date_parser
 from ckan.logic import get_action
 from ckan import model
 
-from ckan.lib.helpers import date_str_to_datetime
 import logging
 
 log = logging.getLogger('iati_archiver')
@@ -28,7 +31,7 @@ def text_traceback():
 # Max content-length of archived files, larger files will be ignored
 MAX_CONTENT_LENGTH = 50000000
 URL_TIMEOUT=30
-DATA_FORMATS = ['xml','iati-xml','application/xml']
+DATA_FORMATS = ['xml','iati-xml','application/xml', 'text/xml', 'text/html']
 
 def run(package_id=None,publisher_id=None):
 
@@ -53,110 +56,30 @@ def run(package_id=None,publisher_id=None):
 
     t1 = datetime.datetime.now()
 
-    from ckanext.archiver import tasks
 
     log.info('IATI Archiver: starting  %s' % str(t1))
     log.info('Number of datasets to archive: %d' % len(package_ids))
+
     updated = 0
     consecutive_errors = 0
+
     for package_id in package_ids:
-        package = get_action('package_show_rest')(context,{'id': package_id})
-
-        is_activity_package = (package['extras']['filetype'] == 'activity') if 'filetype' in package['extras'] else 'activity'
-
-        log.debug('Archiving dataset: %s (%d resources)' % (package.get('name'), len(package.get('resources', []))))
-        for resource in package.get('resources', []):
-
-            if not resource.get('url',''):
-                log.error('Resource for dataset %s does not have URL' % package['name'])
-                continue
-
-            old_hash = resource.get('hash')
-            try:
-                result = download(context,resource,data_formats=DATA_FORMATS)
-            except tasks.LinkCheckerError,e:
-                log.error('Invalid resource URL for dataset %s: %s' % (package['name'],str(e)))
-                continue
-            except tasks.DownloadError,e:
-                log.error('Error downloading resource for dataset %s: %s' % (package['name'],str(e)))
-                continue
-            except Exception,e:
-                consecutive_errors = consecutive_errors + 1
-                log.error('Error downloading resource for dataset %s: %s' % (package['name'],str(e)))
-                log.error(text_traceback())
-                if consecutive_errors > 5:
-                    log.error('Too many errors, aborting...')
-                    return False
-                else:
-                    continue
+        try:
+            updated_package = archive_package(package_id, context, consecutive_errors)
+        except Exception,e:
+            consecutive_errors += 1
+            log.error('Error downloading resource for dataset %s: %s' % (package_id, str(e)))
+            log.error(text_traceback())
+            if consecutive_errors > 5:
+                log.error('Too many errors, aborting...')
+                return False
             else:
-                consecutive_errors = 0
-
-            file_path = result['saved_file']
-
-            if 'zip' in result['headers']['content-type']:
-                # Skip zipped files for now
-                log.info('Skipping zipped file for dataset %s ' % package.get('name'))
-                os.remove(file_path)
                 continue
+        else:
+            consecutive_errors = 0
 
-            update = False
-
-            if old_hash != resource.get('hash'):
-                update = True
-
-
-            with open(file_path, 'r') as f:
-                xml = f.read()
-            os.remove(file_path)
-
-            try:
-                tree = etree.fromstring(xml)
-            except etree.XMLSyntaxError,e:
-                log.error('Could not parse XML file for dataset %s: %s' % (package['name'],str(e)))
-                continue
-
-            new_extras = {}
-            if is_activity_package:
-                # Number of activities (activity_count extra)
-                new_extras['activity_count'] = int(tree.xpath('count(//iati-activity)'))
-
-            # Last updated date (data_updated extra)
-            if is_activity_package:
-                xpath = 'iati-activity/@last-updated-datetime'
-            else:
-                xpath = 'iati-organisation/@last-updated-datetime'
-            dates = tree.xpath(xpath) or []
-
-            sorted(dates,reverse=True)
-            last_updated_date = dates[0] if len(dates) else None
-
-            # Check dates
-            if last_updated_date:
-                # Get rid of the microseconds
-                if '.' in last_updated_date:
-                    last_updated_date = last_updated_date[:last_updated_date.find('.')]
-                try:
-                    date = date_str_to_datetime(last_updated_date)
-                    format = '%Y-%m-%d %H:%M' if (date.hour and date.minute) else '%Y-%m-%d'
-                    new_extras['data_updated'] = date.strftime(format)
-                except (ValueError,TypeError),e:
-                    log.error('Wrong date format for data_updated for dataset %s: %s' % (package['name'],str(e)))
-
-
-            for key,value in new_extras.iteritems():
-                if value and (not key in package['extras'] or unicode(value) != unicode(package['extras'][key])):
-                    update = True
-                    old_value = unicode(package['extras'][key]) if key in package['extras'] else '""'
-                    log.info('Updated extra %s for dataset %s: %s -> %s' % (key,package['name'],old_value,value))
-                    package['extras'][unicode(key)] = unicode(value)
-
-            if update:
-                context['id'] = package['id']
-                context['message'] = 'Daily archiver: update dataset %s' % package['name']
-                updated_package = get_action('package_update_rest')(context,package)
-                log.debug('Package %s updated with new extras' % package['name'])
-                updated = updated + 1
+        if updated_package:
+            updated += 1
 
     t2 = datetime.datetime.now()
 
@@ -164,11 +87,146 @@ def run(package_id=None,publisher_id=None):
 
     return True
 
+
+def archive_package(package_id, context, consecutive_errors=0):
+
+    from ckanext.archiver import tasks
+
+    package = get_action('package_show_rest')(context,{'id': package_id})
+
+    is_activity_package = (package['extras']['filetype'] == 'activity') if 'filetype' in package['extras'] else 'activity'
+
+    log.debug('Archiving dataset: %s (%d resources)' % (package.get('name'), len(package.get('resources', []))))
+    for resource in package.get('resources', []):
+
+        if not resource.get('url',''):
+            return save_package_issue(context, package, 'no-url', 'URL missing')
+
+        old_hash = resource.get('hash')
+        try:
+            result = download(context,resource,data_formats=DATA_FORMATS)
+        except tasks.LinkCheckerError, e:
+            if 'URL unobtainable: HTTP' in str(e):
+                message = str(e)[:str(e).find(' on')]
+            else:
+                message = str(e)
+            return save_package_issue(context, package, 'url-error', message)
+        except tasks.DownloadError, e:
+            if 'exceeds maximum allowed value' in str(e):
+                message = 'File too big, not downloading'
+            else:
+                message = str(e)
+            return save_package_issue(context, package, 'download-error', message)
+        except socket.timeout:
+            return save_package_issue(context, package, 'download-error', 'URL timeout')
+
+        file_path = result['saved_file']
+
+        if 'zip' in result['headers'].get('content-type', ''):
+            # Skip zipped files for now
+            log.info('Skipping zipped file for dataset %s ' % package.get('name'))
+            os.remove(file_path)
+            continue
+
+        update = False
+
+        if old_hash != resource.get('hash'):
+            update = True
+
+
+        with open(file_path, 'r') as f:
+            xml = f.read()
+        os.remove(file_path)
+
+        if re.sub('<!doctype(.*)>', '', xml.lower()[:100]).strip().startswith('<html'):
+            return save_package_issue(context, package, 'xml-error', 'File is an HTML document')
+
+        try:
+            tree = etree.fromstring(xml)
+        except etree.XMLSyntaxError, e:
+            return save_package_issue(context, package, 'xml-error', 'Could not parse XML file: {0}'.format(str(e)[:200]))
+
+        new_extras = {}
+        if is_activity_package:
+            # Number of activities (activity_count extra)
+            new_extras['activity_count'] = int(tree.xpath('count(//iati-activity)'))
+
+        # Last updated date (data_updated extra)
+        if is_activity_package:
+            xpath = 'iati-activity/@last-updated-datetime'
+        else:
+            xpath = 'iati-organisation/@last-updated-datetime'
+        dates = tree.xpath(xpath) or []
+
+        sorted(dates,reverse=True)
+        last_updated_date = dates[0] if len(dates) else None
+
+        # Check dates
+        if last_updated_date:
+            try:
+                date = date_parser(last_updated_date)
+                format = '%Y-%m-%d %H:%M' if (date.hour and date.minute) else '%Y-%m-%d'
+                new_extras['data_updated'] = date.strftime(format)
+
+            except ValueError:
+                log.error('Wrong date format for data_updated for dataset %s: %s' % (package['name'],str(e)))
+
+
+        for key,value in new_extras.iteritems():
+            if value and (not key in package['extras'] or unicode(value) != unicode(package['extras'][key])):
+                update = True
+                old_value = unicode(package['extras'][key]) if key in package['extras'] else '""'
+                log.info('Updated extra %s for dataset %s: %s -> %s' % (key,package['name'],old_value,value))
+                package['extras'][unicode(key)] = unicode(value)
+
+
+        # At this point, any previous issues should be resolved, delete the issue extras
+        # to mark them as resolved
+        if 'issue_type' in package['extras']:
+            update = True
+            for key in ['issue_type', 'issue_message', 'issue_date']:
+                if key in package['extras']:
+                    package['extras'][key] = None
+
+        if update:
+            return update_package(context, package)
+
+    return None
+
+def save_package_issue(context, data_dict, issue_type, issue_message):
+    if 'issue_type' in data_dict['extras'] and 'issue_message' in data_dict['extras'] \
+        and data_dict['extras']['issue_type'] == issue_type \
+        and data_dict['extras']['issue_message'] == issue_message:
+        log.info('Dataset {0} still has the same issue ({1} - {2}), skipping...'.format(data_dict['name'], issue_type, issue_message))
+        return None
+    else:
+        data_dict['extras'][u'issue_type'] = unicode(issue_type)
+        data_dict['extras'][u'issue_message'] = unicode(issue_message)
+        data_dict['extras'][u'issue_date'] = unicode(datetime.datetime.now().isoformat())
+
+        log.error('Issue found for dataset {0}: {1} - {2}'.format(data_dict['name'], issue_type, issue_message))
+
+        return update_package(context, data_dict)
+
+def update_package(context, data_dict, message=None):
+    context['id'] = data_dict['id']
+    message = message or 'Daily archiver: update dataset %s' % data_dict['name']
+    context['message'] = message
+
+    updated_package = get_action('package_update_rest')(context, data_dict)
+    log.debug('Package %s updated with new extras' % data_dict['name'])
+
+    return updated_package
+
+
+
 def download(context, resource, url_timeout=URL_TIMEOUT,
              max_content_length=MAX_CONTENT_LENGTH,
              data_formats=DATA_FORMATS):
 
     from ckanext.archiver import tasks
+
+    resource_changed = False
 
     link_context = "{}"
     link_data = json.dumps({
@@ -212,13 +270,15 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
             (cl, max_content_length))
 
     # check that resource is a data file
-    if not (resource_format in data_formats or ct.lower() in data_formats):
+    if not ct.lower().strip('"') in data_formats:
         if resource_changed:
             tasks._update_resource(context, resource)
         raise tasks.DownloadError("Of content type %s, not downloading" % ct)
 
     # get the resource and archive it
-    res = requests.get(resource['url'], timeout = url_timeout)
+    # TODO: remove the Accept-Encoding limitation after upgrading
+    # archiver and requests
+    res = requests.get(resource['url'], timeout = url_timeout, headers={'Accept-Encoding':''})
     length, hash, saved_file = tasks._save_resource(resource, res, max_content_length)
 
     # check if resource size changed
@@ -255,4 +315,3 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
             'hash' : resource_hash,
             'headers': headers,
             'saved_file': saved_file}
-
