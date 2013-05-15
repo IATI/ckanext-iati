@@ -18,7 +18,7 @@ from ckan.logic.validators import int_validator
 from ckan.logic.converters import convert_from_extras, convert_to_extras, date_to_db, date_to_form
 
 from ckanext.iati.lists import COUNTRIES
-from ckanext.iati.logic.validators import iati_dataset_name, db_date
+from ckanext.iati.logic.validators import iati_dataset_name, db_date, strip
 from ckanext.iati.logic.converters import convert_from_comma_list, convert_to_comma_list, checkbox_value
 
 class PackageIatiController(PackageController):
@@ -46,7 +46,7 @@ class PackageIatiController(PackageController):
             'archive_file': [checkbox_value, convert_to_extras,ignore_missing],
             'verified': [checkbox_value, convert_to_extras,ignore_missing],
             'language': [convert_to_extras, ignore_missing],
-            'secondary_publisher': [convert_to_extras, ignore_missing],
+            'secondary_publisher': [strip, convert_to_extras, ignore_missing],
             'issue_type': [convert_to_extras, ignore_missing],
             'issue_message': [convert_to_extras, ignore_missing],
             'issue_date': [convert_to_extras, ignore_missing],

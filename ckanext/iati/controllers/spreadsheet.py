@@ -17,7 +17,8 @@ from ckanext.iati.logic.validators import (iati_dataset_name_from_csv,
                                            file_type_validator,
                                            date_from_csv,
                                            yes_no,
-                                           country_code)
+                                           country_code,
+                                           strip)
 
 log = logging.getLogger(__name__)
 
@@ -36,7 +37,7 @@ CSV_MAPPING = [
         ('activity-count','extras', 'activity_count', [ignore_empty,int_validator]),
         ('verification-status','extras', 'verified', [ignore_empty,yes_no]),
         ('default-language','extras', 'language', []),
-        ('secondary-publisher', 'extras', 'secondary_publisher', []),
+        ('secondary-publisher', 'extras', 'secondary_publisher', [strip]),
         ]
 
 class CSVController(BaseController):

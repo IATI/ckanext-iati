@@ -99,3 +99,7 @@ def country_code(value,context):
 
     return value
 
+def strip(value, context):
+
+    return value.strip()
+
