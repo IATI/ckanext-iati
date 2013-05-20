@@ -13,11 +13,11 @@
 </div>
 
     <dl>
-        <dt><label class="field_opt" for="name">Login:</label></dt>
+        <dt><label class="field_opt" for="name">User name:</label></dt>
         <dd><input type="text" name="name" value="${data.get('name','')}" /></dd>
         <dd class="instructions basic">
           This will be the username associated with your account.  You will use this to log-in.
-          Must be at least three characters long and lower case. Can include letters, numbers and also - (dash) and _ (underscore)
+          Must be at least three characters long and lower case. Can include letters, numbers and also - (dash) and _ (underscore) but no spaces or other special characters.
         </dd>
         <dd class="field_error" py:if="errors.get('name', '')">${errors.get('name', '')}</dd>
 
