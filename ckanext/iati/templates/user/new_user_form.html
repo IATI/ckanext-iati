@@ -12,41 +12,42 @@
 </ul>
 </div>
 
-    <dl>
-        <dt><label class="field_opt" for="name">User name:</label></dt>
-        <dd><input type="text" name="name" value="${data.get('name','')}" /></dd>
-        <dd class="instructions basic">
-          This will be the username associated with your account.  You will use this to log-in.
-          Must be at least three characters long and lower case. Can include letters, numbers and also - (dash) and _ (underscore) but no spaces or other special characters.
-        </dd>
-        <dd class="field_error" py:if="errors.get('name', '')">${errors.get('name', '')}</dd>
+<div class="new-form">
+  <div><label class="field_opt" for="name">User name:</label>
+  <input type="text" name="name" value="${data.get('name','')}" /></div>
+  <div class="instructions basic">
+    This will be the username associated with your account. You will use this to log-in.
+    Must be at least three characters long and lower case. Can include letters, numbers and also - (dash) and _ (underscore) but no spaces or other special characters.
+  </div>
+  <div class="field_error" py:if="errors.get('name', '')">${errors.get('name', '')}</div>
 
-        <dt><label class="field_opt" for="fullname">Full name (optional):</label></dt>
-        <dd><input type="text" name="fullname" value="${data.get('fullname','')}" /></dd>
-        <dd class="field_error" py:if="errors.get('fullname', '')">${errors.get('fullname', '')}</dd>
+  <div><label class="field_opt" for="fullname">Full name (optional):</label>
+  <input type="text" name="fullname" value="${data.get('fullname','')}" /></div>
+  <div class="field_error" py:if="errors.get('fullname', '')">${errors.get('fullname', '')}</div>
 
-        <dt><label class="field_opt" for="email">E-Mail</label></dt>
-        <dd><input type="text" name="email" value="${data.get('email','')}" /></dd>
+  <div><label class="field_opt" for="email">E-Mail:</label>
+  <input type="text" name="email" value="${data.get('email','')}" /></div>
 
-        <dt><label class="field_opt" for="password1">Password:</label></dt>
-        <dd><input type="password" name="password1" value="" /></dd>
-        <dd class="field_error" py:if="errors.get('password1', '')">${errors.get('password1', '')}</dd>
+  <div><label class="field_opt" for="password1">Password:</label>
+  <input type="password" name="password1" value="" /></div>
+  <div class="field_error" py:if="errors.get('password1', '')">${errors.get('password1', '')}</div>
 
-        <dt><label class="field_opt" for="password2">Password (repeat):</label></dt>
-        <dd><input type="password" name="password2" value="" /></dd>
+  <div><label class="field_opt" for="password2">Password (repeat):</label>
+  <input type="password" name="password2" value="" /></div>
 
-        <dd py:if="g.recaptcha_publickey">
-          <script type="text/javascript"
-            src="http://www.google.com/recaptcha/api/challenge?k=${g.recaptcha_publickey}">
-          </script>
-          <noscript>
-            <iframe src="http://www.google.com/recaptcha/api/noscript?k=${g.recaptcha_publickey}"
-              height="300" width="500" frameborder="0"></iframe><br/>
-            <textarea name="recaptcha_challenge_field" rows="3" cols="40"> </textarea>
-            <input type="hidden" name="recaptcha_response_field" value="manual_challenge" />
-          </noscript>
-        </dd>
+  <div py:if="g.recaptcha_publickey">
+    <script type="text/javascript"
+      src="http://www.google.com/recaptcha/api/challenge?k=${g.recaptcha_publickey}">
+    </script>
+    <noscript>
+      <iframe src="http://www.google.com/recaptcha/api/noscript?k=${g.recaptcha_publickey}"
+        height="300" width="500" frameborder="0"></iframe><br/>
+      <textarea name="recaptcha_challenge_field" rows="3" cols="40"> </textarea>
+      <input type="hidden" name="recaptcha_response_field" value="manual_challenge" />
+    </noscript>
+  </div>
+</div>
 
-    </dl>
+
   <input id="save" name="save" type="submit" class="pretty-button primary" value="Register now &raquo;" />
 </form>
