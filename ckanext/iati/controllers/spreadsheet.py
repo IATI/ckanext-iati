@@ -9,7 +9,7 @@ from ckan.authz import Authorizer
 from ckan.logic import get_action, NotFound, ValidationError, NotAuthorized
 from ckan.logic.converters import date_to_db
 from ckan.logic.validators import int_validator
-from ckan.lib.navl.validators import not_empty, ignore_empty, not_missing
+from ckan.lib.navl.validators import not_empty, ignore_empty, not_missing, ignore_missing
 from ckan.lib.navl.dictization_functions import validate
 from ckanext.iati.authz import get_user_administered_groups
 
@@ -27,6 +27,7 @@ CSV_MAPPING = [
         ('registry-file-id', 'package', 'name', [not_empty, iati_dataset_name_from_csv]),
         ('title', 'package', 'title', []),
         ('contact-email', 'package', 'author_email', []),
+        ('state', 'package', 'state', [ignore_missing]),
         ('source-url', 'resources', 'url', []),
         ('format', 'resources', 'format', []),
         ('file-type','extras', 'filetype', [ignore_empty, file_type_validator]),
@@ -146,21 +147,24 @@ class CSVController(BaseController):
 
         output = ''
         try:
-            fieldnames = [n[0] for n in CSV_MAPPING]
+            fieldnames = [n[0] for n in CSV_MAPPING if n[0] != 'state']
             writer = csv.DictWriter(f, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
-            headers = dict( (n[0],n[0]) for n in CSV_MAPPING )
+            headers = dict( (n[0],n[0]) for n in CSV_MAPPING if n[0] != 'state')
             writer.writerow(headers)
 
             packages.sort()
             for pkg in packages:
                 try:
                     package = get_action('package_show_rest')(context,{'id':pkg})
+                    package.pop('state', None)
                 except NotAuthorized:
                     log.warn('User %s not authorized to read package %s' % (c.user, pkg))
                     continue
                 if package:
                     row = {}
                     for fieldname, entity, key, v in CSV_MAPPING:
+                        if key == 'state':
+                            continue
                         value = None
                         if entity == 'groups':
                             if len(package['groups']):
@@ -202,7 +206,7 @@ class CSVController(BaseController):
             reader = csv.DictReader(csv_file, dialect=dialect)
 
             # Check if all columns are present
-            missing_columns = [f for f in fieldnames if f not in reader.fieldnames]
+            missing_columns = [f for f in fieldnames if f not in reader.fieldnames and f != 'state']
             if len(missing_columns):
                 error = {'file': 'Missing columns: %s' % ', '.join(sorted(missing_columns))}
                 return [], [], [], [('1',error)]
