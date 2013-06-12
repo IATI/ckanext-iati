@@ -168,7 +168,7 @@ def send_activation_notification_email(group):
     for user in users:
         if user.email:
             user_name = user.fullname or user.name
-            content = publisher_activation_body_template.format(user_name=user_name,
-                    group_title=group.title, group_link=group_link, user_email=user.email,
+            content = publisher_activation_body_template.format(user_name=user_name.encode('utf8'),
+                    group_title=group.title.encode('utf8'), group_link=group_link, user_email=user.email,
                     site_url=site_url)
             send_email(content, subject, user.email)
