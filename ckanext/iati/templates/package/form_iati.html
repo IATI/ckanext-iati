@@ -115,7 +115,7 @@
                        value="${data.get('tag_string') or ' '.join([tag['name'] for tag in data.get('tags', [])])}" />
             </dd>
             <dd class="field_error" py:if="errors.get('tag_string', '')">${errors.get('tag_string', '')}</dd>
-            <dd class="instructions basic">Terms that may link this dataset to similar ones. For more information on conventions, see <a href="http://wiki.okfn.org/ckan/doc/faq#TagConventions">this wiki page</a>.</dd>
+            <dd class="instructions basic">Terms that may link this dataset to similar ones.</dd>
             <dd class="hints">e.g. pollution rivers water-quality</dd>
 
             <dt><label class="field_opt" for="notes">Notes</label></dt>
