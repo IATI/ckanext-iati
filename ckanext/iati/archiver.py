@@ -156,21 +156,25 @@ def archive_package(package_id, context, consecutive_errors=0):
             xpath = 'iati-activity/@last-updated-datetime'
         else:
             xpath = 'iati-organisation/@last-updated-datetime'
+
         dates = tree.xpath(xpath) or []
-
-        sorted(dates,reverse=True)
-        last_updated_date = dates[0] if len(dates) else None
-
-        # Check dates
-        if last_updated_date:
+        dates = sorted(dates,reverse=True)
+        last_updated_date = None
+        for date in dates:
             try:
-                date = date_parser(last_updated_date)
-                format = '%Y-%m-%d %H:%M' if (date.hour and date.minute) else '%Y-%m-%d'
-                new_extras['data_updated'] = date.strftime(format)
-
+                check_date = date_parser(date)
+                if check_date < datetime.datetime.now():
+                    last_updated_date = check_date
+                    break
             except ValueError:
                 log.error('Wrong date format for data_updated for dataset %s: %s' % (package['name'],str(e)))
 
+        # Check dates
+        if last_updated_date:
+            format = '%Y-%m-%d %H:%M' if (last_updated_date.hour and last_updated_date.minute) else '%Y-%m-%d'
+            new_extras['data_updated'] = last_updated_date.strftime(format)
+        else:
+            new_extras['data_updated'] = None
 
         for key,value in new_extras.iteritems():
             if value and (not key in package['extras'] or unicode(value) != unicode(package['extras'][key])):
