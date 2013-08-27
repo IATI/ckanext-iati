@@ -166,7 +166,7 @@ def archive_package(package_id, context, consecutive_errors=0):
                 if check_date < datetime.datetime.now():
                     last_updated_date = check_date
                     break
-            except ValueError:
+            except ValueError, e:
                 log.error('Wrong date format for data_updated for dataset %s: %s' % (package['name'],str(e)))
 
         # Check dates
