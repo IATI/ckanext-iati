@@ -1,0 +1,11 @@
+{% ckan_extends %}
+
+{% block styles %}
+  {{ super() }}
+  {# We're not calling super as iati.css has everything we need and we don't
+  want include CKAN cores main.css #}
+  {#
+  Uncomment this when iati.css is a little more ready
+  {% resource 'ckanext-iati/styles/iati.css' %}
+  #}
+{% endblock %}

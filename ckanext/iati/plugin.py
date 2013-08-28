@@ -11,6 +11,8 @@ from ckan.plugins import IAuthFunctions
 from ckan.plugins import IGroupController
 from ckan.plugins import IPackageController
 
+import ckan.plugins.toolkit as toolkit
+
 import ckanext.iati
 
 log = getLogger(__name__)
@@ -92,8 +94,9 @@ class IatiForms(SingletonPlugin):
         return map
 
     def update_config(self, config):
-        configure_template_directory(config, 'templates')
-        configure_public_directory(config, 'public')
+        configure_template_directory(config, 'theme/templates')
+        configure_public_directory(config, 'theme/public')
+        toolkit.add_resource('theme/fanstatic_library', 'ckanext-iati')
 
 class IatiActions(SingletonPlugin):
 
