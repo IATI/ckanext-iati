@@ -1,8 +1,6 @@
 #header {
   background: transparent url("../images/header.png") repeat-x 100% 100%;
   .logo {
-    // float: left;
-    // display: inline;
     display: block;
     width: 270px;
     height: 70px;
@@ -11,10 +9,11 @@
     span {
       display: none;
     }
+    &:hover {
+      opacity: 0.5;
+    }
   }
 }
-
-// @primary-nav-height: 42px;
 
 #header {
   margin-bottom: 20px;
@@ -75,6 +74,7 @@
     #secondary-nav li,
     #account-nav li {
       a {
+        background: transparent url(../images/secondary-nav-divider.png) no-repeat;
         padding: 14px 14px 14px 15px;
         color: white;
       }
@@ -87,7 +87,7 @@
     }
     #secondary-nav li {
       a {
-        background: transparent url(../images/secondary-nav-divider.png) no-repeat 100% 50%;
+        background-position: 100% 50%;
       }
       &:last-child a { 
         background-image: none;
@@ -95,6 +95,44 @@
     }
     #account-nav {
       float: right;
+      li {
+        a {
+          background-position: 0 50%;
+          i {
+            font-size: 14px;
+          }
+          &.image {
+            position: relative;
+            padding-left: 40px;
+            img {
+              top: 12px;
+              left: 13px;
+              position: absolute;
+              .border-radius(4px);
+            }
+          }
+        }
+        &.notifications {
+          a span {
+            background-color: darken(@iati-color-registry, 10%);
+            font-size: 12px;
+            padding: 2px 6px;
+            line-height: 1;
+            margin-left: 3px;
+            .border-radius(2px);
+          }
+          a:hover span {
+            color: white;
+            background-color: @iati-color-registry;
+          }
+          &.notifications-important a span {
+            background-color: #A44040;
+          }
+        }
+        &:first-child a { 
+          background-image: none;
+        }
+      }
     }
   }
 }

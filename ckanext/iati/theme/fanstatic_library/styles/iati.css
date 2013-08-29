@@ -6726,6 +6726,9 @@ a .icon-flip-vertical:before {
 #header .logo span {
   display: none;
 }
+#header .logo:hover {
+  opacity: 0.5;
+}
 #header {
   margin-bottom: 20px;
 }
@@ -6798,6 +6801,7 @@ a .icon-flip-vertical:before {
 }
 #header nav #secondary-nav li a,
 #header nav #account-nav li a {
+  background: transparent url(../images/secondary-nav-divider.png) no-repeat;
   padding: 14px 14px 14px 15px;
   color: white;
 }
@@ -6810,11 +6814,49 @@ a .icon-flip-vertical:before {
   text-decoration: none;
 }
 #header nav #secondary-nav li a {
-  background: transparent url(../images/secondary-nav-divider.png) no-repeat 100% 50%;
+  background-position: 100% 50%;
 }
 #header nav #secondary-nav li:last-child a {
   background-image: none;
 }
 #header nav #account-nav {
   float: right;
+}
+#header nav #account-nav li a {
+  background-position: 0 50%;
+}
+#header nav #account-nav li a i {
+  font-size: 14px;
+}
+#header nav #account-nav li a.image {
+  position: relative;
+  padding-left: 40px;
+}
+#header nav #account-nav li a.image img {
+  top: 12px;
+  left: 13px;
+  position: absolute;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+#header nav #account-nav li.notifications a span {
+  background-color: #0075a8;
+  font-size: 12px;
+  padding: 2px 6px;
+  line-height: 1;
+  margin-left: 3px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+}
+#header nav #account-nav li.notifications a:hover span {
+  color: white;
+  background-color: #0098db;
+}
+#header nav #account-nav li.notifications.notifications-important a span {
+  background-color: #A44040;
+}
+#header nav #account-nav li:first-child a {
+  background-image: none;
 }
