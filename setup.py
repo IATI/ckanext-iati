@@ -33,6 +33,7 @@ setup(name='ckanext-iati',
       iati_license_override = ckanext.iati.plugin:IatiLicenseOverride
       iati_feeds = ckanext.iati.plugin:IatiFeeds
 
+      iati_publishers = ckanext.iati.plugins:IatiPublishers
       [paste.paster_command]
       create-iati-fixtures = ckanext.iati.fixtures:CreateIatiFixtures
       iati-archiver=ckanext.iati.commands:Archiver
