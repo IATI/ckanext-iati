@@ -1,0 +1,100 @@
+#header {
+  background: transparent url("../images/header.png") repeat-x 100% 100%;
+  .logo {
+    // float: left;
+    // display: inline;
+    display: block;
+    width: 270px;
+    height: 70px;
+    background-image: url("../images/logo.png");
+    margin: 26px 0 36px 0;
+    span {
+      display: none;
+    }
+  }
+}
+
+// @primary-nav-height: 42px;
+
+#header {
+  margin-bottom: 20px;
+  nav {
+    ul {
+      .clearfix;
+      .unstyled;
+      li {
+        float: left;
+        a {
+          display: block;
+          font-size: 15px;
+          line-height: 15px;
+        }
+      }
+    }
+    #primary-nav li {
+      width: 25%;
+      a {
+        padding: 15px 0;
+        font-weight: bold;
+        text-transform: uppercase;
+        line-height: 18px;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+      }
+      &.transparency a {
+        background-color: @iati-color-transparency;
+        .border-radius(5px 0 0 0);
+        &:hover {
+          color: @iati-color-transparency;
+        }
+      }
+      &.standard a {
+        background-color: @iati-color-standard;
+        &:hover {
+          color: @iati-color-standard;
+        }
+      }
+      &.registry a {
+        background-color: @iati-color-registry;
+        &:hover {
+          color: @iati-color-registry;
+        }
+      }
+      &.community a {
+        background-color: @iati-color-community;
+        .border-radius(0 5px 0 0);
+        &:hover {
+          color: @iati-color-community;
+        }
+      }
+      a:hover {
+        background-color: white;
+      }
+    }
+    #secondary-nav li,
+    #account-nav li {
+      a {
+        padding: 14px 14px 14px 15px;
+        color: white;
+      }
+      &.active a,
+      a:hover {
+        color: @iati-color-registry;
+        background: white;
+        text-decoration: none;
+      }
+    }
+    #secondary-nav li {
+      a {
+        background: transparent url(../images/secondary-nav-divider.png) no-repeat 100% 50%;
+      }
+      &:last-child a { 
+        background-image: none;
+      }
+    }
+    #account-nav {
+      float: right;
+    }
+  }
+}

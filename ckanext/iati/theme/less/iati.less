@@ -1,12 +1,22 @@
 // Base variables
-@iati-base-color: #0098DB;
+
+@iati-color-transparency: #A2AD00;
+@iati-color-standard: #1A206D;
+@iati-color-registry: #0098DB;
+@iati-color-community: #00693C;
 
 // Where are the dependancies located?
 @bootstrap-folder: "../bower_components/bootstrap/less/";
 @font-awesome-folder: "../bower_components/font-awesome/less/";
 
+@import "mixins.less";
+
 // Now import dependancies
 @import "bootstrap.less";
 @import "font-awesome.less";
 
+// Vendor overrides
+@import "overrides.less";
+
 // Now the iati specifics
+@import "header.less";

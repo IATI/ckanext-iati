@@ -1,7 +1,132 @@
 {% ckan_extends %}
 
-{% block header_logo %}
-  <a class="logo" href="{{ h.url('home') }}">
-    <h1>{{ _('IATI Registry') }}</h1>
-  </a>
+{% block header_wrapper %}
+  <a href="#content" class="hide">{{ _('Skip to primary content') }}</a>
+  <header id="header">
+    <div class="container">
+      {% block header_logo %}
+        <a class="logo" href="{{ h.url('home') }}">
+          <span>{{ _('IATI Registry') }}</span>
+        </a>
+      {% endblock %}
+      {% block header_nav %}
+        <nav>
+          {% block header_nav_primary %}
+            <ul id="primary-nav">
+              <li class="transparency">
+                <a href="http://www.aidtransparency.net/">{{ _('Aid Transparency') }}</a>
+              </li>
+              <li class="standard">
+                <a href="http://www.iatistandard.org/">{{ _('IATI Standard') }}</a>
+              </li>
+              <li class="registry">
+                <a href="http://iatiregistry.org/">{{ _('IATI Registry / Data') }}</a>
+              </li>
+              <li class="community">
+                <a href="http://support.iatistandard.org/">{{ _('IATI Community') }}</a>
+              </li>
+            </ul>
+          {% endblock %}
+          {% block header_nav_account %}
+            {% if c.userobj %}
+              {% set nav_class = 'not-authed' %}
+              {% set nav_items = [
+                [h.url_for(controller='admin', action='index'), _("Sysadmin"), 'legal'] if c.userobj.sysadmin,
+                [h.url_for('/user/_logout'), _("Logout"), 'signout']
+              ] %}
+            {% else %}
+              {% set nav_class = 'authed' %}
+              {% set nav_extras = ' data-module="me" data-me="' ~ c.userobj.id ~ '"' %}
+              {% set nav_items = [
+                [h.url_for(controller='user', action='login'), _("Log in"), false],
+                [h.url_for(controller='user', action='register'), _("Register"), false]
+              ] %}
+            {% endif %}
+            <ul id="account-nav" class="account {{ nav_class }}"{{ nav_extras }}>
+              {% for url, label, icon in nav_items %}
+                <li><a href="{{ url }}">{{ label }}</a></li>
+              {% endfor %}
+            </ul>
+              {#
+              <ul id="account-nav" class="account avatar authed" data-module="me" data-me="{{ c.userobj.id }}">
+                {% if c.userobj.sysadmin %}
+                  <li>
+                    <a href="{{ h.url_for(controller='admin', action='index') }}" title="{{ _('Sysadmin settings') }}"><i class="icon-legal"></i></a>
+                  </li>
+                {% endif %}
+                <li>
+                  <a href="{{ h.url_for(controller='user', action='read', id=c.userobj.name) }}" class="image" title="{{ _('View profile') }}">
+                    {{ h.gravatar((c.userobj.email_hash if c and c.userobj else ''), size=22) }}
+                    <span class="username">{{ c.userobj.display_name }}</span>
+                  </a>
+                </li>
+                <li class="notifications {% if c.new_activities > 0 %}notifications-important{% endif %}">
+                  {% set notifications_tooltip = ngettext('Dashboard (%(num)d new item)', 'Dashboard (%(num)d new items)', c.new_activities) %}
+                  <a href="{{ h.url_for(controller='user', action='dashboard') }}" title="{{ notifications_tooltip }}">
+                    <i class="icon-dashboard"></i>
+                    <span>{{ c.new_activities }}</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ h.url_for(controller='user', action='edit', id=c.userobj.name) }}" title="{{ _('Edit settings') }}">
+                    <i class="icon-cog"></i>
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ h.url_for('/user/_logout') }}" title="{{ _('Log out') }}">
+                    <i class="icon-signout"></i>
+                  </a>
+                </li>
+              </ul>
+            {% else %}
+              <ul id="account-nav" class="account not-authed">
+                <li>{% link_for _('Log in'), controller='user', action='login' %}</li>
+                <li>{% link_for _('Register'), controller='user', action='register', class_='sub' %}</li>
+              </ul>
+            {% endif %}
+            #}
+          {% endblock %}
+          {% block header_nav_secondary %}
+            <ul id="secondary-nav">
+               {{ h.build_nav_main(
+                  ('home', _('Home')),
+                  ('search', _('Datasets')),
+                  ('group_index', _('Publishers')),
+                  ('about', _('About'))
+                ) }}
+            </ul>
+          {% endblock %}
+        </nav>
+      {% endblock %}
+
+        {#<ul class="menu-main">
+          <li id="menu-item-home" class="current_page_item current-menu-item page_item">
+            <a href="/">Home</a>
+            <!-- <ul class="children"><li class="page_item"><a href="/revision">Newsfeed</a></li> -->
+            </ul></li>
+          <li id="menu-item-dataset">
+            <a href="/dataset">Data</a>
+            <ul class="children"></ul></li>
+          <li id="menu-item-publisher">
+            <a href="/publisher">Publishers</a>
+            <ul class="children"></ul></li>
+        <li id="menu-item-45" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-45"><a href="/using-iati-data">Using IATI Data</a></li>
+<li id="menu-item-37" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-37"><a href="/about-2">About</a></li>
+<li id="menu-item-80" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-80"><a href="/registry-api">API</a></li>
+<li id="menu-item-12" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12"><a href="/help">Help</a></li>
+</ul><div id="top-bar">
+          <div id="top-bar-login">
+            <span class="ckan_logged_in" style="display: none;">
+              <span id="ckan_user_name" style="display: none;">username</span>
+              <a href="/user/me">My account</a>
+              <a href="/user/logout">Logout</a>
+            </span>
+            <span class="ckan_logged_out">
+              <a href="/user/login">Login</a>
+              <a href="/user/register">Register</a>
+            </span>
+          </div>#}
+        </div>
+      </nav>
+  </header>
 {% endblock %}
