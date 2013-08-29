@@ -56,5 +56,76 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
 
     ## IConfigurer
     def update_config(self, config):
-        p.toolkit.add_template_directory(config, 'templates_new')
+        p.toolkit.add_template_directory(config, 'theme/templates')
+
+
+class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
+
+    p.implements(p.IDatasetForm, inherit=True)
+    p.implements(p.IConfigurer)
+    p.implements(p.ITemplateHelpers)
+
+    ## IDatasetForm
+
+    def is_fallback(self):
+        return True
+
+    def package_types(self):
+        return []
+
+    def _modify_package_schema(self, schema):
+
+        # TODO: Add the whole schema currently defined in ckanext/iati/controllers/package_iati.py:_form_to_db_schema
+        # Get the validators from core via the toolkit (like the ones below)
+
+        # Import core converters and validators
+        _convert_to_extras = p.toolkit.get_converter('convert_to_extras')
+        _ignore_missing = p.toolkit.get_validator('ignore_missing')
+
+
+        schema.update({
+            'filetype': [_convert_to_extras],
+            'country': [_convert_to_extras, _ignore_missing],
+        })
+
+        return schema
+
+    def create_package_schema(self):
+        schema = super(IatiDatasets, self).create_package_schema()
+        schema = self._modify_package_schema(schema)
+        return schema
+
+    def update_package_schema(self):
+        schema = super(IatiDatasets, self).update_package_schema()
+        schema = self._modify_package_schema(schema)
+        return schema
+
+    def show_package_schema(self):
+        schema = super(IatiDatasets, self).show_package_schema()
+
+        # TODO: Add the whole schema currently defined in ckanext/iati/controllers/package_iati.py:_db_to_form_schema
+        # Get the validators from core via the toolkit (like the ones below)
+
+        # Import core converters and validators
+        _convert_from_extras = p.toolkit.get_converter('convert_from_extras')
+        _ignore_missing = p.toolkit.get_validator('ignore_missing')
+
+        schema.update({
+            'filetype': [_convert_from_extras, _ignore_missing],
+            'country': [_convert_from_extras, _ignore_missing],
+        })
+
+        return schema
+
+    ## IConfigurer
+    def update_config(self, config):
+        p.toolkit.add_template_directory(config, 'theme/templates')
+
+    ## ITemplateHelpers
+    def get_helpers(self):
+        import ckanext.iati.helpers as iati_helpers
+
+        return {
+            'get_countries': iati_helpers.get_countries
+        }
 

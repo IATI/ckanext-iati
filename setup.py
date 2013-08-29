@@ -23,7 +23,7 @@ setup(name='ckanext-iati',
       ],
       entry_points="""
       # -*- Entry points: -*-
-      
+
       [ckan.plugins]
       iati_approval = ckanext.iati.approval:IatiGroupApprovalExtension
       iati_group_authz = ckanext.iati.authz:IatiGroupAuthzExtension
@@ -34,6 +34,8 @@ setup(name='ckanext-iati',
       iati_feeds = ckanext.iati.plugin:IatiFeeds
 
       iati_publishers = ckanext.iati.plugins:IatiPublishers
+      iati_datasets = ckanext.iati.plugins:IatiDatasets
+
       [paste.paster_command]
       create-iati-fixtures = ckanext.iati.fixtures:CreateIatiFixtures
       iati-archiver=ckanext.iati.commands:Archiver
