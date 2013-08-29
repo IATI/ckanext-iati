@@ -10,4 +10,4 @@ npm install less@1.4.1 watchr@2.4.3
 # because of the --global flag)
 npm install --global bower@1.2.4
 # Then installs bootstrap
-bower install bootstrap#2.3.2 font-awesome#3.2.1
+bower install bootstrap#3.0.0 font-awesome#3.2.1

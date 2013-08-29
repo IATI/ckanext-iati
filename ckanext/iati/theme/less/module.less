@@ -1,0 +1,44 @@
+.module {
+  margin: @unit 0 0 0;
+  .nav {
+    margin: 0 0 (@unit/3) 0;
+  }
+}
+
+.module-heading {
+  font-size: @font-size-base;
+  line-height: 1.4;
+  padding: (@unit/3) @unit;
+  margin: 0 0 (@unit/3) 0;
+  background-color: @iati-color-grey;
+  .border-radius(@border-radius);
+  i {
+    margin-right: 2px;
+  }
+}
+
+.module-content {
+  padding: @unit 0;
+}
+
+.module-footer {
+  padding: (@unit/3) @unit;
+}
+
+.module-content.page-header {
+  position: relative;
+  margin: 0;
+  padding: 0;//@unit 0 0 0;
+  border-bottom-width: 0;
+  .nav-tabs {
+    margin-bottom: 0;
+  }
+  .content_action {
+    position: absolute;
+    right: 0;
+  }
+}
+
+.primary .module .module-content:first-child {
+  padding-top: 0;
+}

@@ -1,0 +1,34 @@
+.nav-simple {
+  li a {
+    padding: (@unit/3) @unit;
+  }
+}
+
+.breadcrumb,
+.page_primary_action {
+  margin: 0;
+  padding: 0 0 @unit 0;
+  border-bottom: 3px solid @gray-lighter;
+}
+
+.breadcrumb {
+  background-color: transparent;
+  // li {
+  //   color: #999;
+  //   padding-left: 4px;
+  //   &:after {
+  //     content: '/';
+  //     margin-left: 6px;
+  //   }
+  //   &.active:after {
+  //     content: '';
+  //   }
+  li.home span {
+    display: none;
+  }
+  // }
+}
+
+.page_primary_action {
+  margin-bottom: @unit;
+}
