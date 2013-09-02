@@ -55,6 +55,43 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
 
         return schema
 
+    def db_to_form_schema(self):
+
+        # Import core converters and validators
+        _convert_from_extras = p.toolkit.get_converter('convert_from_extras')
+        _ignore_not_sysadmin = p.toolkit.get_validator('ignore_not_sysadmin')
+        _ignore_missing = p.toolkit.get_validator('ignore_missing')
+        _not_empty = p.toolkit.get_validator('not_empty')
+
+        schema = super(IatiPublishers, self).form_to_db_schema()
+        schema.update({
+            'state': [_ignore_not_sysadmin],
+            'type': [_convert_from_extras],
+            'license_id': [_convert_from_extras],
+            'publisher_country': [_convert_from_extras],
+            'publisher_iati_id': [_convert_from_extras, _ignore_missing],
+            'publisher_segmentation': [_convert_from_extras],
+            'publisher_ui': [_convert_from_extras],
+            'publisher_frequency': [_convert_from_extras],
+            'publisher_thresholds': [_convert_from_extras],
+            'publisher_units': [_convert_from_extras],
+            'publisher_contact': [_convert_from_extras],
+            'publisher_agencies': [_convert_from_extras],
+            'publisher_field_exclusions': [_convert_from_extras],
+            'publisher_description': [_convert_from_extras],
+            'publisher_record_exclusions': [_convert_from_extras],
+            'publisher_timeliness': [_convert_from_extras],
+            'publisher_refs': [_convert_from_extras],
+            'publisher_constraints': [_convert_from_extras],
+            'publisher_data_quality': [_convert_from_extras],
+            'publisher_organization_type': [_convert_from_extras],
+            #TODO: this should be handled in core
+            'num_followers': [_not_empty],
+            'package_count': [_not_empty],
+        })
+
+        return schema
+
     ## IConfigurer
     def update_config(self, config):
         p.toolkit.add_template_directory(config, 'theme/templates')
@@ -145,7 +182,15 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     def get_helpers(self):
         import ckanext.iati.helpers as iati_helpers
 
-        return {
-            'get_countries': iati_helpers.get_countries
-        }
+        function_names = (
+            'get_countries',
+            'get_publisher_source_types',
+            'get_licenses',
+            'get_organization_types',
+        )
 
+        helpers = {}
+        for f in function_names:
+            helpers[f] = iati_helpers.__dict__[f]
+
+        return helpers

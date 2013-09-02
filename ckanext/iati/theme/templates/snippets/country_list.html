@@ -1,0 +1,13 @@
+<div class="control-group">
+  {% set error = errors.country %}
+  <label class="control-label" for="field-country">{{ _("Country") }}</label>
+  <div class="controls">
+    <select id="field-country" name="country" data-module="autocomplete">
+      {% for value, label in h.get_countries() %}
+        <option value="{{ value }}"{% if data.get('country') == value %} selected="selected"{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
+  </div>
+</div>
+

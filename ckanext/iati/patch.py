@@ -111,7 +111,7 @@ def format_file_size(size):
         if size < 1024.0:
             return "%3.1f%s" % (size, label)
         size /= 1024.0
-
+'''
 h.am_authorized_with_publisher = am_authorized_with_publisher
 h.country_name = country_name
 h.group_title = group_title
@@ -125,3 +125,4 @@ h.my_group_license = my_group_license
 h.format_file_size = format_file_size
 h.get_organization_type = get_organization_type
 h.am_a_sysadmin = am_a_sysadmin
+'''
