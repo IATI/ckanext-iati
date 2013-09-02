@@ -1,7 +1,8 @@
 
 # Bad imports: this should be in the toolkit
 from ckan.lib.plugins import DefaultGroupForm
-
+from ckanext.iati.logic.validators import db_date
+from ckanext.iati.logic.converters import checkbox_value, strip
 
 import ckan.plugins as p
 
@@ -20,7 +21,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
         return ['organization']
 
     def form_to_db_schema(self):
-       
+
         # Import core converters and validators
         _convert_to_extras = p.toolkit.get_converter('convert_to_extras')
         _ignore_not_sysadmin = p.toolkit.get_validator('ignore_not_sysadmin')
@@ -32,7 +33,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
             'state': [_ignore_not_sysadmin],
             'type': [_not_empty, _convert_to_extras],
             # TODO sort licensing
-            #'license_id': [_convert_to_extras], 
+            #'license_id': [_convert_to_extras],
             'publisher_iati_id': [_ignore_missing, _convert_to_extras, unicode],
             'publisher_country': [_ignore_missing, _convert_to_extras, unicode],
             'publisher_segmentation': [ _ignore_missing, _convert_to_extras, unicode],
@@ -75,17 +76,26 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
     def _modify_package_schema(self, schema):
 
-        # TODO: Add the whole schema currently defined in ckanext/iati/controllers/package_iati.py:_form_to_db_schema
-        # Get the validators from core via the toolkit (like the ones below)
-
         # Import core converters and validators
         _convert_to_extras = p.toolkit.get_converter('convert_to_extras')
         _ignore_missing = p.toolkit.get_validator('ignore_missing')
-
+        _ignore_empty = p.toolkit.get_validator('ignore_empty')
+        _int_validator = p.toolkit.get_validator('int_validator')
 
         schema.update({
             'filetype': [_convert_to_extras],
             'country': [_convert_to_extras, _ignore_missing],
+            'data_updated': [_ignore_missing, _ignore_empty, db_date, _convert_to_extras],
+            'activity_period-from': [_ignore_missing, _ignore_empty, db_date, _convert_to_extras],
+            'activity_period-to': [_ignore_missing, _ignore_empty, db_date, _convert_to_extras],
+            'activity_count': [_int_validator, _convert_to_extras, _ignore_missing],
+            'archive_file': [checkbox_value, _convert_to_extras, _ignore_missing],
+            'verified': [checkbox_value, _convert_to_extras, _ignore_missing],
+            'language': [_convert_to_extras, _ignore_missing],
+            'secondary_publisher': [strip, _convert_to_extras, _ignore_missing],
+            'issue_type': [_convert_to_extras, _ignore_missing],
+            'issue_message': [_convert_to_extras, _ignore_missing],
+            'issue_date': [_convert_to_extras, _ignore_missing],
         })
 
         return schema
@@ -103,16 +113,26 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     def show_package_schema(self):
         schema = super(IatiDatasets, self).show_package_schema()
 
-        # TODO: Add the whole schema currently defined in ckanext/iati/controllers/package_iati.py:_db_to_form_schema
-        # Get the validators from core via the toolkit (like the ones below)
-
         # Import core converters and validators
-        _convert_from_extras = p.toolkit.get_converter('convert_from_extras')
+        _convert_to_extras = p.toolkit.get_converter('convert_to_extras')
         _ignore_missing = p.toolkit.get_validator('ignore_missing')
+        _ignore_empty = p.toolkit.get_validator('ignore_empty')
+        _int_validator = p.toolkit.get_validator('int_validator')
 
         schema.update({
-            'filetype': [_convert_from_extras, _ignore_missing],
-            'country': [_convert_from_extras, _ignore_missing],
+            'filetype': [_convert_to_extras],
+            'country': [_convert_to_extras, _ignore_missing],
+            'data_updated': [_ignore_missing, _ignore_empty, db_date, _convert_to_extras],
+            'activity_period-from': [_ignore_missing, _ignore_empty, db_date, _convert_to_extras],
+            'activity_period-to': [_ignore_missing, _ignore_empty, db_date, _convert_to_extras],
+            'activity_count': [_int_validator, _convert_to_extras, _ignore_missing],
+            'archive_file': [checkbox_value, _convert_to_extras, _ignore_missing],
+            'verified': [checkbox_value, _convert_to_extras, _ignore_missing],
+            'language': [_convert_to_extras, _ignore_missing],
+            'secondary_publisher': [strip, _convert_to_extras, _ignore_missing],
+            'issue_type': [_convert_to_extras, _ignore_missing],
+            'issue_message': [_convert_to_extras, _ignore_missing],
+            'issue_date': [_convert_to_extras, _ignore_missing],
         })
 
         return schema
