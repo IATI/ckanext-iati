@@ -1,16 +1,73 @@
 
 # Bad imports: this should be in the toolkit
+
+from routes.mapper import SubMapper     # Maybe not this one
 from ckan.lib.plugins import DefaultGroupForm
 from ckanext.iati.logic.validators import db_date
 from ckanext.iati.logic.converters import checkbox_value, strip
 
 import ckan.plugins as p
 
+
 class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
 
-   # p.implements(p.IRoutes)
+    p.implements(p.IRoutes, inherit=True)
     p.implements(p.IGroupForm, inherit=True)
     p.implements(p.IConfigurer)
+
+    ## IRoutes
+
+    def before_map(self, map):
+
+        map.redirect('/group/{url:.*}', '/publisher/{url}',
+                     _redirect_code='301 Moved Permanently')
+        map.redirect('/group', '/publisher',
+                     _redirect_code='301 Moved Permanently')
+        map.redirect('/organization/{url:.*}', '/publisher/{url}',
+                     _redirect_code='301 Moved Permanently')
+        map.redirect('/organization', '/publisher',
+                     _redirect_code='301 Moved Permanently')
+
+        map.redirect('/publishers', '/publisher')
+        map.redirect('/publishers/{url:.*}', '/publisher/{url}')
+
+        org_controller = 'ckan.controllers.organization:OrganizationController'
+        with SubMapper(map, controller=org_controller) as m:
+            m.connect('publishers_index', '/publisher', action='index')
+            m.connect('/publisher/list', action='list')
+            m.connect('/publisher/new', action='new')
+            m.connect('/publisher/{action}/{id}',
+                      requirements=dict(action='|'.join([
+                          'delete',
+                          'admins',
+                          'member_new',
+                          'member_delete',
+                          'history'
+                      ])))
+            m.connect('publisher_activity', '/publisher/activity/{id}',
+                      action='activity', ckan_icon='time')
+            m.connect('publisher_read', '/publisher/{id}', action='read')
+            m.connect('publisher_about', '/publisher/about/{id}',
+                      action='about', ckan_icon='info-sign')
+            m.connect('publisher_read', '/publisher/{id}', action='read',
+                      ckan_icon='sitemap')
+            m.connect('publisher_edit', '/publisher/edit/{id}',
+                      action='edit', ckan_icon='edit')
+            m.connect('publisher_members', '/publisher/members/{id}',
+                      action='members', ckan_icon='group')
+            m.connect('publisher_bulk_process',
+                      '/publisher/bulk_process/{id}',
+                      action='bulk_process', ckan_icon='sitemap')
+
+        map.redirect('/api/{ver:1|2|3}/rest/publisher',
+                     '/api/{ver}/rest/group')
+        map.redirect('/api/rest/publisher', '/api/rest/group')
+        map.redirect('/api/{ver:1|2|3}/rest/publisher/{url:.*}',
+                     '/api/{ver}/rest/group/{url:.*}')
+        map.redirect('/api/rest/publisher/{url:.*}',
+                     '/api/rest/group/{url:.*}')
+
+        return map
 
     ## IGroupForm
 
