@@ -1,5 +1,6 @@
 .unstyled {
   margin: 0;
+  padding: 0;
   list-style: none;
 }
 /*! normalize.css v2.1.0 | MIT License | git.io/normalize */
@@ -6920,7 +6921,7 @@ iframe {
   padding: 3px 5px;
 }
 .container {
-  width: 960px;
+  width: 940px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -6961,7 +6962,7 @@ iframe {
   min-height: 350px;
 }
 [role=main] .primary {
-  width: 717px;
+  width: 688px;
   float: right;
 }
 [role=main] .secondary {
@@ -7076,6 +7077,10 @@ h4 {
 }
 #header {
   background: transparent url("../images/header.png") repeat-x 100% 100%;
+  margin-bottom: 20px;
+}
+#header .container {
+  width: 960px;
 }
 #header .logo {
   display: block;
@@ -7090,11 +7095,9 @@ h4 {
 #header .logo:hover {
   opacity: 0.5;
 }
-#header {
-  margin-bottom: 20px;
-}
 #header nav ul {
   margin: 0;
+  padding: 0;
   list-style: none;
   padding-left: 0;
 }
@@ -7279,6 +7282,7 @@ h4 {
 }
 #pre-footer .social {
   margin: 0;
+  padding: 0;
   list-style: none;
   float: right;
   width: 158px;
@@ -7388,4 +7392,138 @@ h4 {
 }
 .page_primary_action {
   margin-bottom: 15px;
+}
+#home-welcome {
+  padding: 15px 0 30px 0;
+}
+#home-welcome h1 {
+  margin: 0;
+  padding: 0;
+  font-size: 32px;
+  line-height: 1.25em;
+  color: #303030;
+  font-weight: normal;
+}
+#home-icons {
+  background-color: #F5F5F5;
+}
+#home-icons .container {
+  width: 960px;
+}
+#home-icons .container:before,
+#home-icons .container:after {
+  content: " ";
+  /* 1 */
+
+  display: table;
+  /* 2 */
+
+}
+#home-icons .container:after {
+  clear: both;
+}
+#home-icons .container:before,
+#home-icons .container:after {
+  content: " ";
+  /* 1 */
+
+  display: table;
+  /* 2 */
+
+}
+#home-icons .container:after {
+  clear: both;
+}
+#home-icons .icon {
+  float: left;
+  width: 300px;
+  padding: 0px;
+  margin: 0 10px;
+}
+#home-icons .icon h2 {
+  padding: 0;
+  margin: 0 0 24px;
+  font-size: 22px;
+  line-height: 33px;
+}
+#home-icons .icon h2 a {
+  display: block;
+  padding: 225px 10px 10px 10px;
+  background: transparent url("../images/home-sections.png") no-repeat;
+  color: #363636;
+  font-weight: normal;
+}
+#home-icons .icon h2 a:hover {
+  text-decoration: none;
+}
+#home-icons .icon.registry h2 a {
+  background-position: 0px 0;
+}
+#home-icons .icon.registry h2 a:hover {
+  background-position: -900px 0;
+}
+#home-icons .icon.detail h2 a {
+  background-position: -300px 0;
+}
+#home-icons .icon.detail h2 a:hover {
+  background-position: -1200px 0;
+}
+#home-icons .icon.support h2 a {
+  background-position: -600px 0;
+}
+#home-icons .icon.support h2 a:hover {
+  background-position: -1500px 0;
+}
+#home-icons .icon p {
+  color: #6e6e6e;
+  margin: 10px;
+  font-size: 15px;
+  line-height: 22px;
+}
+#home-icons div.box {
+  padding: 10px;
+  font-size: 24px;
+  line-height: 30px;
+  background-color: #fff;
+  color: #0098db;
+}
+#home-icons a.box {
+  display: block;
+  padding: 15px 19px;
+  font-size: 18px;
+  line-height: 18px;
+  background-color: #0098db;
+  color: #fff;
+}
+#home-icons .icon.support ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px dashed #B0B0B0;
+}
+#home-icons .icon.support ul li {
+  border-top: 1px dashed #B0B0B0;
+}
+#home-icons .icon.support ul li a {
+  display: block;
+  position: relative;
+  padding: 9px 0 9px 20px;
+  color: #6e6e6e;
+}
+#home-icons .icon.support ul li a:hover {
+  background-color: white;
+  color: black;
+  text-decoration: none;
+}
+#home-icons .icon.support ul li a:before {
+  content: '\f054';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  font-size: 12px;
+  font-family: FontAwesome;
+  color: #0098db;
+}
+#home-icons .icon.support ul li a:hover:before {
+  left: 2px;
 }

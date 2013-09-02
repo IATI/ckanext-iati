@@ -1,0 +1,104 @@
+#home-welcome {
+  padding: 15px 0 30px 0;
+  h1 {
+  	margin: 0;
+  	padding: 0;
+  	font-size: 32px;
+    line-height: 1.25em;
+    color: #303030;
+    font-weight: normal;
+  }
+}
+
+#home-icons {
+  background-color: #F5F5F5;
+  .container {
+    .clearfix;
+    width: 960px;
+  }
+  .icon {
+    float: left;
+    width: 300px;
+    padding: 0px;
+    margin: 0 10px;
+    h2 {
+      padding: 0;
+      margin: 0 0 24px;
+      font-size: 22px;
+      line-height: 33px;
+      a {
+        display: block;
+        padding: 225px 10px 10px 10px;
+        background: transparent url("../images/home-sections.png") no-repeat;
+        color: #363636;
+        font-weight: normal;
+        &:hover {
+          text-decoration: none;
+        }
+      }
+    }
+    &.registry h2 a {
+      .home-icon(0);
+      &:hover { .home-icon(3); }
+    }
+    &.detail h2 a {
+      .home-icon(1);
+      &:hover { .home-icon(4); }
+    }
+    &.support h2 a {
+      .home-icon(2);
+      &:hover { .home-icon(5); }
+    }
+    p {
+      color: #6e6e6e;
+      margin: 10px;
+      font-size: 15px;
+      line-height: 22px;
+    }
+  }
+  div.box {
+    padding: 10px;
+    font-size: 24px;
+    line-height: 30px;
+    background-color: #fff;
+    color: #0098db;
+  }
+  a.box {
+    display: block;
+    padding: 15px 19px;
+    font-size: 18px;
+    line-height: 18px;
+    background-color: #0098db;
+    color: #fff;
+  }
+  .icon.support ul {
+    .unstyled;
+    border-bottom: 1px dashed #B0B0B0;
+    li {
+      border-top: 1px dashed #B0B0B0;
+      a {
+        display: block;
+        position: relative;
+        padding: 9px 0 9px 20px;
+        color: #6e6e6e;
+        &:hover {
+          background-color: white;
+          color: black;
+          text-decoration: none;
+        }
+        &:before {
+          content: '\f054';
+          position: absolute;
+          left: 0;
+          top: 10px;
+          font-size: 12px;
+          font-family: FontAwesome;
+          color: @iati-color-registry;
+        }
+        &:hover:before {
+          left: 2px;
+        }
+      }
+    }
+  }
+}
