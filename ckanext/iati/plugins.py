@@ -86,28 +86,29 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
         _not_empty = p.toolkit.get_validator('not_empty')
 
         schema = super(IatiPublishers, self).form_to_db_schema()
+        default_validators = [_ignore_missing, _convert_to_extras, unicode]
         schema.update({
             'state': [_ignore_not_sysadmin],
             'type': [_not_empty, _convert_to_extras],
             # TODO sort licensing
             #'license_id': [_convert_to_extras],
-            'publisher_iati_id': [_ignore_missing, _convert_to_extras, unicode],
-            'publisher_country': [_ignore_missing, _convert_to_extras, unicode],
-            'publisher_segmentation': [ _ignore_missing, _convert_to_extras, unicode],
-            'publisher_ui': [ _ignore_missing, _convert_to_extras, unicode],
-            'publisher_frequency': [ _ignore_missing, _convert_to_extras, unicode],
-            'publisher_thresholds': [ _ignore_missing, _convert_to_extras, unicode],
-            'publisher_units': [ _ignore_missing, _convert_to_extras, unicode],
-            'publisher_contact': [ _ignore_missing, _convert_to_extras, unicode],
-            'publisher_agencies': [ _ignore_missing, _convert_to_extras, unicode],
-            'publisher_field_exclusions': [ _ignore_missing, _convert_to_extras, unicode],
-            'publisher_description': [ _ignore_missing, _convert_to_extras, unicode],
-            'publisher_record_exclusions': [ _ignore_missing, _convert_to_extras, unicode],
-            'publisher_timeliness': [ _ignore_missing, _convert_to_extras, unicode],
-            'publisher_refs': [ _ignore_missing, _convert_to_extras, unicode],
-            'publisher_constraints': [ _ignore_missing, _convert_to_extras, unicode],
-            'publisher_data_quality': [ _ignore_missing, _convert_to_extras, unicode],
-            'publisher_organization_type': [ _ignore_missing, _convert_to_extras, unicode],
+            'publisher_iati_id': default_validators,
+            'publisher_country': default_validators,
+            'publisher_segmentation': default_validators,
+            'publisher_ui': default_validators,
+            'publisher_frequency': default_validators,
+            'publisher_thresholds': default_validators,
+            'publisher_units': default_validators,
+            'publisher_contact': default_validators,
+            'publisher_agencies': default_validators,
+            'publisher_field_exclusions': default_validators,
+            'publisher_description': default_validators,
+            'publisher_record_exclusions': default_validators,
+            'publisher_timeliness': default_validators,
+            'publisher_refs': default_validators,
+            'publisher_constraints': default_validators,
+            'publisher_data_quality': default_validators,
+            'publisher_organization_type': default_validators,
         })
 
         return schema
