@@ -83,19 +83,19 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         _int_validator = p.toolkit.get_validator('int_validator')
 
         schema.update({
-            'filetype': [_convert_to_extras],
-            'country': [_convert_to_extras, _ignore_missing],
+            'filetype': [_ignore_missing, _convert_to_extras],
+            'country': [_ignore_missing, _convert_to_extras],
             'data_updated': [_ignore_missing, _ignore_empty, db_date, _convert_to_extras],
             'activity_period-from': [_ignore_missing, _ignore_empty, db_date, _convert_to_extras],
             'activity_period-to': [_ignore_missing, _ignore_empty, db_date, _convert_to_extras],
-            'activity_count': [_int_validator, _convert_to_extras, _ignore_missing],
-            'archive_file': [checkbox_value, _convert_to_extras, _ignore_missing],
-            'verified': [checkbox_value, _convert_to_extras, _ignore_missing],
-            'language': [_convert_to_extras, _ignore_missing],
-            'secondary_publisher': [strip, _convert_to_extras, _ignore_missing],
-            'issue_type': [_convert_to_extras, _ignore_missing],
-            'issue_message': [_convert_to_extras, _ignore_missing],
-            'issue_date': [_convert_to_extras, _ignore_missing],
+            'activity_count': [_ignore_missing, _int_validator, _convert_to_extras],
+            'archive_file': [_ignore_missing, checkbox_value, _convert_to_extras],
+            'verified': [_ignore_missing, checkbox_value, _convert_to_extras],
+            'language': [_ignore_missing, _convert_to_extras],
+            'secondary_publisher': [_ignore_missing, strip, _convert_to_extras],
+            'issue_type': [_ignore_missing, _convert_to_extras],
+            'issue_message': [_ignore_missing, _convert_to_extras],
+            'issue_date': [_ignore_missing, _convert_to_extras],
         })
 
         return schema
@@ -120,19 +120,19 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         _int_validator = p.toolkit.get_validator('int_validator')
 
         schema.update({
-            'filetype': [_convert_to_extras],
-            'country': [_convert_to_extras, _ignore_missing],
+            'filetype': [_ignore_missing, _convert_to_extras],
+            'country': [_ignore_missing, _convert_to_extras],
             'data_updated': [_ignore_missing, _ignore_empty, db_date, _convert_to_extras],
             'activity_period-from': [_ignore_missing, _ignore_empty, db_date, _convert_to_extras],
             'activity_period-to': [_ignore_missing, _ignore_empty, db_date, _convert_to_extras],
-            'activity_count': [_int_validator, _convert_to_extras, _ignore_missing],
-            'archive_file': [checkbox_value, _convert_to_extras, _ignore_missing],
-            'verified': [checkbox_value, _convert_to_extras, _ignore_missing],
-            'language': [_convert_to_extras, _ignore_missing],
-            'secondary_publisher': [strip, _convert_to_extras, _ignore_missing],
-            'issue_type': [_convert_to_extras, _ignore_missing],
-            'issue_message': [_convert_to_extras, _ignore_missing],
-            'issue_date': [_convert_to_extras, _ignore_missing],
+            'activity_count': [_ignore_missing, _int_validator, _convert_to_extras],
+            'archive_file': [_ignore_missing, checkbox_value, _convert_to_extras],
+            'verified': [_ignore_missing, checkbox_value, _convert_to_extras],
+            'language': [_ignore_missing, _convert_to_extras],
+            'secondary_publisher': [_ignore_missing, strip, _convert_to_extras],
+            'issue_type': [_ignore_missing, _convert_to_extras],
+            'issue_message': [_ignore_missing, _convert_to_extras],
+            'issue_date': [_ignore_missing, _convert_to_extras],
         })
 
         return schema
