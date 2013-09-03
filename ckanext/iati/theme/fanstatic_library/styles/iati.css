@@ -5527,12 +5527,28 @@ fieldset[disabled] .btn-info.active {
   background-color: #5bc0de;
   border-color: #46b8da;
 }
+.btn-link,
+.btn-link:hover {
+  background-color: transparent;
+  border-color: transparent;
+}
 .btn-mini {
   padding: 5px 10px;
   font-size: 12px;
   line-height: 1.5;
   border-radius: 3px;
   padding: 1px 5px;
+}
+.alert {
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+  color: #3a87ad;
+}
+.alert hr {
+  border-top-color: #a6e1ec;
+}
+.alert .alert-link {
+  color: #2d6987;
 }
 /* FONT PATH
  * -------------------------- */
@@ -9363,6 +9379,62 @@ fieldset[disabled] .control-custom.disabled .checkbox.btn.active {
 .label[data-format*=turtle] {
   background-color: #0b4498;
 }
+.table-selected td {
+  background-color: transparent;
+}
+.table-selected td .edit {
+  display: block;
+}
+.table-bulk-edit th input {
+  top: -5px;
+}
+.table-bulk-edit .table-actions .btn-group {
+  float: left;
+  margin: 0 10px 0 0;
+}
+.table-bulk-edit .context p {
+  margin-bottom: 0;
+}
+.table-header thead th {
+  background-color: transparent;
+}
+.table-edit-hover .edit {
+  display: none;
+  float: right;
+}
+.table-edit-hover tr:hover .edit {
+  display: block;
+}
+.js .table-toggle-more .toggle-more {
+  display: none;
+}
+.js .table-toggle-more .show-more {
+  display: inline;
+}
+.js .table-toggle-more .show-less {
+  display: none;
+}
+.js .table-toggle-more .toggle-seperator {
+  display: table-row;
+}
+.js .table-toggle-more .toggle-seperator td {
+  height: 11px;
+  padding: 0;
+  background-image: url("../../../../base/images/table-seperator.png");
+}
+.js .table .toggle-show td {
+  background: none;
+  text-align: center;
+}
+.js .table-toggle-less .show-less {
+  display: inline;
+}
+.js .table-toggle-less .show-more {
+  display: none;
+}
+.js .table-toggle-less .toggle-seperator {
+  display: none;
+}
 .activity {
   margin: 10px 0;
   padding: 0;
@@ -9825,6 +9897,15 @@ form .info-block.info-inline {
 .dataset-form-resource-types input[type=radio]:checked + label:after {
   bottom: -19px;
 }
+.form-actions {
+  margin: 15px 0 0 0;
+  padding: 15px 0 0 0;
+  border-top: 3px solid #eeeeee;
+}
+.form-horizontal .form-actions {
+  padding-left: 0;
+  padding-right: 0;
+}
 #header {
   background: transparent url("../images/header.png") repeat-x 100% 100%;
   margin-bottom: 20px;
@@ -10131,6 +10212,9 @@ form .info-block.info-inline {
 .primary .module .module-content:first-child {
   padding-top: 0;
 }
+.secondary .module .module-content {
+  padding: 15px;
+}
 .media-grid {
   background-color: transparent;
   border-width: 0;
@@ -10157,7 +10241,11 @@ form .info-block.info-inline {
   color: #ffffff;
   background-color: #0098db;
 }
-.nav-simple li a:hover:hover:before {
+.nav-simple li.active a {
+  color: #ffffff;
+  background-color: #0098db;
+}
+.nav-facet li a:hover:before {
   content: '\F055';
   font-size: 14px;
   font-family: FontAwesome;
@@ -10165,12 +10253,11 @@ form .info-block.info-inline {
   right: 10px;
   margin-top: 1px;
 }
-.nav-simple li.active a {
-  color: #ffffff;
-  background-color: #0098db;
-}
-.nav-simple li.active a:hover:before {
+.nav-facet li.active a:hover:before {
   content: '\F057';
+}
+.nav-btn {
+  margin-top: 15px;
 }
 .breadcrumb,
 .page_primary_action {
@@ -10194,6 +10281,18 @@ form .info-block.info-inline {
 }
 .page_primary_action {
   margin-bottom: 15px;
+}
+.actions {
+  float: right;
+}
+.actions ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.actions ul li {
+  float: left;
+  margin-left: 15px;
 }
 .dataset-heading a {
   font-weight: bold;

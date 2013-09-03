@@ -8,24 +8,31 @@
       &:hover {
         color: @white;
         background-color: @brand-primary;
-        &:hover:before {
-          content: '\F055';
-          font-size: 14px;
-          font-family: FontAwesome;
-          position: absolute;
-          right: 10px;
-          margin-top: 1px;
-        }
       }
     }
     &.active a {
       color: @white;
       background-color: @brand-primary;
-      &:hover:before {
-        content: '\F057';
-      }
     }
   }
+}
+
+.nav-facet li {
+  a:hover:before {
+    content: '\F055';
+    font-size: 14px;
+    font-family: FontAwesome;
+    position: absolute;
+    right: 10px;
+    margin-top: 1px;
+  }
+  &.active a:hover:before {
+    content: '\F057';
+  }
+}
+
+.nav-btn {
+  margin-top: @unit;
 }
 
 .breadcrumb,
@@ -52,4 +59,15 @@
 
 .page_primary_action {
   margin-bottom: @unit;
+}
+
+.actions {
+  float: right;
+  ul {
+    .unstyled;
+    li {
+      float: left;
+      margin-left: @unit;
+    }
+  }
 }

@@ -8,7 +8,7 @@
 // Font Awesome overrides
 @FontAwesomePath: '../';
 
-// CKAN core overrides
+// CKAN core overrides / mixins
 @black: #000;
 @white: #FFF;
 @imagePath: "../../../../base/images";
@@ -71,6 +71,9 @@
 @resourceFormatBackground: @black;
 @layoutBackgroundColor: #EEE;
 .ckan-icon-callout() {}
+// Needed for tables.less
+@formActionsBackground: transparent;
+@moduleHeadingBackgroundColor: transparent;
 // Needed for activity.less
 @activityColorText: #FFFFFF;
 @activityColorBlank: #999999;
