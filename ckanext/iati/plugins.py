@@ -90,8 +90,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
         schema.update({
             'state': [_ignore_not_sysadmin],
             'type': [_not_empty, _convert_to_extras],
-            # TODO sort licensing
-            #'license_id': [_convert_to_extras],
+            'license_id': [_convert_to_extras],
             'publisher_iati_id': default_validators,
             'publisher_country': default_validators,
             'publisher_segmentation': default_validators,
