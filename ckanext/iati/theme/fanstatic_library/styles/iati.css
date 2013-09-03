@@ -9789,89 +9789,6 @@ h4 {
   font-size: 16px;
   font-weight: bold;
 }
-.context-info .module-content {
-  padding: 15px;
-  background-color: #f6f6f6;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
-}
-.context-info .image {
-  margin-bottom: 15px;
-}
-.context-info .image img,
-.context-info .image a {
-  display: block;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
-}
-.context-info p {
-  overflow: auto;
-}
-.context-info code {
-  display: block;
-  font-weight: normal;
-  padding: 0;
-  margin: 0;
-  overflow: auto;
-}
-.context-info h1.heading {
-  margin: 0 0 5px 0;
-  font-size: 18px;
-  line-height: 1.3;
-}
-.context-info .info {
-  margin-top: 15px;
-}
-.context-info .info dl dd {
-  margin-top: 3px;
-  margin-left: 0;
-}
-.context-info .nums:before,
-.context-info .nums:after {
-  content: " ";
-  /* 1 */
-
-  display: table;
-  /* 2 */
-
-}
-.context-info .nums:after {
-  clear: both;
-}
-.context-info .nums:before,
-.context-info .nums:after {
-  content: " ";
-  /* 1 */
-
-  display: table;
-  /* 2 */
-
-}
-.context-info .nums:after {
-  clear: both;
-}
-.context-info .nums dl {
-  float: left;
-  width: 50%;
-  margin: 5px 0 0 0;
-}
-.context-info .nums dl dt {
-  display: block;
-  color: #555555;
-  font-weight: 300;
-}
-.context-info .nums dl dd {
-  display: block;
-  font-size: 30px;
-  font-weight: 700;
-  line-height: 36px;
-  margin-left: 0;
-}
-.context-info .follow_button {
-  margin-top: 15px;
-}
 .form-horizontal .control-label {
   float: left;
   font-weight: normal;
@@ -9905,6 +9822,10 @@ form .info-block.info-inline {
 .form-horizontal .form-actions {
   padding-left: 0;
   padding-right: 0;
+}
+.editor .editor-info-block {
+  border-color: #CCC;
+  background-color: #F6F6F6;
 }
 #header {
   background: transparent url("../images/header.png") repeat-x 100% 100%;
@@ -10213,7 +10134,90 @@ form .info-block.info-inline {
   padding-top: 0;
 }
 .secondary .module .module-content {
+  padding: 5px 15px;
+}
+.secondary .context-info .module-content {
   padding: 15px;
+  border: 1px solid #DDD;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+.secondary .context-info .image {
+  margin-bottom: 15px;
+}
+.secondary .context-info .image img,
+.secondary .context-info .image a {
+  display: block;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+.secondary .context-info p {
+  overflow: auto;
+}
+.secondary .context-info code {
+  display: block;
+  font-weight: normal;
+  padding: 0;
+  margin: 0;
+  overflow: auto;
+}
+.secondary .context-info h1.heading {
+  margin: 0 0 5px 0;
+  font-size: 18px;
+  line-height: 1.3;
+}
+.secondary .context-info .info {
+  margin-top: 15px;
+}
+.secondary .context-info .info dl dd {
+  margin-top: 3px;
+  margin-left: 0;
+}
+.secondary .context-info .nums:before,
+.secondary .context-info .nums:after {
+  content: " ";
+  /* 1 */
+
+  display: table;
+  /* 2 */
+
+}
+.secondary .context-info .nums:after {
+  clear: both;
+}
+.secondary .context-info .nums:before,
+.secondary .context-info .nums:after {
+  content: " ";
+  /* 1 */
+
+  display: table;
+  /* 2 */
+
+}
+.secondary .context-info .nums:after {
+  clear: both;
+}
+.secondary .context-info .nums dl {
+  float: left;
+  width: 50%;
+  margin: 5px 0 0 0;
+}
+.secondary .context-info .nums dl dt {
+  display: block;
+  color: #999999;
+  font-weight: 300;
+}
+.secondary .context-info .nums dl dd {
+  display: block;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 36px;
+  margin-left: 0;
+}
+.secondary .context-info .follow_button {
+  margin-top: 15px;
 }
 .media-grid {
   background-color: transparent;
@@ -10321,6 +10325,7 @@ form .info-block.info-inline {
 }
 #home-icons {
   background-color: #F5F5F5;
+  padding-bottom: 30px;
 }
 #home-icons .container {
   width: 960px;
@@ -10441,4 +10446,10 @@ form .info-block.info-inline {
 }
 #home-icons .icon.support ul li a:hover:before {
   left: 2px;
+}
+#home-apps {
+  padding-bottom: 30px;
+}
+#home-apps .media-item {
+  width: 304px;
 }
