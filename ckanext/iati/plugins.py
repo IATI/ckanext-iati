@@ -116,32 +116,35 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
 
         # Import core converters and validators
         _convert_from_extras = p.toolkit.get_converter('convert_from_extras')
-        _ignore_not_sysadmin = p.toolkit.get_validator('ignore_not_sysadmin')
         _ignore_missing = p.toolkit.get_validator('ignore_missing')
+        _ignore = p.toolkit.get_validator('ignore')
         _not_empty = p.toolkit.get_validator('not_empty')
 
         schema = super(IatiPublishers, self).form_to_db_schema()
+
+        default_validators = [_ignore_missing, _convert_from_extras]
         schema.update({
-            'state': [_ignore_not_sysadmin],
-            'type': [_convert_from_extras],
-            'license_id': [_convert_from_extras],
-            'publisher_country': [_convert_from_extras],
-            'publisher_iati_id': [_convert_from_extras, _ignore_missing],
-            'publisher_segmentation': [_convert_from_extras],
-            'publisher_ui': [_convert_from_extras],
-            'publisher_frequency': [_convert_from_extras],
-            'publisher_thresholds': [_convert_from_extras],
-            'publisher_units': [_convert_from_extras],
-            'publisher_contact': [_convert_from_extras],
-            'publisher_agencies': [_convert_from_extras],
-            'publisher_field_exclusions': [_convert_from_extras],
-            'publisher_description': [_convert_from_extras],
-            'publisher_record_exclusions': [_convert_from_extras],
-            'publisher_timeliness': [_convert_from_extras],
-            'publisher_refs': [_convert_from_extras],
-            'publisher_constraints': [_convert_from_extras],
-            'publisher_data_quality': [_convert_from_extras],
-            'publisher_organization_type': [_convert_from_extras],
+            'state': [],
+            'type': default_validators,
+            'license_id': default_validators,
+            'publisher_country': default_validators,
+            'publisher_iati_id': default_validators,
+            'publisher_segmentation': default_validators,
+            'publisher_ui': default_validators,
+            'publisher_frequency': default_validators,
+            'publisher_thresholds': default_validators,
+            'publisher_units': default_validators,
+            'publisher_contact': default_validators,
+            'publisher_agencies': default_validators,
+            'publisher_field_exclusions': default_validators,
+            'publisher_description': default_validators,
+            'publisher_record_exclusions': default_validators,
+            'publisher_timeliness': default_validators,
+            'publisher_refs': default_validators,
+            'publisher_constraints': default_validators,
+            'publisher_data_quality': default_validators,
+            'publisher_organization_type': default_validators,
+            'approval_status': [_ignore],
             #TODO: this should be handled in core
             'num_followers': [_not_empty],
             'package_count': [_not_empty],
