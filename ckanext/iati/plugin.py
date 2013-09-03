@@ -34,6 +34,15 @@ def configure_served_directory(config, relative_path, config_var):
         else:
             config[config_var] = absolute_path
 
+class IatiTheme(SingletonPlugin):
+
+    implements(IConfigurer)
+
+    def update_config(self, config):
+        configure_template_directory(config, 'theme/templates')
+        configure_public_directory(config, 'theme/public')
+        toolkit.add_resource('theme/fanstatic_library', 'ckanext-iati')
+
 class IatiForms(SingletonPlugin):
 
     implements(IRoutes)
@@ -92,11 +101,6 @@ class IatiForms(SingletonPlugin):
 
     def after_map(self, map):
         return map
-
-    def update_config(self, config):
-        configure_template_directory(config, 'theme/templates')
-        configure_public_directory(config, 'theme/public')
-        toolkit.add_resource('theme/fanstatic_library', 'ckanext-iati')
 
 class IatiActions(SingletonPlugin):
 
