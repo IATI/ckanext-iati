@@ -157,8 +157,11 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
 class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
     p.implements(p.IDatasetForm, inherit=True)
+    p.implements(p.IPackageController, inherit=True)
     p.implements(p.IConfigurer)
     p.implements(p.ITemplateHelpers)
+    p.implements(p.IActions)
+    p.implements(p.IAuthFunctions)
 
     ## IDatasetForm
 
@@ -231,6 +234,22 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
         return schema
 
+    ## IPackageController
+    def after_show(self, context, data_dict):
+        if data_dict.get('owner_org'):
+            org = p.toolkit.get_action('organization_show')({}, {'id': data_dict['owner_org']})
+            if org:
+                new_extras = [
+                    {'key': 'publishertype', 'value': org.get('type', '')},
+                    {'key': 'publisher_organization_type', 'value': org.get('publisher_organization_type', '')},
+                    {'key': 'publisher_country', 'value': org.get('publisher_country', '')},
+                    {'key': 'publisher_iati_id', 'value': org.get('publisher_iati_id', '')},
+                ]
+
+                data_dict['extras'].extend(new_extras)
+
+        return data_dict
+
     ## IConfigurer
     def update_config(self, config):
         p.toolkit.add_template_directory(config, 'theme/templates')
@@ -245,9 +264,32 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_licenses',
             'get_organization_types',
         )
+        return _get_module_functions(iati_helpers, function_names)
 
-        helpers = {}
-        for f in function_names:
-            helpers[f] = iati_helpers.__dict__[f]
+    ## IActions
+    def get_actions(self):
+        import ckanext.iati.logic.action as iati_actions
 
-        return helpers
+        function_names = (
+            'package_create',
+            'package_update',
+            'issues_report_csv',
+        )
+        return _get_module_functions(iati_actions, function_names)
+
+    ## IAuthFunctions
+    def get_auth_functions(self):
+        from ckanext.iati.logic import auth as iati_auth
+
+        function_names = (
+            'issues_report_csv',
+        )
+        return _get_module_functions(iati_auth, function_names)
+
+def _get_module_functions(module, function_names):
+    functions = {}
+    for f in function_names:
+        functions[f] = module.__dict__[f]
+
+    return functions
+

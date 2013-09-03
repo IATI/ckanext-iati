@@ -6,27 +6,52 @@ from urlparse import urljoin
 from pylons import config
 
 from ckan import logic
-from ckan.logic.action.get import package_show as package_show_core
+
+import ckan.plugins as p
 from ckan.logic.action.get import package_show_rest as package_show_rest_core
+from ckan.logic.action.create import package_create as package_create_core
+from ckan.logic.action.update import package_update as package_update_core
 
-def package_show(context, data_dict):
 
-    package_dict = package_show_core(context, data_dict)
-    group = context['package'].groups[0] if len(context['package'].groups) else None
-    if group:
-        new_extras = [
-            {'key': 'publishertype', 'value': group.extras.get('type', '')},
-            {'key': 'publisher_organization_type', 'value': group.extras.get('publisher_organization_type', '')},
-            {'key': 'publisher_country', 'value': group.extras.get('publisher_country', '')},
-            {'key': 'publisher_iati_id', 'value': group.extras.get('publisher_iati_id', '')},
-        ]
+def package_create(context, data_dict):
+    '''
+        The only thing we do here is remove some extras that are always
+        inherited from the dataset publisher, to avoid duplicating them
+    '''
+    _remove_extras_from_data_dict(data_dict)
 
-        package_dict['extras'].extend(new_extras)
+    return package_create_core(context, data_dict)
 
-    return package_dict
 
+def package_update(context, data_dict):
+    '''
+        The only thing we do here is remove some extras that are always
+        inherited from the dataset publisher, to avoid duplicating them
+    '''
+    _remove_extras_from_data_dict(data_dict)
+
+    return package_update_core(context, data_dict)
+
+
+def _remove_extras_from_data_dict(data_dict):
+    # Remove these extras, as they are always inherited from the publishers
+    # and we don't want to store them
+    extras_to_remove = ('publishertype',
+                        'publisher_organization_type',
+                        'publisher_country',
+                        'publisher_iati_id',
+                       )
+    data_dict['extras'] = [e for e in data_dict.get('extras', []) if e['key'] not in extras_to_remove]
+
+
+@p.toolkit.side_effect_free
 def package_show_rest(context, data_dict):
+    '''
+        Add some extras to the dataset from its publisher.
 
+        The ideal place to do this should be the after_show hook on the
+        iati_datasets plugin but package_show_rest does not call it in core.
+    '''
     package_dict = package_show_rest_core(context, data_dict)
 
     group = context['package'].groups[0] if len(context['package'].groups) else None
@@ -41,6 +66,7 @@ def package_show_rest(context, data_dict):
         package_dict['extras'].update(new_extras)
 
     return package_dict
+
 
 def issues_report_csv(context, data_dict):
 
