@@ -150,15 +150,15 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
 
         return schema
 
-    # # IConfigurer
-    # def update_config(self, config):
-    #     p.toolkit.add_template_directory(config, 'theme/templates')
+    # IConfigurer
+    def update_config(self, config):
+        p.toolkit.add_template_directory(config, 'theme/templates')
 
 
 class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
     p.implements(p.IDatasetForm, inherit=True)
-    # p.implements(p.IConfigurer)
+    p.implements(p.IConfigurer)
     p.implements(p.ITemplateHelpers)
 
     ## IDatasetForm
@@ -232,9 +232,9 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
         return schema
 
-    # # IConfigurer
-    # def update_config(self, config):
-    #     p.toolkit.add_template_directory(config, 'theme/templates')
+    # IConfigurer
+    def update_config(self, config):
+        p.toolkit.add_template_directory(config, 'theme/templates')
 
     ## ITemplateHelpers
     def get_helpers(self):
