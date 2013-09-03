@@ -29,13 +29,13 @@ setup(name='ckanext-iati',
       iati_group_authz = ckanext.iati.authz:IatiGroupAuthzExtension
       iati_package_authz = ckanext.iati.authz:IatiPackageAuthzExtension
       iati_forms = ckanext.iati.plugin:IatiForms
-      iati_theme = ckanext.iati.plugin:IatiTheme
       iati_actions = ckanext.iati.plugin:IatiActions
       iati_license_override = ckanext.iati.plugin:IatiLicenseOverride
       iati_feeds = ckanext.iati.plugin:IatiFeeds
 
       iati_publishers = ckanext.iati.plugins:IatiPublishers
       iati_datasets = ckanext.iati.plugins:IatiDatasets
+      iati_theme = ckanext.iati.plugins:IatiTheme
 
       [paste.paster_command]
       create-iati-fixtures = ckanext.iati.fixtures:CreateIatiFixtures

@@ -7,9 +7,9 @@ import ckan.plugins as p
 
 class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
 
-   # p.implements(p.IRoutes)
+    # p.implements(p.IRoutes)
     p.implements(p.IGroupForm, inherit=True)
-    p.implements(p.IConfigurer)
+    # p.implements(p.IConfigurer)
 
     ## IGroupForm
 
@@ -54,15 +54,15 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
 
         return schema
 
-    ## IConfigurer
-    def update_config(self, config):
-        p.toolkit.add_template_directory(config, 'theme/templates')
+    # # IConfigurer
+    # def update_config(self, config):
+    #     p.toolkit.add_template_directory(config, 'theme/templates')
 
 
 class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
     p.implements(p.IDatasetForm, inherit=True)
-    p.implements(p.IConfigurer)
+    # p.implements(p.IConfigurer)
     p.implements(p.ITemplateHelpers)
 
     ## IDatasetForm
@@ -117,9 +117,9 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
         return schema
 
-    ## IConfigurer
-    def update_config(self, config):
-        p.toolkit.add_template_directory(config, 'theme/templates')
+    # # IConfigurer
+    # def update_config(self, config):
+    #     p.toolkit.add_template_directory(config, 'theme/templates')
 
     ## ITemplateHelpers
     def get_helpers(self):
@@ -128,4 +128,15 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         return {
             'get_countries': iati_helpers.get_countries
         }
+
+
+class IatiTheme(p.SingletonPlugin):
+
+    p.implements(p.IConfigurer)
+
+    # IConfigurer
+    def update_config(self, config):
+        p.toolkit.add_template_directory(config, 'theme/templates')
+        p.toolkit.add_public_directory(config, 'theme/public')
+        p.toolkit.add_resource('theme/fanstatic_library', 'ckanext-iati')
 
