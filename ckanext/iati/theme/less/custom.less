@@ -10,14 +10,42 @@
 
 // CKAN core overrides
 @black: #000;
-@white: #000;
+@white: #FFF;
+@imagePath: "../../../../base/images";
+// Needed for mixins.less
+@tagBackgroundColor: @brand-primary;
+@tabTextColor: @white;
+@btnPrimaryBackground: @brand-primary;
+@pillTextColor: @white;
+@pillBackgroundColor: @brand-primary;
+@gutterX: @unit;
+@gutterSmallX: (@unit/2);
+@layoutTrimBorderColor: transparent;
+// Needed for icons.less
+.ie7-restore-right-whitespace() {}
+// Needed for search.less
 @genericBorderColor: #999;
 @inputBorder: @genericBorderColor;
 @inputColor: @black;
 @layoutBoldColor: @black;
 @layoutTextColor: @black;
-// @baseFontSize: 14px;
-// @baseLineHeight: 14px;
-// @gutterX: @unit;
 .ckan-icon() {}
 .ckan-icon-search() {}
+// Needed for media.less
+@bannerTextColor: @black;
+@bannerBackgroundColor: @white;
+@bgPath: none;
+@moduleHeadingBorderColor: #EEE;
+@mastheadBackgroundColor: @brand-primary;
+// Needed for dataset.less
+@listingHeadingTextColor: @black;
+@resourceFormatBackground: @black;
+@layoutBackgroundColor: #EEE;
+.ckan-icon-callout() {}
+// Needed for activity.less
+@activityColorText: #FFFFFF;
+@activityColorBlank: #999999;
+@activityColorNew: #A2AD00;
+@activityColorNeutral: #767DCE;
+@activityColorModify: #767DCE;
+@activityColorDelete: #B95252;
