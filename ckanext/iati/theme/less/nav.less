@@ -1,6 +1,30 @@
 .nav-simple {
-  li a {
-    padding: (@unit/3) @unit;
+  li {
+    position: relative;
+    a {
+      padding: (@unit/3) @unit;
+      .transition(all 0.1s ease-in);
+      .border-radius(@border-radius);
+      &:hover {
+        color: @white;
+        background-color: @brand-primary;
+        &:hover:before {
+          content: '\F055';
+          font-size: 14px;
+          font-family: FontAwesome;
+          position: absolute;
+          right: 10px;
+          margin-top: 1px;
+        }
+      }
+    }
+    &.active a {
+      color: @white;
+      background-color: @brand-primary;
+      &:hover:before {
+        content: '\F057';
+      }
+    }
   }
 }
 
