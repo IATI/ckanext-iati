@@ -1,13 +1,15 @@
+import logging
 
 # Bad imports: this should be in the toolkit
 
 from routes.mapper import SubMapper     # Maybe not this one
 from ckan.lib.plugins import DefaultGroupForm
-from ckanext.iati.logic.validators import db_date
+from ckanext.iati.logic.validators import db_date, iati_publisher_state_validator
 from ckanext.iati.logic.converters import checkbox_value, strip
 
 import ckan.plugins as p
 
+log = logging.getLogger(__name__)
 
 class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
 
@@ -77,18 +79,51 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
     def group_types(self):
         return ['organization']
 
+    def form_to_db_schema_options(self, options):
+        ''' This allows us to select different schemas for different
+        purpose eg via the web interface or via the api or creation vs
+        updating. It is optional and if not available form_to_db_schema
+        should be used.
+        If a context is provided, and it contains a schema, it will be
+        returned.
+        '''
+        schema = options.get('context', {}).get('schema', None)
+        if schema:
+            return schema
+
+        if options.get('api'):
+            if options.get('type') == 'create':
+                return self.form_to_db_schema_api_create()
+            else:
+                return self.form_to_db_schema_api_update()
+        else:
+            return self.form_to_db_schema()
+
+    def form_to_db_schema_api_create(self):
+        schema = super(IatiPublishers, self).form_to_db_schema_api_create()
+        schema = self._modify_group_schema(schema)
+        return schema
+
+    def form_to_db_schema_api_update(self):
+        schema = super(IatiPublishers, self).form_to_db_schema_api_update()
+        schema = self._modify_group_schema(schema)
+        return schema
+
     def form_to_db_schema(self):
+        schema = super(IatiPublishers, self).form_to_db_schema()
+        schema = self._modify_group_schema(schema)
+        return schema
+
+    def _modify_group_schema(self, schema):
 
         # Import core converters and validators
         _convert_to_extras = p.toolkit.get_converter('convert_to_extras')
-        _ignore_not_sysadmin = p.toolkit.get_validator('ignore_not_sysadmin')
         _ignore_missing = p.toolkit.get_validator('ignore_missing')
         _not_empty = p.toolkit.get_validator('not_empty')
 
-        schema = super(IatiPublishers, self).form_to_db_schema()
         default_validators = [_ignore_missing, _convert_to_extras, unicode]
         schema.update({
-            'state': [_ignore_not_sysadmin],
+            'state': [iati_publisher_state_validator],
             'type': [_not_empty, _convert_to_extras],
             'license_id': [_convert_to_extras],
             'publisher_iati_id': default_validators,
@@ -122,7 +157,8 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
 
         schema = super(IatiPublishers, self).form_to_db_schema()
 
-        default_validators = [_ignore_missing, _convert_from_extras]
+        # TODO: what to do with ignore missing!!
+        default_validators = [ _convert_from_extras]
         schema.update({
             'state': [],
             'type': default_validators,
@@ -255,6 +291,9 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
     ## IConfigurer
     def update_config(self, config):
+        if not config.get('ckan.site_url'):
+            raise Exception('This extension requires site_url to be set up in the ini file')
+
         p.toolkit.add_template_directory(config, 'theme/templates')
 
     ## ITemplateHelpers
@@ -276,6 +315,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         function_names = (
             'package_create',
             'package_update',
+            'organization_create',
             'issues_report_csv',
         )
         return _get_module_functions(iati_actions, function_names)

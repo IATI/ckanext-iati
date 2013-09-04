@@ -58,57 +58,60 @@
   {{ form.input('publisher_iati_id', label=_('IATI Identifier'), id='field-publisher_iati_id', value=data.publisher_iati_id, error=errors.publisher_iati_id) }}
 
 
-  <div class="control-group">
-    <label for="field-state" class="control-label">{{ _('State') }}</label>
-    <div class="controls">
-      <select id="field-state" name="state">
-        <option value="active" {% if data.get('state', 'none') == 'active' %} selected="selected" {% endif %}>{{ _('Active') }}</option>
-        <option value="deleted" {% if data.get('state', 'none') == 'deleted' %} selected="selected" {% endif %}>{{ _('Deleted') }}</option>
-      </select>
+  {% if c.userobj.sysadmin %}
+    <div class="control-group">
+      <label for="field-state" class="control-label">{{ _('State') }}</label>
+      <div class="controls">
+        <select id="field-state" name="state">
+          <option value="active" {% if data.get('state', 'none') == 'active' %} selected="selected" {% endif %}>{{ _('Active') }}</option>
+          <option value="pending" {% if data.get('state', 'none') == 'pending' %} selected="selected" {% endif %}>{{ _('Pending') }}</option>
+          <option value="deleted" {% if data.get('state', 'none') == 'deleted' %} selected="selected" {% endif %}>{{ _('Deleted') }}</option>
+        </select>
+      </div>
     </div>
-  </div>
+  {% endif %}
 
-{{ form.textarea('publisher_contact', label=_('Contact'), id='field-publisher_contact', value=data.publisher_contact, error=errors.publisher_contact) }}
-{# DESC: Contact details for publisher. #}
+  {{ form.textarea('publisher_contact', label=_('Contact'), id='field-publisher_contact', value=data.publisher_contact, error=errors.publisher_contact) }}
+  {# DESC: Contact details for publisher. #}
 
-{{ form.textarea('publisher_description', label=_('Description'), id='field-publisher_description', value=data.publisher_description, error=errors.publisher_description) }}
-{# DESC: General description of publisher's role and activities. #}
+  {{ form.textarea('publisher_description', label=_('Description'), id='field-publisher_description', value=data.publisher_description, error=errors.publisher_description) }}
+  {# DESC: General description of publisher's role and activities. #}
 
-{{ form.textarea('publisher_agencies', label=_('Organisations / agencies covered'), id='field-publisher_agencies', value=data.publisher_agencies, error=errors.publisher_agencies) }}
-{# DESC: Which organisations/agencies does your IATI data cover?  (What % of your total development flows does this cover? What is missing?). #}
+  {{ form.textarea('publisher_agencies', label=_('Organisations / agencies covered'), id='field-publisher_agencies', value=data.publisher_agencies, error=errors.publisher_agencies) }}
+  {# DESC: Which organisations/agencies does your IATI data cover?  (What % of your total development flows does this cover? What is missing?). #}
 
-{{ form.textarea('publisher_timeliness', label=_('Timeliness of Data'), id='field-publisher_timeliness', value=data.publisher_timeliness, error=errors.publisher_timeliness) }}
-{# DESC: How soon after data is captured and available internally will data be published? #}
+  {{ form.textarea('publisher_timeliness', label=_('Timeliness of Data'), id='field-publisher_timeliness', value=data.publisher_timeliness, error=errors.publisher_timeliness) }}
+  {# DESC: How soon after data is captured and available internally will data be published? #}
 
-{{ form.textarea('publisher_frequency', label=_('Frequency of publication'), id='field-publisher_frequency', value=data.publisher_frequency, error=errors.publisher_frequency) }}
-{# DESC: How often is IATI data refreshed? Monthly/Quarterly? #}
+  {{ form.textarea('publisher_frequency', label=_('Frequency of publication'), id='field-publisher_frequency', value=data.publisher_frequency, error=errors.publisher_frequency) }}
+  {# DESC: How often is IATI data refreshed? Monthly/Quarterly? #}
 
-{{ form.textarea('publisher_units', label=_('Units of Aid'), id='field-publisher_units', value=data.publisher_units, error=errors.publisher_units) }}
-{# DESC: How is an activity defined e.g. projects and programmes, or some other structure? Do you have multi-tiered project structures e.g. projects and sub-projects or components? At which level/s do you intend to publish details?). #}
+  {{ form.textarea('publisher_units', label=_('Units of Aid'), id='field-publisher_units', value=data.publisher_units, error=errors.publisher_units) }}
+  {# DESC: How is an activity defined e.g. projects and programmes, or some other structure? Do you have multi-tiered project structures e.g. projects and sub-projects or components? At which level/s do you intend to publish details?). #}
 
-{{ form.textarea('publisher_segmentation', label=_('Segmentation of Published Data'), id='field-publisher_segmentation', value=data.publisher_segmentation, error=errors.publisher_segmentation) }}
-{# DESC: Is IATI data published in separate files per country or region? #}
+  {{ form.textarea('publisher_segmentation', label=_('Segmentation of Published Data'), id='field-publisher_segmentation', value=data.publisher_segmentation, error=errors.publisher_segmentation) }}
+  {# DESC: Is IATI data published in separate files per country or region? #}
 
-{{ form.textarea('publisher_refs', label=_('Data Definitions and References'), id='field-publisher_refs', value=data.publisher_refs, error=errors.publisher_refs) }}
-{# DESC: Links to guides, explanations, codelists on the publisher's own site that clarify their data. #}
+  {{ form.textarea('publisher_refs', label=_('Data Definitions and References'), id='field-publisher_refs', value=data.publisher_refs, error=errors.publisher_refs) }}
+  {# DESC: Links to guides, explanations, codelists on the publisher's own site that clarify their data. #}
 
-{{ form.textarea('publisher_field_exclusions', label=_('Field Exclusions'), id='field-publisher_field_exclusions', value=data.publisher_field_exclusions, error=errors.publisher_field_exclusions) }}
-{# DESC: What fields recommended in the standard do you never use - and for what reason. #}
+  {{ form.textarea('publisher_field_exclusions', label=_('Field Exclusions'), id='field-publisher_field_exclusions', value=data.publisher_field_exclusions, error=errors.publisher_field_exclusions) }}
+  {# DESC: What fields recommended in the standard do you never use - and for what reason. #}
 
-{{ form.textarea('publisher_record_exclusions', label=_('Record Exclusions'), id='field-publisher_record_exclusions', value=data.publisher_record_exclusions, error=errors.publisher_record_exclusions) }}
-{# DESC: What are your policies for excluding particular activities, or parts of an activity's data? #}
+  {{ form.textarea('publisher_record_exclusions', label=_('Record Exclusions'), id='field-publisher_record_exclusions', value=data.publisher_record_exclusions, error=errors.publisher_record_exclusions) }}
+  {# DESC: What are your policies for excluding particular activities, or parts of an activity's data? #}
 
-{{ form.textarea('publisher_thresholds', label=_('Thresholds'), id='field-publisher_thresholds', value=data.publisher_thresholds, error=errors.publisher_thresholds) }}
-{# DESC: What are the thresholds below which data or whole activities are not published? #}
+  {{ form.textarea('publisher_thresholds', label=_('Thresholds'), id='field-publisher_thresholds', value=data.publisher_thresholds, error=errors.publisher_thresholds) }}
+  {# DESC: What are the thresholds below which data or whole activities are not published? #}
 
-{{ form.textarea('publisher_constraints', label=_('Other Constraints'), id='field-publisher_constraints', value=data.publisher_constraints, error=errors.publisher_constraints) }}
-{# DESC: Other policies or circumstances that restrict your full compliance with the standard. #}
+  {{ form.textarea('publisher_constraints', label=_('Other Constraints'), id='field-publisher_constraints', value=data.publisher_constraints, error=errors.publisher_constraints) }}
+  {# DESC: Other policies or circumstances that restrict your full compliance with the standard. #}
 
-{{ form.textarea('publisher_data_quality', label=_('Data Quality'), id='field-publisher_data_quality', value=data.publisher_data_quality, error=errors.publisher_data_quality) }}
-{# DESC: Publisher's comment on the status and accuracyof the data - audited/verified, operational/sub to change, etc #}
+  {{ form.textarea('publisher_data_quality', label=_('Data Quality'), id='field-publisher_data_quality', value=data.publisher_data_quality, error=errors.publisher_data_quality) }}
+  {# DESC: Publisher's comment on the status and accuracyof the data - audited/verified, operational/sub to change, etc #}
 
-{{ form.textarea('publisher_ui', label=_('User Interface'), id='field-publisher_ui', value=data.publisher_ui, error=errors.publisher_ui) }}
-{# DESC: Will IATI data be accessible for end users through an existing or a new user interface on your website? #}
+  {{ form.textarea('publisher_ui', label=_('User Interface'), id='field-publisher_ui', value=data.publisher_ui, error=errors.publisher_ui) }}
+  {# DESC: Will IATI data be accessible for end users through an existing or a new user interface on your website? #}
 
 {% endblock %}
 
