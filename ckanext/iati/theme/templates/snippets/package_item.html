@@ -1,0 +1,36 @@
+{% ckan_extends %}
+
+{% set package_url = h.url_for(controller='package', action='read', id=package.name) %}
+
+{% block package_item_content %}
+  <h3 class="dataset-heading">
+    {% if package.private %}
+      <span class="dataset-private label label-inverse">
+        <i class="icon-lock"></i>
+        {{ _('Private') }}
+      </span>
+    {% endif %}
+    {{ h.link_to(h.truncate(title, truncate_title), package_url) }}
+    {% if package.get('state', '').startswith('draft') %}
+      <span class="label label-info">{{ _('Draft') }}</span>
+    {% elif package.get('state', '').startswith('deleted') %}
+      <span class="label label-important">{{ _('Deleted') }}</span>
+    {% endif %}
+    {{ h.popular('recent views', package.tracking_summary.recent, min=10) if package.tracking_summary }}
+  </h3>
+  {% if banner %}
+    <span class="banner">{{ _('Popular') }}</span>
+  {% endif %}
+  {% if notes %}
+    <p>{{ notes|urlize }}</p>
+  {% endif %}
+  {% if package.resources and not hide_resources %}
+    {% for resource in package.resources %}
+      <p>
+        <a href="{{ package_url }}" target="_blank">View Metadata</a>
+        &middot;
+        <a href="{{ resource.url }}" target="_blank">Download</a>
+      </p>
+    {% endfor %}
+  {% endif %}
+{% endblock %}

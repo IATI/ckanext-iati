@@ -53,7 +53,7 @@
   padding: (@unit/3) @unit;
 }
 
-.secondary .context-info {
+.secondary .context-info:first-child {
   .module-content {
     padding: @unit;
     border: 1px solid #DDD;
@@ -63,6 +63,7 @@
     margin-bottom: @unit;
     img,
     a {
+      max-width: 100%;
       display: block;
       .border-radius(@border-radius);
     }

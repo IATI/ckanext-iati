@@ -3,3 +3,93 @@
 .container {
   width: 960px;
 }
+
+// Forms
+textarea,
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"] {
+	.form-control();
+}
+select {
+  .form-control();
+  width: auto;
+}
+
+// Buttons
+.btn,
+button {
+  .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
+  .transition(all 0.1s ease-in);
+}
+.btn-primary {
+  .button-variant(@btn-primary-color; @btn-primary-bg; @btn-primary-border);
+}
+.btn-warning {
+  .button-variant(@btn-warning-color; @btn-warning-bg; @btn-warning-border);
+}
+.btn-danger {
+  .button-variant(@btn-danger-color; @btn-danger-bg; @btn-danger-border);
+}
+.btn-success {
+  .button-variant(@btn-success-color; @btn-success-bg; @btn-success-border);
+}
+.btn-info {
+  .button-variant(@btn-info-color; @btn-info-bg; @btn-info-border);
+}
+.btn-link,
+.btn-link:hover {
+  background-color: transparent;
+  border-color: transparent;
+}
+.btn-mini { .btn-xs; }
+
+// Alerts
+.alert {
+  .alert-info;
+}
+.alert-success {
+  .alert-success;
+}
+.alert-info {
+  .alert-info;
+}
+.alert-warning {
+  .alert-warning;
+}
+.alert-danger {
+  .alert-danger;
+}
+
+// Pagination
+.pagination ul {
+  .pagination;
+}
+
+// Mini badges/labels
+.label {
+  .label-default;
+}
+.label-success {
+  .label-success;
+}
+.label-info {
+  .label-info;
+}
+.label-warning {
+  .label-warning;
+}
+.label-danger {
+  .label-danger;
+}

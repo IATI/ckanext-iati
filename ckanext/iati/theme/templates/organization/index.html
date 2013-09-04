@@ -1,0 +1,17 @@
+{% ckan_extends %}
+
+{% block breadcrumb_content %}
+  <li class="active">{% link_for _('Publishers'), controller='organization', action='index' %}</li>
+{% endblock %}
+
+{% block page_primary_action %}
+  {% if h.check_access('organization_create') %}
+    {% link_for _('Add Publisher'), controller='organization', action='new', class_='btn btn-primary', icon='plus-sign-alt' %}
+  {% endif %}
+{% endblock %}
+
+{% block page_heading %}{{ _('Publishers') }}{% endblock %}
+
+{% block organizations_search_form %}
+  {% snippet 'snippets/search_form.html', type='publisher', query=c.q, sorting_selected=c.sort_by_selected, count=c.page.item_count, placeholder=_('Search publishers...'), show_empty=request.params %}
+{% endblock %}

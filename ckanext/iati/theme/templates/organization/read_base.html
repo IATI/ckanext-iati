@@ -4,14 +4,14 @@
 {% block primary_content %}
   
   {% if c.group_dict.state == 'pending' %}
-    <div class="alert alert-warning">
+    <div class="alert alert-warning m-top">
     This publisher is pending administrator approval. Until it is approved, it is hidden from
     site visitors and it cannot publish activity records.
     </div>
   {% endif %}
 
   {% if c.group_dict.state == 'deleted' %}
-    <div class="alert alert-danger">
+    <div class="alert alert-danger m-top">
     This publisher has been deleted.
     </div>
   {% endif %}
@@ -20,3 +20,7 @@
 
 {% endblock %}
 
+{% block breadcrumb_content %}
+  <li>{% link_for _('Publishers'), controller='organization', action='index' %}</li>
+  <li class="active">{% link_for c.group_dict.display_name|truncate(35), controller='organization', action='read', id=c.group_dict.name %}</li>
+{% endblock %}

@@ -3,13 +3,13 @@
 {% block primary_content %}
   
   {% if c.pkg_dict.state == 'pending' %}
-    <div class="alert alert-warning">
+    <div class="alert alert-warning m-top">
     This dataset is in a pending state.
     </div>
   {% endif %}
 
   {% if c.pkg_dict.state == 'deleted' %}
-    <div class="alert alert-danger">
+    <div class="alert alert-danger m-top">
     This dataset has been deleted.
     </div>
   {% endif %}
@@ -19,7 +19,8 @@
 {% endblock %}
 
 {% block content_primary_nav %}
-  {{ super() }}
+  {{ h.build_nav_icon('dataset_read', _('Dataset'), id=pkg.name) }}
+  {{ h.build_nav_icon('dataset_activity', _('Activity Stream'), id=pkg.name) }}
   {% set history_link = h.nav_link(_('History'), controller='package', action='history', id=pkg.name, icon='code-fork') %}
   {% set active_check = history_link|replace("active", "")|length %}
   <li{% if history_link|length != active_check %} class="active" {% endif %}>{{ history_link }}</li>

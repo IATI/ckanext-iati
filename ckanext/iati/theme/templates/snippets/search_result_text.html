@@ -1,0 +1,8 @@
+{% ckan_extends %}
+
+{% if type == 'publisher' %}
+  {% set text_query = ungettext('{number} publisher found for "{query}"', '{number} publishers found for "{query}"', count) %}
+  {% set text_query_none = _('Sorry no publishers found for "{query}"') %}
+  {% set text_no_query = ungettext('{number} publisher found', '{number} publishers found', count) %}
+  {% set text_no_query_none = _('Sorry no publishers found') %}
+{% endif %}
