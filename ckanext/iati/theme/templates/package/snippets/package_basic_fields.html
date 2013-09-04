@@ -3,6 +3,17 @@
 
 {# NOTE: this is most likely the wrong place to put this field, it is just show for demostrative purposes :) #}
 
+{% block package_basic_fields_title %}
+  <fieldset>
+    <legend>Basic information</legend>
+    {{ super() }}
+{% endblock %}
+
+{% block package_basic_fields_org %}
+    {{ super() }}
+  </fieldset>
+{% endblock %}
+
 {% block package_basic_fields_custom %}
 <div class="control-group">
   {% set error = errors.filetype %}
