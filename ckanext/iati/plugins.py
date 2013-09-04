@@ -157,8 +157,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
 
         schema = super(IatiPublishers, self).form_to_db_schema()
 
-        # TODO: what to do with ignore missing!!
-        default_validators = [ _convert_from_extras]
+        default_validators = [_convert_from_extras, _ignore_missing]
         schema.update({
             'state': [],
             'type': default_validators,
@@ -180,6 +179,8 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
             'publisher_constraints': default_validators,
             'publisher_data_quality': default_validators,
             'publisher_organization_type': default_validators,
+            'groups': [_ignore],
+            'tags': [_ignore],
             'approval_status': [_ignore],
             #TODO: this should be handled in core
             'num_followers': [_not_empty],
