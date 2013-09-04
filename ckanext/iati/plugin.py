@@ -11,6 +11,8 @@ from ckan.plugins import IAuthFunctions
 from ckan.plugins import IGroupController
 from ckan.plugins import IPackageController
 
+import ckan.plugins.toolkit as toolkit
+
 import ckanext.iati
 
 log = getLogger(__name__)
@@ -90,10 +92,6 @@ class IatiForms(SingletonPlugin):
 
     def after_map(self, map):
         return map
-
-    def update_config(self, config):
-        configure_template_directory(config, 'templates')
-        configure_public_directory(config, 'public')
 
 class IatiActions(SingletonPlugin):
 

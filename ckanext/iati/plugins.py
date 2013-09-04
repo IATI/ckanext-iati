@@ -188,7 +188,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
 
         return schema
 
-    ## IConfigurer
+    # IConfigurer
     def update_config(self, config):
         p.toolkit.add_template_directory(config, 'theme/templates')
 
@@ -336,3 +336,13 @@ def _get_module_functions(module, function_names):
 
     return functions
 
+
+class IatiTheme(p.SingletonPlugin):
+
+    p.implements(p.IConfigurer)
+
+    # IConfigurer
+    def update_config(self, config):
+        p.toolkit.add_template_directory(config, 'theme/templates')
+        p.toolkit.add_public_directory(config, 'theme/public')
+        p.toolkit.add_resource('theme/fanstatic_library', 'ckanext-iati')

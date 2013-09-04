@@ -1,0 +1,8 @@
+{% ckan_extends %}
+
+{% block content_primary_nav %}
+  {{ super() }}
+  {% set history_link = h.nav_link(_('History'), controller='package', action='history', id=pkg.name, icon='code-fork') %}
+  {% set active_check = history_link|replace("active", "")|length %}
+  <li{% if history_link|length != active_check %} class="active" {% endif %}>{{ history_link }}</li>
+{% endblock %}

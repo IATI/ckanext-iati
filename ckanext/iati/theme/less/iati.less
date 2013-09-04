@@ -1,0 +1,47 @@
+// Base variables
+
+@iati-color-transparency: #A2AD00;
+@iati-color-standard: #1A206D;
+@iati-color-registry: #0098DB;
+@iati-color-community: #00693C;
+@iati-color-grey: #F6F6F6;
+@unit: 15px;
+@border-radius: (@unit/3);
+
+// Where are the dependancies located?
+@bootstrap-folder: "../bower_components/bootstrap/less/";
+@font-awesome-folder: "../bower_components/font-awesome/less/";
+@ckan-folder: "../../../../ckan/ckan/public/base/less/";
+
+@import "mixins.less";
+
+// Now import dependancies
+@import "bootstrap.less";
+@import "font-awesome.less";
+
+// Vendor overrides
+@import "overrides.less";
+
+// Import needed stuff from CKAN core
+@import "@{ckan-folder}mixins.less";
+@import "@{ckan-folder}icons.less";
+@import "@{ckan-folder}forms.less";
+@import "@{ckan-folder}search.less";
+@import "@{ckan-folder}media.less";
+@import "@{ckan-folder}dataset.less";
+@import "@{ckan-folder}tables.less";
+@import "@{ckan-folder}activity.less";
+
+// Now the iati specifics
+@import "helpers.less";
+@import "base.less";
+@import "layout.less";
+@import "prose.less";
+@import "form.less";
+@import "header.less";
+@import "footer.less";
+@import "module.less";
+@import "media.less";
+@import "nav.less";
+@import "dataset.less";
+@import "homepage.less";

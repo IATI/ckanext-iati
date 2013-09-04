@@ -1,0 +1,98 @@
+// Modified from ../bower_components/bootstrap/less/bootstrap.less
+
+// Core variables and mixins
+@import "@{bootstrap-folder}variables.less"; // Modify this for custom colors, font-sizes, etc
+@import "@{bootstrap-folder}mixins.less";
+
+// Here's where we overwrite the standard bootstrap variables
+@import "custom.less";
+
+// Reset
+@import "@{bootstrap-folder}normalize.less";
+
+// Core CSS
+@import "@{bootstrap-folder}scaffolding.less";
+@import "@{bootstrap-folder}type.less";
+@import "@{bootstrap-folder}code.less";
+// We don't need the grid stuff... because we're defining our own layout in layout.less
+// @import "@{bootstrap-folder}grid.less";
+@import "@{bootstrap-folder}tables.less";
+@import "@{bootstrap-folder}forms.less";
+@import "@{bootstrap-folder}buttons.less";
+
+// Components
+@import "@{bootstrap-folder}component-animations.less";
+@import "@{bootstrap-folder}glyphicons.less";
+@import "@{bootstrap-folder}dropdowns.less";
+@import "@{bootstrap-folder}button-groups.less";
+@import "@{bootstrap-folder}input-groups.less";
+@import "@{bootstrap-folder}navs.less";
+@import "@{bootstrap-folder}navbar.less";
+@import "@{bootstrap-folder}breadcrumbs.less";
+@import "@{bootstrap-folder}pagination.less";
+@import "@{bootstrap-folder}pager.less";
+@import "@{bootstrap-folder}labels.less";
+@import "@{bootstrap-folder}badges.less";
+@import "@{bootstrap-folder}jumbotron.less";
+@import "@{bootstrap-folder}thumbnails.less";
+@import "@{bootstrap-folder}alerts.less";
+@import "@{bootstrap-folder}progress-bars.less";
+@import "@{bootstrap-folder}media.less";
+@import "@{bootstrap-folder}list-group.less";
+@import "@{bootstrap-folder}panels.less";
+@import "@{bootstrap-folder}wells.less";
+@import "@{bootstrap-folder}close.less";
+
+// Components w/ JavaScript
+@import "@{bootstrap-folder}modals.less";
+@import "@{bootstrap-folder}tooltip.less";
+@import "@{bootstrap-folder}popovers.less";
+@import "@{bootstrap-folder}carousel.less";
+
+// Utility classes
+@import "@{bootstrap-folder}utilities.less";
+@import "@{bootstrap-folder}responsive-utilities.less";
+
+// =============================================
+// Hacks to make Bootstrap 3.0.0 act like 2.3.0
+
+// Forms
+textarea,
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"] {
+	.form-control();
+}
+
+// Buttons
+.btn,
+button {
+  .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
+  .transition(all 0.1s ease-in);
+}
+.btn-primary {
+  .button-variant(@btn-primary-color; @btn-primary-bg; @btn-primary-border);
+}
+.btn-warning {
+  .button-variant(@btn-warning-color; @btn-warning-bg; @btn-warning-border);
+}
+.btn-danger {
+  .button-variant(@btn-danger-color; @btn-danger-bg; @btn-danger-border);
+}
+.btn-success {
+  .button-variant(@btn-success-color; @btn-success-bg; @btn-success-border);
+}
+.btn-info {
+  .button-variant(@btn-info-color; @btn-info-bg; @btn-info-border);
+}
+.btn-link,
+.btn-link:hover {
+  background-color: transparent;
+  border-color: transparent;
+}
+.btn-mini { .btn-xs; }
+
+.alert {
+  .alert-info;
+}
