@@ -1,0 +1,22 @@
+{% ckan_extends %}
+
+
+{% block primary_content %}
+  
+  {% if c.group_dict.state == 'pending' %}
+    <div class="alert alert-warning">
+    This publisher is pending administrator approval. Until it is approved, it is hidden from
+    site visitors and it cannot publish activity records.
+    </div>
+  {% endif %}
+
+  {% if c.group_dict.state == 'deleted' %}
+    <div class="alert alert-danger">
+    This publisher has been deleted.
+    </div>
+  {% endif %}
+
+  {{ super() }}
+
+{% endblock %}
+
