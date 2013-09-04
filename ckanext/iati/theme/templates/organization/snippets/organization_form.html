@@ -53,7 +53,7 @@
     </div>
   </div>
 
-  {% snippet 'snippets/country_list.html', data=data, errors=errors %}
+  {% snippet 'snippets/country_list.html', data=data, errors=errors, field_name='publisher_country' %}
 
   {{ form.input('publisher_iati_id', label=_('IATI Identifier'), id='field-publisher_iati_id', value=data.publisher_iati_id, error=errors.publisher_iati_id) }}
 
