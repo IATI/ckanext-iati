@@ -14,7 +14,7 @@
   <div class="control-group">
     <label for="field-type" class="control-label">{{ _('Source') }}</label>
     <div class="controls">
-      <select id="field-type" name="type">
+      <select id="field-publisher_type" name="publisher_type">
         {% for value, label in h.get_publisher_source_types() %}
         <option value="{{ value }}" {% if value == data.get('type') %}selected="selected"{% endif %}>{{ label }}</option>
         {% endfor %}

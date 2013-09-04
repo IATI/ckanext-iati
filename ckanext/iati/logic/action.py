@@ -81,12 +81,10 @@ def package_show_rest(context, data_dict):
 
     group = context['package'].groups[0] if len(context['package'].groups) else None
     if group:
-        new_extras = {
-            'publishertype':group.extras.get('type', ''),
-            'publisher_organization_type':group.extras.get('publisher_organization_type', ''),
-            'publisher_country':group.extras.get('publisher_country', ''),
-            'publisher_iati_id':group.extras.get('publisher_iati_id', ''),
-        }
+        new_extras = []
+        for key in ('publisher_source_type', 'publisher_organization_type', 'publisher_country',
+                    'publisher_iati_id',):
+            new_extras.append({'key': key, 'value': group.get(key, '')})
 
         package_dict['extras'].update(new_extras)
 

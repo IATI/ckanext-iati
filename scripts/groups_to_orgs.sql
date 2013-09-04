@@ -5,6 +5,10 @@ UPDATE group_revision SET type = 'organization';
 UPDATE "group" SET is_organization = True;
 UPDATE group_revision SET is_organization = True;
 
+UPDATE group_extra SET key = 'publisher_source_type' WHERE key = 'type';
+UPDATE group_extra_revision SET key = 'publisher_source_type' WHERE key = 'type';
+
+
 UPDATE package p SET owner_org = m.group_id FROM member m WHERE p.id = m.table_id;
 UPDATE package_revision p SET owner_org = m.group_id FROM member m WHERE p.id = m.table_id;
 

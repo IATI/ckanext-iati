@@ -119,13 +119,12 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
         # Import core converters and validators
         _convert_to_extras = p.toolkit.get_converter('convert_to_extras')
         _ignore_missing = p.toolkit.get_validator('ignore_missing')
-        _not_empty = p.toolkit.get_validator('not_empty')
 
         default_validators = [_ignore_missing, _convert_to_extras, unicode]
         schema.update({
             'state': [iati_publisher_state_validator],
-            'type': [_not_empty, _convert_to_extras],
             'license_id': [_convert_to_extras],
+            'publisher_source_type': default_validators,
             'publisher_iati_id': default_validators,
             'publisher_country': default_validators,
             'publisher_segmentation': default_validators,
@@ -160,8 +159,8 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
         default_validators = [_convert_from_extras, _ignore_missing]
         schema.update({
             'state': [],
-            'type': default_validators,
             'license_id': default_validators,
+            'publisher_source_type': default_validators,
             'publisher_country': default_validators,
             'publisher_iati_id': default_validators,
             'publisher_segmentation': default_validators,
@@ -279,12 +278,10 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         if data_dict.get('owner_org'):
             org = p.toolkit.get_action('organization_show')({}, {'id': data_dict['owner_org']})
             if org:
-                new_extras = [
-                    {'key': 'publishertype', 'value': org.get('type', '')},
-                    {'key': 'publisher_organization_type', 'value': org.get('publisher_organization_type', '')},
-                    {'key': 'publisher_country', 'value': org.get('publisher_country', '')},
-                    {'key': 'publisher_iati_id', 'value': org.get('publisher_iati_id', '')},
-                ]
+                new_extras = []
+                for key in ('publisher_source_type', 'publisher_organization_type', 'publisher_country',
+                            'publisher_iati_id',):
+                    new_extras.append({'key': key, 'value': org.get(key, '')})
 
                 data_dict['extras'].extend(new_extras)
 
