@@ -1,0 +1,83 @@
+// 
+
+// Bootstrap overrides
+@brand-primary: @iati-color-registry;
+@font-family-sans-serif: arial, sans-serif;
+@btn-default-bg: #EEE;
+
+// Font Awesome overrides
+@FontAwesomePath: '../';
+
+// CKAN core overrides / mixins
+@black: #000;
+@white: #FFF;
+@imagePath: "../../../../base/images";
+// Needed for mixins.less
+@tagBackgroundColor: @brand-primary;
+@tabTextColor: @white;
+@btnPrimaryBackground: @brand-primary;
+@pillTextColor: @white;
+@pillBackgroundColor: @brand-primary;
+@gutterX: @unit;
+@gutterY: @unit;
+@gutterSmallX: (@unit/2);
+@gutterSmallY: (@unit/2);
+@layoutTrimBorderColor: transparent;
+// Needed for icons.less
+.ie7-restore-right-whitespace() {}
+// Needed for forms.less
+@baseFontSize: 14px;
+@baseLineHeight: 21px;
+@formInfoText: @black;
+@emptyTextColor: #999;
+@inputBorderRadius: (@unit/4);
+@layoutLinkColor: @brand-primary;
+@disabledCustomInputTextColor: #999;
+@disabledCustomInputBackground: #EEE;
+@errorText: red;
+@errorBorder: @errorText;
+@inputBackground: #FFF;
+@stagesTextColor: #aeaeae;
+@stagesBackground: #EDEDED;
+@stagesTransparentBackground: rgba(237, 237, 237, 0); // Used for arrows.
+@stagesActiveTextColor: #fff;
+@stagesActiveBackground: #8cc68a;
+@stagesActiveTransparentBackground: rgba(140, 198, 138, 0);
+@stagesCompleteTextColor: #eef6ed;
+@stagesCompleteBackground: #c5e2c4;
+@stagesCompleteTransparentBackground: rgba(197, 226, 196, 0);
+@stagesCounterTextColor: #fff;
+@stagesCounterBackground: #aeaeae;
+@stagesCounterActiveTextColor: #8cc68a;
+@stagesCounterActiveBackground: #fff;
+@stagesCounterCompleteTextColor: #c5e2c4;
+@stagesCounterCompleteBackground: #eef6ed;
+// Needed for search.less
+@genericBorderColor: #999;
+@inputBorder: @genericBorderColor;
+@inputColor: @black;
+@layoutBoldColor: @black;
+@layoutTextColor: @black;
+.ckan-icon() {}
+.ckan-icon-search() {}
+// Needed for media.less
+@bannerTextColor: @black;
+@bannerBackgroundColor: @white;
+@bgPath: none;
+@moduleHeadingBorderColor: #EEE;
+@mastheadBackgroundColor: @brand-primary;
+// Needed for dataset.less
+@listingHeadingTextColor: @black;
+@resourceFormatBackground: @black;
+@layoutBackgroundColor: #EEE;
+.ckan-icon-callout() {}
+// Needed for tables.less
+@formActionsBackground: transparent;
+@moduleHeadingBackgroundColor: transparent;
+// Needed for activity.less
+@activityColorText: #FFFFFF;
+@activityColorBlank: #999999;
+@activityColorNew: #A2AD00;
+@activityColorNeutral: #767DCE;
+@activityColorModify: #767DCE;
+@activityColorDelete: #B95252;

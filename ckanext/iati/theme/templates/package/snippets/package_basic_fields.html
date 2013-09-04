@@ -1,0 +1,23 @@
+{% ckan_extends %}
+
+
+{# NOTE: this is most likely the wrong place to put this field, it is just show for demostrative purposes :) #}
+
+{% block package_basic_fields_custom %}
+<div class="control-group">
+  {% set error = errors.filetype %}
+  <label class="control-label" for="field-filetype">{{ _("File Type") }}</label>
+  <div class="controls">
+    <select id="field-filetype" name="filetype">
+        <option value="activity" {% if data.get('filetype') == 'activity' %}selected="selected"{% endif %}>{{ _("Activity") }}</option>
+        <option value="organisation" {% if data.get('filetype') == 'organisation' %}selected="selected"{% endif %}>{{ _("Organisation") }}</option>
+    </select>
+    {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
+  </div>
+</div>
+
+ {% snippet 'snippets/country_list.html', data=data, errors=errors %}
+
+
+{% endblock %}
+

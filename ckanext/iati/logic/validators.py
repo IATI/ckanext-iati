@@ -1,8 +1,25 @@
 from ckan.logic import get_action
+from ckan import new_authz
 from ckan.lib.navl.dictization_functions import unflatten, Invalid
 from ckan.lib.field_types import DateType, DateConvertError
 
 from ckanext.iati.lists import FILE_TYPES, COUNTRIES
+
+
+def iati_publisher_state_validator(key, data, errors, context):
+    user = context.get('user')
+
+    if 'ignore_auth' in context:
+        return
+
+    if user and new_authz.is_sysadmin(user):
+        return
+
+    # If the user is not a sysadmin but we are creating the publisher,
+    # we need to keep the state = pending value, otherwise ignore it.
+    if not context.get('__iati_state_pending'):
+        data.pop(key)
+
 
 def iati_dataset_name(key,data,errors,context):
 
@@ -98,8 +115,4 @@ def country_code(value,context):
         raise Invalid('Unknown country code "%s"' % value)
 
     return value
-
-def strip(value, context):
-
-    return value.strip()
 

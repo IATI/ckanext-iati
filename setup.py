@@ -20,13 +20,11 @@ setup(name='ckanext-iati',
       zip_safe=False,
       install_requires=[
           # -*- Extra requirements: -*-
-          'ckanclient>=0.3',
       ],
       entry_points="""
       # -*- Entry points: -*-
-      
+
       [ckan.plugins]
-      iati_preview = ckanext.iati.preview:IatiPackagePreviewExtension
       iati_approval = ckanext.iati.approval:IatiGroupApprovalExtension
       iati_group_authz = ckanext.iati.authz:IatiGroupAuthzExtension
       iati_package_authz = ckanext.iati.authz:IatiPackageAuthzExtension
@@ -34,6 +32,10 @@ setup(name='ckanext-iati',
       iati_actions = ckanext.iati.plugin:IatiActions
       iati_license_override = ckanext.iati.plugin:IatiLicenseOverride
       iati_feeds = ckanext.iati.plugin:IatiFeeds
+
+      iati_publishers = ckanext.iati.plugins:IatiPublishers
+      iati_datasets = ckanext.iati.plugins:IatiDatasets
+      iati_theme = ckanext.iati.plugins:IatiTheme
 
       [paste.paster_command]
       create-iati-fixtures = ckanext.iati.fixtures:CreateIatiFixtures

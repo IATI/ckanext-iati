@@ -1,0 +1,139 @@
+#header {
+  background: transparent url("../images/header.png") repeat-x 100% 100%;
+  .container {
+    width: 960px;
+  }
+  .logo {
+    display: block;
+    width: 270px;
+    height: 70px;
+    background: url("../images/logo.png") no-repeat;
+    margin: 26px 0 36px 0;
+    span {
+      display: none;
+    }
+    &:hover {
+      opacity: 0.5;
+    }
+  }
+  margin-bottom: 20px;
+  nav {
+    ul {
+      .clearfix;
+      .unstyled;
+      padding-left: 0;
+      li {
+        float: left;
+        a {
+          display: block;
+          font-size: 15px;
+          line-height: 15px;
+        }
+      }
+    }
+    #primary-nav li {
+      width: 25%;
+      a {
+        padding: 15px 0;
+        font-weight: bold;
+        text-transform: uppercase;
+        line-height: 18px;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+      }
+      &.transparency a {
+        background-color: @iati-color-transparency;
+        .border-radius(5px 0 0 0);
+        &:hover {
+          color: @iati-color-transparency;
+        }
+      }
+      &.standard a {
+        background-color: @iati-color-standard;
+        &:hover {
+          color: @iati-color-standard;
+        }
+      }
+      &.registry a {
+        background-color: @iati-color-registry;
+        &:hover {
+          color: @iati-color-registry;
+        }
+      }
+      &.community a {
+        background-color: @iati-color-community;
+        .border-radius(0 5px 0 0);
+        &:hover {
+          color: @iati-color-community;
+        }
+      }
+      a:hover {
+        background-color: white;
+      }
+    }
+    #secondary-nav li,
+    #account-nav li {
+      a {
+        background: transparent url(../images/secondary-nav-divider.png) no-repeat;
+        padding: 14px 14px 14px 15px;
+        color: white;
+      }
+      &.active a,
+      a:hover {
+        color: @iati-color-registry;
+        background: white;
+        text-decoration: none;
+      }
+    }
+    #secondary-nav li {
+      a {
+        background-position: 100% 50%;
+      }
+      &:last-child a { 
+        background-image: none;
+      }
+    }
+    #account-nav {
+      float: right;
+      li {
+        a {
+          background-position: 0 50%;
+          i {
+            font-size: 14px;
+          }
+          &.image {
+            position: relative;
+            padding-left: 40px;
+            img {
+              top: 12px;
+              left: 13px;
+              position: absolute;
+              .border-radius(4px);
+            }
+          }
+        }
+        &.notifications {
+          a span {
+            background-color: darken(@iati-color-registry, 10%);
+            font-size: 12px;
+            padding: 2px 6px;
+            line-height: 1;
+            margin-left: 3px;
+            .border-radius(2px);
+          }
+          a:hover span {
+            color: white;
+            background-color: @iati-color-registry;
+          }
+          &.notifications-important a span {
+            background-color: #A44040;
+          }
+        }
+        &:first-child a { 
+          background-image: none;
+        }
+      }
+    }
+  }
+}
