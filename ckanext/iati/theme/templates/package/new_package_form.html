@@ -1,0 +1,12 @@
+{% ckan_extends %}
+
+{% block stages %}{% endblock %}
+
+{% block metadata_fields %}
+  {% snippet 'package/snippets/package_metadata_fields.html', data=data, errors=errors %}
+{% endblock %}
+
+{% block disclaimer %}{% endblock %}
+{% block save_button_text %}Create{% endblock %}
+{% block cancel_button %}{% endblock %}
+{% block delete_button %}{% endblock %}
