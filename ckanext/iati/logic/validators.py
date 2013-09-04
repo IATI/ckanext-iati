@@ -6,6 +6,18 @@ from ckan.lib.field_types import DateType, DateConvertError
 from ckanext.iati.lists import FILE_TYPES, COUNTRIES
 
 
+
+def iati_owner_org_validator(key, data, errors, context):
+
+    value = data.get(key)
+
+    model = context['model']
+    group = model.Group.get(value)
+    if not group.state == 'active':
+        raise Invalid('Publisher must be active to add datasets to it')
+    data[key] = group.id
+
+
 def iati_publisher_state_validator(key, data, errors, context):
     user = context.get('user')
 

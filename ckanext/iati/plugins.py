@@ -4,7 +4,7 @@ import logging
 
 from routes.mapper import SubMapper     # Maybe not this one
 from ckan.lib.plugins import DefaultGroupForm
-from ckanext.iati.logic.validators import db_date, iati_publisher_state_validator
+from ckanext.iati.logic.validators import db_date, iati_publisher_state_validator, iati_owner_org_validator
 from ckanext.iati.logic.converters import checkbox_value, strip
 
 import ckan.plugins as p
@@ -233,6 +233,9 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'issue_message': [_ignore_missing, _convert_to_extras],
             'issue_date': [_ignore_missing, _convert_to_extras],
         })
+
+        schema['owner_org'].append(iati_owner_org_validator)
+
 
         return schema
 
