@@ -10566,6 +10566,9 @@ form .info-block.info-inline {
 .media-item img {
   max-width: 100%;
 }
+.media-item .prose {
+  margin-bottom: 0;
+}
 .nav-simple li {
   position: relative;
 }
