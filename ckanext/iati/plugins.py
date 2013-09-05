@@ -340,7 +340,19 @@ def _get_module_functions(module, function_names):
 
 class IatiTheme(p.SingletonPlugin):
 
+    p.implements(p.IRoutes, inherit=True)
     p.implements(p.IConfigurer)
+
+    # IRoutes
+    def before_map(self, map):
+        static_controller = 'ckanext.iati.controllers.static:StaticController'
+        static_pages = ['/using-iati-data', '/about-2', '/registry-api', '/help']
+
+        with SubMapper(map, controller=static_controller) as m:
+            for page in static_pages:
+                m.connect(page, action='static_page', page=page)
+
+        return map
 
     # IConfigurer
     def update_config(self, config):
