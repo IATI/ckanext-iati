@@ -346,11 +346,13 @@ class IatiTheme(p.SingletonPlugin):
     # IRoutes
     def before_map(self, map):
         static_controller = 'ckanext.iati.controllers.static:StaticController'
-        static_pages = ['/using-iati-data', '/about-2', '/registry-api', '/help']
 
         with SubMapper(map, controller=static_controller) as m:
-            for page in static_pages:
-                m.connect(page, action='static_page', page=page)
+            m.connect('using-iati-data', '/using-iati-data',
+                action='using_iati_data')
+            m.connect('about-2', '/about-2', action='about')
+            m.connect('api', '/registry-api', action='api')
+            m.connect('help', '/help', action='help')
 
         return map
 
