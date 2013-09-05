@@ -1,0 +1,46 @@
+{% extends "static/base.html" %}
+
+{% block subtitle %}Using IATI Data{% endblock %}
+
+{% block primary_content %}
+
+  <h1>Using IATI Data</h1>
+
+  <p>This registry provides links to all raw data published using the IATI xml standard. This is machine-readable data that can be exchanged between, and used by, a growing number of tools and applications.</p>
+
+  <p>An <a title="Registry API" href="/registry-api">API is available for accessing the meta-data held on the registry</a>.</p>
+
+  <p>A number of tools are being developed by third-parties to provide access to browse available IATI data. These include:</p>
+
+  <p><a href="http://www.aidview.net/about">Aid View (alpha)</a> – a prototype visual interface to browse aid activities by donor, country and sector.</p>
+
+  <p><a href="http://openaidsearch.org/">Open Aid Search</a> – powering a simple search and faceted browsing interface.</p>
+
+  <p>There are also a number of ongoing initiatives integrating IATI data into aid feedback systems, national Aid Management Platforms, and research platforms such as <a href="http://www.aiddata.org/">AidData</a>.</p>
+
+  <p>You can find details of prototypes, work in progress, and more specialized IATI tools collated by the community on&nbsp;<a href="http://www.aidinfolabs.org">AidInfoLabs.org</a>. A number of tools for creating IATI data are also available.</p>
+
+  <h2>Making direct use of IATI Data</h2>
+
+  <p><strong>Developers</strong> can find information on working with IATI data in the <a href="http://support.iatistandard.org/">IATI Standard Knowledge Base</a>. Example code exists for integrating IATI data with Microsoft systems and a range of open source platforms, as well as for converting data into a variety of different formats.</p>
+
+  <p>There is also an <a href="https://groups.google.com/group/iati-tools/">IATI-Tools e-mail list</a> where you can discuss the use of IATI Data with a growing community of developers. AidInfoLabs.org includes a showcase of <a href="http://www.aidinfolabs.org/archives/category/inspiration/prototypes">prototypes</a> and <a href="http://www.aidinfolabs.org/archives/category/inspiration/products">products</a> that have been built to work with IATI Data.</p>
+
+  <p><strong>Researchers </strong>and other users may want to access a copy of IATI as a CSV file to open in a spreadsheet. The <a href="http://tools.aidinfolabs.org/csv/">CSV service</a> provided by The AidInfoLabs Toolkit gives you access to a number of different spreadsheet extracts of IATI data.</p>
+
+  <p>More technical users may also want to explore XSLT (XML Style Sheets – transforming XML into other formats) to create their own spreadsheet versions of IATI data. <a href="http://support.iatistandard.org/entries/20189073-using-xslt-with-iati-data">Details are on the IATI Standard Support Site</a>.</p>
+
+  <h2>Getting listed:</h2>
+
+  <p>We are developing criteria to help determine the tools that will be listed here on the IATI Registry. To be listed here an application or tool using IATI data will need to:</p>
+
+  <ul>
+    <li><strong>Work with the majority of the available data</strong>, or clearly explain to users when only a sub-set of the data is available (e.g. only using data from government donors; or only data from small NGOs).</li>
+    <li><strong>Reflect the latest data from the IATI Registry</strong></li>
+    <li><strong>Be stable and consistently available online</strong></li>
+    <li><strong>Ensure that IATI data is not misrepresented </strong>and that best practices are applied in analysis or visualization of the data.</li>
+  </ul>
+
+  <p>Tools and applications which do not yet meet this criteria are still featured by the community on AidInfoLabs. If you have a tool or application we should list here, please contact us via the <a href="http://support.iatistandard.org/">IATI Support website</a>.</p>
+
+{% endblock %}

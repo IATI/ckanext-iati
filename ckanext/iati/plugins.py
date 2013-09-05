@@ -341,7 +341,21 @@ def _get_module_functions(module, function_names):
 
 class IatiTheme(p.SingletonPlugin):
 
+    p.implements(p.IRoutes, inherit=True)
     p.implements(p.IConfigurer)
+
+    # IRoutes
+    def before_map(self, map):
+        static_controller = 'ckanext.iati.controllers.static:StaticController'
+
+        with SubMapper(map, controller=static_controller) as m:
+            m.connect('using-iati-data', '/using-iati-data',
+                action='using_iati_data')
+            m.connect('about-2', '/about-2', action='about')
+            m.connect('api', '/registry-api', action='api')
+            m.connect('help', '/help', action='help')
+
+        return map
 
     # IConfigurer
     def update_config(self, config):
