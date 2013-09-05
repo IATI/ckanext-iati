@@ -10459,6 +10459,9 @@ form .info-block.info-inline {
 .module-content {
   padding: 15px 0;
 }
+.module-content img {
+  max-width: 100%;
+}
 .module-footer {
   padding: 5px 15px;
 }
@@ -10480,6 +10483,11 @@ form .info-block.info-inline {
 }
 .secondary .module .module-content {
   padding: 5px 15px;
+}
+.secondary h1.heading {
+  margin: 0 0 5px 0;
+  font-size: 18px;
+  line-height: 1.3;
 }
 .secondary .context-info:first-child .module-content {
   padding: 15px;
@@ -10508,11 +10516,6 @@ form .info-block.info-inline {
   padding: 0;
   margin: 0;
   overflow: auto;
-}
-.secondary .context-info:first-child h1.heading {
-  margin: 0 0 5px 0;
-  font-size: 18px;
-  line-height: 1.3;
 }
 .secondary .context-info:first-child .info {
   margin-top: 15px;
