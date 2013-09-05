@@ -17,29 +17,27 @@ import ckanext.iati.emailer as emailer
 site_url = config.get('ckan.site_url', 'http://iatiregistry.org')
 
 def package_create(context, data_dict):
-    '''
-        The only thing we do here is remove some extras that are always
-        inherited from the dataset publisher, to avoid duplicating them
-    '''
+
+    # The only thing we do here is remove some extras that are always
+    # inherited from the dataset publisher, to avoid duplicating them
     _remove_extras_from_data_dict(data_dict)
 
     return create_core.package_create(context, data_dict)
 
 
 def package_update(context, data_dict):
-    '''
-        The only thing we do here is remove some extras that are always
-        inherited from the dataset publisher, to avoid duplicating them
-    '''
+
+    # The only thing we do here is remove some extras that are always
+    # inherited from the dataset publisher, to avoid duplicating them
     _remove_extras_from_data_dict(data_dict)
 
     return update_core.package_update(context, data_dict)
 
 def organization_create(context, data_dict):
-    '''
-        When creating a publisher, if the user is not a sysadmin it will be
-        created as pending, and sysadmins notified
-    '''
+
+    # When creating a publisher, if the user is not a sysadmin it will be
+    # created as pending, and sysadmins notified
+
     notify_sysadmins = False
     try:
         p.toolkit.check_access('sysadmin', context, data_dict)
@@ -56,7 +54,6 @@ def organization_create(context, data_dict):
 
     return org_dict
 
-#TODO: 
 
 def _remove_extras_from_data_dict(data_dict):
     # Remove these extras, as they are always inherited from the publishers
@@ -71,12 +68,12 @@ def _remove_extras_from_data_dict(data_dict):
 
 @p.toolkit.side_effect_free
 def package_show_rest(context, data_dict):
-    '''
-        Add some extras to the dataset from its publisher.
 
-        The ideal place to do this should be the after_show hook on the
-        iati_datasets plugin but package_show_rest does not call it in core.
-    '''
+    #  Add some extras to the dataset from its publisher.
+
+    #  The ideal place to do this should be the after_show hook on the
+    #  iati_datasets plugin but package_show_rest does not call it in core.
+
     package_dict = get_core.package_show_rest(context, data_dict)
 
     group = context['package'].groups[0] if len(context['package'].groups) else None
