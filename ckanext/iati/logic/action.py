@@ -1,3 +1,4 @@
+import logging
 import json
 import csv
 import tempfile
@@ -8,11 +9,15 @@ from pylons import config
 from ckan import logic
 
 import ckan.plugins as p
+import ckan.lib.helpers as h
+
 import ckan.logic.action.get as get_core
 import ckan.logic.action.create as create_core
 import ckan.logic.action.update as update_core
 
 import ckanext.iati.emailer as emailer
+
+log = logging.getLogger(__name__)
 
 site_url = config.get('ckan.site_url', 'http://iatiregistry.org')
 
@@ -54,6 +59,24 @@ def organization_create(context, data_dict):
 
     return org_dict
 
+
+def organization_update(context, data_dict):
+
+    # Check if state is set from pending to active so we can notify users
+
+    old_org_dict = p.toolkit.get_action('organization_show')({},
+            {'id': data_dict.get('id') or data_dict.get('name')})
+    old_state = old_org_dict.get('state')
+
+    new_org_dict = update_core.organization_update(context, data_dict)
+    new_state = new_org_dict.get('state')
+
+    if old_state == 'pending' and new_state == 'active':
+        # Notify users
+        _send_activation_notification_email(context, new_org_dict)
+        h.flash_success('Publisher activated, a notification email has been sent to its administrators.')
+
+    return new_org_dict
 
 def _remove_extras_from_data_dict(data_dict):
     # Remove these extras, as they are always inherited from the publishers
@@ -187,21 +210,26 @@ def _send_new_publisher_email(context, organization_dict):
             )
             subject = "[IATI Registry] New Publisher: {0}".format(organization_dict['title'])
             emailer.send_email(body, subject, sysadmin.email)
+            log.debug('[email] New publisher notification email sent to sysadmin {0}'.format(sysadmin.name))
 
 
+def _send_activation_notification_email(context, organization_dict):
 
-def _send_activation_notification_email(group):
+    model = context['model']
 
-    users = Authorizer().get_admins(group)
+    members = p.toolkit.get_action('member_list')(context, {'id': organization_dict['id']})
+    admins = [m for m in members if m[1] == 'user' and m[2] == 'Admin']
 
     subject = config.get('iati.publisher_activation_email_subject', 'IATI Registry Publisher Activation')
 
-    group_link = urljoin(site_url, '/publisher/' + group.name)
+    group_link = urljoin(site_url, '/publisher/' + organization_dict['name'])
 
-    for user in users:
-        if user.email:
+    for admin in admins:
+        user = model.User.get(admin[0])
+        if user and user.email:
             user_name = user.fullname or user.name
-            content = publisher_activation_body_template.format(user_name=user_name.encode('utf8'),
-                    group_title=group.title.encode('utf8'), group_link=group_link, user_email=user.email,
+            content = emailer.publisher_activation_body_template.format(user_name=user_name.encode('utf8'),
+                    group_title=organization_dict['title'].encode('utf8'), group_link=group_link, user_email=user.email,
                     site_url=site_url)
-            send_email(content, subject, user.email)
+            emailer.send_email(content, subject, user.email)
+            log.debug('[email] Publisher activated notification email sent to user {0}'.format(user.name))
