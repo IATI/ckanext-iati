@@ -1,0 +1,77 @@
+{% extends "page.html" %}}
+
+{% block title %}CSV Import Results - {{ super() }}{% endblock %}
+
+{% block primary_content %}
+
+<h2 class="page_heading">CSV Export</h2>
+  <article>
+  <div>CSV file <strong>{{file_name}}</strong> imported. (<a href="/csv/upload">Upload another file</a>)</div>
+    <hr class="cleared" />
+    <h3>Summary</h3>
+    <ul>
+      <li><a href="#added">Datasets created: {{ added|length }}</a></li>
+      <li><a href="#updated">Datasets updated: {{ updated|length }}</a></li>
+      <li><a href="#warnings">Warnings found: {{ warnings|length }}</a></li>
+      <li><a href="#errors">Errors found: {{ errors|length }}</a></li>
+    </ul>
+    <h3 id="added">Datasets added</h3>
+    <ul>
+      {% for pkg in added %}
+    <li><a href="{{h.url_for(controller='package', action='read', id=pkg)}}">{{g.site_url}}{{h.url_for(controller='package', action='read', id=pkg)}}</a></li>
+    {% endfor %}
+    {% if not added %}
+        <li><i>None</i></li>
+        {% endif %}
+    </ul>
+
+    <h3 id="updated">Datasets updated</h3>
+    <ul>
+      {% for pkg in updated %}
+    <li><a href="{{h.url_for(controller='package', action='read', id=pkg)}}">{{g.site_url}}{{h.url_for(controller='package', action='read', id=pkg)}}</a></li>
+    {% endfor %}
+    {% if not updated %}
+        <li><i>None</i></li>
+        {% endif %}
+
+    </ul>
+
+    <h3 id="warnings">Warnings</h3>
+    <ul>
+      {% for row,fields in c.warnings %}
+    <li>Line {{row}}:
+            <ul>
+              {% for field, msgs in fields.iteritems() %}
+            <li><strong>{{field}}</strong>: {{msgs}}</li>
+            {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+        {% if not warnings %}
+        <li><i>None</i></li>
+        {% endif %}
+
+    </ul>
+
+    <h3 id="errors">Errors found</h3>
+    <ul>
+      {% for row,fields in errors%}
+    <li>Line {{row}}:
+            <ul>
+              {% for field,msgs in fields.iteritems() %}
+            <li><strong>{{field}}</strong>: {{msgs}}</li>
+            {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+        {% if not errors %}
+        <li><i>None</i></li>
+        {% endif %}
+
+    </ul>
+
+    </div>
+  </article>
+
+  {% endblock %}}
+

@@ -23,7 +23,7 @@ _ignore_missing = p.toolkit.get_validator('ignore_missing')
 _int_validator = p.toolkit.get_validator('int_validator')
 
 CSV_MAPPING = [
-        ('registry-publisher-id', 'groups', 'name', [_not_empty]),
+        ('registry-publisher-id', 'organization', 'name', [_not_empty]),
         ('registry-file-id', 'package', 'name', [_not_empty, iati_dataset_name_from_csv]),
         ('title', 'package', 'title', []),
         ('contact-email', 'package', 'author_email', []),
@@ -81,7 +81,7 @@ class CSVController(p.toolkit.BaseController):
             if publisher and publisher != 'all':
                 # Return CSV for provided publisher (we already checked the permissions)
                 output = self.write_csv_file(publisher)
-            elif len(self.authz_groups) == 1:
+            elif len(self.authz_orgs) == 1:
                 # Return directly CSV for publisher
                 output = self.write_csv_file(self.authz_orgs[0])
             elif len(self.authz_orgs) > 1:
@@ -98,7 +98,7 @@ class CSVController(p.toolkit.BaseController):
         return output
 
     def upload(self):
-        if not self.is_sysadmin and not self.authz_groups:
+        if not self.is_sysadmin and not self.authz_orgs:
             # User does not have permissions on any publisher
             p.toolkit.abort(403,'Permission denied')
 
@@ -109,20 +109,20 @@ class CSVController(p.toolkit.BaseController):
 
             if not hasattr(csv_file,'filename'):
                 p.toolkit.abort(400,'No CSV file provided')
-
-            c.file_name = csv_file.filename
+            vars = {}
+            vars['file_name'] = csv_file.filename
 
             added, updated, warnings, errors = self.read_csv_file(csv_file.file)
-            c.added = added
-            c.updated = updated
+            vars['added'] = added
+            vars['updated'] = updated
 
-            c.errors = errors
-            c.warnings = warnings
+            vars['errors'] = errors
+            vars['warnings'] = warnings
 
             log.info('CSV import finished: file %s, %i added, %i updated, %i warnings, %i errors' % \
-                    (c.file_name,len(c.added),len(c.updated),len(c.warnings),len(c.errors)))
+                    (vars['file_name'],len(vars['added']),len(vars['updated']),len(vars['warnings']),len(vars['errors'])))
 
-            return p.toolkit.render('csv/result.html')
+            return p.toolkit.render('csv/result.html', extra_vars=vars)
 
     def write_csv_file(self, publisher):
         context = {'model': model, 'user': c.user or c.author}
@@ -136,7 +136,7 @@ class CSVController(p.toolkit.BaseController):
                 org = p.toolkit.get_action('organization_show')(context, {'id': publisher})
                 packages = [pkg['name'] for pkg in org['packages']]
         except p.toolkit.ObjectNotFound:
-            p.toolkit.abort(404, 'Group not found')
+            p.toolkit.abort(404, 'Organization not found')
 
         f = StringIO.StringIO()
 
@@ -161,9 +161,9 @@ class CSVController(p.toolkit.BaseController):
                         if key == 'state':
                             continue
                         value = None
-                        if entity == 'groups':
-                            if len(package['groups']):
-                                value = package['groups'][0]
+                        if entity == 'organization':
+                            if len(package['organization']):
+                                value = package['organization']['name']
                         elif entity == 'resources':
                             if len(package['resources']) and key in package['resources'][0]:
                                 value = package['resources'][0][key]
@@ -249,7 +249,7 @@ class CSVController(p.toolkit.BaseController):
                     log.error('Error in row %i: %s: %s' % (i+1,iati_key,str(msgs)))
                     errors[row_index][iati_key] = msgs
             except p.toolkit.NotAuthorized,e:
-                msg = 'Not authorized to publish to this group: %s' % row['registry-publisher-id']
+                msg = 'Not authorized to publish to this organization: %s' % row['registry-publisher-id']
                 log.error('Error in row %i: %s' % (i+1,msg))
                 errors[row_index]['registry-publisher-id'] = [msg]
             except p.toolkit.ObjectNotFound,e:
@@ -263,13 +263,15 @@ class CSVController(p.toolkit.BaseController):
         return counts['added'], counts['updated'], warnings, errors
 
     def get_package_dict_from_row(self,row):
+        context = {'model': model, 'user': c.user or c.author}
         package = {}
         for fieldname, entity, key, v in CSV_MAPPING:
             if fieldname in row:
                 # If value is None (empty cell), property will be set to blank
                 value = row[fieldname]
-                if entity == 'groups':
-                    package['groups'] = [value]
+                if entity == 'organization':
+                    org = p.toolkit.get_action('organization_show')(context, {'id': value})
+                    package['owner_org'] = org['id']
                 elif entity == 'resources':
                     if not 'resources' in package:
                        package['resources'] = [{}]
