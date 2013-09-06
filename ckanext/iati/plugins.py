@@ -362,3 +362,30 @@ class IatiTheme(p.SingletonPlugin):
         p.toolkit.add_template_directory(config, 'theme/templates')
         p.toolkit.add_public_directory(config, 'theme/public')
         p.toolkit.add_resource('theme/fanstatic_library', 'ckanext-iati')
+
+
+class IatiCsvImporter(p.SingletonPlugin):
+
+    p.implements(p.IConfigurer)
+    p.implements(p.IRoutes)
+
+    # IRoutes
+    def before_map(self, map):
+        csv_controller = 'ckanext.iati.controllers.spreadsheet:CSVController'
+
+        map.connect('/csv/download', controller=csv_controller, action='download')
+        map.connect('/csv/download/{publisher}', controller=csv_controller, action='download')
+        map.connect('/csv/upload', controller=csv_controller, action='upload',
+                    conditions=dict(method=['GET']))
+        map.connect('/csv/upload', controller=csv_controller, action='upload',
+                    conditions=dict(method=['POST']))
+        return map
+
+    def after_map(self, map):
+        return map
+
+    # IConfigurer
+    def update_config(self, config):
+        p.toolkit.add_template_directory(config, 'theme/templates')
+        p.toolkit.add_public_directory(config, 'theme/public')
+        p.toolkit.add_resource('theme/fanstatic_library', 'ckanext-iati')

@@ -36,6 +36,7 @@ setup(name='ckanext-iati',
       iati_publishers = ckanext.iati.plugins:IatiPublishers
       iati_datasets = ckanext.iati.plugins:IatiDatasets
       iati_theme = ckanext.iati.plugins:IatiTheme
+      iati_csv = ckanext.iati.plugins:IatiCsvImporter
 
       [paste.paster_command]
       create-iati-fixtures = ckanext.iati.fixtures:CreateIatiFixtures
