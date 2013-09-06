@@ -1,0 +1,39 @@
+{% extends "page.html" %}
+
+{% block title %}CSV Import - {{ super() }}{% endblock %}
+
+{% block primary_content %}
+
+<h2 class="page_heading">CSV Import</h2>
+    <ul>
+        <li>IATI requires that you create a registry record for each file of IATI-xml data that you publish.</li>
+        <li>You may use this import utility to register or update the metadata of these records</li>
+        <li>Please provide a spreadsheet in CSV format containing IATI registry records metadata</li>
+        <li>Your file must follow the format specified in this <a href="/csv/download/template">Template</a>.</li>
+        <li>Guidance on the contents of this file can be found <a href="http://iatiregistry.org/help_csv-import">here</a>.</li>
+    </ul>
+    <fieldset>
+      <legend>Upload file</legend>
+      <form id="csv-upload" action="/csv/upload" method="POST" enctype="multipart/form-data" class="form-horizontal">
+        <div class="form-group">
+          <label for="file">CSV File</label>
+          <input type="file" id="file">
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-default">Submit</button>
+        </div>
+      </form>
+    </fieldset>
+    <h3>Warning:</h3>
+    <div class="listdiv">
+    <ul>
+        <li>For publishers with a large number of datasets it may take a while to upload the CSV file. Please be patient.</li>
+        <li>You may only upload records that contain your authorised registry-publisher-id.</li>
+        <li>This import will overwrite all fields in each record specified in the file. Blank cells in the file will overwrite existing data.</li>
+        <li>This import will not delete records in the registry. To delete a record follow the instructions <a href="http://iatiregistry.org/help_delete">here</a>.</li>
+        <li>Excel users be aware that by default Excel does not quote fields when exporting a file to CSV. In this case the delimiter <strong>must</strong>
+        be a comma in order for the file to get properly imported. If the fields are quoted, the allowed delimiters are comma, semicolon and tab.</li>
+        <li>If you keep getting import errors, check if any of the fields (specially the URL) contain special characters. If this is the case, these fields should be quoted.</li>
+    </ul>
+{% endblock %}
+
