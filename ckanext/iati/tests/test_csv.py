@@ -47,10 +47,10 @@ class TestCSVImporter():
 
         added, updated, warnings, errors = cls.controller.read_csv_file(f,context=cls.context)
 
-        assert len(added) == expected_added
-        assert len(updated) == expected_updated
-        assert len(warnings) == expected_warnings
-        assert len(errors) == expected_errors
+        assert len(added) == expected_added, '{0} != {1}'.format(len(added), expected_added)
+        assert len(updated) == expected_updated, '{0} != {1}'.format(len(updated), expected_updated)
+        assert len(warnings) == expected_warnings, '{0} != {1}'.format(len(warnings), expected_warnings)
+        assert len(errors) == expected_errors, '{0} != {1}'.format(len(errors), expected_errors)
 
         return added, updated, warnings, errors
 
