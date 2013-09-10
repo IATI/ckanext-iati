@@ -1,0 +1,47 @@
+{% ckan_extends %}
+
+{% set fields = [
+  ('publisher_contact',
+   'Contact'),
+  ('publisher_description',
+   'Description'),
+  ('publisher_agencies',
+   'Organisations / agencies covered'),
+  ('publisher_timeliness',
+   'Timeliness of Data'),
+  ('publisher_frequency',
+   'Frequency of publication'),
+  ('publisher_units',
+   'Units of Aid'),
+  ('publisher_segmentation',
+   'Segmentation of Published Data'),
+  ('publisher_refs',
+   'Data Definitions and References'),
+  ('publisher_field_exclusions',
+   'Field Exclusions'),
+  ('publisher_record_exclusions',
+   'Record Exclusions'),     
+  ('publisher_thresholds',
+   'Thresholds'),
+  ('publisher_constraints',
+   'Other Constraints'),
+  ('publisher_data_quality',
+   'Data Quality'),
+  ('publisher_ui',
+   'User Interface'),
+  ] %}
+
+{% block organization_extras %}
+  <h3>{{ _('Additional Info') }}</h3>
+  <table class="table table-striped table-bordered table-condensed">
+    <tbody>
+      {% for id, key in fields %}
+        {% set value = c.group_dict.extras[id] or 'n/a' %}
+        <tr rel="dc:relation" resource="_:extra{{ i }}">
+          <th scope="row" class="dataset-label" property="rdfs:label">{{ _(key) }}</th>
+          <td class="dataset-details" property="rdf:value">{{ value }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
