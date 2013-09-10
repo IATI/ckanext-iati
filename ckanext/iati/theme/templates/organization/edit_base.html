@@ -13,3 +13,9 @@
     {% link_for _('View publisher'), controller='organization', action='read', id=organization.name, class_='btn', icon='eye-open' %}
   {% endif %}
 {% endblock %}
+
+{% block content_primary_nav %}
+  {{ h.build_nav_icon('publisher_edit', _('Edit'), id=c.group_dict.name) }}
+  {{ h.build_nav_icon('publisher_bulk_process', _('Datasets'), id=c.group_dict.name) }}
+  {{ h.build_nav_icon('publisher_members', _('Members'), id=c.group_dict.name) }}
+{% endblock %}
