@@ -4,10 +4,12 @@ import logging
 
 from routes.mapper import SubMapper     # Maybe not this one
 from ckan.lib.plugins import DefaultGroupForm
-from ckanext.iati.logic.validators import db_date, iati_publisher_state_validator, iati_owner_org_validator
-from ckanext.iati.logic.converters import checkbox_value, strip
 
 import ckan.plugins as p
+
+from ckanext.iati.logic.validators import db_date, iati_publisher_state_validator, iati_owner_org_validator
+from ckanext.iati.logic.converters import checkbox_value, strip
+import ckanext.iati.helpers as iati_helpers
 
 log = logging.getLogger(__name__)
 
@@ -294,6 +296,24 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
         return data_dict
 
+    def before_index(self, data_dict):
+
+        # Add nicely formatted values for faceting
+        fields = (
+            ('country', iati_helpers.get_country_title),
+            ('publisher_source_type', iati_helpers.get_publisher_source_type_title),
+            ('filetype', iati_helpers.get_file_type_title),
+            ('publisher_source_type', iati_helpers.get_publisher_source_type_title),
+            ('publisher_organization_type', iati_helpers.get_organization_type_title),
+            ('issue_type', iati_helpers.get_issue_title),
+        )
+
+        for name, func in fields:
+            if data_dict.get('extras_{0}'.format(name)):
+                data_dict[name] = func(data_dict['extras_{0}'.format(name)])
+
+        return data_dict
+
     ## IConfigurer
     def update_config(self, config):
         if not config.get('ckan.site_url'):
@@ -303,14 +323,18 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
     ## ITemplateHelpers
     def get_helpers(self):
-        import ckanext.iati.helpers as iati_helpers
 
         function_names = (
             'get_countries',
             'get_publisher_source_types',
             'get_licenses',
             'get_organization_types',
-            'is_route_active'
+            'is_route_active',
+            'get_country_title',
+            'get_file_type_title',
+            'get_publisher_source_type_title',
+            'get_organization_type_title',
+            'get_issue_title',
         )
         return _get_module_functions(iati_helpers, function_names)
 
@@ -372,16 +396,17 @@ class IatiTheme(p.SingletonPlugin):
     # IFacets
     def dataset_facets(self, facets_dict, package_type):
         ''' Update the facets_dict and return it. '''
+
+        # We will actually remove all the core facets and add our own
         facets_dict.clear()
-        facets_dict.update({
-            'groups': p.toolkit._('Publisher'),
-            'secondary_publisher': p.toolkit._('Secondary Publisher'),
-            'publisher_source_type': p.toolkit._('Source'),
-            'publisher_organization_type': p.toolkit._('Organization Type'),
-            'country': p.toolkit._('Country'),
-            'filetype': p.toolkit._('File Type'),
-            'issue_type': p.toolkit._('Issues'),
-		})
+        facets_dict['filetype'] = p.toolkit._('File Types')
+        facets_dict['organization'] = p.toolkit._('Publishers')
+        facets_dict['secondary_publisher'] = p.toolkit._('Secondary Publishers')
+        facets_dict['publisher_source_type'] = p.toolkit._('Sources')
+        facets_dict['publisher_organization_type'] = p.toolkit._('Organization Types')
+        facets_dict['country'] = p.toolkit._('Countries')
+        facets_dict['issue_type'] = p.toolkit._('Issues')
+
         return facets_dict
 
 class IatiCsvImporter(p.SingletonPlugin):
