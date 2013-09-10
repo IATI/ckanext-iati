@@ -1,5 +1,11 @@
 {% ckan_extends %}
 
+{% macro nav_item(route, label) %}
+  {% set url = h.url_for(route) %}
+  {% set is_active = h.is_route_active(route) %}
+  <a href="{{ url }}"{% if is_active %} class="active"{% endif %}>{{ label }}</a>
+{% endmacro %}
+
 {% block header_wrapper %}
   <a href="#content" class="hide">{{ _('Skip to primary content') }}</a>
   <header id="header">
@@ -71,15 +77,44 @@
           {% endblock %}
           {% block header_nav_secondary %}
             <ul id="secondary-nav">
-               {{ h.build_nav_main(
-                  ('home', _('Home')),
-                  ('search', _('Data')),
-                  ('publishers_index', _('Publishers')),
-                  ('using-iati-data', _('Using IATI Data')),
-                  ('about-2', _('About')),
-                  ('api', _('API')),
-                  ('help', _('Help'))
-                ) }}
+              {% set is_superadmin = c.userobj.sysadmin %}
+              {% set can_package_create = h.check_access('package_create') %}
+              {% set can_organization_create = h.check_access('organization_create') %}
+
+              {% set home_dropdown = [
+                ('/revision', _('Newsfeed')),
+              ] %}
+              {% set data_dropdown = [
+                ('add dataset', _('Register')) if can_package_create,
+                ('/csv/download', _('Download current records')) if can_package_create,
+                ('/csv/upload', _('Upload CSV file')) if can_package_create,
+                ('/report/issues', _('Issues report')) if can_organization_create,
+              ] %}
+              {% set publisher_dropdown = [
+                ('organization_create', _('Create a new publisher')) if can_organization_create
+              ] %}
+
+              {% set nav = [
+                ('home', _('Home'), home_dropdown),
+                ('search', _('Data'), data_dropdown),
+                ('publishers_index', _('Publishers'), publisher_dropdown),
+                ('using-iati-data', _('Using IATI Data'), false),
+                ('about-2', _('About'), false),
+                ('api', _('API'), false),
+                ('help', _('Help'), false)
+              ] %}
+              {% for route, label, dropdown in nav %}
+                <li>
+                  {{ nav_item(route, label) }}
+                  {% if dropdown %}
+                    <ul class="dropdown">
+                      {% for route, label in dropdown %}
+                        <li>{{ nav_item(route, label) }}</li>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                </li>
+              {% endfor %}
             </ul>
           {% endblock %}
         </nav>

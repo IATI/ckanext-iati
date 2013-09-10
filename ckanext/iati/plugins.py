@@ -55,7 +55,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
                       ckan_icon='sitemap')
             m.connect('publisher_edit', '/publisher/edit/{id}',
                       action='edit', ckan_icon='edit')
-            m.connect('publisher_members', '/publisher/members/{id}',
+            m.connect('publisher_members', '/publisher/edit_members/{id}',
                       action='members', ckan_icon='group')
             m.connect('publisher_bulk_process',
                       '/publisher/bulk_process/{id}',
@@ -68,6 +68,10 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
                      '/api/{ver}/rest/group/{url:.*}')
         map.redirect('/api/rest/publisher/{url:.*}',
                      '/api/rest/group/{url:.*}')
+
+        map.connect('publisher_members_read', '/publisher/members/{id}',
+            controller='ckanext.iati.controllers.publisher:PublisherController',
+            action='members_read', ckan_icon='group')
 
         return map
 
@@ -306,6 +310,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_publisher_source_types',
             'get_licenses',
             'get_organization_types',
+            'is_route_active'
         )
         return _get_module_functions(iati_helpers, function_names)
 
