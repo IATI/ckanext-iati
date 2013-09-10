@@ -24,13 +24,40 @@
   {% if notes %}
     <p>{{ notes|urlize }}</p>
   {% endif %}
+
+<div class="to-sort-out">
+        Last modified: {{h.get_pkg_dict_extra(package, 'data_updated', '-')}}
+        No. of Activities: {{h.get_pkg_dict_extra(package, 'activity_count', '-')}}
+</div>
+
   {% if package.resources and not hide_resources %}
     {% for resource in package.resources %}
       <p>
         <a href="{{ package_url }}" target="_blank">View Metadata</a>
         &middot;
         <a href="{{ resource.url }}" target="_blank">Download</a>
+        {% if resource.size %}
+          ({{ h.format_file_size(resource.size) }})
+        {% endif %}
+
+        {% set is_org_file = (h.get_pkg_dict_extra(package, 'filetype') == 'organisation') %}
+        {% if h.get_config_option('iati.preview_service') and not is_org_file %}
+          &middot;
+          {{h.link_to('Preview',  h.get_config_option('iati.preview_service') % resource.url, target='_blank')}}
+          {% snippet 'snippets/new_window.html' %}
+        {% endif %}
+        {% if h.get_config_option('iati.csv_service') and not is_org_file %}
+          &middot;
+          {{h.link_to('CSV',  h.get_config_option('iati.csv_service') % resource.url, target='_blank')}}
+          {% snippet 'snippets/new_window.html' %}
+        {% endif %}
+
       </p>
     {% endfor %}
   {% endif %}
+
+
+
+
+
 {% endblock %}

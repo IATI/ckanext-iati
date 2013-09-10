@@ -70,6 +70,9 @@ def return_select_options(name, data):
 
     return (return_options, return_selected)
 
+def get_config_option(key):
+    return config.get(key)
+
 def _get_list_item_title(_list, code):
     return dict(_list).get(code, code)
 
