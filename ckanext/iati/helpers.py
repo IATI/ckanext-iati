@@ -1,6 +1,8 @@
 # Bad import: should be in toolkit
-import ckan.model as model # get_licenses should be in core
+from pylons import config
 
+import ckan.model as model # get_licenses should be in core
+import ckan.lib.helpers as helpers
 
 import ckanext.iati.lists as lists
 
@@ -19,3 +21,8 @@ def get_organization_types():
 def get_licenses():
     return [('', '')] + model.Package.get_license_options()
 
+def is_route_active(menu_item):
+    _menu_items = config.get('routes.named_routes')
+    if menu_item not in _menu_items:
+        return False
+    return helpers._link_active(_menu_items[menu_item])

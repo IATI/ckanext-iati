@@ -74,16 +74,40 @@
     }
     #secondary-nav li,
     #account-nav li {
+      position: relative;
       a {
         background: transparent url(../images/secondary-nav-divider.png) no-repeat;
         padding: 14px 14px 14px 15px;
         color: white;
       }
-      &.active a,
-      a:hover {
+      a.active,
+      &:hover a {
         color: @iati-color-registry;
         background: white;
         text-decoration: none;
+      }
+      .dropdown {
+        display: none;
+        position: absolute;
+        z-index: 1;
+        background-color: @iati-color-registry;
+        overflow: hidden;
+        .border-radius(0 0 3px 3px);
+        li {
+          float: none;
+          a {
+            background: transparent;
+            color: white;
+            white-space: nowrap;
+            &:hover {
+              background-color: #c4e1f5;
+              color: #0098db;
+            }
+          }
+        }
+      }
+      &:hover .dropdown {
+        display: block;
       }
     }
     #secondary-nav li {
