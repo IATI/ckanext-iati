@@ -91,7 +91,7 @@
                 ('/report/issues', _('Issues report')) if can_organization_create,
               ] %}
               {% set publisher_dropdown = [
-                ('organization_create', _('Create a new publisher')) if can_organization_create
+                ('organization_new', _('Create a new publisher')) if can_organization_create
               ] %}
 
               {% set nav = [

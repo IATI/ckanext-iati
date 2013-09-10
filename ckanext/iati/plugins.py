@@ -335,6 +335,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_publisher_source_type_title',
             'get_organization_type_title',
             'get_issue_title',
+            'return_select_options',
         )
         return _get_module_functions(iati_helpers, function_names)
 
