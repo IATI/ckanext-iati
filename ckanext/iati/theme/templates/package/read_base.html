@@ -25,3 +25,23 @@
   {% set active_check = history_link|replace("active", "")|length %}
   <li{% if history_link|length != active_check %} class="active" {% endif %}>{{ history_link }}</li>
 {% endblock %}
+
+{% block package_social %}
+  <div class="module">
+    <h2 class="module-heading">
+      <i class="icon-file"></i> Alternative formats
+    </h2>
+    <ul class="nav nav-simple">
+      <li class="nav-item">
+        {% set api_url = h.url_for(controller='api', register='package', action='show', id=pkg.name, ver=3) %}
+        <a href="{{ g.api_url ~ api_url }}">JSON</a>
+      </li>
+      {% if g.rdf_packages %}
+        <li class="nav-item">
+          <a href="{{ g.rdf_packages ~ pkg.name }}">RDF</a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+  {{ super() }}
+{% endblock %}
