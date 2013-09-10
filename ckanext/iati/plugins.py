@@ -343,6 +343,7 @@ class IatiTheme(p.SingletonPlugin):
 
     p.implements(p.IRoutes, inherit=True)
     p.implements(p.IConfigurer)
+    p.implements(p.IFacets)
 
     # IRoutes
     def before_map(self, map):
@@ -363,6 +364,20 @@ class IatiTheme(p.SingletonPlugin):
         p.toolkit.add_public_directory(config, 'theme/public')
         p.toolkit.add_resource('theme/fanstatic_library', 'ckanext-iati')
 
+    # IFacets
+    def dataset_facets(self, facets_dict, package_type):
+        ''' Update the facets_dict and return it. '''
+        facets_dict.clear()
+        facets_dict.update({
+            'groups': p.toolkit._('Publisher'),
+            'secondary_publisher': p.toolkit._('Secondary Publisher'),
+            'publisher_source_type': p.toolkit._('Source'),
+            'publisher_organization_type': p.toolkit._('Organization Type'),
+            'country': p.toolkit._('Country'),
+            'filetype': p.toolkit._('File Type'),
+            'issue_type': p.toolkit._('Issues'),
+		})
+        return facets_dict
 
 class IatiCsvImporter(p.SingletonPlugin):
 
