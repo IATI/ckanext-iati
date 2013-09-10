@@ -26,3 +26,33 @@ def is_route_active(menu_item):
     if menu_item not in _menu_items:
         return False
     return helpers._link_active(_menu_items[menu_item])
+
+def return_select_options(name, data):
+    return_options = []
+    return_selected = False
+
+    if name == 'publisher_type':
+        options = get_publisher_source_types()
+        return_selected = data.get('type')
+        for value, label in options:
+            return_options.append({ 'text': label, 'value': value })
+    elif name == 'license_id':
+        options = get_licenses()
+        return_selected = data.get('license_id', 'notspecified')
+        for label, value in options:
+            if label:
+                return_options.append({ 'text': label, 'value': value })
+    elif name == 'publisher_organization_type':
+        options = get_organization_types()
+        return_selected = data.get('publisher_organization_type')
+        for value, label in options:
+            return_options.append({ 'text': label, 'value': value })
+    elif name == 'state':
+        return_options = [
+            { 'text': 'Active', 'value': 'active' },
+            { 'text': 'Pending', 'value': 'pending' },
+            { 'text': 'Deleted', 'value': 'deleted' },
+        ]
+        return_selected = data.get('state', 'none')
+
+    return (return_options, return_selected)

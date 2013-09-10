@@ -310,7 +310,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_publisher_source_types',
             'get_licenses',
             'get_organization_types',
-            'is_route_active'
+            'is_route_active',
+            'return_select_options',
         )
         return _get_module_functions(iati_helpers, function_names)
 
