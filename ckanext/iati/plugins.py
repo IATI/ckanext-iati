@@ -410,6 +410,19 @@ class IatiTheme(p.SingletonPlugin):
 
         return facets_dict
 
+    def organization_facets(self, facets_dict, organization_type, package_type):
+
+        ''' Update the facets_dict and return it. '''
+
+        # We will actually remove all the core facets and add our own
+        facets_dict.clear()
+        facets_dict['filetype'] = p.toolkit._('File Types')
+        facets_dict['publisher_source_type'] = p.toolkit._('Sources')
+        facets_dict['country'] = p.toolkit._('Countries')
+        facets_dict['issue_type'] = p.toolkit._('Issues')
+
+        return facets_dict
+
 class IatiCsvImporter(p.SingletonPlugin):
 
     p.implements(p.IConfigurer)
