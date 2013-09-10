@@ -348,7 +348,7 @@ class IatiTheme(p.SingletonPlugin):
 
     p.implements(p.IRoutes, inherit=True)
     p.implements(p.IConfigurer)
-    p.implements(p.IFacets)
+    p.implements(p.IFacets, inherit=True)
 
     # IRoutes
     def before_map(self, map):
