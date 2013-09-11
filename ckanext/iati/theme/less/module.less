@@ -6,6 +6,7 @@
 }
 
 .module-heading {
+  .clearfix;
   position: relative;
   font-size: @font-size-base;
   line-height: 1.4;
@@ -64,11 +65,9 @@
   }
 }
 
-.secondary .context-info:first-child {
+.secondary .context-info {
   .module-content {
     padding: @unit;
-    border: 1px solid #DDD;
-    .border-radius(@border-radius);
   }
   .image {
     margin-bottom: @unit;
@@ -78,6 +77,13 @@
       display: block;
       .border-radius(@border-radius);
     }
+  }
+}
+
+.secondary .context-info:first-child {
+  .module-content {
+    border: 1px solid #DDD;
+    .border-radius(@border-radius);
   }
   p {
     overflow: auto;
