@@ -337,6 +337,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_issue_title',
             'return_select_options',
             'get_config_option',
+            'check_nav_dropdown',
         )
         return _get_module_functions(iati_helpers, function_names)
 

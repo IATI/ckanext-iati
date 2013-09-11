@@ -76,3 +76,13 @@ def get_config_option(key):
 def _get_list_item_title(_list, code):
     return dict(_list).get(code, code)
 
+def check_nav_dropdown(items):
+    return_items = []
+    if items:
+        for item in items:
+            if (item[0]):
+                return_items.append(item)
+    if return_items:
+        return return_items
+    return False
+

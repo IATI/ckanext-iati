@@ -80,18 +80,19 @@
               {% set is_superadmin = c.userobj.sysadmin %}
               {% set can_package_create = h.check_access('package_create') %}
               {% set can_organization_create = h.check_access('organization_create') %}
+              {% set empty = ('', '') %}
 
               {% set home_dropdown = [
                 ('/revision', _('Newsfeed')),
               ] %}
               {% set data_dropdown = [
-                ('add dataset', _('Register')) if can_package_create,
-                ('/csv/download', _('Download current records')) if can_package_create,
-                ('/csv/upload', _('Upload CSV file')) if can_package_create,
-                ('/report/issues', _('Issues report')) if can_organization_create,
+                ('add dataset', _('Register')) if can_package_create else empty,
+                ('/csv/download', _('Download current records')) if can_package_create else empty,
+                ('/csv/upload', _('Upload CSV file')) if can_package_create else empty,
+                ('/report/issues', _('Issues report')) if is_superadmin else empty,
               ] %}
               {% set publisher_dropdown = [
-                ('organization_new', _('Create a new publisher')) if can_organization_create
+                ('organization_new', _('Create a new publisher')) if can_organization_create else empty
               ] %}
 
               {% set nav = [
@@ -103,7 +104,8 @@
                 ('api', _('API'), false),
                 ('help', _('Help'), false)
               ] %}
-              {% for route, label, dropdown in nav %}
+              {% for route, label, check_dropdown in nav %}
+                {% set dropdown = h.check_nav_dropdown(check_dropdown) %}
                 <li>
                   {{ nav_item(route, label) }}
                   {% if dropdown %}
