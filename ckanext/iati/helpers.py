@@ -2,6 +2,8 @@
 from pylons import config
 
 import ckan.model as model # get_licenses should be in core
+
+import ckan.plugins as p
 import ckan.lib.helpers as helpers
 
 import ckanext.iati.lists as lists
@@ -86,3 +88,18 @@ def check_nav_dropdown(items):
         return return_items
     return False
 
+def get_num_active_publishers():
+    data_dict = {
+        'q':'*:*',
+        'facet.field': ['organization', 'country'],
+        'facet.limit': 10000,
+        'rows':0,
+        'start':0,
+    }
+
+    query = p.toolkit.get_action('package_search')({} , data_dict)
+
+    num_publishers = len(query['search_facets']
+                         .get('organization', [])
+                         .get('items', []))
+    return num_publishers
