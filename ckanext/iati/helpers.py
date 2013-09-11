@@ -1,10 +1,12 @@
 # Bad import: should be in toolkit
 from pylons import config
+from webhelpers.html import literal
 
 import ckan.model as model # get_licenses should be in core
 
 import ckan.plugins as p
 import ckan.lib.helpers as helpers
+import ckan.lib.formatters as formatters
 
 import ckanext.iati.lists as lists
 
@@ -103,3 +105,12 @@ def get_num_active_publishers():
                          .get('organization', [])
                          .get('items', []))
     return num_publishers
+
+def SI_number_span(number):
+    ''' outputs a span with the number in SI unit eg 14700 -> 14.7k '''
+    number = int(number)
+    if number < 1000:
+        output = literal('<span>')
+    else:
+        output = literal('<span title="' + formatters.localised_number(number) + '">')
+    return output + formatters.localised_SI_number(number) + literal('</span>')
