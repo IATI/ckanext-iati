@@ -33,7 +33,7 @@
     </h2>
     <ul class="nav nav-simple">
       <li class="nav-item">
-        {% set api_url = h.url_for(controller='api', register='package', action='show', id=pkg.name, ver=3) %}
+        {% set api_url = h.url_for(controller='api', logic_function='package_show', action='action', id=c.pkg.name, ver=3) %}
         <a href="{{ g.api_url ~ api_url }}">JSON</a>
       </li>
       {% if g.rdf_packages %}
