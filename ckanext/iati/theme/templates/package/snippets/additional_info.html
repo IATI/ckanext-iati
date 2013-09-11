@@ -1,0 +1,37 @@
+{% ckan_extends %}
+
+{% set extras = pkg_dict.extras %}
+
+{% macro package_additional_info_row(label, name, formatter=false, empty='-', full=false, force_value=false) %}
+  {% set data = h.get_package_extra(extras, name) %}
+  {% set value = formatter(data) if formatter else data %}
+  <tr>
+    <th scope="row" class="dataset-label">{{ label }}</th>
+    <td class="dataset-details">
+      {% if value and full %}
+        {{ full }}
+      {% else %}
+        {{ force_value or value or empty }}
+      {% endif %}
+    </td>
+  </tr>
+{% endmacro %}
+
+{% block package_additional_info %}
+
+  {{ package_additional_info_row('File Type', 'filetype', formatter=h.file_type_title) }}
+  {{ package_additional_info_row('Language', 'language') }}
+  {{ package_additional_info_row('Recipient Country', 'country', formatter=h.country_name, empty='(Unknown)') }}
+
+  {{ package_additional_info_row('Publisher Type', 'publishertype', formatter=h.publisher_type_title) }}
+  {{ package_additional_info_row('Publisher Organization Type', 'publisher_organization_type', formatter=h.organization_type_title) }}
+  {{ package_additional_info_row('Publisher Identifier', 'publisher_iati_id') }}
+  {{ package_additional_info_row('Publisher Country', 'publisher_country', formatter=h.country_name, empty='(Unknown)') }}
+
+  {{ package_additional_info_row('Verified', 'verified', empty='No', full='Yes') }}
+  {{ package_additional_info_row('Archive File', 'archive_file', empty='No', full='Yes') }}
+
+  {{ package_additional_info_row('Data updated', 'data_updated') }}
+  {{ package_additional_info_row('Record updated', 'data_recorded', force_value=h.render_datetime(pkg_dict.metadata_modified)) }}
+
+{% endblock %}
