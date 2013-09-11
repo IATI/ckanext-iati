@@ -1,9 +1,7 @@
 {% ckan_extends %}
 
-{% set extras = pkg_dict.extras %}
-
 {% macro package_additional_info_row(label, name, formatter=false, empty='-', full=false, force_value=false) %}
-  {% set data = h.get_package_extra(extras, name) %}
+  {% set data = h.get_extra(pkg_dict, name, '') %}
   {% set value = formatter(data) if formatter else data %}
   <tr>
     <th scope="row" class="dataset-label">{{ label }}</th>

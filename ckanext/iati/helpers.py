@@ -86,9 +86,3 @@ def check_nav_dropdown(items):
         return return_items
     return False
 
-def get_package_extra(extras, name):
-    for extra in extras:
-        if (extra.get('key') == name):
-            return extra.get('value')
-    return False
-
