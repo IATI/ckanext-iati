@@ -9472,12 +9472,12 @@ iframe {
 }
 [role=main] .primary {
   width: 688px;
-  float: right;
+  float: left;
 }
 [role=main] .secondary {
   width: 222px;
   margin-left: 0;
-  float: left;
+  float: right;
 }
 #static_page {
   width: 600px;
