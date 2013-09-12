@@ -9968,7 +9968,11 @@ form .info-block.info-inline {
   max-width: 100%;
 }
 .module-footer {
-  padding: 5px 15px;
+  padding: 0 15px;
+}
+.module-footer a {
+  font-size: 12px;
+  color: #555555;
 }
 .module-content.page-header {
   position: relative;
