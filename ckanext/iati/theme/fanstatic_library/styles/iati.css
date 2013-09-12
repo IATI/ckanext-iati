@@ -10153,11 +10153,28 @@ form .info-block.info-inline {
 }
 .dataset-heading a {
   font-weight: bold;
+  color: #0098db;
 }
-.search-form,
-.dataset-item {
+.dataset-heading a:hover {
+  color: #0075a8;
+}
+.search-form {
   border-bottom-style: solid;
   border-bottom-color: #EEE;
+}
+.dataset-list .dataset-item {
+  border-bottom-width: 0;
+  padding: 10px;
+  margin: 0 -10px;
+}
+.dataset-list .dataset-item:nth-child(2n) {
+  background-color: #F6F6F6;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+.dataset-list .dataset-item p:last-child {
+  margin-bottom: 0;
 }
 .resources {
   padding: 0;
