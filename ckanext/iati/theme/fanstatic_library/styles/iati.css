@@ -9549,6 +9549,12 @@ form .info-block.info-inline {
   padding: 15px 0 0 0;
   border-top: 3px solid #eeeeee;
 }
+.form-actions .btn {
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.33;
+  border-radius: 6px;
+}
 .form-horizontal .form-actions {
   padding-left: 0;
   padding-right: 0;
