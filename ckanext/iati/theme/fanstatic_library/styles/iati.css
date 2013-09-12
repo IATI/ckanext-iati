@@ -9513,6 +9513,15 @@ h4 {
   font-size: 16px;
   font-weight: bold;
 }
+.external-link {
+  display: inline-block;
+  width: 14px;
+  height: 11px;
+  background: transparent url("../images/external-link.png") no-repeat 0 0;
+}
+a:hover .external-link {
+  background-position: -14px 0;
+}
 .form-horizontal .control-label {
   float: left;
   font-weight: normal;
@@ -10352,7 +10361,7 @@ form .info-block.info-inline {
   float: left;
   margin-padding: 30px;
   margin-right: 7.5px;
-  background-image: url("/images/ie7-breadcrumb.png");
+  background-image: url("../images/ie7-breadcrumb.png");
 }
 .ie7 [role='main'],
 .ie7 .context-info .nums,
