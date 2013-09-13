@@ -83,7 +83,7 @@ class CSVController(p.toolkit.BaseController):
                 output = self.write_csv_file(publisher)
             elif len(self.authz_orgs) == 1:
                 # Return directly CSV for publisher
-                output = self.write_csv_file(self.authz_orgs[0])
+                output = self.write_csv_file(self.authz_orgs[0].get('name'))
             elif len(self.authz_orgs) > 1:
                 # Show list of available publishers for this user
                 return p.toolkit.render('csv/index.html', extra_vars={'orgs', self.authz_orgs})
