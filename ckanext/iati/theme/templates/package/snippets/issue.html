@@ -1,0 +1,10 @@
+{% if h.get_pkg_dict_extra(package, 'issue_type') %}
+  <div class="alert">
+    <strong>
+      {{ h.issue_title(h.get_pkg_dict_extra(package, 'issue_type', '')) }}
+      &middot;
+      ({{ h.render_datetime(h.get_pkg_dict_extra(package, 'issue_date', '')) }})
+    </strong><br>
+    {{ h.get_pkg_dict_extra(package, 'issue_message', '') }}
+  </div>
+{% endif %}

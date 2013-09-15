@@ -34,7 +34,7 @@
   {% if package.resources and not hide_resources %}
     {% for resource in package.resources %}
       <p>
-        <a href="{{ package_url }}" target="_blank">View Metadata</a>
+        <a href="{{ package_url }}">View Metadata</a>
         &middot;
         {% snippet 'snippets/resource_links.html', resource=resource, package=package %}
       </p>

@@ -1,0 +1,56 @@
+.ie7-clearfix {
+  *zoom: 1;
+}
+
+.ie7 {
+
+  // Make clearfix work!
+  .clearfix {
+    .ie7-clearfix;
+  }
+
+  #header {
+    // Dropdown z-index fix
+    position: relative;
+    z-index: 1;
+    nav {
+      #account-nav {
+        // Extra spacing on secondary header fix
+        li.notifications a {
+          padding-top: 12px;
+        }
+      }
+      #secondary-nav {
+        // Fixed width header dropdown
+        li .dropdown {
+          width: 200px;
+        }
+      }
+    }
+  }
+
+  // Breadcrumbs
+  .toolbar .breadcrumb {
+    .ie7-clearfix;
+    li {
+      display: block;
+      float: left;
+      margin-padding: @unit*2;
+      margin-right: @unit/2;
+      background-image: url("../images/ie7-breadcrumb.png");
+    }
+  }
+
+  // Everything that required clearfix. Sigh.
+  [role='main'],
+  .context-info .nums,
+  ul.nav-tabs {
+    .ie7-clearfix;
+  }
+
+  #pre-footer .social li a {
+    padding: 9px 0;
+    // height: 32px;
+  }
+
+}

@@ -238,7 +238,7 @@ class CSVController(p.toolkit.BaseController):
                         errors[row_index][key] = msgs
                     continue
 
-                package_dict = self.get_package_dict_from_row(row)
+                package_dict = self.get_package_dict_from_row(row, context)
                 self.create_or_update_package(package_dict,counts,context=context)
 
                 del errors[row_index]
@@ -262,8 +262,7 @@ class CSVController(p.toolkit.BaseController):
         errors = sorted(errors.iteritems())
         return counts['added'], counts['updated'], warnings, errors
 
-    def get_package_dict_from_row(self,row):
-        context = {'model': model, 'user': c.user or c.author}
+    def get_package_dict_from_row(self, row, context):
         package = {}
         for fieldname, entity, key, v in CSV_MAPPING:
             if fieldname in row:
