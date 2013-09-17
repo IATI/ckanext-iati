@@ -340,6 +340,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'check_nav_dropdown',
             'get_num_active_publishers',
             'SI_number_span',
+            'format_file_size',
         )
         return _get_module_functions(iati_helpers, function_names)
 

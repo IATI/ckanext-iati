@@ -114,3 +114,16 @@ def SI_number_span(number):
     else:
         output = literal('<span title="' + formatters.localised_number(number) + '">')
     return output + formatters.localised_SI_number(number) + literal('</span>')
+
+def format_file_size(size):
+    if size is None:
+        return None
+    try:
+        size = float(size)
+    except ValueError,e:
+        return None
+
+    for label in ['bytes','KB','MB','GB','TB']:
+        if size < 1024.0:
+            return "%3.1f%s" % (size, label)
+        size /= 1024.0
