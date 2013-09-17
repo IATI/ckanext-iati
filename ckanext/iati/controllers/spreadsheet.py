@@ -277,8 +277,7 @@ class CSVController(p.toolkit.BaseController):
                 # If value is None (empty cell), property will be set to blank
                 value = row[fieldname]
                 if entity == 'organization':
-                    org = p.toolkit.get_action('organization_show')(context, {'id': value})
-                    package['owner_org'] = org['id']
+                    package['owner_org'] = value
                 elif entity == 'resources':
                     if not 'resources' in package:
                        package['resources'] = [{}]
