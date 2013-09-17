@@ -54,7 +54,7 @@ class CSVController(p.toolkit.BaseController):
 
         # Orgs of which the logged user is admin
         context = {'model': model, 'user': c.user or c.author}
-        self.authz_orgs = p.toolkit.get_action('organization_list_for_user')(context, c.user)
+        self.authz_orgs = p.toolkit.get_action('organization_list_for_user')(context, {})
 
     def download(self, publisher=None):
 
@@ -157,6 +157,7 @@ class CSVController(p.toolkit.BaseController):
                     continue
                 if package:
                     row = {}
+                    extras_dict = self.extras_to_dict(package)
                     for fieldname, entity, key, v in CSV_MAPPING:
                         if key == 'state':
                             continue
@@ -168,8 +169,8 @@ class CSVController(p.toolkit.BaseController):
                             if len(package['resources']) and key in package['resources'][0]:
                                 value = package['resources'][0][key]
                         elif entity == 'extras':
-                            if key in package['extras']:
-                                value = package['extras'][key]
+                            if key in extras_dict:
+                                value = extras_dict[key]
                         else:
                             if key in package:
                                 value = package[key]
@@ -183,6 +184,13 @@ class CSVController(p.toolkit.BaseController):
             f.close()
 
         return output
+
+    def extras_to_dict(self, pkg):
+        extras_dict = {}
+        if pkg and 'extras' in pkg:
+            for extra in pkg['extras']:
+                extras_dict[extra['key']] = extra['value']
+        return extras_dict
 
     def read_csv_file(self,csv_file,context=None):
         fieldnames = [f[0] for f in CSV_MAPPING]
