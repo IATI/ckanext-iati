@@ -272,6 +272,7 @@ class CSVController(p.toolkit.BaseController):
 
     def get_package_dict_from_row(self, row, context):
         package = {}
+        extras_dict = []
         for fieldname, entity, key, v in CSV_MAPPING:
             if fieldname in row:
                 # If value is None (empty cell), property will be set to blank
@@ -283,11 +284,10 @@ class CSVController(p.toolkit.BaseController):
                        package['resources'] = [{}]
                     package['resources'][0][key] = value
                 elif entity == 'extras':
-                    if not 'extras' in package:
-                       package['extras'] = {}
-                    package['extras'][key] = value
+                    extras_dict.append({'key': key, 'value': value})
                 else:
                     package[key] = value
+        package['extras'] = extras_dict
         return package
 
     def create_or_update_package(self, package_dict, counts = None, context = None):
@@ -315,7 +315,7 @@ class CSVController(p.toolkit.BaseController):
 
             context['message'] = 'CSV import: update dataset %s' % package_dict['name']
 
-            updated_package = p.toolkit.get_action('package_update_rest')(context, package_dict)
+            updated_package = p.toolkit.get_action('package_update')(context, package_dict)
             if counts:
                 counts['updated'].append(updated_package['name'])
             log.debug('Package with name "%s" updated' % package_dict['name'])
@@ -325,7 +325,7 @@ class CSVController(p.toolkit.BaseController):
 
             context['message'] = 'CSV import: create dataset %s' % package_dict['name']
 
-            new_package = p.toolkit.get_action('package_create_rest')(context, package_dict)
+            new_package = p.toolkit.get_action('package_create')(context, package_dict)
             if counts:
                 counts['added'].append(new_package['name'])
             log.debug('Package with name "%s" created' % package_dict['name'])
