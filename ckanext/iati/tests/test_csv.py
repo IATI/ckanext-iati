@@ -1,8 +1,13 @@
 import os
 
+import paste.fixture
+from pylons import config
+
 from ckan import model
 from ckan.model import Session
-
+import ckan.tests as tests
+from ckan.config.middleware import make_app
+from ckan.common import c
 from ckan.logic.action.get import package_list, package_show, package_show_rest
 from ckan.tests import CreateTestData
 from ckanext.iati.controllers.spreadsheet import CSVController
@@ -18,23 +23,39 @@ class TestCSVImporter():
         'model':model,
         'session':Session,
         'user':u'tester',
-        'api_version':1
+        'api_version':3
     }
 
     @classmethod
     def setup_class(cls):
-
         cls.base_csv_path = os.path.join(os.path.dirname(os.path.abspath( __file__ )), 'csv')
-    
+        cls._original_config = config.copy()
+        config['ckan.plugins'] = 'iati_csv'
+        wsgiapp = make_app(config['global_conf'], **config)
+        cls.app = paste.fixture.TestApp(wsgiapp)
+
+    @classmethod
+    def teardown_class(cls):
+        config.clear()
+        config.update(cls._original_config)
+
     def setup(self):
         # Create a test user and publisher
-        # TODO: use logic functions (there are conflicts with the IATI plugins)
-        CreateTestData.create_test_user()
-        group = model.Group(name='test-publisher',title='Test Publisher')
-        model.repo.new_revision()
-        model.Session.add(group)
-        model.setup_default_user_roles(group, [model.User.get(u'tester')])
+        self.sysadmin = model.User(name='test_sysadmin', sysadmin=True)
+        model.Session.add(self.sysadmin)
         model.Session.commit()
+        model.Session.remove()
+        tester = tests.call_action_api(self.app, 'user_create',
+                                           apikey=self.sysadmin.apikey,
+                                           name='tester',
+                                           email='email@domain.com',
+                                           password='password')
+        c.user = tester['name']
+        users = [{'name': tester['name'], 'capacity': 'admin'}]
+        org = tests.call_action_api(self.app, 'organization_create',
+                                           apikey=self.sysadmin.apikey,
+                                           name='test-publisher',
+                                           users=users)
 
     def teardown(self):
         model.Session.remove()
@@ -58,7 +79,7 @@ class TestCSVImporter():
 
         # Create new records
         added, updated, warnings, errors = self.assert_csv_import('from_the_registry.csv',3,0,0,0)
-        
+
         # Check that packages were actually created
         pkgs = package_list(self.context,{})
         assert len(pkgs) == 3
@@ -69,13 +90,13 @@ class TestCSVImporter():
         # Check that packages were updated and the new one created
         pkgs = package_list(self.context,{})
         assert len(pkgs) == 4
-        
+
         pkg = package_show(self.context,{'id':'test-publisher-vu'})
         assert 'UPDATED' in pkg['title']
         pkg = package_show(self.context,{'id':'test-publisher-iq'})
         assert 'NEW' in pkg['title']
 
-    def test_warnings(self): 
+    def test_warnings(self):
         # Missing columns
         added, updated, warnings, errors = self.assert_csv_import('from_the_registry_extra_column.csv',3,0,1,0)
 
@@ -106,7 +127,7 @@ class TestCSVImporter():
         #   * Wrong file type
         #   * Wrong validation status
         #   * Missing publisher name
-        #   * Missing dataset name  
+        #   * Missing dataset name
         added, updated, warnings, errors = self.assert_csv_import('error_misc.csv',0,0,0,8)
 
         assert errors == [
@@ -143,7 +164,7 @@ class TestCSVImporter():
         added, updated, warnings, errors = self.assert_csv_import('format_semicolon_unquoted.csv',0,3,0,0)
 
     def test_dates(self):
-        
+
         # ISO style (YYYY-MM-DD HH:MM, YYYY-MM-DD, YYYY-MM, YYYY)
         added, updated, warnings, errors = self.assert_csv_import('dates_iso.csv',1,0,0,0)
 
