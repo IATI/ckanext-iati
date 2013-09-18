@@ -1,19 +1,5 @@
 {% ckan_extends %}
 
-
-{# NOTE: this is most likely the wrong place to put this field, it is just show for demostrative purposes :) #}
-
-{% block package_basic_fields_title %}
-  <fieldset>
-    <legend>Basic information</legend>
-    {{ super() }}
-{% endblock %}
-
-{% block package_basic_fields_org %}
-    {{ super() }}
-  </fieldset>
-{% endblock %}
-
 {% block package_basic_fields_custom %}
 <div class="control-group">
   {% set error = errors.filetype %}
@@ -26,9 +12,14 @@
     {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
   </div>
 </div>
-
  {% snippet 'snippets/country_list.html', data=data, errors=errors, field_name='country' %}
-
+{{ form.input('data_updated', id='field-date-uploaded', label=_('Date Uploaded'), placeholder=_("Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'."), value=data.data_updated, error=errors.data_updated, classes=['control-full']) }}
+{{ form.input('activity_period-from', id='field-activity_period-from', label=_('Activity Period From'), placeholder=_("Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'."), value=data.activity_period_from, error=errors.activity_period_from, classes=['control-full']) }}
+{{ form.input('activity_period-to', id='field-activity-period_to', label=_('Activity Period To'), placeholder=_("Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'."), value=data.activity_period_to, error=errors.activity_period_to, classes=['control-full']) }}
+{{ form.input('activity-count', id='field-activity-count', label=_('Num. Activities'), value=data.activity_count, error=errors.activity_count, classes=['control-full']) }}
+{{ form.checkbox('archive-file', id='field-archive_file', label=_('Archive'), value=data.archive_file, error=errors.archive_file, classes=['control-full']) }}
+{{ form.checkbox('verified', id='field-verified', label=_('Verified'), value=data.verified, error=errors.verified, classes=['control-full']) }}
+{{ form.input('language', id='field-language', label=_('Language'), value=data.language, error=errors.language, classes=['control-full']) }}
 
 {% endblock %}
 
