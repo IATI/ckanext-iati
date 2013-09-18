@@ -9535,6 +9535,18 @@ a:hover .external-link {
   margin-top: -15px;
   padding-top: 0;
 }
+.form-horizontal label.checkbox {
+  font-weight: normal;
+  padding-top: 0;
+  padding-left: 0;
+}
+.form-horizontal label.checkbox input {
+  float: none;
+  top: 0;
+  margin-left: 0;
+  margin-right: 5px;
+  width: auto;
+}
 .stages {
   margin: 0 0 30px 0;
   -webkit-border-radius: 5px;

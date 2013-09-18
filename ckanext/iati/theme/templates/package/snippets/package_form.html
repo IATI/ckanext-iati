@@ -5,6 +5,7 @@
 {% block cancel_button %}{% endblock %}
 
 {% block basic_fields %}
+  <h1>Create dataset</h1>
   {% snippet 'package/snippets/package_basic_fields.html', data=data, errors=errors, licenses=c.licenses, groups_available=c.groups_available %}
 {% endblock %}
 

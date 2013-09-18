@@ -1,25 +1,135 @@
 {% ckan_extends %}
 
-{% block package_basic_fields_custom %}
-<div class="control-group">
-  {% set error = errors.filetype %}
-  <label class="control-label" for="field-filetype">{{ _("File Type") }}</label>
-  <div class="controls">
-    <select id="field-filetype" name="filetype">
-        <option value="activity" {% if data.get('filetype') == 'activity' %}selected="selected"{% endif %}>{{ _("Activity") }}</option>
-        <option value="organisation" {% if data.get('filetype') == 'organisation' %}selected="selected"{% endif %}>{{ _("Organisation") }}</option>
-    </select>
-    {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
-  </div>
-</div>
- {% snippet 'snippets/country_list.html', data=data, errors=errors, field_name='country' %}
-{{ form.input('data_updated', id='field-date-uploaded', label=_('Date Uploaded'), placeholder=_("Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'."), value=data.data_updated, error=errors.data_updated, classes=['control-full']) }}
-{{ form.input('activity_period-from', id='field-activity_period-from', label=_('Activity Period From'), placeholder=_("Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'."), value=data.activity_period_from, error=errors.activity_period_from, classes=['control-full']) }}
-{{ form.input('activity_period-to', id='field-activity-period_to', label=_('Activity Period To'), placeholder=_("Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'."), value=data.activity_period_to, error=errors.activity_period_to, classes=['control-full']) }}
-{{ form.input('activity-count', id='field-activity-count', label=_('Num. Activities'), value=data.activity_count, error=errors.activity_count, classes=['control-full']) }}
-{{ form.checkbox('archive-file', id='field-archive_file', label=_('Archive'), value=data.archive_file, error=errors.archive_file, classes=['control-full']) }}
-{{ form.checkbox('verified', id='field-verified', label=_('Verified'), value=data.verified, error=errors.verified, classes=['control-full']) }}
-{{ form.input('language', id='field-language', label=_('Language'), value=data.language, error=errors.language, classes=['control-full']) }}
+{% block package_basic_fields_title %}
+  <fieldset>
+    <legend>Basic fields</legend>
 
+    {{ super() }}
+    <p class="help-block">The title of the dataset. It should not be a description though - save that for the Notes field. Do not give a trailing full stop.</p>
 {% endblock %}
 
+{% block package_basic_fields_custom %}
+
+    <div class="control-group">
+      {% set error = errors.filetype %}
+      <label class="control-label" for="field-filetype">{{ _("File Type") }}</label>
+      <div class="controls">
+        <select id="field-filetype" name="filetype">
+            <option value="activity" {% if data.get('filetype') == 'activity' %}selected="selected"{% endif %}>{{ _("Activity") }}</option>
+            <option value="organisation" {% if data.get('filetype') == 'organisation' %}selected="selected"{% endif %}>{{ _("Organisation") }}</option>
+        </select>
+        {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Details</legend>
+
+    {% snippet 'snippets/country_list.html', data=data, errors=errors, field_name='country' %}
+
+    {{ form.input('data_updated', id='field-date-uploaded', label=_('Date Uploaded'), value=data.data_updated, error=errors.data_updated, classes=['control-full']) }}
+    <p class="help-block">Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
+
+    {{ form.input('activity_period-from', id='field-activity_period-from', label=_('Activity Period From'), value=data.activity_period_from, error=errors.activity_period_from, classes=['control-full']) }}
+    <p class="help-block">Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
+
+    {{ form.input('activity_period-to', id='field-activity-period_to', label=_('Activity Period To'), value=data.activity_period_to, error=errors.activity_period_to, classes=['control-full']) }}
+    <p class="help-block">Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
+
+    {{ form.input('activity-count', id='field-activity-count', label=_('Num. Activities'), value=data.activity_count, error=errors.activity_count, classes=['control-full']) }}
+    <p class="help-block">A count of the number of activities reported.</p>
+
+    {{ form.checkbox('archive-file', id='field-archive_file', label=_('Archive'), value=data.archive_file, error=errors.archive_file, classes=['control-full']) }}
+
+    {{ form.checkbox('verified', id='field-verified', label=_('Verified'), value=data.verified, error=errors.verified, classes=['control-full']) }}
+
+    {{ form.input('language', id='field-language', label=_('Language'), value=data.language, error=errors.language, classes=['control-full']) }}
+    <p class="help-block">The ISO 639-1 code for the default language of the file (e.g. 'en').</p>
+
+  </fieldset>
+{% endblock %}
+
+{% block package_basic_fields_description %}
+  {{ form.markdown('notes', id='field-notes', label=_('Notes'), placeholder=_('The main description of the dataset'), value=data.notes, error=errors.notes) }}
+  <p class="help-block">It is often displayed with the record title. In particular, it should start with a short sentence that describes the data set succinctly, because the first few words alone may be used in some views of the data sets.</p>
+{% endblock %}
+
+{% block package_basic_fields_tags %}
+  {{ super() }}
+  <p class="help-block">Terms that may link this dataset to similar ones.</p>
+{% endblock %}
+
+{% block package_basic_fields_org %}  
+    {# if we have a default group then this wants remembering #}
+    {% if data.group_id %}
+      <input type="hidden" name="groups__0__id" value="{{ data.group_id }}" />
+    {% endif %}
+
+    {% set dataset_is_draft = data.get('state', 'draft').startswith('draft') or data.get('state', 'none') ==  'none' %}
+    {% set dataset_has_organization = data.owner_org or data.group_id %}
+    {% set organizations_available = h.organizations_available('create_dataset') %}
+    {% set user_is_sysadmin = h.check_access('sysadmin') %}
+    {% set show_organizations_selector = organizations_available and (user_is_sysadmin or dataset_is_draft) %}
+    {% set show_visibility_selector = dataset_has_organization or (organizations_available and (user_is_sysadmin or dataset_is_draft)) %}
+
+    {% if show_organizations_selector and show_visibility_selector %}
+      <div data-module="dataset-visibility">
+    {% endif %}
+
+    {% if show_organizations_selector %}
+    <div class="control-group">
+      <label for="field-organizations" class="control-label">{{ _('Publisher') }}</label>
+      <div class="controls">
+        <select id="field-organizations" name="owner_org" data-module="autocomplete">
+          <option value="" {% if not selected_org and data.id %} selected="selected" {% endif %}>{{ _('Select an publisher...') }}</option>
+          {% for organization in organizations_available %}
+            {# get out first org from users list only if there is not an existing org #}
+            {% set selected_org = (existing_org and existing_org == organization.id) or (not existing_org and not data.id and organization.id == organizations_available[0].id) %}
+            <option value="{{ organization.id }}" {% if selected_org %} selected="selected" {% endif %}>{{ organization.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <p class="help-block">Choose your own Publisher Name from the Dropdown. Your Publisher record needs to have been created and authorised by the Registry administrator before you can publish datsets.</p>
+    {% endif %}
+
+    {% if show_visibility_selector %}
+      {% block package_metadata_fields_visibility %}
+        <div class="control-group">
+          <label for="field-private" class="control-label">{{ _('Visibility') }}</label>
+          <div class="controls">
+            <select id="field-private" name="private">
+              {% for option in [(true, _('Private')), (false, _('Public'))] %}
+              <option value="{{ option[0] }}" {% if option[0] == data.private %}selected="selected"{% endif %}>{{ option[1] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      {% endblock %}
+    {% endif %}
+
+    {% if show_organizations_selector and show_visibility_selector %}
+      </div>
+    {% endif %}
+  </fieldset>
+
+  {# TODO: Make this work #}
+  <fieldset>
+    <legend>Resource</legend>
+
+    {{ form.input('resource_url', id='resource-title', label=_('URL'), value=data.resource_url, placeholder="eg. http://example.com/gold-prices-jan-2013.json", error=errors.resource_url, classes=['control-full', 'control-large']) }}
+    <p class="help-block">This is the Internet link directly to the data - by selecting this link in a web browser, the user will immediately download the full dataset. Note that datasets are not hosted on this site, but by the publisher of the data.</p>
+
+    {% set format_attrs = {'data-module': 'autocomplete', 'data-module-source': '/api/2/util/resource/format_autocomplete?incomplete=?'} %}
+    {{ form.input('resource_format', id='field-resource_format', label=_('Format'), placeholder=_('eg. CSV, XML or JSON'), value=data.format, error=errors.format, classes=['control-medium'], attrs=format_attrs) }}
+    <p class="help-block">This should give the file format in which the data is supplied. IATI-compliant data should specify "IATI-XML".</p>
+
+
+    {{ form.input('resource_description', id='resource-description', label=_('Description'), value=data.resource_description, error=errors.resource_description) }}
+    <p class="help-block">Any information you want to add to describe the resource.</p>
+
+  </fieldset>
+{% endblock %}
+
+{% block package_basic_fields_license %}{% endblock %}
