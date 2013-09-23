@@ -1,13 +1,59 @@
-{% ckan_extends %}
+{% import 'macros/form.html' as form %}
+{% set action = c.form_action or '' %}
 
-{% block save_button_text %}
-  {% if form_style != 'edit' %}
-    Add Dataset
-  {% else %}
-    Update Dataset
-  {% endif %}
-{% endblock %}
+{# This provides a full page that renders a form for adding a dataset. It can
+then itself be extended to add/remove blocks of functionality. #}
+<form class="dataset-form form-horizontal" method="post" action="{{ action }}" data-module="basic-form">
 
-{% block stages %}{% endblock %}
+  {# pkg_name used in 3 stage edit #}
+  <input type="hidden" name="pkg_name" value="{{ data.id }}" />
+  {% block errors %}{{ form.errors(error_summary) }}{% endblock %}
 
-{% block disclaimer %}{% endblock %}
+  <fieldset>
+    <legend>Basic Information</legend>
+
+    {% block package_basic_fields_url %}
+    {{ form.input('name', id='field-name', label=_('File Id'), placeholder=_('eg. my-dataset'), value=data.name, error=errors.name) }}
+    <p class="help-block">A unique identifier for the activity record. It must be prefixed with your Publisher Id and a hyphen. It is recommended that you use "org" for your organisation file and the country or region code for segmented activity datasets. 2+ characters, lowercase, using only 'a-z0-9' and '_' . (eg dfid-ao, wb-org, unops-998).</p>
+    {% endblock %}
+
+  {% block basic_fields %}
+    {% snippet 'package/snippets/package_basic_fields.html', data=data, errors=errors, licenses=c.licenses, groups_available=c.groups_available %}
+  {% endblock %}
+
+  {% block metadata_fields %}
+    {% snippet 'package/snippets/package_metadata_fields.html', data=data, errors=errors %}
+  {% endblock %}
+
+  {% block form_actions %}
+    <div class="form-actions">
+      {% block disclaimer %}
+        <p class="action-info small">
+          {%- trans -%}
+          Important: By submitting content, you
+          agree to release your contributions under the Open Database
+          License.
+          {%- endtrans -%}
+        </p>
+      {% endblock %}
+      {% block delete_button %}
+        {% if data.id and h.check_access('package_delete', {'id': data.id})  %}
+          {% set locale = h.dump_json({'content': _('Are you sure you want to delete this dataset?')}) %}
+          <a class="btn btn-danger pull-left" href="{% url_for controller='package', action='delete', id=data.id %}" data-module="confirm-action" data-module-i18n="{{ locale }}">{% block delete_button_text %}{{ _('Delete') }}{% endblock %}</a>
+        {% endif %}
+      {% endblock %}
+      {% block cancel_button %}
+        <a class="btn" href="">{% block cancel_button_text %}{{ _('Cancel') }}{% endblock %}</a>
+      {% endblock %}
+      <button class="btn btn-primary" type="submit" name="save">
+        {% block save_button_text %}
+        {% if form_style != 'edit' -%}
+        Add Dataset
+        {%- else -%}
+        Update Dataset
+        {%- endif %}
+        {% endblock %}
+      </button>
+    </div>
+  {% endblock %}
+</form>

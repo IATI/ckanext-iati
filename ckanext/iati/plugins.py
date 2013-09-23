@@ -216,6 +216,9 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     def package_types(self):
         return []
 
+    def package_form(self):
+        return 'package/new_package_form.html'
+
     def _modify_package_schema(self, schema):
 
         # Import core converters and validators

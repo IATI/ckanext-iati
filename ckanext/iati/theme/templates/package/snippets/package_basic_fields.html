@@ -1,14 +1,18 @@
 {% ckan_extends %}
 
 {% block package_basic_fields_title %}
-  <fieldset>
-    <legend>Basic fields</legend>
-
     {{ super() }}
     <p class="help-block">The title of the dataset. It should not be a description though - save that for the Notes field. Do not give a trailing full stop.</p>
 {% endblock %}
 
+{% block package_basic_fields_url %}
+{% endblock %}
+
+
 {% block package_basic_fields_custom %}
+
+    {{ form.input('author_email', id='field-author_email', label=_('Contact e-mail'), value=data.author_email, error=errors.author_email) }}
+    <p class="help-block">A contact address for anyone wishing to query you about your data.</p>
 
     <div class="control-group">
       {% set error = errors.filetype %}
@@ -21,6 +25,7 @@
         {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
       </div>
     </div>
+    <p class="help-block">Choose from dropdown. Either "Activity" or "Organisation".</p>
   </fieldset>
 
   <fieldset>
@@ -60,7 +65,7 @@
   <p class="help-block">Terms that may link this dataset to similar ones.</p>
 {% endblock %}
 
-{% block package_basic_fields_org %}  
+{% block package_basic_fields_org %}
     {# if we have a default group then this wants remembering #}
     {% if data.group_id %}
       <input type="hidden" name="groups__0__id" value="{{ data.group_id }}" />
@@ -114,19 +119,18 @@
     {% endif %}
   </fieldset>
 
-  {# TODO: Make this work #}
   <fieldset>
     <legend>Resource</legend>
 
-    {{ form.input('resource_url', id='resource-title', label=_('URL'), value=data.resource_url, placeholder="eg. http://example.com/gold-prices-jan-2013.json", error=errors.resource_url, classes=['control-full', 'control-large']) }}
+    {{ form.input('resources__0__url', id='resource-title', label=_('URL'), value=data.resource_url, placeholder="eg. http://example.com/gold-prices-jan-2013.json", error=errors.resource_url, classes=['control-full', 'control-large']) }}
     <p class="help-block">This is the Internet link directly to the data - by selecting this link in a web browser, the user will immediately download the full dataset. Note that datasets are not hosted on this site, but by the publisher of the data.</p>
 
     {% set format_attrs = {'data-module': 'autocomplete', 'data-module-source': '/api/2/util/resource/format_autocomplete?incomplete=?'} %}
-    {{ form.input('resource_format', id='field-resource_format', label=_('Format'), placeholder=_('eg. CSV, XML or JSON'), value=data.format, error=errors.format, classes=['control-medium'], attrs=format_attrs) }}
+    {{ form.input('resources__0__format', id='field-resource_format', label=_('Format'), placeholder=_('eg. CSV, XML or JSON'), value=data.format, error=errors.format, classes=['control-medium'], attrs=format_attrs) }}
     <p class="help-block">This should give the file format in which the data is supplied. IATI-compliant data should specify "IATI-XML".</p>
 
 
-    {{ form.input('resource_description', id='resource-description', label=_('Description'), value=data.resource_description, error=errors.resource_description) }}
+    {{ form.input('resources__0__description', id='resource-description', label=_('Description'), value=data.resource_description, error=errors.resource_description) }}
     <p class="help-block">Any information you want to add to describe the resource.</p>
 
   </fieldset>
