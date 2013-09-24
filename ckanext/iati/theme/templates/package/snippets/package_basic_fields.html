@@ -1,6 +1,11 @@
 {% ckan_extends %}
+{% set extras_dict = h.extras_to_dict(data) %}
 
 {% block package_basic_fields_title %}
+<!-- {{ data}} -->
+<!-- {{ extras_dict }} -->
+<!-- {{ errors }} -->
+
     {{ super() }}
     <p class="help-block">The title of the dataset. It should not be a description though - save that for the Notes field. Do not give a trailing full stop.</p>
 {% endblock %}
@@ -19,8 +24,8 @@
       <label class="control-label" for="field-filetype">{{ _("File Type") }}</label>
       <div class="controls">
         <select id="field-filetype" name="filetype">
-            <option value="activity" {% if data.get('filetype') == 'activity' %}selected="selected"{% endif %}>{{ _("Activity") }}</option>
-            <option value="organisation" {% if data.get('filetype') == 'organisation' %}selected="selected"{% endif %}>{{ _("Organisation") }}</option>
+            <option value="activity" {% if extras_dict.get('filetype') == 'activity' %}selected="selected"{% endif %}>{{ _("Activity") }}</option>
+            <option value="organisation" {% if extras_dict.get('filetype') == 'organisation' %}selected="selected"{% endif %}>{{ _("Organisation") }}</option>
         </select>
         {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
       </div>
@@ -31,25 +36,24 @@
   <fieldset>
     <legend>Details</legend>
 
-    {% snippet 'snippets/country_list.html', data=data, errors=errors, field_name='country' %}
+    {% snippet 'snippets/country_list.html', data=extras_dict, errors=errors, field_name='country' %}
 
-    {{ form.input('data_updated', id='field-date-uploaded', label=_('Date Uploaded'), value=data.data_updated, error=errors.data_updated, classes=['control-full']) }}
+    {{ form.input('data_updated', id='field-date-uploaded', label=_('Date Uploaded'), value=extras_dict.get('data_updated'), error=errors.data_updated, classes=['control-full']) }}
     <p class="help-block">Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
 
-    {{ form.input('activity_period-from', id='field-activity_period-from', label=_('Activity Period From'), value=data.activity_period_from, error=errors.activity_period_from, classes=['control-full']) }}
+    {{ form.input('activity_period-from', id='field-activity_period-from', label=_('Activity Period From'), value=extras_dict.get('activity_period-from'), error=errors.activity_period_from, classes=['control-full']) }}
     <p class="help-block">Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
 
-    {{ form.input('activity_period-to', id='field-activity-period_to', label=_('Activity Period To'), value=data.activity_period_to, error=errors.activity_period_to, classes=['control-full']) }}
+    {{ form.input('activity_period-to', id='field-activity-period_to', label=_('Activity Period To'), value=extras_dict.get('activity_period-to'), error=errors.activity_period_to, classes=['control-full']) }}
     <p class="help-block">Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
 
-    {{ form.input('activity-count', id='field-activity-count', label=_('Num. Activities'), value=data.activity_count, error=errors.activity_count, classes=['control-full']) }}
+    {{ form.input('activity_count', id='field-activity-count', label=_('Num. Activities'), value=extras_dict.get('activity_count'), error=errors.activity_count, classes=['control-full']) }}
     <p class="help-block">A count of the number of activities reported.</p>
+    {{ form.checkbox('archive_file', id='field-archive_file', label=_('Archive'), value="yes", checked=(true if extras_dict.get('archive_file') == "yes" else false), error=errors.archive_file, classes=['control-full']) }}
 
-    {{ form.checkbox('archive-file', id='field-archive_file', label=_('Archive'), value=data.archive_file, error=errors.archive_file, classes=['control-full']) }}
+    {{ form.checkbox('verified', id='field-verified', label=_('Verified'), value="yes", checked=(true if extras_dict.get('verified') == "yes" else false), error=errors.verified, classes=['control-full']) }}
 
-    {{ form.checkbox('verified', id='field-verified', label=_('Verified'), value=data.verified, error=errors.verified, classes=['control-full']) }}
-
-    {{ form.input('language', id='field-language', label=_('Language'), value=data.language, error=errors.language, classes=['control-full']) }}
+    {{ form.input('language', id='field-language', label=_('Language'), value=extras_dict.get('language'), error=errors.language, classes=['control-full']) }}
     <p class="help-block">The ISO 639-1 code for the default language of the file (e.g. 'en').</p>
 
   </fieldset>
@@ -87,11 +91,11 @@
       <label for="field-organizations" class="control-label">{{ _('Publisher') }}</label>
       <div class="controls">
         <select id="field-organizations" name="owner_org" data-module="autocomplete">
-          <option value="" {% if not selected_org and data.id %} selected="selected" {% endif %}>{{ _('Select an publisher...') }}</option>
+          <option value="" {% if data.get('organization') and data.id %} selected="selected" {% endif %}>{{ _('Select an publisher...') }}</option>
           {% for organization in organizations_available %}
             {# get out first org from users list only if there is not an existing org #}
             {% set selected_org = (existing_org and existing_org == organization.id) or (not existing_org and not data.id and organization.id == organizations_available[0].id) %}
-            <option value="{{ organization.id }}" {% if selected_org %} selected="selected" {% endif %}>{{ organization.name }}</option>
+            <option value="{{ organization.id }}"{% if data.get('organization', {}).get('id') == organization.id %} selected="selected"{% endif %}>{{ organization.name }}</option>
           {% endfor %}
         </select>
       </div>
@@ -121,16 +125,18 @@
 
   <fieldset>
     <legend>Resource</legend>
-
-    {{ form.input('resources__0__url', id='resource-title', label=_('URL'), value=data.resource_url, placeholder="eg. http://example.com/gold-prices-jan-2013.json", error=errors.resource_url, classes=['control-full', 'control-large']) }}
+    {% set resources = {} %}
+    {% if data.get('resources')[0] is defined %}
+    {% set resources = data['resources'][0] %}
+    {% endif %}
+    {{ form.input('resources__0__url', id='resource-title', label=_('URL'), value=resources.get('url'), placeholder="eg. http://example.com/gold-prices-jan-2013.json", error=errors.resource_url, classes=['control-full', 'control-large']) }}
     <p class="help-block">This is the Internet link directly to the data - by selecting this link in a web browser, the user will immediately download the full dataset. Note that datasets are not hosted on this site, but by the publisher of the data.</p>
-
     {% set format_attrs = {'data-module': 'autocomplete', 'data-module-source': '/api/2/util/resource/format_autocomplete?incomplete=?'} %}
-    {{ form.input('resources__0__format', id='field-resource_format', label=_('Format'), placeholder=_('eg. CSV, XML or JSON'), value=data.format, error=errors.format, classes=['control-medium'], attrs=format_attrs) }}
+    {{ form.input('resources__0__format', id='field-resource_format', label=_('Format'), placeholder=_('eg. CSV, XML or JSON'), value=resources.get('format'), error=errors.format, classes=['control-medium'], attrs=format_attrs) }}
     <p class="help-block">This should give the file format in which the data is supplied. IATI-compliant data should specify "IATI-XML".</p>
 
 
-    {{ form.input('resources__0__description', id='resource-description', label=_('Description'), value=data.resource_description, error=errors.resource_description) }}
+    {{ form.input('resources__0__description', id='resource-description', label=_('Description'), value=resources.get('description'), error=errors.resource_description) }}
     <p class="help-block">Any information you want to add to describe the resource.</p>
 
   </fieldset>

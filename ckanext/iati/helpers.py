@@ -127,3 +127,11 @@ def format_file_size(size):
         if size < 1024.0:
             return "%3.1f%s" % (size, label)
         size /= 1024.0
+
+def extras_to_dict(pkg):
+    extras_dict = {}
+    if pkg and 'extras' in pkg:
+        for extra in pkg['extras']:
+            extras_dict[extra['key']] = extra['value']
+    return extras_dict
+

@@ -14,6 +14,7 @@ from ckanext.iati.logic.validators import (iati_dataset_name_from_csv,
                                            yes_no,
                                            country_code)
 from ckanext.iati.logic.converters import strip
+from ckanext.iati.helpers import extras_to_dict
 
 log = logging.getLogger(__name__)
 
@@ -157,7 +158,7 @@ class CSVController(p.toolkit.BaseController):
                     continue
                 if package:
                     row = {}
-                    extras_dict = self.extras_to_dict(package)
+                    extras_dict = extras_to_dict(package)
                     for fieldname, entity, key, v in CSV_MAPPING:
                         if key == 'state':
                             continue
@@ -184,13 +185,6 @@ class CSVController(p.toolkit.BaseController):
             f.close()
 
         return output
-
-    def extras_to_dict(self, pkg):
-        extras_dict = {}
-        if pkg and 'extras' in pkg:
-            for extra in pkg['extras']:
-                extras_dict[extra['key']] = extra['value']
-        return extras_dict
 
     def read_csv_file(self,csv_file,context=None):
         fieldnames = [f[0] for f in CSV_MAPPING]
