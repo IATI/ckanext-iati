@@ -121,6 +121,8 @@
     {% if show_organizations_selector and show_visibility_selector %}
       </div>
     {% endif %}
+    {{ form.input('secondary_publisher', id='field-secondar-publisher', label=_('Secondary Publisher'), value=extras_dict.get('secondary_publisher'), error=errors.secondary_publisher, classes=['control-full']) }}
+    <p class="help-block">The publisher this dataset is published on behalf of.</p>
   </fieldset>
 
   <fieldset>
