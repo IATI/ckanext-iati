@@ -1,7 +1,12 @@
-{% ckan_extends %}
-
-{% block description %}
-  {% if organization.description %}
-    <p>{{ h.markdown_extract(organization.description, extract_length=80) }}</p>
-  {% endif %}
-{% endblock %}
+{% set url = h.url_for(organization.type + '_read', action='read', id=organization.name) %}
+<tr>
+  {% block title %}
+    <td>{{ organization.display_name }}</td>
+  {% endblock %}
+  {% block organization_type %}
+  <td>Something</td>
+  {% endblock %}
+  {% block dataset_count %}
+  <td>{{ organization.packages }}</td>
+  {% endblock %}
+</tr>
