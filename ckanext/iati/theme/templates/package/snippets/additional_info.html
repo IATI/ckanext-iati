@@ -50,6 +50,6 @@
   {{ package_additional_info_row('Archive File', 'archive_file', empty='No', full='Yes') }}
 
   {{ package_additional_info_row('Data updated', 'data_updated') }}
-  {{ package_additional_info_row('Record updated', 'data_recorded', force_value=h.render_datetime(pkg_dict.metadata_modified)) }}
+  {{ package_additional_info_row('Record updated', 'data_recorded', force_value=h.render_datetime(pkg_dict.metadata_modified, date_format='%Y-%m-%d %H:%M')) }}
 
 {% endblock %}
