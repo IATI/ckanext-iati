@@ -17,6 +17,26 @@
 
 {% block package_additional_info %}
 
+  <tr>
+    <th scope="row" class="dataset-label">{{ _('License') }}</th>
+    <td class="dataset-details">
+      {% if pkg_dict.license_id %}
+        {% if 'license_url' in pkg_dict %}
+          <a href="{{ pkg_dict.license_url }}" rel="dc:rights">{{ pkg_dict.license_title }}</a>
+        {% else %}
+          <span property="dc:rights">{{ pkg_dict.license_title }}</span>
+        {% endif %}
+        {% if pkg_dict.isopen %}
+          <a href="http://opendefinition.org/okd/" title="{{ _('This dataset satisfies the Open Definition.') }}">
+            <img class="open-data" src="http://assets.okfn.org/images/ok_buttons/od_80x15_blue.png" alt="[Open Data]" />
+          </a>
+        {% endif %}
+      {% else %}
+        {{ _('No License Provided') }}
+      {% endif %}
+    </td>
+  </tr>
+
   {{ package_additional_info_row('File Type', 'filetype', formatter=h.get_file_type_title) }}
   {{ package_additional_info_row('Language', 'language') }}
   {{ package_additional_info_row('Recipient Country', 'country', formatter=h.get_country_title, empty='(Unknown)') }}
