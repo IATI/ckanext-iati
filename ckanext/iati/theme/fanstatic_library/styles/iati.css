@@ -10088,6 +10088,19 @@ form .info-block.info-inline {
   line-height: 36px;
   margin-left: 0;
 }
+.secondary .context-info:first-child .nums dl.wide {
+  float: none;
+  width: 100%;
+  margin-bottom: 15px;
+}
+.secondary .context-info:first-child .nums dl.wide dt {
+  margin-bottom: 5px;
+}
+.secondary .context-info:first-child .nums dl.wide dd {
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: normal;
+}
 .secondary .context-info:first-child .follow_button {
   margin-top: 15px;
 }
