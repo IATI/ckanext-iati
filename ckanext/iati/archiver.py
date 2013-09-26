@@ -1,6 +1,7 @@
 import sys
 import os
 import datetime
+from dateutil.parser import parse as date_parser
 import hashlib
 import socket
 import re
@@ -15,9 +16,9 @@ from pylons import config
 
 from ckan import model
 import ckan.plugins.toolkit as toolkit
-import ckan.iati.helpers.extras_to_dict as extras_to_dict, extras_to_list
+from ckanext.iati.helpers import extras_to_dict, extras_to_list
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('iati_archiver')
 
 def text_traceback():
     with warnings.catch_warnings():
@@ -72,8 +73,8 @@ def run(package_id=None, publisher_id=None):
 
     t1 = datetime.datetime.now()
 
-    print ('IATI Archiver: starting {0}'.format(str(t1)))
-    print ('Number of datasets to archive: {0}'.format(len(package_ids)))
+    log.info('IATI Archiver: starting {0}'.format(str(t1)))
+    log.info('Number of datasets to archive: {0}'.format(len(package_ids)))
 
     updated = 0
     consecutive_errors = 0
@@ -83,10 +84,10 @@ def run(package_id=None, publisher_id=None):
             updated_package = archive_package(package_id, context, consecutive_errors)
         except Exception,e:
             consecutive_errors += 1
-            print ('Error downloading resource for dataset %s: %s' % (package_id, str(e)))
-            print (text_traceback())
+            log.error('Error downloading resource for dataset %s: %s' % (package_id, str(e)))
+            log.error(text_traceback())
             if consecutive_errors > 5:
-                print 'Too many errors, aborting...'
+                log.error('Too many errors, aborting...')
                 return False
             else:
                 continue
@@ -108,7 +109,7 @@ def archive_package(package_id, context, consecutive_errors=0):
 
     is_activity_package = True if 'activity' == extras_dict.get('filetype') else False
 
-    print ('Archiving dataset: {0} ({1} resources)'.format(package.get('name'), len(package.get('resources', []))))
+    log.debug('Archiving dataset: {0} ({1} resources)'.format(package.get('name'), len(package.get('resources', []))))
     for resource in package.get('resources', []):
         if not resource.get('url',''):
             return save_package_issue(context, package, extras_dict, 'no-url', 'URL missing')
@@ -188,23 +189,23 @@ def archive_package(package_id, context, consecutive_errors=0):
             new_extras['data_updated'] = None
 
         for key,value in new_extras.iteritems():
-            if value and (not key in extras or unicode(value) != unicode(extras[key])):
+            if value and (not key in extras_dict or unicode(value) != unicode(extras_dict[key])):
                 update = True
-                old_value = unicode(extras[key]) if key in extras else '""'
+                old_value = unicode(extras_dict[key]) if key in extras_dict else '""'
                 log.info('Updated extra {0} for dataset {1}: {2} -> {3}'.format(key, package['name'], old_value, value))
-                extras[unicode(key)] = unicode(value)
+                extras_dict[unicode(key)] = unicode(value)
 
 
         # At this point, any previous issues should be resolved, delete the issue extras
         # to mark them as resolved
-        if 'issue_type' in extras:
+        if 'issue_type' in extras_dict:
             update = True
             for key in ['issue_type', 'issue_message', 'issue_date']:
-                if key in extras:
-                    extras[key] = None
+                if key in extras_dict:
+                    extras_dict[key] = None
 
         if update:
-            package['extras'] = extras_to_list(extras)
+            package['extras'] = extras_to_list(extras_dict)
             return update_package(context, package)
 
     return None
@@ -216,10 +217,10 @@ def save_package_issue(context, data_dict, extras_dict, issue_type, issue_messag
         log.info('Dataset {0} still has the same issue ({1} - {2}), skipping...'.format(data_dict['name'], issue_type, issue_message))
         return None
     else:
-        extras[u'issue_type'] = unicode(issue_type)
-        extras[u'issue_message'] = unicode(issue_message)
-        extras[u'issue_date'] = unicode(datetime.datetime.now().isoformat())
-        data_dict['extras'] = extras_to_list(extras)
+        extras_dict[u'issue_type'] = unicode(issue_type)
+        extras_dict[u'issue_message'] = unicode(issue_message)
+        extras_dict[u'issue_date'] = unicode(datetime.datetime.now().isoformat())
+        data_dict['extras'] = extras_to_list(extras_dict)
 
         log.error('Issue found for dataset {0}: {1} - {2}'.format(data_dict['name'], issue_type, issue_message))
 

@@ -1,6 +1,5 @@
 import os
 import sys
-import logging
 from ckan.lib.cli import CkanCommand
 
 from ckanext.iati.archiver import run as run_archiver
@@ -40,7 +39,6 @@ class Archiver(CkanCommand):
 
         cmd = self.args[0]
         self._load_config()
-        self.logger = logging.getLogger(__name__)
 
         if cmd == 'update':
             package_id = unicode(self.args[1]) if len(self.args) > 1 else None
