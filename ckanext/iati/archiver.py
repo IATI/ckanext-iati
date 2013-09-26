@@ -232,7 +232,7 @@ def update_package(context, data_dict, message=None):
     message = message or 'Daily archiver: update dataset %s' % data_dict['name']
     context['message'] = message
 
-    updated_package = toolkit.get_action('package_update_rest')(context, data_dict)
+    updated_package = toolkit.get_action('package_update')(context, data_dict)
     log.debug('Package %s updated with new extras' % data_dict['name'])
 
     return updated_package
