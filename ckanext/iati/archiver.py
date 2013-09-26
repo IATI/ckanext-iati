@@ -57,20 +57,19 @@ def run(package_id=None, publisher_id=None):
 
     if package_id:
         package_ids = [package_id]
+    elif publisher_id:
+        try:
+            org = toolkit.get_action('organization_show')(context, {'id': publisher_id})
+        except toolkit.ObjectNotFound:
+            log.error('Could not find Publisher: {0}'.format(publisher_id))
+            sys.exit(1)
+        package_ids = [p['name'] for p in org['packages']]
     else:
-        if publisher_id:
-            try:
-                org = toolkit.get_action('organization_show')(context, {'id': publisher_id})
-            except toolkit.ObjectNotFound:
-                log.error('Could not find Publisher: {0}'.format(publisher_id))
-                sys.exit(1)
-            package_ids = [p['name'] for p in org['packages']]
-        else:
-            try:
-                package_ids = toolkit.get_action('package_list')(context, {})
-            except toolkit.ObjectNotFound:
-                log.error('Could not find package: {0}'.format(package_id))
-                sys.exit(1)
+        try:
+            package_ids = toolkit.get_action('package_list')(context, {})
+        except toolkit.ObjectNotFound:
+            log.error('Could not find package: {0}'.format(package_id))
+            sys.exit(1)
 
     t1 = datetime.datetime.now()
 
