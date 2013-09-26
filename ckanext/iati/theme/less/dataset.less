@@ -1,10 +1,12 @@
 .dataset-heading {
   font-size: 18px;
   a {
-    font-weight: bold;
     color: @iati-color-registry;
+    font-weight: normal;
     &:hover{
       color: darken(@iati-color-registry, 10%);
+      text-decoration: none;
+      border-bottom: 1px dashed darken(@iati-color-registry, 10%);
     }
   }
 }
@@ -20,7 +22,7 @@
     padding: 10px;
     margin: 0 -10px;
     &:nth-child(2n) {
-      background-color: #F6F6F6;
+      background-color: @iati-color-grey;
       .border-radius(3px);
     }
     p:last-child {
