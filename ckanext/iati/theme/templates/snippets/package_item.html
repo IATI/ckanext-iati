@@ -3,6 +3,12 @@
 {% set package_url = h.url_for(controller='package', action='read', id=package.name) %}
 
 {% block package_item_content %}
+
+  {% if package.isopen %}
+    <a href="http://opendefinition.org/okd/" title="{{ _('This dataset satisfies the Open Definition.') }}" class="pull-right">
+      <img class="open-data" src="http://assets.okfn.org/images/ok_buttons/od_80x15_blue.png" alt="[Open Data]" />
+    </a>
+  {% endif %}
   <h3 class="dataset-heading">
     {% if package.private %}
       <span class="dataset-private label label-inverse">
