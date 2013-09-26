@@ -47,13 +47,13 @@ def run(package_id=None, publisher_id=None):
     }
     if not context['site_url']:
         raise Exception('You have to set the "ckan.site_url" property in the config file')
-        sys.exit(1)
+        return False
     if not context['user']:
         raise Exception('You have to set the "iati.admin_user.name" property in the config file')
-        sys.exit(1)
+        return False
     if not context['apikey']:
         raise Exception('You have to set the "iati.admin_user.api_key" property in the config file')
-        sys.exit(1)
+        return False
 
     if package_id:
         package_ids = [package_id]
