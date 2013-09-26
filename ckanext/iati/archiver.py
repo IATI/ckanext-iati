@@ -93,14 +93,11 @@ def run(package_id=None, publisher_id=None):
                 continue
         else:
             consecutive_errors = 0
-
         if updated_package:
             updated += 1
 
     t2 = datetime.datetime.now()
-
     log.info('IATI Archiver: Done. Updated %i packages. Total time: %s' % (updated,str(t2 - t1)))
-
     return True
 
 
@@ -112,12 +109,10 @@ def archive_package(package_id, context, consecutive_errors=0):
 
     is_activity_package = True if 'activity' == extras_dict.get('filetype') else False
 
-    log.debug('Archiving dataset: {0} ({1} resources)'.format(package.get('name'), len(package.get('resources', []))))
+    print ('Archiving dataset: {0} ({1} resources)'.format(package.get('name'), len(package.get('resources', []))))
     for resource in package.get('resources', []):
-
         if not resource.get('url',''):
-            return save_package_issue(context, package, 'no-url', 'URL missing')
-
+            return save_package_issue(context, package, extras_dict, 'no-url', 'URL missing')
         old_hash = resource.get('hash')
         try:
             result = download(context,resource,data_formats=DATA_FORMATS)
@@ -126,15 +121,15 @@ def archive_package(package_id, context, consecutive_errors=0):
                 message = str(e)[:str(e).find(' on')]
             else:
                 message = str(e)
-            return save_package_issue(context, package, 'url-error', message)
+            return save_package_issue(context, package, extras_dict, 'url-error', message)
         except tasks.DownloadError, e:
             if 'exceeds maximum allowed value' in str(e):
                 message = 'File too big, not downloading'
             else:
                 message = str(e)
-            return save_package_issue(context, package, 'download-error', message)
+            return save_package_issue(context, package, extras_dict, 'download-error', message)
         except socket.timeout:
-            return save_package_issue(context, package, 'download-error', 'URL timeout')
+            return save_package_issue(context, package, extras_dict, 'download-error', 'URL timeout')
 
         file_path = result['saved_file']
 
@@ -155,12 +150,12 @@ def archive_package(package_id, context, consecutive_errors=0):
         os.remove(file_path)
 
         if re.sub('<!doctype(.*)>', '', xml.lower()[:100]).strip().startswith('<html'):
-            return save_package_issue(context, package, 'xml-error', 'File is an HTML document')
+            return save_package_issue(context, package, extras_dict, 'xml-error', 'File is an HTML document')
 
         try:
             tree = etree.fromstring(xml)
         except etree.XMLSyntaxError, e:
-            return save_package_issue(context, package, 'xml-error', 'Could not parse XML file: {0}'.format(str(e)[:200]))
+            return save_package_issue(context, package, extras_dict, 'xml-error', 'Could not parse XML file: {0}'.format(str(e)[:200]))
 
         new_extras = {}
         if is_activity_package:
@@ -213,7 +208,7 @@ def archive_package(package_id, context, consecutive_errors=0):
 
     return None
 
-def save_package_issue(context, data_dict, issue_type, issue_message):
+def save_package_issue(context, data_dict, extras_dict, issue_type, issue_message):
     if 'issue_type' in data_dict['extras'] and 'issue_message' in data_dict['extras'] \
         and data_dict['extras']['issue_type'] == issue_type \
         and data_dict['extras']['issue_message'] == issue_message:
