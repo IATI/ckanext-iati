@@ -39,7 +39,6 @@ setup(name='ckanext-iati',
       iati_csv = ckanext.iati.plugins:IatiCsvImporter
 
       [paste.paster_command]
-      create-iati-fixtures = ckanext.iati.fixtures:CreateIatiFixtures
       iati-archiver=ckanext.iati.commands:Archiver
       """,
       )
