@@ -135,3 +135,9 @@ def extras_to_dict(pkg):
             extras_dict[extra['key']] = extra['value']
     return extras_dict
 
+def extras_to_list(extras):
+    extras_list = []
+    for key in extras:
+        extras_list.append(dict(key=key, value=extras[key]))
+    return extras_list
+
