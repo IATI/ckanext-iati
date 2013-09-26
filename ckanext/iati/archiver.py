@@ -84,7 +84,7 @@ def run(package_id=None, publisher_id=None):
             updated_package = archive_package(package_id, context, consecutive_errors)
         except Exception,e:
             consecutive_errors += 1
-            log.error('Error downloading resource for dataset %s: %s' % (package_id, str(e)))
+            log.error('Error downloading resource for dataset {0}: {1}'.format(package_id, str(e)))
             log.error(text_traceback())
             if consecutive_errors > 5:
                 log.error('Too many errors, aborting...')
@@ -97,7 +97,7 @@ def run(package_id=None, publisher_id=None):
             updated += 1
 
     t2 = datetime.datetime.now()
-    log.info('IATI Archiver: Done. Updated %i packages. Total time: %s' % (updated,str(t2 - t1)))
+    log.info('IATI Archiver: Done. Updated {0} packages. Total time: {1}'.format(int(updated), str(t2 - t1)))
     return True
 
 
@@ -136,7 +136,7 @@ def archive_package(package_id, context, consecutive_errors=0):
 
         if 'zip' in result['headers'].get('content-type', ''):
             # Skip zipped files for now
-            log.info('Skipping zipped file for dataset %s ' % package.get('name'))
+            log.info('Skipping zipped file for dataset {0}'.format(package.get('name')))
             os.remove(file_path)
             continue
 
@@ -174,12 +174,12 @@ def archive_package(package_id, context, consecutive_errors=0):
         last_updated_date = None
         for date in dates:
             try:
-                check_date = date_parser(date)
+                check_date = date_parser(date).replace(tzinfo=None)
                 if check_date < datetime.datetime.now():
                     last_updated_date = check_date
                     break
             except ValueError, e:
-                log.error('Wrong date format for data_updated for dataset %s: %s' % (package['name'],str(e)))
+                log.error('Wrong date format for data_updated for dataset {0}: {1}'.format(package['name'], str(e)))
 
         # Check dates
         if last_updated_date:
@@ -229,11 +229,11 @@ def save_package_issue(context, data_dict, extras_dict, issue_type, issue_messag
 
 def update_package(context, data_dict, message=None):
     context['id'] = data_dict['id']
-    message = message or 'Daily archiver: update dataset %s' % data_dict['name']
+    message = message or 'Daily archiver: update dataset {0}'.format(data_dict['name'])
     context['message'] = message
 
     updated_package = toolkit.get_action('package_update')(context, data_dict)
-    log.debug('Package %s updated with new extras' % data_dict['name'])
+    log.debug('Package {0} updated with new extras'.format(data_dict['name']))
 
     return updated_package
 
@@ -290,7 +290,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
     if not ct.lower().strip('"') in data_formats:
         if resource_changed:
             tasks._update_resource(context, resource)
-        raise tasks.DownloadError("Of content type %s, not downloading" % ct)
+        raise tasks.DownloadError("Of content type {0}, not downloading".format(ct))
 
     # get the resource and archive it
     # TODO: remove the Accept-Encoding limitation after upgrading
@@ -312,8 +312,8 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
         if resource_changed:
             tasks._update_resource(context, resource)
         # record fact that resource is too large to archive
-        raise tasks.DownloadError("Content-length after streaming reached maximum allowed value of %s" %
-            max_content_length)
+        raise tasks.DownloadError("Content-length after streaming reached maximum allowed value of {0}".format(
+            max_content_length))
 
     # update the resource metadata in CKAN if the resource has changed
     # IATI: remove generated time tags before calculating the hash
