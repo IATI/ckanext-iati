@@ -7,19 +7,19 @@ import re
 from lxml import etree
 import requests
 import json
+import cgitb
+import warnings
+import logging
 
 from pylons import config
 
-from dateutil.parser import parse as date_parser
-from ckan.logic import get_action
 from ckan import model
-
-import logging
+import ckan.plugins.toolkit as toolkit
+import ckan.iati.helpers.extras_to_dict as extras_to_dict
 
 log = logging.getLogger('iati_archiver')
 
-import cgitb
-import warnings
+
 def text_traceback():
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -33,32 +33,49 @@ MAX_CONTENT_LENGTH = 50000000
 URL_TIMEOUT=30
 DATA_FORMATS = ['xml','iati-xml','application/xml', 'text/xml', 'text/html']
 
-def run(package_id=None,publisher_id=None):
+def run(package_id=None, publisher_id=None):
 
     # TODO: use this when it gets to default ckan
-    # username = get_action('get_site_user')({'model': model, 'ignore_auth': True}, {})
+    # username = toolkit.get_action('get_site_user')({'model': model, 'ignore_auth': True}, {})
     context = {
         'model': model,
         'session':model.Session,
         'site_url':config.get('ckan.site_url'),
         'user': config.get('iati.admin_user.name'),
-        'apikey': config.get('iati.admin_user.api_key')
+        'apikey': config.get('iati.admin_user.api_key'),
+        'api_version': 3,
     }
+    if not context['site_url']:
+        raise Exception('You have to set the "ckan.site_url" property in the config file')
+        sys.exit(1)
+    if not context['user']:
+        raise Exception('You have to set the "iati.admin_user.name" property in the config file')
+        sys.exit(1)
+    if not context['apikey']:
+        raise Exception('You have to set the "iati.admin_user.api_key" property in the config file')
+        sys.exit(1)
 
     if package_id:
         package_ids = [package_id]
     else:
         if publisher_id:
-            packages = get_action('group_package_show')(context, {'id':publisher_id})
-            package_ids = [p['name'] for p in packages]
+            try:
+                org = toolkit.get_action('organization_show')(context, {'id': publisher_id})
+            except toolkit.ObjectNotFound:
+                log.error('Could not find Publisher: {0}'.format(publisher_id))
+                sys.exit(1)
+            package_ids = [p['name'] for p in org['packages']]
         else:
-            package_ids = get_action('package_list')(context, {})
+            try:
+                package_ids = toolkit.get_action('package_list')(context, {})
+            except toolkit.ObjectNotFound:
+                log.error('Could not find package: {0}'.format(package_id))
+                sys.exit(1)
 
     t1 = datetime.datetime.now()
 
-
-    log.info('IATI Archiver: starting  %s' % str(t1))
-    log.info('Number of datasets to archive: %d' % len(package_ids))
+    print ('IATI Archiver: starting {0}'.format(str(t1)))
+    print ('Number of datasets to archive: {0}'.format(len(package_ids)))
 
     updated = 0
     consecutive_errors = 0
@@ -68,10 +85,10 @@ def run(package_id=None,publisher_id=None):
             updated_package = archive_package(package_id, context, consecutive_errors)
         except Exception,e:
             consecutive_errors += 1
-            log.error('Error downloading resource for dataset %s: %s' % (package_id, str(e)))
-            log.error(text_traceback())
+            print ('Error downloading resource for dataset %s: %s' % (package_id, str(e)))
+            print (text_traceback())
             if consecutive_errors > 5:
-                log.error('Too many errors, aborting...')
+                print 'Too many errors, aborting...'
                 return False
             else:
                 continue
@@ -91,12 +108,12 @@ def run(package_id=None,publisher_id=None):
 def archive_package(package_id, context, consecutive_errors=0):
 
     from ckanext.archiver import tasks
+    package = toolkit.get_action('package_show')(context,{'id': package_id})
+    extras_dict = extras_to_dict(package)
 
-    package = get_action('package_show_rest')(context,{'id': package_id})
+    is_activity_package = True if 'activity' == extras_dict.get('filetype') else False
 
-    is_activity_package = (package['extras']['filetype'] == 'activity') if 'filetype' in package['extras'] else 'activity'
-
-    log.debug('Archiving dataset: %s (%d resources)' % (package.get('name'), len(package.get('resources', []))))
+    log.debug('Archiving dataset: {0} ({1} resources)'.format(package.get('name'), len(package.get('resources', []))))
     for resource in package.get('resources', []):
 
         if not resource.get('url',''):
@@ -217,7 +234,7 @@ def update_package(context, data_dict, message=None):
     message = message or 'Daily archiver: update dataset %s' % data_dict['name']
     context['message'] = message
 
-    updated_package = get_action('package_update_rest')(context, data_dict)
+    updated_package = toolkit.get_action('package_update_rest')(context, data_dict)
     log.debug('Package %s updated with new extras' % data_dict['name'])
 
     return updated_package
