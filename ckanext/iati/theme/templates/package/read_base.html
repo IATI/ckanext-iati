@@ -46,4 +46,19 @@
   {{ super() }}
 {% endblock %}
 
+{% block package_organization %}
+  {% if pkg.organization %}
+    {% with organization=pkg.organization, truncate=truncate or 0, url=h.url_for(controller='organization', action='read', id=pkg.organization.name) %}
+      <div class="module module-narrow module-shallow context-info">
+        <h2 class="module-heading"><i class="icon-building"></i> {{ _('Publisher') }}</h2>
+        <section class="module-content">
+          <h1 class="heading">
+            <a href="{{ url }}">{{ organization.title or organization.name }}</a>
+          </h1>
+        </section>
+      </div>
+    {% endwith %}
+  {% endif %}
+{% endblock %}
+
 {% block package_license %}{% endblock %}
