@@ -15,10 +15,9 @@ from pylons import config
 
 from ckan import model
 import ckan.plugins.toolkit as toolkit
-import ckan.iati.helpers.extras_to_dict as extras_to_dict
+import ckan.iati.helpers.extras_to_dict as extras_to_dict, extras_to_list
 
-log = logging.getLogger('iati_archiver')
-
+log = logging.getLogger(__name__)
 
 def text_traceback():
     with warnings.catch_warnings():
@@ -115,9 +114,10 @@ def archive_package(package_id, context, consecutive_errors=0):
             return save_package_issue(context, package, extras_dict, 'no-url', 'URL missing')
         old_hash = resource.get('hash')
         try:
-            result = download(context,resource,data_formats=DATA_FORMATS)
+            result = download(context, resource, data_formats=DATA_FORMATS)
         except tasks.LinkCheckerError, e:
             if 'URL unobtainable: HTTP' in str(e):
+                #TODO: What does this do?
                 message = str(e)[:str(e).find(' on')]
             else:
                 message = str(e)
@@ -188,40 +188,43 @@ def archive_package(package_id, context, consecutive_errors=0):
             new_extras['data_updated'] = None
 
         for key,value in new_extras.iteritems():
-            if value and (not key in package['extras'] or unicode(value) != unicode(package['extras'][key])):
+            if value and (not key in extras or unicode(value) != unicode(extras[key])):
                 update = True
-                old_value = unicode(package['extras'][key]) if key in package['extras'] else '""'
-                log.info('Updated extra %s for dataset %s: %s -> %s' % (key,package['name'],old_value,value))
-                package['extras'][unicode(key)] = unicode(value)
+                old_value = unicode(extras[key]) if key in extras else '""'
+                log.info('Updated extra {0} for dataset {1}: {2} -> {3}'.format(key, package['name'], old_value, value))
+                extras[unicode(key)] = unicode(value)
 
 
         # At this point, any previous issues should be resolved, delete the issue extras
         # to mark them as resolved
-        if 'issue_type' in package['extras']:
+        if 'issue_type' in extras:
             update = True
             for key in ['issue_type', 'issue_message', 'issue_date']:
-                if key in package['extras']:
-                    package['extras'][key] = None
+                if key in extras:
+                    extras[key] = None
 
         if update:
+            package['extras'] = extras_to_list(extras)
             return update_package(context, package)
 
     return None
 
 def save_package_issue(context, data_dict, extras_dict, issue_type, issue_message):
-    if 'issue_type' in data_dict['extras'] and 'issue_message' in data_dict['extras'] \
-        and data_dict['extras']['issue_type'] == issue_type \
+    if 'issue_type' in extras_dict and 'issue_message' in extras_dict \
+        and extras_dict['issue_type'] == issue_type \
         and data_dict['extras']['issue_message'] == issue_message:
         log.info('Dataset {0} still has the same issue ({1} - {2}), skipping...'.format(data_dict['name'], issue_type, issue_message))
         return None
     else:
-        data_dict['extras'][u'issue_type'] = unicode(issue_type)
-        data_dict['extras'][u'issue_message'] = unicode(issue_message)
-        data_dict['extras'][u'issue_date'] = unicode(datetime.datetime.now().isoformat())
+        extras[u'issue_type'] = unicode(issue_type)
+        extras[u'issue_message'] = unicode(issue_message)
+        extras[u'issue_date'] = unicode(datetime.datetime.now().isoformat())
+        data_dict['extras'] = extras_to_list(extras)
 
         log.error('Issue found for dataset {0}: {1} - {2}'.format(data_dict['name'], issue_type, issue_message))
 
         return update_package(context, data_dict)
+
 
 def update_package(context, data_dict, message=None):
     context['id'] = data_dict['id']
@@ -232,7 +235,6 @@ def update_package(context, data_dict, message=None):
     log.debug('Package %s updated with new extras' % data_dict['name'])
 
     return updated_package
-
 
 
 def download(context, resource, url_timeout=URL_TIMEOUT,
@@ -281,8 +283,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
         if resource_changed:
             tasks._update_resource(context, resource)
         # record fact that resource is too large to archive
-        raise tasks.DownloadError("Content-length %s exceeds maximum allowed value %s" %
-            (cl, max_content_length))
+        raise tasks.DownloadError("Content-length {0} exceeds maximum allowed value {1}".format(cl, max_content_length))
 
     # check that resource is a data file
     if not ct.lower().strip('"') in data_formats:
