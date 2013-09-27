@@ -239,7 +239,7 @@ def save_package_issue(context, data_dict, extras_dict, issue_type,
                        issue_message):
     if 'issue_type' in extras_dict and 'issue_message' in extras_dict \
             and extras_dict['issue_type'] == issue_type \
-            and data_dict['extras']['issue_message'] == issue_message:
+            and extras_dict['issue_message'] == issue_message:
         log.info('Dataset {0} still has the same issue ({1} - {2}), '
                  'skipping...'.format(data_dict['name'], issue_type,
                                       issue_message))
