@@ -216,6 +216,9 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     def package_types(self):
         return []
 
+    def package_form(self):
+        return 'package/new_package_form.html'
+
     def _modify_package_schema(self, schema):
 
         # Import core converters and validators
@@ -335,11 +338,14 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_publisher_source_type_title',
             'get_organization_type_title',
             'get_issue_title',
+            'get_publisher_organization_type',
             'return_select_options',
             'get_config_option',
             'check_nav_dropdown',
             'get_num_active_publishers',
             'SI_number_span',
+            'format_file_size',
+            'extras_to_dict',
         )
         return _get_module_functions(iati_helpers, function_names)
 

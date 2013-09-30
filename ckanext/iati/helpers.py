@@ -38,6 +38,14 @@ def get_issue_title(code):
 def get_licenses():
     return [('', '')] + model.Package.get_license_options()
 
+def get_publisher_organization_type(group_id):
+    group = model.Group.get(group_id)
+    if group:
+        org_type = group.extras.get('publisher_organization_type')
+        if org_type:
+            return get_organization_type_title(org_type)
+    return ''
+
 def is_route_active(menu_item):
     _menu_items = config.get('routes.named_routes')
     if menu_item not in _menu_items:
@@ -114,3 +122,30 @@ def SI_number_span(number):
     else:
         output = literal('<span title="' + formatters.localised_number(number) + '">')
     return output + formatters.localised_SI_number(number) + literal('</span>')
+
+def format_file_size(size):
+    if size is None:
+        return None
+    try:
+        size = float(size)
+    except ValueError,e:
+        return None
+
+    for label in ['bytes','KB','MB','GB','TB']:
+        if size < 1024.0:
+            return "%3.1f%s" % (size, label)
+        size /= 1024.0
+
+def extras_to_dict(pkg):
+    extras_dict = {}
+    if pkg and 'extras' in pkg:
+        for extra in pkg['extras']:
+            extras_dict[extra['key']] = extra['value']
+    return extras_dict
+
+def extras_to_list(extras):
+    extras_list = []
+    for key in extras:
+        extras_list.append(dict(key=key, value=extras[key]))
+    return extras_list
+

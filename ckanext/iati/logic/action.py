@@ -86,7 +86,7 @@ def _remove_extras_from_data_dict(data_dict):
                         'publisher_country',
                         'publisher_iati_id',
                        )
-    data_dict['extras'] = [e for e in data_dict.get('extras', []) if e['key'] not in extras_to_remove]
+    data_dict['extras'] = [e for e in data_dict.get('extras', []) if e.get('key') and e['key'] not in extras_to_remove]
 
 
 @p.toolkit.side_effect_free

@@ -14,6 +14,7 @@ from ckanext.iati.logic.validators import (iati_dataset_name_from_csv,
                                            yes_no,
                                            country_code)
 from ckanext.iati.logic.converters import strip
+from ckanext.iati.helpers import extras_to_dict
 
 log = logging.getLogger(__name__)
 
@@ -54,7 +55,7 @@ class CSVController(p.toolkit.BaseController):
 
         # Orgs of which the logged user is admin
         context = {'model': model, 'user': c.user or c.author}
-        self.authz_orgs = p.toolkit.get_action('organization_list_for_user')(context, c.user)
+        self.authz_orgs = p.toolkit.get_action('organization_list_for_user')(context, {})
 
     def download(self, publisher=None):
 
@@ -83,7 +84,7 @@ class CSVController(p.toolkit.BaseController):
                 output = self.write_csv_file(publisher)
             elif len(self.authz_orgs) == 1:
                 # Return directly CSV for publisher
-                output = self.write_csv_file(self.authz_orgs[0])
+                output = self.write_csv_file(self.authz_orgs[0].get('name'))
             elif len(self.authz_orgs) > 1:
                 # Show list of available publishers for this user
                 return p.toolkit.render('csv/index.html', extra_vars={'orgs', self.authz_orgs})
@@ -157,6 +158,7 @@ class CSVController(p.toolkit.BaseController):
                     continue
                 if package:
                     row = {}
+                    extras_dict = extras_to_dict(package)
                     for fieldname, entity, key, v in CSV_MAPPING:
                         if key == 'state':
                             continue
@@ -168,8 +170,8 @@ class CSVController(p.toolkit.BaseController):
                             if len(package['resources']) and key in package['resources'][0]:
                                 value = package['resources'][0][key]
                         elif entity == 'extras':
-                            if key in package['extras']:
-                                value = package['extras'][key]
+                            if key in extras_dict:
+                                value = extras_dict[key]
                         else:
                             if key in package:
                                 value = package[key]
@@ -264,23 +266,22 @@ class CSVController(p.toolkit.BaseController):
 
     def get_package_dict_from_row(self, row, context):
         package = {}
+        extras_dict = []
         for fieldname, entity, key, v in CSV_MAPPING:
             if fieldname in row:
                 # If value is None (empty cell), property will be set to blank
                 value = row[fieldname]
                 if entity == 'organization':
-                    org = p.toolkit.get_action('organization_show')(context, {'id': value})
-                    package['owner_org'] = org['id']
+                    package['owner_org'] = value
                 elif entity == 'resources':
                     if not 'resources' in package:
                        package['resources'] = [{}]
                     package['resources'][0][key] = value
                 elif entity == 'extras':
-                    if not 'extras' in package:
-                       package['extras'] = {}
-                    package['extras'][key] = value
+                    extras_dict.append({'key': key, 'value': value})
                 else:
                     package[key] = value
+        package['extras'] = extras_dict
         return package
 
     def create_or_update_package(self, package_dict, counts = None, context = None):
@@ -308,7 +309,7 @@ class CSVController(p.toolkit.BaseController):
 
             context['message'] = 'CSV import: update dataset %s' % package_dict['name']
 
-            updated_package = p.toolkit.get_action('package_update_rest')(context, package_dict)
+            updated_package = p.toolkit.get_action('package_update')(context, package_dict)
             if counts:
                 counts['updated'].append(updated_package['name'])
             log.debug('Package with name "%s" updated' % package_dict['name'])
@@ -318,7 +319,7 @@ class CSVController(p.toolkit.BaseController):
 
             context['message'] = 'CSV import: create dataset %s' % package_dict['name']
 
-            new_package = p.toolkit.get_action('package_create_rest')(context, package_dict)
+            new_package = p.toolkit.get_action('package_create')(context, package_dict)
             if counts:
                 counts['added'].append(new_package['name'])
             log.debug('Package with name "%s" created' % package_dict['name'])
