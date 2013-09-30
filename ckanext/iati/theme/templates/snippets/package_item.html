@@ -37,6 +37,8 @@
     No. of Activities: {{ h.get_pkg_dict_extra(package, 'activity_count', '-') }}
   </p>
 
+  {% snippet 'package/snippets/issue.html', package=package %}
+
   {% if package.resources and not hide_resources %}
     {% for resource in package.resources %}
       <p>

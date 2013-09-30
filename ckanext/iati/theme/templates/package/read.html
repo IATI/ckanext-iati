@@ -1,8 +1,8 @@
 {% ckan_extends %}
 
 {% block package_resources %}
+  {% snippet 'package/snippets/issue.html', package=pkg %}
   {{ super() }}
-  {% snippet 'package/snippets/issue.html', package=package %}
 {% endblock %}
 
 {% block package_additional_info %}
