@@ -4,22 +4,23 @@
 {% set sorting = sorting if sorting else [(_('Name Ascending'), 'name asc'), (_('Name Descending'), 'name desc')] %}
 {% set search_class = search_class if search_class else 'search-giant' %}
 
-<form class="search-form" method="get" data-module="select-switch">
+<form method="get">
 
   {% block search_input %}
     <div class="search-input control-group {{ search_class }}">
-      <input type="text" class="search" name="q" value="{{ query }}" autocomplete="off" placeholder="{{ placeholder }}">
-      {% for facet in facet_list %}
+      <p><input type="text" class="search" name="q" value="{{ query }}" autocomplete="off" placeholder="{{ placeholder }}"></p>
+      {% for facet in facets['titles'] %}
         {% with items = h.get_facet_items_dict(facet) %}
-          <label for="{{ facet }}-field">{{ h.get_facet_title(facet) }}</label>
+        <p><label for="{{ facet }}-field">{{ facets['titles'][facet] }}</label>
           <select id="{{ facet }}-field" name="{{ facet }}">
             <option value="">Any</option>
             {% for item in items %}
-            <option value="{{ item.name }}">{{ item.display_name }} ({{ item.count }})</option>
+            <option {% if item.active %}selected {% endif %}value="{{ item.name }}">{{ item.display_name }} ({{ item.count }})</option>
             {% endfor %}
-          </select>
+          </select></p>
         {% endwith %}
       {% endfor %}
+      <input type="submit" value="Search" class="btn btn-default">
 
     </div>
   {% endblock %}
@@ -30,21 +31,7 @@
     {%- endif %}
   {% endblock %}
 
-  {% block search_sortby %}
-    {% if sorting %}
-      <div class="form-select control-group control-order-by">
-        <label for="field-order-by">{{ _('Order by') }}</label>
-        <select id="field-order-by" name="sort">
-          {% for label, value in sorting %}
-            {% if label and value %}
-              <option value="{{ value }}"{% if sorting_selected == value %} selected="selected"{% endif %}>{{ label }}</option>
-            {% endif %}
-          {% endfor %}
-        </select>
-        <button class="btn js-hide" type="submit">{{ _('Go') }}</button>
-      </div>
-    {% endif %}
-  {% endblock %}
+  {% block search_sortby %}{% endblock %}
 
   {% block search_title %}
     {% if not no_title %}
