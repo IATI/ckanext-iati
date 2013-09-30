@@ -10766,7 +10766,7 @@ form .info-block.info-inline {
   line-height: 1.4;
   padding: 5px 15px;
   margin: 0 0 5px 0;
-  background-color: #f6f6f6;
+  background-color: #ecf3f5;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
@@ -10918,6 +10918,19 @@ form .info-block.info-inline {
   line-height: 36px;
   margin-left: 0;
 }
+.secondary .context-info:first-child .nums dl.wide {
+  float: none;
+  width: 100%;
+  margin-bottom: 15px;
+}
+.secondary .context-info:first-child .nums dl.wide dt {
+  margin-bottom: 5px;
+}
+.secondary .context-info:first-child .nums dl.wide dd {
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: normal;
+}
 .secondary .context-info:first-child .follow_button {
   margin-top: 15px;
 }
@@ -11007,11 +11020,13 @@ form .info-block.info-inline {
   font-size: 18px;
 }
 .dataset-heading a {
-  font-weight: bold;
   color: #0098db;
+  font-weight: normal;
 }
 .dataset-heading a:hover {
   color: #0075a8;
+  text-decoration: none;
+  border-bottom: 1px dashed #0075a8;
 }
 .search-form {
   border-bottom-style: solid;
@@ -11023,7 +11038,7 @@ form .info-block.info-inline {
   margin: 0 -10px;
 }
 .dataset-list .dataset-item:nth-child(2n) {
-  background-color: #F6F6F6;
+  background-color: #ecf3f5;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;

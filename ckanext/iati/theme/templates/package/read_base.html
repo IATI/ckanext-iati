@@ -26,6 +26,35 @@
   <li{% if history_link|length != active_check %} class="active" {% endif %}>{{ history_link }}</li>
 {% endblock %}
 
+{% block package_info %}
+  <div class="module context-info">
+    <div class="module-content">
+      <h1 class="heading">{{ pkg.title or pkg.name }}</h1>
+      <div class="nums">
+        <dl class="wide">
+          <dt>Author</dt>
+          <dd>{{ c.pkg_author_link }}</dd>
+        </dl>
+        {% if pkg.organization %}
+          {% with organization=pkg.organization, truncate=truncate or 0, url=h.url_for(controller='organization', action='read', id=pkg.organization.name) %}
+            <dl class="wide">
+              <dt>Publisher</dt>
+              <dd><a href="{{ url }}">{{ organization.title or organization.name }}</a></dd>
+            </dl>
+          {% endwith %}
+        {% endif %}
+        <dl>
+          <dt>{{ _('Followers') }}</dt>
+          <dd>{{ h.SI_number_span(h.get_action('dataset_follower_count', {'id': pkg.id})) }}</dd>
+        </dl>
+      </div>
+      <div class="follow_button">
+        {{ h.follow_button('dataset', pkg.name) }}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
 {% block package_social %}
   <div class="module">
     <h2 class="module-heading">
@@ -45,3 +74,7 @@
   </div>
   {{ super() }}
 {% endblock %}
+
+{% block package_organization %}{% endblock %}
+
+{% block package_license %}{% endblock %}
