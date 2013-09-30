@@ -1,0 +1,20 @@
+{#
+Display a grid of organization items.
+
+organizations - A list of organizations.
+
+Example:
+
+    {% snippet "organization/snippets/organization_list.html" %}
+
+#}
+<table class="table table-bordered">
+  <tr>
+    <th>Publisher</th>
+    <th>Organization Type</th>
+    <th>Datasets</th>
+  </tr>
+  {% for organization in organizations %}
+    {% snippet "organization/snippets/organization_item.html", organization=organization, position=loop.index %}
+  {% endfor %}
+</table>
