@@ -13,7 +13,6 @@
 {% block page_heading %}{{ _('Publishers') }}{% endblock %}
 
 {% block organizations_search_form %}
-  {% snippet 'snippets/search_form.html', type='publisher', query=c.q, sorting_selected=c.sort_by_selected, count=c.page.item_count, placeholder=_('Search publishers...'), show_empty=request.params %}
 {% endblock %}
 
 {% block organizations_list %}

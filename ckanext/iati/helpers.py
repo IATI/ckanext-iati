@@ -38,6 +38,14 @@ def get_issue_title(code):
 def get_licenses():
     return [('', '')] + model.Package.get_license_options()
 
+def get_publisher_organization_type(group_id):
+    group = model.Group.get(group_id)
+    if group:
+        org_type = group.extras.get('publisher_organization_type')
+        if org_type:
+            return get_organization_type_title(org_type)
+    return ''
+
 def is_route_active(menu_item):
     _menu_items = config.get('routes.named_routes')
     if menu_item not in _menu_items:
