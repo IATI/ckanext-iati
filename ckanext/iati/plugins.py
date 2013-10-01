@@ -7,7 +7,7 @@ from ckan.lib.plugins import DefaultGroupForm
 
 import ckan.plugins as p
 
-from ckanext.iati.logic.validators import db_date, iati_publisher_state_validator, iati_owner_org_validator
+from ckanext.iati.logic.validators import db_date, iati_publisher_state_validator, iati_owner_org_validator, iati_dataset_name
 from ckanext.iati.logic.converters import checkbox_value, strip
 import ckanext.iati.helpers as iati_helpers
 
@@ -243,6 +243,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'issue_date': [_ignore_missing, _convert_to_extras],
         })
 
+        schema['name'].append(iati_dataset_name)
         schema['owner_org'].append(iati_owner_org_validator)
 
 
@@ -418,6 +419,7 @@ class IatiTheme(p.SingletonPlugin):
         facets_dict['country'] = p.toolkit._('Countries')
         facets_dict['issue_type'] = p.toolkit._('Issues')
 
+        facets_dict['res_format'] = p.toolkit._('Froat')
         return facets_dict
 
     def organization_facets(self, facets_dict, organization_type, package_type):

@@ -52,10 +52,10 @@
     <label for="field-organizations" class="control-label">{{ _('Publisher') }}</label>
     <div class="controls">
       <select id="field-organizations" name="owner_org" data-module="autocomplete">
-        <option value="" {% if data.get('organization') and data.id %} selected="selected" {% endif %}>{{ _('Select an publisher...') }}</option>
+        <option value="" {% if not selected_org and data.id %} selected="selected" {% endif %}>{{ _('Select a publisher...') }}</option>
         {% for organization in organizations_available %}
           {% set selected_org = (existing_org and existing_org == organization.id) or (not existing_org and not data.id and organization.id == organizations_available[0].id) %}
-          <option value="{{ organization.id }}"{% if data.get('organization', {}).get('id') == organization.id %} selected="selected"{% endif %}>{{ organization.title }}</option>
+          <option value="{{ organization.id }}" {% if selected_org %} selected="selected" {% endif %}>{{ organization.title }}</option>
         {% endfor %}
       </select>
     </div>
@@ -63,13 +63,14 @@
   <p class="help-block">Choose your own Publisher Name from the Dropdown. Your Publisher record needs to have been created and authorised by the Registry administrator before you can publish datsets.</p>
   {% endif %}
 
+
   {% if show_visibility_selector %}
     {% block package_metadata_fields_visibility %}
       <div class="control-group">
         <label for="field-private" class="control-label">{{ _('Visibility') }}</label>
         <div class="controls">
           <select id="field-private" name="private">
-            {% for option in [(true, _('Private')), (false, _('Public'))] %}
+            {% for option in [(false, _('Public')), (true, _('Private'))] %}
             <option value="{{ option[0] }}" {% if option[0] == data.private %}selected="selected"{% endif %}>{{ option[1] }}</option>
             {% endfor %}
           </select>
@@ -105,21 +106,23 @@
 </fieldset>
 
 <fieldset>
-  <legend>Resources</legend>
+  <legend>Data File</legend>
   {% set resources = {} %}
   {% if data.get('resources')[0] is defined %}
     {% set resources = data['resources'][0] %}
   {% endif %}
+  {% if errors.get('resources') %}
+    {% set errors_resources = errors['resources'][0] %}
+  {% else %}
+    {% set errors_resources = {} %}
+  {% endif %}
 
-  {{ form.input('resources__0__url', id='resource-title', label=_('URL'), value=resources.get('url'), placeholder="eg. http://example.com/gold-prices-jan-2013.json", error=errors.resource_url, classes=['control-full', 'control-large']) }}
-  <p class="help-block">This is the Internet link directly to the data - by selecting this link in a web browser, the user will immediately download the full dataset. Note that datasets are not hosted on this site, but by the publisher of the data.</p>
+  {{ form.input('resources__0__url', id='resource-url', label=_('URL'), value=resources.get('url'), placeholder="eg. http://example.com/iati-activities.xml", error=errors_resources.url, classes=['control-full', 'control-large']) }}
+  <p class="help-block">This is the Internet link directly to the data - by selecting this link in a web browser, the user will immediately download the full dataset. All files should be in XML following the <a href="http://iatistandard.org" target="_blank">IATI standard</a>. Note that datasets are not hosted on this site, but by the publisher of the data.</p>
 
-  {% set format_attrs = {'data-module': 'autocomplete', 'data-module-source': '/api/2/util/resource/format_autocomplete?incomplete=?'} %}
-  {{ form.input('resources__0__format', id='field-resource_format', label=_('Format'), placeholder=_('eg. CSV, XML or JSON'), value=resources.get('format'), error=errors.format, classes=['control-medium'], attrs=format_attrs) }}
+  {{ form.input('resources__0__format', id='field-resource_format', label=_('Format'), value=resources.get('format') or 'IATI-XML', error=errors.format, classes=['control-medium']) }}
   <p class="help-block">This should give the file format in which the data is supplied. IATI-compliant data should specify "IATI-XML".</p>
 
-  {{ form.input('resources__0__description', id='resource-description', label=_('Description'), value=resources.get('description'), error=errors.resource_description) }}
-  <p class="help-block">Any information you want to add to describe the resource.</p>
 
 </fieldset>
 
