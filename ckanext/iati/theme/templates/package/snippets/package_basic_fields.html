@@ -1,147 +1,142 @@
-{% ckan_extends %}
+{% import 'macros/form.html' as form %}
+
 {% set extras_dict = h.extras_to_dict(data) %}
 
-{% block package_basic_fields_title %}
-<!-- {{ data}} -->
-<!-- {{ extras_dict }} -->
-<!-- {{ errors }} -->
+<fieldset>
+  <legend>Basic Information</legend>
 
-    {{ super() }}
-    <p class="help-block">The title of the dataset. It should not be a description though - save that for the Notes field. Do not give a trailing full stop.</p>
-{% endblock %}
+  {{ form.input('name', id='field-name', label=_('File Id'), placeholder=_('eg. my-dataset'), value=data.name, error=errors.name) }}
+  <p class="help-block">A unique identifier for the activity record. It must be prefixed with your Publisher Id and a hyphen. It is recommended that you use "org" for your organisation file and the country or region code for segmented activity datasets. 2+ characters, lowercase, using only 'a-z0-9' and '_' . (eg dfid-ao, wb-org, unops-998).</p>
 
-{% block package_basic_fields_url %}
-{% endblock %}
+  {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}) }}
+  <p class="help-block">The title of the dataset. It should not be a description though - save that for the Notes field. Do not give a trailing full stop.</p>
 
-
-{% block package_basic_fields_custom %}
-
-    {{ form.input('author_email', id='field-author_email', label=_('Contact e-mail'), value=data.author_email, error=errors.author_email) }}
+  {{ form.input('author_email', id='field-author_email', label=_('Contact e-mail'), value=data.author_email, error=errors.author_email) }}
     <p class="help-block">A contact address for anyone wishing to query you about your data.</p>
 
-    <div class="control-group">
-      {% set error = errors.filetype %}
-      <label class="control-label" for="field-filetype">{{ _("File Type") }}</label>
-      <div class="controls">
-        <select id="field-filetype" name="filetype">
-            <option value="activity" {% if extras_dict.get('filetype') == 'activity' %}selected="selected"{% endif %}>{{ _("Activity") }}</option>
-            <option value="organisation" {% if extras_dict.get('filetype') == 'organisation' %}selected="selected"{% endif %}>{{ _("Organisation") }}</option>
-        </select>
-        {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
-      </div>
+  <div class="control-group">
+    {% set error = errors.filetype %}
+    <label class="control-label" for="field-filetype">{{ _("File Type") }}</label>
+    <div class="controls">
+      <select id="field-filetype" name="filetype">
+          <option value="activity" {% if extras_dict.get('filetype') == 'activity' %}selected="selected"{% endif %}>{{ _("Activity") }}</option>
+          <option value="organisation" {% if extras_dict.get('filetype') == 'organisation' %}selected="selected"{% endif %}>{{ _("Organisation") }}</option>
+      </select>
+      {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
     </div>
-    <p class="help-block">Choose from dropdown. Either "Activity" or "Organisation".</p>
-  </fieldset>
+  </div>
+  <p class="help-block">Choose from dropdown. Either "Activity" or "Organisation".</p>
 
-  <fieldset>
-    <legend>Details</legend>
+</fieldset>
 
-    {% snippet 'snippets/country_list.html', data=extras_dict, errors=errors, field_name='country' %}
+<fieldset>
+  <legend>Publisher</legend>
+  
+  {% if data.group_id %}
+    <input type="hidden" name="groups__0__id" value="{{ data.group_id }}" />
+  {% endif %}
 
-    {{ form.input('data_updated', id='field-date-uploaded', label=_('Date Uploaded'), value=extras_dict.get('data_updated'), error=errors.data_updated, classes=['control-full']) }}
-    <p class="help-block">Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
+  {% set dataset_is_draft = data.get('state', 'draft').startswith('draft') or data.get('state', 'none') ==  'none' %}
+  {% set dataset_has_organization = data.owner_org or data.group_id %}
+  {% set organizations_available = h.organizations_available('create_dataset') %}
+  {% set user_is_sysadmin = h.check_access('sysadmin') %}
+  {% set show_organizations_selector = organizations_available and (user_is_sysadmin or dataset_is_draft) %}
+  {% set show_visibility_selector = dataset_has_organization or (organizations_available and (user_is_sysadmin or dataset_is_draft)) %}
 
-    {{ form.input('activity_period-from', id='field-activity_period-from', label=_('Activity Period From'), value=extras_dict.get('activity_period-from'), error=errors.activity_period_from, classes=['control-full']) }}
-    <p class="help-block">Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
+  {% if show_organizations_selector and show_visibility_selector %}
+    <div data-module="dataset-visibility">
+  {% endif %}
 
-    {{ form.input('activity_period-to', id='field-activity-period_to', label=_('Activity Period To'), value=extras_dict.get('activity_period-to'), error=errors.activity_period_to, classes=['control-full']) }}
-    <p class="help-block">Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
-
-    {{ form.input('activity_count', id='field-activity-count', label=_('Num. Activities'), value=extras_dict.get('activity_count'), error=errors.activity_count, classes=['control-full']) }}
-    <p class="help-block">A count of the number of activities reported.</p>
-    {{ form.checkbox('archive_file', id='field-archive_file', label=_('Archive'), value="yes", checked=(true if extras_dict.get('archive_file') == "yes" else false), error=errors.archive_file, classes=['control-full']) }}
-
-    {{ form.checkbox('verified', id='field-verified', label=_('Verified'), value="yes", checked=(true if extras_dict.get('verified') == "yes" else false), error=errors.verified, classes=['control-full']) }}
-
-    {{ form.input('language', id='field-language', label=_('Language'), value=extras_dict.get('language'), error=errors.language, classes=['control-full']) }}
-    <p class="help-block">The ISO 639-1 code for the default language of the file (e.g. 'en').</p>
-
-  </fieldset>
-{% endblock %}
-
-{% block package_basic_fields_description %}
-  {{ form.markdown('notes', id='field-notes', label=_('Notes'), placeholder=_('The main description of the dataset'), value=data.notes, error=errors.notes) }}
-  <p class="help-block">It is often displayed with the record title. In particular, it should start with a short sentence that describes the data set succinctly, because the first few words alone may be used in some views of the data sets.</p>
-{% endblock %}
-
-{% block package_basic_fields_tags %}
-  {{ super() }}
-  <p class="help-block">Terms that may link this dataset to similar ones.</p>
-{% endblock %}
-
-{% block package_basic_fields_org %}
-    {# if we have a default group then this wants remembering #}
-    {% if data.group_id %}
-      <input type="hidden" name="groups__0__id" value="{{ data.group_id }}" />
-    {% endif %}
-
-    {% set dataset_is_draft = data.get('state', 'draft').startswith('draft') or data.get('state', 'none') ==  'none' %}
-    {% set dataset_has_organization = data.owner_org or data.group_id %}
-    {% set organizations_available = h.organizations_available('create_dataset') %}
-    {% set user_is_sysadmin = h.check_access('sysadmin') %}
-    {% set show_organizations_selector = organizations_available and (user_is_sysadmin or dataset_is_draft) %}
-    {% set show_visibility_selector = dataset_has_organization or (organizations_available and (user_is_sysadmin or dataset_is_draft)) %}
-
-    {% if show_organizations_selector and show_visibility_selector %}
-      <div data-module="dataset-visibility">
-    {% endif %}
-
-    {% if show_organizations_selector %}
-    <div class="control-group">
-      <label for="field-organizations" class="control-label">{{ _('Publisher') }}</label>
-      <div class="controls">
-        <select id="field-organizations" name="owner_org" data-module="autocomplete">
-          <option value="" {% if data.get('organization') and data.id %} selected="selected" {% endif %}>{{ _('Select an publisher...') }}</option>
-          {% for organization in organizations_available %}
-            {# get out first org from users list only if there is not an existing org #}
-            {% set selected_org = (existing_org and existing_org == organization.id) or (not existing_org and not data.id and organization.id == organizations_available[0].id) %}
-            <option value="{{ organization.id }}"{% if data.get('organization', {}).get('id') == organization.id %} selected="selected"{% endif %}>{{ organization.title }}</option>
-          {% endfor %}
-        </select>
-      </div>
+  {% if show_organizations_selector %}
+  <div class="control-group">
+    <label for="field-organizations" class="control-label">{{ _('Publisher') }}</label>
+    <div class="controls">
+      <select id="field-organizations" name="owner_org" data-module="autocomplete">
+        <option value="" {% if data.get('organization') and data.id %} selected="selected" {% endif %}>{{ _('Select an publisher...') }}</option>
+        {% for organization in organizations_available %}
+          {% set selected_org = (existing_org and existing_org == organization.id) or (not existing_org and not data.id and organization.id == organizations_available[0].id) %}
+          <option value="{{ organization.id }}"{% if data.get('organization', {}).get('id') == organization.id %} selected="selected"{% endif %}>{{ organization.title }}</option>
+        {% endfor %}
+      </select>
     </div>
-    <p class="help-block">Choose your own Publisher Name from the Dropdown. Your Publisher record needs to have been created and authorised by the Registry administrator before you can publish datsets.</p>
-    {% endif %}
+  </div>
+  <p class="help-block">Choose your own Publisher Name from the Dropdown. Your Publisher record needs to have been created and authorised by the Registry administrator before you can publish datsets.</p>
+  {% endif %}
 
-    {% if show_visibility_selector %}
-      {% block package_metadata_fields_visibility %}
-        <div class="control-group">
-          <label for="field-private" class="control-label">{{ _('Visibility') }}</label>
-          <div class="controls">
-            <select id="field-private" name="private">
-              {% for option in [(true, _('Private')), (false, _('Public'))] %}
-              <option value="{{ option[0] }}" {% if option[0] == data.private %}selected="selected"{% endif %}>{{ option[1] }}</option>
-              {% endfor %}
-            </select>
-          </div>
+  {% if show_visibility_selector %}
+    {% block package_metadata_fields_visibility %}
+      <div class="control-group">
+        <label for="field-private" class="control-label">{{ _('Visibility') }}</label>
+        <div class="controls">
+          <select id="field-private" name="private">
+            {% for option in [(true, _('Private')), (false, _('Public'))] %}
+            <option value="{{ option[0] }}" {% if option[0] == data.private %}selected="selected"{% endif %}>{{ option[1] }}</option>
+            {% endfor %}
+          </select>
         </div>
-      {% endblock %}
-    {% endif %}
-
-    {% if show_organizations_selector and show_visibility_selector %}
       </div>
-    {% endif %}
-    {{ form.input('secondary_publisher', id='field-secondar-publisher', label=_('Secondary Publisher'), value=extras_dict.get('secondary_publisher'), error=errors.secondary_publisher, classes=['control-full']) }}
-    <p class="help-block">The publisher this dataset is published on behalf of.</p>
-  </fieldset>
+    {% endblock %}
+  {% endif %}
 
-  <fieldset>
-    <legend>Resource</legend>
-    {% set resources = {} %}
-    {% if data.get('resources')[0] is defined %}
+  {% if show_organizations_selector and show_visibility_selector %}
+    </div>
+  {% endif %}
+  {{ form.input('secondary_publisher', id='field-secondar-publisher', label=_('Secondary Publisher'), value=extras_dict.get('secondary_publisher'), error=errors.secondary_publisher, classes=['control-full']) }}
+  <p class="help-block">The publisher this dataset is published on behalf of.</p>
+
+</fieldset>
+
+<fieldset>
+  <legend>Details</legend>
+
+  {% snippet 'snippets/country_list.html', data=extras_dict, errors=errors, field_name='country' %}
+
+  {{ form.input('data_updated', id='field-date-uploaded', label=_('Date Uploaded'), value=extras_dict.get('data_updated'), error=errors.data_updated, classes=['control-full']) }}
+  <p class="help-block">Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
+
+  {{ form.input('language', id='field-language', label=_('Language'), value=extras_dict.get('language'), error=errors.language, classes=['control-full']) }}
+  <p class="help-block">The ISO 639-1 code for the default language of the file (e.g. 'en').</p>
+
+  {% set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': '', 'data-module-source': '/api/2/util/tag/autocomplete?incomplete=?'} %}
+  {{ form.input('tag_string', id='field-tags', label=_('Tags'), placeholder=_('eg. economy, mental health, government'), value=data.tag_string, error=errors.tags, classes=['control-full'], attrs=tag_attrs) }}
+
+  {{ form.markdown('notes', id='field-notes', label=_('Description'), placeholder=_('eg. Some useful notes about the data'), value=data.notes, error=errors.notes) }}
+
+</fieldset>
+
+<fieldset>
+  <legend>Resources</legend>
+  {% set resources = {} %}
+  {% if data.get('resources')[0] is defined %}
     {% set resources = data['resources'][0] %}
-    {% endif %}
-    {{ form.input('resources__0__url', id='resource-title', label=_('URL'), value=resources.get('url'), placeholder="eg. http://example.com/gold-prices-jan-2013.json", error=errors.resource_url, classes=['control-full', 'control-large']) }}
-    <p class="help-block">This is the Internet link directly to the data - by selecting this link in a web browser, the user will immediately download the full dataset. Note that datasets are not hosted on this site, but by the publisher of the data.</p>
-    {% set format_attrs = {'data-module': 'autocomplete', 'data-module-source': '/api/2/util/resource/format_autocomplete?incomplete=?'} %}
-    {{ form.input('resources__0__format', id='field-resource_format', label=_('Format'), placeholder=_('eg. CSV, XML or JSON'), value=resources.get('format'), error=errors.format, classes=['control-medium'], attrs=format_attrs) }}
-    <p class="help-block">This should give the file format in which the data is supplied. IATI-compliant data should specify "IATI-XML".</p>
+  {% endif %}
 
+  {{ form.input('resources__0__url', id='resource-title', label=_('URL'), value=resources.get('url'), placeholder="eg. http://example.com/gold-prices-jan-2013.json", error=errors.resource_url, classes=['control-full', 'control-large']) }}
+  <p class="help-block">This is the Internet link directly to the data - by selecting this link in a web browser, the user will immediately download the full dataset. Note that datasets are not hosted on this site, but by the publisher of the data.</p>
 
-    {{ form.input('resources__0__description', id='resource-description', label=_('Description'), value=resources.get('description'), error=errors.resource_description) }}
-    <p class="help-block">Any information you want to add to describe the resource.</p>
+  {% set format_attrs = {'data-module': 'autocomplete', 'data-module-source': '/api/2/util/resource/format_autocomplete?incomplete=?'} %}
+  {{ form.input('resources__0__format', id='field-resource_format', label=_('Format'), placeholder=_('eg. CSV, XML or JSON'), value=resources.get('format'), error=errors.format, classes=['control-medium'], attrs=format_attrs) }}
+  <p class="help-block">This should give the file format in which the data is supplied. IATI-compliant data should specify "IATI-XML".</p>
 
-  </fieldset>
-{% endblock %}
+  {{ form.input('resources__0__description', id='resource-description', label=_('Description'), value=resources.get('description'), error=errors.resource_description) }}
+  <p class="help-block">Any information you want to add to describe the resource.</p>
 
-{% block package_basic_fields_license %}{% endblock %}
+</fieldset>
+
+<fieldset>
+  <legend>Verification and Analysis</legend>
+
+  {{ form.input('activity_period-from', id='field-activity_period-from', label=_('Activity Period From'), value=extras_dict.get('activity_period-from'), error=errors.activity_period_from, classes=['control-full']) }}
+  <p class="help-block">Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
+
+  {{ form.input('activity_period-to', id='field-activity-period_to', label=_('Activity Period To'), value=extras_dict.get('activity_period-to'), error=errors.activity_period_to, classes=['control-full']) }}
+  <p class="help-block">Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
+
+  {{ form.input('activity_count', id='field-activity-count', label=_('Num. Activities'), value=extras_dict.get('activity_count'), error=errors.activity_count, classes=['control-full']) }}
+  <p class="help-block">A count of the number of activities reported.</p>
+
+  {{ form.checkbox('archive_file', id='field-archive_file', label=_('Archive'), value="yes", checked=(true if extras_dict.get('archive_file') == "yes" else false), error=errors.archive_file, classes=['control-full']) }}
+
+  {{ form.checkbox('verified', id='field-verified', label=_('Verified'), value="yes", checked=(true if extras_dict.get('verified') == "yes" else false), error=errors.verified, classes=['control-full']) }}
+
+</fieldset>
