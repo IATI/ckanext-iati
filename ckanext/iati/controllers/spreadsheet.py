@@ -318,7 +318,9 @@ class CSVController(p.toolkit.BaseController):
             log.info('Package with name "%s" does not exist and will be created' % package_dict['name'])
 
             context['message'] = 'CSV import: create dataset %s' % package_dict['name']
-
+            # This is a work around for #1257. package_create auth function
+            # looks for organization_id instead of owner_org.
+            package_dict['organization_id'] = package_dict['owner_org']
             new_package = p.toolkit.get_action('package_create')(context, package_dict)
             if counts:
                 counts['added'].append(new_package['name'])
