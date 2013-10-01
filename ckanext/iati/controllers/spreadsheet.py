@@ -87,7 +87,7 @@ class CSVController(p.toolkit.BaseController):
                 output = self.write_csv_file(self.authz_orgs[0].get('name'))
             elif len(self.authz_orgs) > 1:
                 # Show list of available publishers for this user
-                return p.toolkit.render('csv/index.html', extra_vars={'orgs', self.authz_orgs})
+                return p.toolkit.render('csv/index.html', extra_vars={'orgs': self.authz_orgs})
             else:
                 # User does not have permissions on any publisher
                 p.toolkit.abort(403, 'Permission denied')
