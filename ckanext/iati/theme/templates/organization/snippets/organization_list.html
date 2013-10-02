@@ -19,9 +19,8 @@ Example:
 
   <tbody>
   {% for organization in organizations %}
-    {% set url = h.url_for(organization.type + '_read', action='read', id=organization.name) %}
     <tr>
-      <td><a href="{{ url }}">{{ organization.display_name }}</a></td>
+      <td><a href="/publisher/{{ organization.name }}">{{ organization.display_name }}</a></td>
       <td>{{ h.get_publisher_organization_type(organization.id) }}</td>
       <td>{{ organization.packages }}</td>
     </tr>

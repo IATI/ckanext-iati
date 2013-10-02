@@ -22,7 +22,7 @@
     <tbody>
       {% for org in orgs %}
         <tr>
-          <td>{{ org['display_name'] }}</td>
+          <td><a href="/publisher/{{ org.name }}">{{ org.display_name }}</a></td>
           <td>{{ org['packages'] }}</td>
           <td><a href="{{ h.url_for(controller='ckanext.iati.controllers.spreadsheet:CSVController', action='download', publisher=org['name']) }}">Download</a></td>
         </tr>
