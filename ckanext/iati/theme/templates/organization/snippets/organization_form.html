@@ -12,10 +12,14 @@
   <fieldset>
     <legend>{{ _('Basic fields') }}</legend>
 
-    {{ form.input('title', label=_('Name'), id='field-title', value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}) }}
+    {{ form.input('name', label=_('Publisher Id (required) *'), id='field-name', value=data.name, error=errors.name) }}
+    <p class="help-block">This will be the <strong>unique identifier</strong> for the publisher. Where possible use a short abbreviation of your organisation's name. For example: "dfid" or "worldbank" Must be at least three characters long and lower case. Can include letters, numbers and also - (dash) and _ (underscore).</p>
 
-    {% set attrs = {'data-module': 'slug-preview-slug', 'data-module-prefix': 'http://iatiregistry.com/publisher/', 'data-module-placeholder': '<id>'} %}
-    {{ form.prepend('name', id='field-name', label=_('ID'), prepend=slug_prefix, placeholder=_('eg. my-dataset'), value=data.name, error=errors.name, attrs=attrs) }}
+    {{ form.input('title', label=_('Publisher Name'), id='field-title', value=data.title, error=errors.title) }}
+    <p class="help-block">The Name of the Organisation publishing the data.</p>
+
+    {{ form.input('publisher_iati_id', label=_('IATI Identifier'), id='field-publisher_iati_id', value=data.publisher_iati_id, error=errors.publisher_iati_id) }}
+    <p class="help-block">The organisation identifier used in the IATI-xml files to identify the reporting organisation. (&lt;reporting-org ref="!!!"&gt;).</p>
 
     {{ select('publisher_type', label=_('Source'), data=data) }}
     <p class="help-block">Primary - publishers authorised to report their own (or associated organisations') data. Secondary - publishers reporting the activities of other organisations.</p>
@@ -28,9 +32,6 @@
 
     {% snippet 'snippets/country_list.html', data=data, errors=errors, field_name='publisher_country' %}
     <p class="help-block">Choose from the dropdown the country in which the publisher is legally incorporated. Multilateral and regional organisations may choose a region at the bottom of the list.</p>
-
-    {{ form.input('publisher_iati_id', label=_('IATI Identifier'), id='field-publisher_iati_id', value=data.publisher_iati_id, error=errors.publisher_iati_id) }}
-    <p class="help-block">The organisation identifier used in the IATI-xml files to identify the reporting organisation. (&lt;reporting-org ref="!!!"&gt;).</p>
 
     {{ form.input('image_url', label=_('Image URL'), id='field-image-url', type='url', placeholder=_('http://example.com/my-image.jpg'), value=data.image_url, error=errors.image_url, classes=['control-full']) }}
     <p class="help-block">Link to an image to be used as the publisher logo (Optimum size: 200 x 120 px)</p>
