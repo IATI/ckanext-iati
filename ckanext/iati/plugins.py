@@ -201,6 +201,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
 
 class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
+    p.implements(p.IRoutes, inherit=True)
     p.implements(p.IDatasetForm, inherit=True)
     p.implements(p.IPackageController, inherit=True)
     p.implements(p.IConfigurer)
@@ -208,8 +209,20 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     p.implements(p.IActions)
     p.implements(p.IAuthFunctions)
 
-    ## IDatasetForm
+    ## IRoutes
+    def before_map(self, map):
 
+        reports_controller = 'ckanext.iati.controllers.reports:ReportsController'
+        map.connect('/report/issues', controller=reports_controller, action='issues_report')
+
+        # Redirects needed after updating the datasets name for some of the publishers
+        map.redirect('/dataset/wb-{code}','/dataset/worldbank-{code}',_redirect_code='301 Moved Permanently')
+        map.redirect('/dataset/minbuza_activities','/dataset/minbuza_nl-activities',_redirect_code='301 Moved Permanently')
+        map.redirect('/dataset/minbuza_organisation','/dataset/minbuza_nl-organisation',_redirect_code='301 Moved Permanently')
+
+        return map
+
+    ## IDatasetForm
     def is_fallback(self):
         return True
 

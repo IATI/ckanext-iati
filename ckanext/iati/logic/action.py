@@ -129,12 +129,12 @@ def issues_report_csv(context, data_dict):
         # Get all the publishers whose datasets have issues
         data_dict = {
             'q': 'issue_type:[\'\' TO *]',
-            'facet.field': 'groups',
+            'facet.field': ['organization'],
             'rows': 0,
         }
         result = logic.get_action('package_search')(context, data_dict)
         if result['count'] > 0:
-            publishers = result['facets']['groups']
+            publishers = result['facets']['organization']
             for publisher_name, count in publishers.iteritems():
                 result = packages_with_issues_for_a_publisher(context, publisher_name)
                 issues[publisher_name] = result['results']
@@ -181,7 +181,7 @@ def issues_report_csv(context, data_dict):
 def packages_with_issues_for_a_publisher(context, publisher_name):
         data_dict = {
             'q': 'issue_type:[\'\' TO *]',
-            'fq': 'groups:{0}'.format(publisher_name),
+            'fq': 'organization:{0}'.format(publisher_name),
             'rows': 1000,
         }
 
