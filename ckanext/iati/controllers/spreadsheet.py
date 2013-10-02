@@ -129,13 +129,22 @@ class CSVController(p.toolkit.BaseController):
         context = {'model': model, 'user': c.user or c.author}
         try:
             if publisher == 'all':
-                packages = p.toolkit.get_action('package_list')(context, {})
+                package_ids = p.toolkit.get_action('package_list')(context, {})
+                packages = []
+                for pkg_id in package_ids:
+                    try:
+                        package = p.toolkit.get_action('package_show')(context, {'id': pkg_id})
+                        package.pop('state', None)
+                        packages.append(package)
+                    except p.toolkit.NotAuthorized:
+                        log.warn('User %s not authorized to read package %s' % (c.user, pkg_id))
+                        continue
+
             elif publisher == 'template':
                 # Just return an empty CSV file with just the headers
                 packages = []
             else:
-                org = p.toolkit.get_action('organization_show')(context, {'id': publisher})
-                packages = [pkg['name'] for pkg in org['packages']]
+                packages = get_packages_for_org(context, publisher)
         except p.toolkit.ObjectNotFound:
             p.toolkit.abort(404, 'Organization not found')
 
@@ -149,13 +158,7 @@ class CSVController(p.toolkit.BaseController):
             writer.writerow(headers)
 
             packages.sort()
-            for pkg in packages:
-                try:
-                    package = p.toolkit.get_action('package_show')(context, {'id': pkg})
-                    package.pop('state', None)
-                except p.toolkit.NotAuthorized:
-                    log.warn('User %s not authorized to read package %s' % (c.user, pkg))
-                    continue
+            for package in packages:
                 if package:
                     row = {}
                     extras_dict = extras_to_dict(package)
@@ -326,3 +329,30 @@ class CSVController(p.toolkit.BaseController):
                 counts['added'].append(new_package['name'])
             log.debug('Package with name "%s" created' % package_dict['name'])
 
+def get_packages_for_org(context, org_name):
+    rows = 100
+    start = 0
+
+    packages = []
+
+    data_dict = {
+        'q':'*:*',
+        'fq': 'organization:' + org_name,
+        'rows': rows,
+        'start': start,
+    }
+
+    def do_query(context, data_dict):
+
+        return p.toolkit.get_action('package_search')(context, data_dict)
+
+    pending = True
+    while pending:
+        query = do_query(context, data_dict)
+        if len(query['results']):
+            packages.extend(query['results'])
+            data_dict['start'] += rows
+        else:
+            pending = False
+
+    return packages
