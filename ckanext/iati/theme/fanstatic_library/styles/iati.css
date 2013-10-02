@@ -9640,6 +9640,9 @@ form .info-block.info-inline {
   height: 30px;
   line-height: 21px;
 }
+.select2-container {
+  max-width: 558px;
+}
 #header {
   background: transparent url("../images/header.png") repeat-x 100% 100%;
   margin-bottom: 20px;
