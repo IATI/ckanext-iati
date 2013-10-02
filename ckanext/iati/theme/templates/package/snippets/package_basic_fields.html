@@ -1,8 +1,13 @@
 {% import 'macros/form.html' as form %}
 
-{% set extras_dict = h.extras_to_dict(data) %}
+{% if data.get('extras', [])|length %}
+  {% set extras_dict = h.extras_to_dict(data) %}
+{% else %}
+  {% set extras_dict = data %}
+{% endif %}
 
 <fieldset>
+
   <legend>Basic Information</legend>
 
   {{ form.input('name', id='field-name', label=_('File Id'), placeholder=_('eg. my-dataset'), value=data.name, error=errors.name) }}
@@ -48,6 +53,8 @@
   {% endif %}
 
   {% if show_organizations_selector %}
+
+  {% set existing_org = data.owner_org %}
   <div class="control-group">
     <label for="field-organizations" class="control-label">{{ _('Publisher') }}</label>
     <div class="controls">
