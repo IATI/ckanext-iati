@@ -381,6 +381,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         from ckanext.iati.logic import auth as iati_auth
 
         function_names = (
+            'package_create',
             'issues_report_csv',
         )
         return _get_module_functions(iati_auth, function_names)
