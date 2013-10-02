@@ -419,7 +419,6 @@ class IatiTheme(p.SingletonPlugin):
         facets_dict['country'] = p.toolkit._('Countries')
         facets_dict['issue_type'] = p.toolkit._('Issues')
 
-        facets_dict['res_format'] = p.toolkit._('Froat')
         return facets_dict
 
     def organization_facets(self, facets_dict, organization_type, package_type):
