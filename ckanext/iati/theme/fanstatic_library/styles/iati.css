@@ -7295,6 +7295,25 @@ fieldset[disabled] .btn-info.active {
 .label-danger[href]:focus {
   background-color: #c9302c;
 }
+.modal {
+  position: fixed;
+  background-color: white;
+  top: 15px;
+  left: 50%;
+  width: 500px;
+  margin-left: -250px;
+  bottom: inherit;
+  overflow: hidden;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+}
+.modal .modal-header {
+  padding: 20px;
+}
+.modal h3 {
+  margin: 0;
+}
 .tag {
   display: inline-block;
   margin-bottom: 4px;
