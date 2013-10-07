@@ -431,7 +431,8 @@ class IatiTheme(p.SingletonPlugin):
         facets_dict['publisher_source_type'] = p.toolkit._('Sources')
         facets_dict['publisher_organization_type'] = p.toolkit._('Organisation Types')
         facets_dict['country'] = p.toolkit._('Countries')
-        facets_dict['issue_type'] = p.toolkit._('Issues')
+        if p.toolkit.c.userobj and p.toolkit.c.userobj.sysadmin:
+            facets_dict['issue_type'] = p.toolkit._('Issues')
 
         return facets_dict
 
@@ -444,7 +445,8 @@ class IatiTheme(p.SingletonPlugin):
         facets_dict['filetype'] = p.toolkit._('File Types')
         facets_dict['publisher_source_type'] = p.toolkit._('Sources')
         facets_dict['country'] = p.toolkit._('Countries')
-        facets_dict['issue_type'] = p.toolkit._('Issues')
+        if p.toolkit.c.userobj and p.toolkit.c.userobj.sysadmin:
+            facets_dict['issue_type'] = p.toolkit._('Issues')
 
         return facets_dict
 
