@@ -70,15 +70,15 @@
   <p class="help-block">Choose your own Publisher Name from the Dropdown. Your Publisher record needs to have been created and authorised by the Registry administrator before you can publish datsets.</p>
   {% endif %}
 
-
   {% if show_visibility_selector %}
     {% block package_metadata_fields_visibility %}
       <div class="control-group">
         <label for="field-private" class="control-label">{{ _('Visibility') }}</label>
         <div class="controls">
+{{data.private}}
           <select id="field-private" name="private">
-            {% for option in [(false, _('Public')), (true, _('Private'))] %}
-            <option value="{{ option[0] }}" {% if option[0] == data.private %}selected="selected"{% endif %}>{{ option[1] }}</option>
+            {% for option in [('False', _('Public')), ('True', _('Private'))] %}
+            <option value="{{ option[0] }}" {% if option[0] == data.private|trim %}selected="selected"{% endif %}>{{ option[1] }}</option>
             {% endfor %}
           </select>
         </div>
