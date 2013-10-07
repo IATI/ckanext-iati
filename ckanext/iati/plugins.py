@@ -429,7 +429,7 @@ class IatiTheme(p.SingletonPlugin):
         facets_dict['organization'] = p.toolkit._('Publishers')
         facets_dict['secondary_publisher'] = p.toolkit._('Secondary Publishers')
         facets_dict['publisher_source_type'] = p.toolkit._('Sources')
-        facets_dict['publisher_organization_type'] = p.toolkit._('Organization Types')
+        facets_dict['publisher_organization_type'] = p.toolkit._('Organisation Types')
         facets_dict['country'] = p.toolkit._('Countries')
         facets_dict['issue_type'] = p.toolkit._('Issues')
 
