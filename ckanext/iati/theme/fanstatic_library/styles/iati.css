@@ -7795,6 +7795,12 @@ textarea {
 }
 .form-actions .control-required-message {
   float: left;
+  margin-left: 20px;
+  margin-bottom: 0;
+  line-height: 30px;
+}
+.form-actions .control-required-message:first-child {
+  margin-left: 0;
 }
 .form-actions {
   background: none;
@@ -7912,26 +7918,22 @@ textarea {
   padding: 7px 5px;
 }
 .simple-input .field .btn-search {
-  display: inline-block;
-  vertical-align: text-bottom;
-  position: relative;
-  top: 2px;
-  width: 16px;
-  height: 16px;
-  background-image: url("../../../../base/images/sprite-ckan-icons.png");
-  background-repeat: no-repeat;
-  background-position: 16px 16px;
-  background-position: -51px -16px;
   position: absolute;
   display: block;
   height: 17px;
   width: 17px;
+  padding: 0;
   top: 50%;
   right: 0;
-  margin-top: -8px;
+  margin-top: -10px;
   background-color: transparent;
   border: none;
-  text-indent: -999em;
+  color: #999;
+  -webkit-transition: color 0.2s ease-in;
+  transition: color 0.2s ease-in;
+}
+.simple-input .field .btn-search:hover {
+  color: #000;
 }
 .editor textarea {
   -webkit-border-radius: 3.75px 3.75px 0 0;
@@ -8465,6 +8467,10 @@ fieldset[disabled] .control-custom.disabled .checkbox.btn.active {
   font-size: 18px;
   font-weight: normal;
   color: #000000;
+}
+.search-form.no-bottom-border {
+  border-bottom-width: 0;
+  margin-bottom: 0;
 }
 .tertiary .control-order-by {
   float: none;
@@ -10226,6 +10232,26 @@ form .info-block.info-inline {
 }
 .resource-item .btn-group {
   top: 10px;
+}
+.search-form .group {
+  margin: 0 0 15px 0;
+}
+.search-form .group label {
+  float: left;
+  font-weight: normal;
+  width: 160px;
+  line-height: 28px;
+  margin-bottom: 0;
+}
+.search-form .group select {
+  display: block;
+  width: 528px;
+  height: 28px;
+}
+.search-form .search-input.search-giant .btn {
+  width: auto;
+  padding: 10px 15px;
+  font-size: 18px;
 }
 #home-welcome {
   padding: 15px 0 30px 0;
