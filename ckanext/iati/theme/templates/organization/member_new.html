@@ -1,10 +1,4 @@
-{% extends "organization/edit_base.html" %}
-
-{% import 'macros/form.html' as form %}
-
-{% set user = c.user_dict %}
-
-{% block subtitle %}{{ _('Edit Member') if user else _('Add Member') }} - {{ super() }}{% endblock %}
+{% ckan_extends %}
 
 {% block primary_content_inner %}
   {% link_for _('Back to all members'), controller='organization', action='members', id=organization.name, class_='btn pull-right', icon='arrow-left' %}
@@ -38,24 +32,4 @@
     </div>
   </form>
   {% endblock %}
-{% endblock %}
-
-{% block secondary_content %}
-{{ super() }}
-<div class="module module-narrow module-shallow">
-  <h2 class="module-heading">
-    <i class="icon-large icon-info-sign"></i>
-    {{ _('What are roles?') }}
-  </h2>
-  <div class="module-content">
-    {% trans %}
-      <p><strong>Admin:</strong> Can add/edit and delete datasets, as well as
-        manage organization members.</p>
-      <p><strong>Editor:</strong> Can add and edit datasets, but not manage
-        organization members.</p>
-      <p><strong>Member:</strong> Can view the organization's private
-        datasets, but not add new datasets.</p>
-    {% endtrans %}
-  </div>
-</div>
 {% endblock %}
