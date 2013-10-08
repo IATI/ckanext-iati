@@ -39,10 +39,15 @@
                 {% if c.userobj.sysadmin %}
                   <li>
                     <a href="{{ h.url_for(controller='admin', action='index') }}" title="{{ _('Sysadmin settings') }}">
-                      Sysadmin settings
+                      Sysadmin
                     </a>
                   </li>
                 {% endif %}
+                <li>
+                  <a href="{{ h.url_for(controller='user', action='dashboard') }}" title="My account">
+                    Dashboard
+                  </a>
+                </li>
                 <li>
                   <a href="{{ h.url_for(controller='user', action='read', id=c.userobj.name) }}" title="My account">
                     My account
