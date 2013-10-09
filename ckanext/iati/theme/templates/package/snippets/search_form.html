@@ -14,7 +14,7 @@
       </div>
 
       {% for facet in facets['titles'] %}
-        {% with items = h.get_facet_items_dict(facet) %}
+        {% with items = h.get_facet_items_dict(facet)|sort(attribute='display_name') %}
           <div class="group">
             <label for="{{ facet }}-field">{{ facets['titles'][facet] }}</label>
             <select id="{{ facet }}-field" name="{{ facet }}">
@@ -23,6 +23,9 @@
               <option {% if item.active %}selected {% endif %}value="{{ item.name }}">{{ item.display_name }} ({{ item.count }})</option>
               {% endfor %}
             </select>
+            {% if facet == 'issue_type' %}
+            <div class="sysadmin-text">Only sysadmins can see this filter</div>
+            {% endif %}
           </div>
         {% endwith %}
       {% endfor %}
