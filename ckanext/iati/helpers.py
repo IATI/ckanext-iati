@@ -128,12 +128,12 @@ def format_file_size(size):
         return None
     try:
         size = float(size)
-    except ValueError,e:
+    except ValueError:
         return None
 
     for label in ['bytes','KB','MB','GB','TB']:
         if size < 1024.0:
-            return "%3.1f%s" % (size, label)
+            return "%3.1f %s" % (size, label)
         size /= 1024.0
 
 def extras_to_dict(pkg):
