@@ -149,3 +149,12 @@ def extras_to_list(extras):
         extras_list.append(dict(key=key, value=extras[key]))
     return extras_list
 
+def publishers_pagination(q):
+    '''
+        Hack alert: the group controller does not currently offer a way to
+        customize the pagination links (we need a proper IGroupForm interface
+        with types support), so on the meantime we tweak the output of the
+        default pagination
+    '''
+    return p.toolkit.c.page.pager(q=q).replace('organization', 'publisher')
+

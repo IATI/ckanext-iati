@@ -360,6 +360,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'SI_number_span',
             'format_file_size',
             'extras_to_dict',
+            'publishers_pagination',
         )
         return _get_module_functions(iati_helpers, function_names)
 
