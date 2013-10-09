@@ -38,6 +38,14 @@ def get_issue_title(code):
 def get_licenses():
     return [('', '')] + model.Package.get_license_options()
 
+def get_publisher_organization_type(group_id):
+    group = model.Group.get(group_id)
+    if group:
+        org_type = group.extras.get('publisher_organization_type')
+        if org_type:
+            return get_organization_type_title(org_type)
+    return ''
+
 def is_route_active(menu_item):
     _menu_items = config.get('routes.named_routes')
     if menu_item not in _menu_items:
@@ -120,12 +128,12 @@ def format_file_size(size):
         return None
     try:
         size = float(size)
-    except ValueError,e:
+    except ValueError:
         return None
 
     for label in ['bytes','KB','MB','GB','TB']:
         if size < 1024.0:
-            return "%3.1f%s" % (size, label)
+            return "%3.1f %s" % (size, label)
         size /= 1024.0
 
 def extras_to_dict(pkg):
@@ -140,4 +148,13 @@ def extras_to_list(extras):
     for key in extras:
         extras_list.append(dict(key=key, value=extras[key]))
     return extras_list
+
+def publishers_pagination(q):
+    '''
+        Hack alert: the group controller does not currently offer a way to
+        customize the pagination links (we need a proper IGroupForm interface
+        with types support), so on the meantime we tweak the output of the
+        default pagination
+    '''
+    return p.toolkit.c.page.pager(q=q).replace('organization', 'publisher')
 

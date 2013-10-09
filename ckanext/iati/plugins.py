@@ -7,7 +7,7 @@ from ckan.lib.plugins import DefaultGroupForm
 
 import ckan.plugins as p
 
-from ckanext.iati.logic.validators import db_date, iati_publisher_state_validator, iati_owner_org_validator
+from ckanext.iati.logic.validators import db_date, iati_publisher_state_validator, iati_owner_org_validator, iati_dataset_name
 from ckanext.iati.logic.converters import checkbox_value, strip
 import ckanext.iati.helpers as iati_helpers
 
@@ -201,6 +201,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
 
 class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
+    p.implements(p.IRoutes, inherit=True)
     p.implements(p.IDatasetForm, inherit=True)
     p.implements(p.IPackageController, inherit=True)
     p.implements(p.IConfigurer)
@@ -208,8 +209,20 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     p.implements(p.IActions)
     p.implements(p.IAuthFunctions)
 
-    ## IDatasetForm
+    ## IRoutes
+    def before_map(self, map):
 
+        reports_controller = 'ckanext.iati.controllers.reports:ReportsController'
+        map.connect('/report/issues', controller=reports_controller, action='issues_report')
+
+        # Redirects needed after updating the datasets name for some of the publishers
+        map.redirect('/dataset/wb-{code}','/dataset/worldbank-{code}',_redirect_code='301 Moved Permanently')
+        map.redirect('/dataset/minbuza_activities','/dataset/minbuza_nl-activities',_redirect_code='301 Moved Permanently')
+        map.redirect('/dataset/minbuza_organisation','/dataset/minbuza_nl-organisation',_redirect_code='301 Moved Permanently')
+
+        return map
+
+    ## IDatasetForm
     def is_fallback(self):
         return True
 
@@ -243,6 +256,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'issue_date': [_ignore_missing, _convert_to_extras],
         })
 
+        schema['name'].append(iati_dataset_name)
         schema['owner_org'].append(iati_owner_org_validator)
 
 
@@ -338,6 +352,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_publisher_source_type_title',
             'get_organization_type_title',
             'get_issue_title',
+            'get_publisher_organization_type',
             'return_select_options',
             'get_config_option',
             'check_nav_dropdown',
@@ -345,6 +360,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'SI_number_span',
             'format_file_size',
             'extras_to_dict',
+            'publishers_pagination',
         )
         return _get_module_functions(iati_helpers, function_names)
 
@@ -366,6 +382,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         from ckanext.iati.logic import auth as iati_auth
 
         function_names = (
+            'package_create',
             'issues_report_csv',
         )
         return _get_module_functions(iati_auth, function_names)
@@ -413,9 +430,10 @@ class IatiTheme(p.SingletonPlugin):
         facets_dict['organization'] = p.toolkit._('Publishers')
         facets_dict['secondary_publisher'] = p.toolkit._('Secondary Publishers')
         facets_dict['publisher_source_type'] = p.toolkit._('Sources')
-        facets_dict['publisher_organization_type'] = p.toolkit._('Organization Types')
+        facets_dict['publisher_organization_type'] = p.toolkit._('Organisation Types')
         facets_dict['country'] = p.toolkit._('Countries')
-        facets_dict['issue_type'] = p.toolkit._('Issues')
+        if p.toolkit.c.userobj and p.toolkit.c.userobj.sysadmin:
+            facets_dict['issue_type'] = p.toolkit._('Issues')
 
         return facets_dict
 
@@ -428,7 +446,8 @@ class IatiTheme(p.SingletonPlugin):
         facets_dict['filetype'] = p.toolkit._('File Types')
         facets_dict['publisher_source_type'] = p.toolkit._('Sources')
         facets_dict['country'] = p.toolkit._('Countries')
-        facets_dict['issue_type'] = p.toolkit._('Issues')
+        if p.toolkit.c.userobj and p.toolkit.c.userobj.sysadmin:
+            facets_dict['issue_type'] = p.toolkit._('Issues')
 
         return facets_dict
 

@@ -7295,6 +7295,25 @@ fieldset[disabled] .btn-info.active {
 .label-danger[href]:focus {
   background-color: #c9302c;
 }
+.modal {
+  position: fixed;
+  background-color: white;
+  top: 15px;
+  left: 50%;
+  width: 500px;
+  margin-left: -250px;
+  bottom: inherit;
+  overflow: hidden;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+}
+.modal .modal-header {
+  padding: 20px;
+}
+.modal h3 {
+  margin: 0;
+}
 .tag {
   display: inline-block;
   margin-bottom: 4px;
@@ -9480,6 +9499,15 @@ iframe {
   width: 688px;
   float: left;
 }
+[role=main] .primary .primary {
+  width: 480px;
+  margin-right: 20px;
+}
+[role=main] .primary .tertiary {
+  float: left;
+  width: 188px;
+  font-size: 12px;
+}
 [role=main] .secondary {
   width: 222px;
   margin-left: 0;
@@ -9636,6 +9664,9 @@ form .info-block.info-inline {
   width: 30px;
   height: 30px;
   line-height: 21px;
+}
+.select2-container {
+  max-width: 558px;
 }
 #header {
   background: transparent url("../images/header.png") repeat-x 100% 100%;
@@ -10393,6 +10424,18 @@ form .info-block.info-inline {
 }
 #home-apps .media-item {
   width: 304px;
+}
+.table-sorted .header {
+  cursor: pointer;
+  padding-left: 20px !important;
+}
+.table-sorted .headerSortDown {
+  color: black !important;
+  background: transparent url(../images/desc.png) left center no-repeat;
+}
+.table-sorted .headerSortUp {
+  color: black !important;
+  background: transparent url(../images/asc.png) left center no-repeat;
 }
 .ie7-clearfix {
   *zoom: 1;

@@ -1,0 +1,31 @@
+{#
+Display a grid of organization items.
+
+organizations - A list of organizations.
+
+Example:
+
+    {% snippet "organization/snippets/organization_list.html" %}
+
+#}
+<table class="table table-hover table-bordered table-striped table-sorted" data-module="table-sorter">
+  <thead>
+    <tr>
+      <th title="Sort by publisher name">Publisher</th>
+      <th title="Sort by organisation type">Organisation Type</th>
+      <th title="Sort by number of published datasets">Datasets</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  {% for organization in organizations %}
+    <tr>
+      <td><a href="/publisher/{{ organization.name }}">{{ organization.display_name }}</a></td>
+      <td>{{ h.get_publisher_organization_type(organization.id) }}</td>
+      <td>{{ organization.packages }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% resource 'ckanext-iati/table_sorter' %}

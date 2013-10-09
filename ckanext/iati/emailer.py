@@ -1,8 +1,12 @@
+import logging
 import smtplib
-
+from socket import error as socket_error
 from email.mime.text import MIMEText
 
 from pylons import config
+
+
+log = logging.getLogger(__name__)
 
 FROM = config.get('iati.email', 'no-reply@iatiregistry.org')
 SMTP_SERVER = config.get('smtp_server', 'localhost')
@@ -18,9 +22,12 @@ def send_email(content, subject, to, from_=FROM):
     msg['From'] = from_
     msg['To'] = ','.join(to)
 
-    s = smtplib.SMTP(SMTP_SERVER)
-    s.sendmail(from_, to, msg.as_string())
-    s.quit()
+    try:
+        s = smtplib.SMTP(SMTP_SERVER)
+        s.sendmail(from_, to, msg.as_string())
+        s.quit()
+    except socket_error:
+        log.critical('Could not connect to email server. Have you configured the SMTP settings?')
 
 new_publisher_body_template = '''
 Dear {sysadmin_name},

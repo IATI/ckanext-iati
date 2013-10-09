@@ -33,9 +33,13 @@
 
   <p>
     Last modified: {{ h.get_pkg_dict_extra(package, 'data_updated', '-') }}
-    &middot;
-    No. of Activities: {{ h.get_pkg_dict_extra(package, 'activity_count', '-') }}
+    {% if (h.get_pkg_dict_extra(package, 'filetype') == 'activity') and h.get_pkg_dict_extra(package, 'activity_count') %}
+      &middot;
+      No. of Activities: {{ h.get_pkg_dict_extra(package, 'activity_count', '-') }}
+    {% endif %}
   </p>
+
+  {% snippet 'package/snippets/issue.html', package=package %}
 
   {% if package.resources and not hide_resources %}
     {% for resource in package.resources %}

@@ -13,7 +13,6 @@ class PublisherController(BaseController):
             c.members = logic.get_action('member_list')(
                 context, {'id': id, 'object_type': 'user'}
             )
-            print(c.members)
             c.group_dict = logic.get_action('organization_show')(context, {'id': id})
         except logic.NotAuthorized:
             abort(401, _('Unauthorized to read group members %s') % '')
