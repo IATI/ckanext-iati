@@ -1,0 +1,1 @@
+-e git+https://github.com/okfn/ckanext-archiver#egg=ckanext-archiver
