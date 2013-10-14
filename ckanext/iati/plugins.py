@@ -227,6 +227,13 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         map.redirect('/feed/country/{id}.atom', '/feeds/custom.atom?extras_country={id}', _redirect_code='301 Moved Permanently')
         map.redirect('/feed/organisation_type/{id}.atom', '/feeds/custom.atom?extras_publisher_organization_type={id}', _redirect_code='301 Moved Permanently')
 
+
+        # Redirect static pages to ckanext-pages ones
+        map.redirect('/using-iati-data', '/pages/using-iati-data', _redirect_code='301 Moved Permanently')
+        map.redirect('/about-2', '/pages/about', _redirect_code='301 Moved Permanently')
+        map.redirect('/registry-api', '/pages/api', _redirect_code='301 Moved Permanently')
+        map.redirect('/help', '/pages/help', _redirect_code='301 Moved Permanently')
+
         return map
 
     ## IDatasetForm
