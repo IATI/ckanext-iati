@@ -368,6 +368,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'format_file_size',
             'extras_to_dict',
             'publishers_pagination',
+            'build_nav_main_iati',
+
         )
         return _get_module_functions(iati_helpers, function_names)
 

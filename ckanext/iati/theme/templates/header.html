@@ -1,11 +1,5 @@
 {% ckan_extends %}
 
-{% macro nav_item(route, label) %}
-  {% set url = h.url_for(route) %}
-  {% set is_active = h.is_route_active(route) %}
-  <a href="{{ url }}"{% if is_active %} class="active"{% endif %}>{{ label }}</a>
-{% endmacro %}
-
 {% block header_wrapper %}
   <a href="#content" class="hide">{{ _('Skip to primary content') }}</a>
   <header id="header">
@@ -86,28 +80,12 @@
                 ('organization_new', _('Create a new publisher')) if can_organization_create else empty
               ] %}
 
-              {% set nav = [
-                ('home', _('Home'), home_dropdown),
-                ('search', _('Data'), data_dropdown),
-                ('publishers_index', _('Publishers'), publisher_dropdown),
-                ('using-iati-data', _('Using IATI Data'), false),
-                ('about-2', _('About'), false),
-                ('api', _('API'), false),
-                ('help', _('Help'), false)
-              ] %}
-              {% for route, label, check_dropdown in nav %}
-                {% set dropdown = h.check_nav_dropdown(check_dropdown) %}
-                <li>
-                  {{ nav_item(route, label) }}
-                  {% if dropdown %}
-                    <ul class="dropdown">
-                      {% for route, label in dropdown %}
-                        <li>{{ nav_item(route, label) }}</li>
-                      {% endfor %}
-                    </ul>
-                  {% endif %}
-                </li>
-              {% endfor %}
+            {{ h.build_nav_main_iati(
+              ('home', _('Home'), home_dropdown),
+              ('search', _('Data'), data_dropdown),
+              ('publishers_index', _('Publishers'), publisher_dropdown),
+            ) }}
+
             </ul>
           {% endblock %}
         </nav>

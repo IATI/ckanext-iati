@@ -158,3 +158,49 @@ def publishers_pagination(q):
     '''
     return p.toolkit.c.page.pager(q=q).replace('organization', 'publisher')
 
+def build_nav_main_iati(*args):
+    '''
+        Navigation bar builder for iati, including support for
+        dropdowns and custom pages.
+    '''
+    def nav_item(route, label):
+        output = ''
+        output += helpers.literal('<a href="{url}"'.format(url=helpers.url_for(route)))
+        if is_route_active(route):
+            output +=helpers.literal(' class="active" ')
+        output +=helpers.literal('>{label}</a>'.format(label=label))
+        return output
+
+    output = ''
+    for route, label, dropdown in args:
+        output += helpers.literal('<li>')
+        output += nav_item(route, label)
+        if dropdown:
+            output += helpers.literal('<ul class="dropdown">')
+            for route, label in dropdown:
+                output += helpers.literal('<li>')
+                output += nav_item(route, label)
+                output += helpers.literal('</li>')
+            output += helpers.literal('</ul>')
+        output += helpers.literal('</li>')
+
+    # do not display any private datasets in menu even for sysadmins
+    pages_list = p.toolkit.get_action('ckanext_pages_list')(None, {'order': True, 'private': False})
+
+    page_name = ''
+
+    if (p.toolkit.c.action == 'pages_show'
+       and p.toolkit.c.controller == 'ckanext.pages.controller:PagesController'):
+        page_name = p.toolkit.c.environ['routes.url'].current().split('/')[-1]
+
+    for page in pages_list:
+        link = helpers.link_to(page.get('title'),
+                         helpers.url_for('/pages/' + str(page['name'])))
+
+        if page['name'] == page_name:
+            li = helpers.literal('<li class="active">') + link + helpers.literal('</li>')
+        else:
+            li = helpers.literal('<li>') + link + helpers.literal('</li>')
+        output = output + li
+
+    return output
