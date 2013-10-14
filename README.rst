@@ -7,7 +7,7 @@ International Aid Transparency Initiative (IATI) Registry Extension for CKAN
 * `Configuration`_
 * `General workflow`_
 * `Main customizations`_
-* `Notes`_
+* `Copying and License`_
 
 Installation
 ------------
@@ -15,7 +15,7 @@ Installation
 The current version of ckanext-iati has been developed and tested again
 **CKAN 2.1.x**. We assume a running CKAN 2.1.x instance.
 
-The installation has the following steps, assuming you have a running 
+The installation has the following steps, assuming you have a running
 copy of CKAN:
 
 #. Install the extension from its source repository::
@@ -69,9 +69,9 @@ you will need to add it to the ini file::
 These are the configuration options used by the extension (generic options
 like ``ckan.site_id``, ``solr_url``, etc are not included)::
 
-    
+
     # Load only these four plugins
-    ckan.plugins = iati_publishers iati_datasets iati_theme iati_csv 
+    ckan.plugins = iati_publishers iati_datasets iati_theme iati_csv
 
     # Needed for the search facets to be displayed properly until #599 is
     # fixed on CKAN core
@@ -109,7 +109,7 @@ General workflow
 
 The registry holds *Datasets* for aid spending data following the
 `IATI Standard`_. Each CKAN dataset has a single resource, an IATI XML file,
-which can be of type 'activity' or 'organisation'. 
+which can be of type 'activity' or 'organisation'.
 
 Datasets are created by *Publishers*, implemented with Organizations in CKAN.
 
@@ -194,7 +194,7 @@ the ones of their publisher) in a CSV file.
 Once updated, the file can be reuploaded and new datasets will be created or
 existing ones updated.
 
-The code that handles this is in 
+The code that handles this is in
 ``ckanext-iati/ckanext/iati/controllers/spreadsheet.py``
 
 Daily archiver and issue checker
@@ -236,10 +236,16 @@ to the relevant user crontab (generally ``okfn``)::
 
     05 00  *   *   *  /usr/lib/ckan/iati/bin/paster --plugin=ckanext-iati iati-archiver update -c /etc/ckan/iati/production.ini >> /tmp/iati_archiver_2_out.log 2>&1
 
-    
-    
-Notes
------
+
+Copying and License
+-------------------
+
+This material is copyright (c) 2010-2013 Open Knowledge Foundation.
+
+It is open and licensed under the GNU Affero General Public License (AGPL) v3.0
+whose full text may be found at:
+
+http://www.fsf.org/licensing/licenses/agpl-3.0.html
 
 This extension uses the `TableSorter`_ jQuery plugin by Christian Bach,
 released under the `MIT license`_.
