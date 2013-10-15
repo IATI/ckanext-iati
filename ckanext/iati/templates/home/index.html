@@ -9,6 +9,14 @@
     <py:def function="body_class">home</py:def>
 
     <div py:match="pre_content">
+      <py:with vars="messages = list(h._flash.pop_messages())">
+      <div class="flash-banner-box" py:if="len(messages)">
+        <div class="flash-banner ${m.category}" py:for="m in messages">
+          ${m.message}
+        </div>
+      </div>
+      </py:with>
+
         <div id="home-strapline">
             <h1>Welcome to <strong>IATI Data Registry</strong>, the place to find IATI raw data in XML format.</h1>
         </div>
