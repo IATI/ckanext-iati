@@ -23,6 +23,9 @@
 {% block content %}
 
   <div id="home-welcome" class="container">
+
+    {{ self.flash() }}
+
     {% trans %}
       <h1>Welcome to <strong>IATI Data Registry</strong>, the place to find IATI raw data in XML format.</h1>
     {% endtrans %}
