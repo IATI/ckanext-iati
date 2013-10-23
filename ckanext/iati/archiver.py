@@ -162,7 +162,7 @@ def archive_package(package_id, context, consecutive_errors=0):
         last_updated_date = None
         for date in dates:
             try:
-                check_date = date_parser(date)
+                check_date = date_parser(date, ignoretz=True)
                 if check_date < datetime.datetime.now():
                     last_updated_date = check_date
                     break
