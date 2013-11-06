@@ -81,7 +81,7 @@ def organization_update(context, data_dict):
 def _remove_extras_from_data_dict(data_dict):
     # Remove these extras, as they are always inherited from the publishers
     # and we don't want to store them
-    extras_to_remove = ('publishertype',
+    extras_to_remove = ('publisher_source_type',
                         'publisher_organization_type',
                         'publisher_country',
                         'publisher_iati_id',
