@@ -8,6 +8,7 @@ from pylons import config
 from ckan import logic
 from ckan.logic.action.get import package_show as package_show_core
 from ckan.logic.action.get import package_show_rest as package_show_rest_core
+from ckan.logic.action.get import group_list as group_list_core
 
 def package_show(context, data_dict):
 
@@ -120,4 +121,13 @@ def packages_with_issues_for_a_publisher(context, publisher_name):
         }
 
         return logic.get_action('package_search')(context, data_dict)
+
+def group_list(context, data_dict):
+
+    group_list = group_list_core(context, data_dict)
+
+    # Remove the pending ones
+    group_list = [group for group in group_list if group['state'] == 'active']
+
+    return group_list
 
