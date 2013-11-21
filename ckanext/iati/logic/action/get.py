@@ -8,6 +8,7 @@ from pylons import config
 from ckan import logic
 from ckan.logic.action.get import package_show as package_show_core
 from ckan.logic.action.get import package_show_rest as package_show_rest_core
+from ckan.logic.action.get import group_list as group_list_core
 
 def package_show(context, data_dict):
 
@@ -41,6 +42,16 @@ def package_show_rest(context, data_dict):
         package_dict['extras'].update(new_extras)
 
     return package_dict
+
+def group_list(context, data_dict):
+
+    group_list = group_list_core(context, data_dict)
+
+    # Remove the pending ones
+    if len(group_list) and isinstance(group_list[0], dict):
+        group_list = [group for group in group_list if group['state'] == 'active']
+
+    return group_list
 
 def issues_report_csv(context, data_dict):
 
