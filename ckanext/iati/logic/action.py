@@ -50,7 +50,7 @@ def organization_create(context, data_dict):
         # Not a sysadmin, create as pending and notify sysadmins (if all went
         # well)
         context['__iati_state_pending'] = True
-        data_dict['state'] = 'pending'
+        data_dict['state'] = 'approval_needed'
         notify_sysadmins = True
     org_dict = create_core.organization_create(context, data_dict)
 
@@ -71,7 +71,7 @@ def organization_update(context, data_dict):
     new_org_dict = update_core.organization_update(context, data_dict)
     new_state = new_org_dict.get('state')
 
-    if old_state == 'pending' and new_state == 'active':
+    if old_state == 'approval_needed' and new_state == 'active':
         # Notify users
         _send_activation_notification_email(context, new_org_dict)
         h.flash_success('Publisher activated, a notification email has been sent to its administrators.')

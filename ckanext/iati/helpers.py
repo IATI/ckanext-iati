@@ -75,7 +75,7 @@ def return_select_options(name, data):
     elif name == 'state':
         return_options = [
             { 'text': 'Active', 'value': 'active' },
-            { 'text': 'Pending', 'value': 'pending' },
+            { 'text': 'Pending', 'value': 'approval_needed' },
             { 'text': 'Deleted', 'value': 'deleted' },
         ]
         return_selected = data.get('state', 'none')

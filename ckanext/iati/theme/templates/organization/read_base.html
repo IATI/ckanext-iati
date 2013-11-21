@@ -1,7 +1,7 @@
 {% ckan_extends %}
 
 {% block primary_content %}
-    {% if c.group_dict.state == 'pending' %}
+    {% if c.group_dict.state == 'approval_needed' %}
     <div class="alert alert-warning m-top">
     This publisher is pending administrator approval. Until it is approved, it is hidden from
     the list of publishers and it cannot publish activity records.
