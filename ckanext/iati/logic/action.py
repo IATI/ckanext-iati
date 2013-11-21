@@ -78,16 +78,6 @@ def organization_update(context, data_dict):
 
     return new_org_dict
 
-
-def organization_list(context, data_dict):
-
-    org_list = get_core.organization_list(context, data_dict)
-
-    # Remove the pending ones
-    org_list = [org for org in org_list if org['state'] == 'active']
-
-    return org_list
-
 def _remove_extras_from_data_dict(data_dict):
     # Remove these extras, as they are always inherited from the publishers
     # and we don't want to store them
