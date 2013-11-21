@@ -106,7 +106,6 @@ class IatiActions(SingletonPlugin):
         return {
             'package_show': get_iati.package_show,
             'package_show_rest': get_iati.package_show_rest,
-            'group_list': get_iati.group_list,
             'issues_report_csv': get_iati.issues_report_csv,
         }
 
