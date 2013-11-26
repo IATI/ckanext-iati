@@ -10492,6 +10492,13 @@ form .info-block.info-inline {
 .select2-container {
   max-width: 558px;
 }
+.field-xml {
+  font-weight: normal;
+  font-size: small;
+  font-style: italic;
+  color: #2B2B2B;
+  margin-right: 5px;
+}
 #header {
   background: transparent url("../images/header.png") repeat-x 100% 100%;
   margin-bottom: 20px;

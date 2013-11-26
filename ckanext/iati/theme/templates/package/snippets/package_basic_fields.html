@@ -11,13 +11,17 @@
   <legend>Basic Information</legend>
 
   {{ form.input('name', id='field-name', label=_('File Id'), placeholder=_('eg. my-dataset'), value=data.name, error=errors.name) }}
-  <p class="help-block">A unique identifier for the activity record. It must be prefixed with your Publisher Id and a hyphen. It is recommended that you use "org" for your organisation file and the country or region code for segmented activity datasets. 2+ characters, lowercase, using only 'a-z0-9' and '_' . (eg dfid-ao, wb-org, unops-998).</p>
+  <p class="help-block"><span class="field-xml">[registry-file-id]</span> A unique identifier for the activity record. It must be prefixed with your Publisher Id and a hyphen. It is recommended that you use "org" for your organisation file and the country or region code for segmented activity datasets. 2+ characters, lowercase, using only 'a-z0-9' and '_' . (eg dfid-ao, wb-org, unops-998).
 
-  {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}) }}
-  <p class="help-block">The title of the dataset. It should not be a description though - save that for the Notes field. Do not give a trailing full stop.</p>
+  </p>
+
+  {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full'], attrs={'data-module': 'slug-preview-target'}) }}
+  <p class="help-block"><span class="field-xml">[title]</span> The title of the dataset. It should not be a description though - save that for the Notes field. Do not give a trailing full stop.
+
+  </p>
 
   {{ form.input('author_email', id='field-author_email', label=_('Contact e-mail'), value=data.author_email, error=errors.author_email) }}
-    <p class="help-block">A contact address for anyone wishing to query you about your data.</p>
+    <p class="help-block"><span class="field-xml">[contact-email]</span> A contact address for anyone wishing to query you about your data.</p>
 
   <div class="control-group">
     {% set error = errors.filetype %}
@@ -30,7 +34,7 @@
       {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
     </div>
   </div>
-  <p class="help-block">Choose from dropdown. Either "Activity" or "Organisation".</p>
+  <p class="help-block"><span class="field-xml">[file-type]</span> Choose from dropdown. Either "Activity" or "Organisation".</p>
 
 </fieldset>
 
@@ -97,12 +101,13 @@
   <legend>Details</legend>
 
   {% snippet 'snippets/country_list.html', data=extras_dict, errors=errors, field_name='country' %}
+  <p class="help-block"><span class="field-xml">[recipient-country]</span> Recipient country.</p>
 
   {{ form.input('data_updated', id='field-date-uploaded', label=_('Date Uploaded'), value=extras_dict.get('data_updated'), error=errors.data_updated, classes=['control-full']) }}
-  <p class="help-block">Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
+  <p class="help-block"><span class="field-xml">[last-updated-datetime]</span> Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
 
   {{ form.input('language', id='field-language', label=_('Language'), value=extras_dict.get('language'), error=errors.language, classes=['control-full']) }}
-  <p class="help-block">The ISO 639-1 code for the default language of the file (e.g. 'en').</p>
+  <p class="help-block"><span class="field-xml">[default-language]</span> The ISO 639-1 code for the default language of the file (e.g. 'en').</p>
 
   {% set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': '', 'data-module-source': '/api/2/util/tag/autocomplete?incomplete=?'} %}
   {{ form.input('tag_string', id='field-tags', label=_('Tags'), placeholder=_('eg. economy, mental health, government'), value=data.tag_string, error=errors.tags, classes=['control-full'], attrs=tag_attrs) }}
@@ -136,13 +141,13 @@
   <legend>Verification and Analysis</legend>
 
   {{ form.input('activity_period-from', id='field-activity_period-from', label=_('Activity Period From'), value=extras_dict.get('activity_period-from'), error=errors.activity_period_from, classes=['control-full']) }}
-  <p class="help-block">Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
+  <p class="help-block"><span class="field-xml">[activiy-period-start]</span> Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
 
   {{ form.input('activity_period-to', id='field-activity-period_to', label=_('Activity Period To'), value=extras_dict.get('activity_period-to'), error=errors.activity_period_to, classes=['control-full']) }}
-  <p class="help-block">Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
+  <p class="help-block"><span class="field-xml">[activiy-period-end]</span> Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
 
   {{ form.input('activity_count', id='field-activity-count', label=_('Num. Activities'), value=extras_dict.get('activity_count'), error=errors.activity_count, classes=['control-full']) }}
-  <p class="help-block">A count of the number of activities reported.</p>
+  <p class="help-block"><span class="field-xml">[activiy-count]</span> A count of the number of activities reported.</p>
 
   {{ form.checkbox('archive_file', id='field-archive_file', label=_('Archive'), value="yes", checked=(true if extras_dict.get('archive_file') == "yes" else false), error=errors.archive_file, classes=['control-full']) }}
 
