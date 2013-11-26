@@ -158,3 +158,40 @@ def publishers_pagination(q):
     '''
     return p.toolkit.c.page.pager(q=q).replace('organization', 'publisher')
 
+def get_global_facet_items_dict(facet, limit=10, exclude_active=False, search_facets=None):
+    '''
+        Modified version of get_facet_items_dict that allows facets to be
+        passed as params as opposed to always use the ones on c.
+
+    '''
+    if not search_facets:
+        search_facets = p.toolkit.c.search_facets
+
+    if not search_facets or \
+            not search_facets.get(facet) or \
+            not search_facets.get(facet).get('items'):
+        return []
+
+    facets = []
+    for facet_item in search_facets.get(facet)['items']:
+        if not len(facet_item['name'].strip()):
+            continue
+        if not (facet, facet_item['name']) in p.toolkit.request.params.items():
+            facets.append(dict(active=False, **facet_item))
+        elif not exclude_active:
+            facets.append(dict(active=True, **facet_item))
+    facets = sorted(facets, key=lambda item: item['count'], reverse=True)
+    if p.toolkit.c.search_facets_limits:
+        limit = p.toolkit.c.search_facets_limits.get(facet)
+    if limit:
+        return facets[:limit]
+    else:
+        return facets
+
+def get_global_search_facets():
+
+    query = p.toolkit.get_action('package_search')({}, {
+        'q': '*:*',
+        'facet.field': p.toolkit.c.facet_titles.keys()
+    })
+    return query['search_facets']

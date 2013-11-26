@@ -13,8 +13,9 @@
         <input type="text" class="search" name="q" value="{{ query }}" autocomplete="off" placeholder="{{ placeholder }}">
       </div>
 
+      {% set global_search_facets = h.get_global_search_facets() %}
       {% for facet in facets['titles'] %}
-        {% with items = h.get_facet_items_dict(facet)|sort(attribute='display_name') %}
+        {% with items = h.get_global_facet_items_dict(facet, search_facets=global_search_facets)|sort(attribute='display_name') %}
           <div class="group">
             <label for="{{ facet }}-field">{{ facets['titles'][facet] }}</label>
             <select id="{{ facet }}-field" name="{{ facet }}">
