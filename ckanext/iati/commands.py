@@ -1,8 +1,11 @@
-import os
 import sys
+import logging
 from ckan.lib.cli import CkanCommand
 
 from ckanext.iati.archiver import run as run_archiver
+
+log = logging.getLogger('iati_archiver')
+
 
 class Archiver(CkanCommand):
     '''
@@ -22,12 +25,11 @@ class Archiver(CkanCommand):
     max_args = 2
     pkg_names = []
 
-    def __init__(self,name):
-
-        super(Archiver,self).__init__(name)
-
+    def __init__(self, name):
+        super(Archiver, self).__init__(name)
         self.parser.add_option('-p', '--publisher', dest='publisher',
-            action='store', default=None, help='Archive datasets only from this publisher')
+                               action='store', default=None, help='Archive '
+                               'datasets only from this publisher')
 
     def command(self):
         '''
@@ -47,6 +49,4 @@ class Archiver(CkanCommand):
             if not result:
                 sys.exit(1)
         else:
-            log.error('Command %s not recognized' % (cmd,))
-
-
+            log.error('Command {0} not recognized'.format(cmd))

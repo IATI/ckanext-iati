@@ -1,0 +1,68 @@
+{% ckan_extends %}
+
+{% set apps = [
+  { "url": "http://iatiexplorer.net/",
+    "title": "The IATI explorer",
+    "description": "Collects all the data in the IATI Registry, allows users to search or browse via a simple user interface and provides advanced data users with bespoke raw data packages via a RESTful API.",
+    "image": "app1.jpg",
+    "author": "Development Gateway",
+    "target": "_blank" },
+  { "url": "http://www.aidview.net/",
+    "title": "AidView (alpha)",
+    "description": "Makes it easy to browse through thousands of detailed aid activity datasets published using the IATI standard. See country, sector and funder datasets profiles and create a personalised portfolio of activities to monitor. Designed for tablet devices and the web.",
+    "image": "app2.jpg",
+    "author": "aidinfolabs",
+    "target": "_blank" },
+  { "url": "/using-iati-data",
+    "title": "Other examples",
+    "description": "Members of the community are developing new applications and tools using IATI-compliant data all the time. Find out more here and learn more about how to use IATI data.",
+    "image": "app3.jpg",
+    "target": false }
+] %}
+
+{% block content %}
+
+  <div id="home-welcome" class="container">
+
+    {{ self.flash() }}
+
+    {% trans %}
+      <h1>Welcome to <strong>IATI Data Registry</strong>, the place to find IATI raw data in XML format.</h1>
+    {% endtrans %}
+  </div>
+
+  <div id="home-icons">
+    <div class="container">
+      <div class="icon registry">
+        <h2><a href="/dataset">IATI Registry</a></h2>
+        <a href="/dataset" class="block">Search the Registry</a>
+        <p>The Registry provides links to data and a basic preview function</p>
+      </div>
+      <div class="icon detail">
+        <h2><a href="/publisher">IATI Publishers</a></h2>
+        <div class="block">
+          <strong>{{ h.get_num_active_publishers() }}</strong> Organisations have published so far
+        </div>
+        <p>The Registry began registering data in 2011, with the number of publishers increasing all of the time.<br><a href="/publisher">View list of publishers</a></p>
+      </div>
+      <div class="icon support">
+        <h2><a href="/help.html">Help</a></h2>
+        <p>Frequently Asked Questions for publishers.</p>
+        <ul>
+          <li><a href="/help">How do I register my data?</a></li>
+          <li><a href="/help">Why do I have to wait for my Publisher record to be authorised?</a></li>
+          <li><a href="mailto:support@iatistandard.org">Can't find the answer to your question? Ask for help.</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div id="home-apps" class="container">
+    <h1>Applications using IATI data</h1>
+    <p class="intro">
+      Because IATI data is open, standardised and machine readable, technical users can freely convert it into databases, spreadsheets, web applications, printed documents or data visualisations. As more data is published in the IATI format, more information intermediaries will develop new applications that will help users access IATI information in ways that are meaningful to them. Here are some early examples:
+    </p>
+    {% snippet "related/snippets/related_list.html", related_items = apps %}
+  </div>
+
+{% endblock %}

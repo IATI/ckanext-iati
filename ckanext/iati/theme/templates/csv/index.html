@@ -1,0 +1,38 @@
+{% extends "page.html" %}
+
+{% block title %}CSV Export - {{ super() }}{% endblock %}
+
+{% block primary_content %}
+
+<h2 class="page_heading">CSV Export</h2>
+
+<article>
+  <p>Select a Publisher to download all its records in CSV format.</p>
+  <p><strong>Warning:</strong>For publishers with a large number of datasets it may take a while to generate the CSV file. Please be patient.</p>
+  <p>Alternatively, you can download an empty CSV <a href="/csv/download/template">Template</a>.</p>
+
+  <table class="table table-hover table-bordered table-striped table-sorted" data-module="table-sorter">
+    <thead>
+      <tr>
+        <th title="Sort by publisher name">Publisher</th>
+        <th title="Sort by number of published datasets">Datasets</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for org in orgs %}
+        <tr>
+          <td><a href="/publisher/{{ org.name }}">{{ org.display_name }}</a></td>
+          <td>{{ org['packages'] }}</td>
+          <td><a href="{{ h.url_for(controller='ckanext.iati.controllers.spreadsheet:CSVController', action='download', publisher=org['name']) }}">Download</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</article>
+
+{% endblock %}
+
+{% block scripts %}
+{% resource 'ckanext-iati/table_sorter' %}
+{% endblock %}

@@ -1,0 +1,43 @@
+.dataset-heading {
+  font-size: 18px;
+  a {
+    color: @iati-color-registry;
+    font-weight: normal;
+    &:hover{
+      color: darken(@iati-color-registry, 10%);
+      text-decoration: none;
+      border-bottom: 1px dashed darken(@iati-color-registry, 10%);
+    }
+  }
+}
+
+.search-form {
+  border-bottom-style: solid;
+  border-bottom-color: #EEE;
+}
+
+.dataset-list {
+  .dataset-item {
+    border-bottom-width: 0;
+    padding: 10px;
+    margin: 0 -10px;
+    &:nth-child(2n) {
+      background-color: @iati-color-grey;
+      .border-radius(3px);
+    }
+    p:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.resources {
+  .unstyled;
+  li {
+    margin-bottom: @unit;
+  }
+}
+
+.resource-item .btn-group {
+  top: 10px;
+}

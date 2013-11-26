@@ -1,0 +1,58 @@
+{% ckan_extends %}
+
+{% set package_url = h.url_for(controller='package', action='read', id=package.name) %}
+
+{% block package_item_content %}
+
+  {% if package.isopen %}
+    <a href="http://opendefinition.org/okd/" title="{{ _('This dataset satisfies the Open Definition.') }}" class="pull-right">
+      <img class="open-data" src="http://assets.okfn.org/images/ok_buttons/od_80x15_blue.png" alt="[Open Data]" />
+    </a>
+  {% endif %}
+  <h3 class="dataset-heading">
+    {% if package.private %}
+      <span class="dataset-private label label-inverse">
+        <i class="icon-lock"></i>
+        {{ _('Private') }}
+      </span>
+    {% endif %}
+    {{ h.link_to(h.truncate(title, truncate_title), package_url) }}
+    {% if package.get('state', '').startswith('draft') %}
+      <span class="label label-info">{{ _('Draft') }}</span>
+    {% elif package.get('state', '').startswith('deleted') %}
+      <span class="label label-important">{{ _('Deleted') }}</span>
+    {% endif %}
+    {{ h.popular('recent views', package.tracking_summary.recent, min=10) if package.tracking_summary }}
+  </h3>
+  {% if banner %}
+    <span class="banner">{{ _('Popular') }}</span>
+  {% endif %}
+  {% if notes %}
+    <p>{{ notes|urlize }}</p>
+  {% endif %}
+
+  <p>
+    Last modified: {{ h.get_pkg_dict_extra(package, 'data_updated', '-') }}
+    {% if (h.get_pkg_dict_extra(package, 'filetype') == 'activity') and h.get_pkg_dict_extra(package, 'activity_count') %}
+      &middot;
+      No. of Activities: {{ h.get_pkg_dict_extra(package, 'activity_count', '-') }}
+    {% endif %}
+  </p>
+
+  {% snippet 'package/snippets/issue.html', package=package %}
+
+  {% if package.resources and not hide_resources %}
+    {% for resource in package.resources %}
+      <p>
+        <a href="{{ package_url }}">View Metadata</a>
+        &middot;
+        {% snippet 'snippets/resource_links.html', resource=resource, package=package %}
+      </p>
+    {% endfor %}
+  {% endif %}
+
+
+
+
+
+{% endblock %}

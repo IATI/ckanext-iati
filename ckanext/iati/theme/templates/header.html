@@ -1,0 +1,117 @@
+{% ckan_extends %}
+
+{% macro nav_item(route, label) %}
+  {% set url = h.url_for(route) %}
+  {% set is_active = h.is_route_active(route) %}
+  <a href="{{ url }}"{% if is_active %} class="active"{% endif %}>{{ label }}</a>
+{% endmacro %}
+
+{% block header_wrapper %}
+  <a href="#content" class="hide">{{ _('Skip to primary content') }}</a>
+  <header id="header">
+    <div class="container">
+      {% block header_logo %}
+        <a class="logo" href="{{ h.url('home') }}">
+          <span>{{ _('IATI Registry') }}</span>
+        </a>
+      {% endblock %}
+      {% block header_nav %}
+        <nav>
+          {% block header_nav_primary %}
+            <ul id="primary-nav">
+              <li class="transparency">
+                <a href="http://www.aidtransparency.net/">{{ _('Aid Transparency') }}</a>
+              </li>
+              <li class="standard">
+                <a href="http://www.iatistandard.org/">{{ _('IATI Standard') }}</a>
+              </li>
+              <li class="registry">
+                <a href="http://iatiregistry.org/">{{ _('IATI Registry / Data') }}</a>
+              </li>
+              <li class="community">
+                <a href="http://support.iatistandard.org/">{{ _('IATI Community') }}</a>
+              </li>
+            </ul>
+          {% endblock %}
+          {% block header_nav_account %}
+            {% if c.userobj %}
+              <ul id="account-nav" class="authed avatar" data-module="me" data-me="{{ c.userobj.id }}">
+                {% if c.userobj.sysadmin %}
+                  <li>
+                    <a href="{{ h.url_for(controller='admin', action='index') }}" title="{{ _('Sysadmin settings') }}">
+                      Sysadmin
+                    </a>
+                  </li>
+                {% endif %}
+                <li>
+                  <a href="{{ h.url_for(controller='user', action='dashboard') }}" title="My account">
+                    Dashboard
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ h.url_for(controller='user', action='read', id=c.userobj.name) }}" title="My account">
+                    My account
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ h.url_for('/user/_logout') }}" title="{{ _('Logout') }}">
+                    Logout
+                  </a>
+                </li>
+              </ul>
+            {% else %}
+              <ul id="account-nav" class="not-authed">
+                <li>{% link_for _('Log in'), controller='user', action='login' %}</li>
+                <li>{% link_for _('Register'), controller='user', action='register', class_='sub' %}</li>
+              </ul>
+            {% endif %}
+          {% endblock %}
+          {% block header_nav_secondary %}
+            <ul id="secondary-nav">
+              {% set is_superadmin = c.userobj.sysadmin %}
+              {% set can_package_create = h.check_access('package_create') %}
+              {% set can_organization_create = h.check_access('organization_create') %}
+              {% set empty = ('', '') %}
+
+              {% set home_dropdown = [
+                ('/revision', _('Newsfeed')),
+              ] %}
+              {% set data_dropdown = [
+                ('add dataset', _('Register')) if can_package_create else empty,
+                ('/csv/download', _('Download current records')) if can_package_create else empty,
+                ('/csv/upload', _('Upload CSV file')) if can_package_create else empty,
+                ('/report/issues', _('Issues report')) if is_superadmin else empty,
+              ] %}
+              {% set publisher_dropdown = [
+                ('organization_new', _('Create a new publisher')) if can_organization_create else empty
+              ] %}
+
+              {% set nav = [
+                ('home', _('Home'), home_dropdown),
+                ('search', _('Data'), data_dropdown),
+                ('publishers_index', _('Publishers'), publisher_dropdown),
+                ('using-iati-data', _('Using IATI Data'), false),
+                ('about-2', _('About'), false),
+                ('api', _('API'), false),
+                ('help', _('Help'), false)
+              ] %}
+              {% for route, label, check_dropdown in nav %}
+                {% set dropdown = h.check_nav_dropdown(check_dropdown) %}
+                <li>
+                  {{ nav_item(route, label) }}
+                  {% if dropdown %}
+                    <ul class="dropdown">
+                      {% for route, label in dropdown %}
+                        <li>{{ nav_item(route, label) }}</li>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% endblock %}
+        </nav>
+      {% endblock %}
+    </div>
+  </header>
+{% endblock %}

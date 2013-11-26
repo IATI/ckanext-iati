@@ -1,0 +1,34 @@
+{% ckan_extends %}
+
+{% block subtitle %}{{ _('Publishers') }}{% endblock %}
+
+{% block breadcrumb_content %}
+  <li class="active">{% link_for _('Publishers'), controller='organization', action='index' %}</li>
+{% endblock %}
+
+{% block page_primary_action %}
+  {% if h.check_access('organization_create') %}
+    {% link_for _('Add Publisher'), controller='organization', action='new', class_='btn btn-primary', icon='plus-sign-alt' %}
+  {% endif %}
+{% endblock %}
+
+{% block page_heading %}{{ _('Publishers') }}{% endblock %}
+
+{% block organizations_search_form %}
+{% endblock %}
+
+{% block organizations_list %}
+{% if c.page.items or request.params %}
+  {% snippet "organization/snippets/organization_list.html", organizations=c.page.collection %}
+{% else %}
+  <p class="empty">
+    {{ _('There are currently no organizations for this site') }}.
+    {% if h.check_access('organization_create') %}
+      {% link_for _('How about creating one?'), controller='organization', action='new' %}</a>.
+    {% endif %}
+  </p>
+{% endif %}
+{% endblock %}
+
+{% block page_pagination %}
+{% endblock %}
