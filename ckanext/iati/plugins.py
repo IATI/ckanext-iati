@@ -425,6 +425,8 @@ class IatiTheme(p.SingletonPlugin):
             m.connect('about-2', '/about-2', action='about')
             m.connect('api', '/registry-api', action='api')
             m.connect('help', '/help', action='help')
+            m.connect('help_csv-import', '/help_csv-import', action='help_csv')
+            m.connect('help_delete', '/help_delete', action='help_delete')
 
         return map
 
