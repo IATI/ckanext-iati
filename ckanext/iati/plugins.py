@@ -326,6 +326,12 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
         return data_dict
 
+    def before_search(self, data_dict):
+        if not data_dict.get('sort'):
+            data_dict['sort'] = 'title_string asc'
+
+        return data_dict
+
     def before_index(self, data_dict):
 
         # Add nicely formatted values for faceting
