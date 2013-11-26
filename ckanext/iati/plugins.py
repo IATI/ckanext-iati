@@ -447,7 +447,7 @@ class IatiTheme(p.SingletonPlugin):
         facets_dict['secondary_publisher'] = p.toolkit._('Secondary Publisher')
         facets_dict['organization'] = p.toolkit._('Publisher')
         facets_dict['publisher_organization_type'] = p.toolkit._('Organisation Type')
-        facets_dict['country'] = p.toolkit._('Country')
+        facets_dict['country'] = p.toolkit._('Recipient Country')
         facets_dict['filetype'] = p.toolkit._('File Type')
         if p.toolkit.c.userobj and p.toolkit.c.userobj.sysadmin:
             facets_dict['issue_type'] = p.toolkit._('Issue')
@@ -461,7 +461,7 @@ class IatiTheme(p.SingletonPlugin):
         # We will actually remove all the core facets and add our own
         facets_dict.clear()
         facets_dict['publisher_source_type'] = p.toolkit._('Source')
-        facets_dict['country'] = p.toolkit._('Country')
+        facets_dict['country'] = p.toolkit._('Recipient Country')
         facets_dict['filetype'] = p.toolkit._('File Type')
 
         if p.toolkit.c.userobj and p.toolkit.c.userobj.sysadmin:

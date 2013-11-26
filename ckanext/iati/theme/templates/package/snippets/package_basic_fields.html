@@ -103,7 +103,7 @@
   {% snippet 'snippets/country_list.html', data=extras_dict, errors=errors, field_name='country' %}
   <p class="help-block"><span class="field-xml">[recipient-country]</span> Recipient country.</p>
 
-  {{ form.input('data_updated', id='field-date-uploaded', label=_('Date Uploaded'), value=extras_dict.get('data_updated'), error=errors.data_updated, classes=['control-full']) }}
+  {{ form.input('data_updated', id='field-date-uploaded', label=_('Date Updated'), value=extras_dict.get('data_updated'), error=errors.data_updated, classes=['control-full']) }}
   <p class="help-block"><span class="field-xml">[last-updated-datetime]</span> Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
 
   {{ form.input('language', id='field-language', label=_('Language'), value=extras_dict.get('language'), error=errors.language, classes=['control-full']) }}
