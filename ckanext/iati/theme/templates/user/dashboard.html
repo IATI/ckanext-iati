@@ -1,0 +1,12 @@
+{% ckan_extends %}
+
+{% block page_header %}
+  <header class="module-content page-header hug">
+    <ul class="nav nav-tabs">
+      {{ h.build_nav_icon('user_dashboard', _('News feed')) }}
+      {{ h.build_nav_icon('user_dashboard_datasets', _('My Datasets')) }}
+      {{ h.build_nav_icon('user_dashboard_organizations', _('My Organizations')) }}
+    </ul>
+  </header>
+{% endblock %}
+
