@@ -9,6 +9,8 @@
   {{ super() }}
   <section>
   <h3>Contents</h3>
+
+  {% set date_format='%Y-%m-%d %H:%M' %}
   {% set extras = h.extras_to_dict(pkg) %}
     <table class="table table-striped table-bordered table-condensed">
       <tbody>
@@ -18,7 +20,7 @@
         </tr>
         <tr>
           <th scope="row" class="dataset-label">Activity Period</th>
-          <td class="dataset-details">{{ extras.get('activity_period-from', '') }} - {{ extras.get('activity_period-to', '') }}</td>
+          <td class="dataset-details">{{ h.render_datetime(extras.get('activity_period-from', ''), date_format=date_format) }} - {{ h.render_datetime(extras.get('activity_period-to', ''), date_format=date_format) }}</td>
         </tr>
       </tbody>
     </table>

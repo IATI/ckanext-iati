@@ -1,3 +1,5 @@
+from dateutil.parser import parse as date_parse
+
 from ckan.logic import get_action
 from ckan import new_authz
 from ckan.lib.navl.dictization_functions import unflatten, Invalid
@@ -81,32 +83,11 @@ def file_type_validator(key,data,errors, context=None):
     if not value in allowed_values:
         errors[key].append('File type must be one of [%s]' % ', '.join(allowed_values))
 
-def date_from_csv(value, context):
-    try:
-        # Try first with DD/MM/YYYY, etc
-        value = DateType.form_to_db(value)
-    except DateConvertError, e:
-        # If not try YYYY-MM-DD
-        try:
-            value = db_date(value,context)
-        except Invalid, e:
-            if 'cannot parse' in e.error.lower():
-                msg = "Cannot parse db date '%s'. Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY' \
-                        or 'DD/MM/YYYY HH:MM', 'DD/MM/YYYY', 'MM/YYYY'" % (value)
-                raise Invalid(msg)
-            raise e
-    return value
-
 def db_date(value, context):
+
     try:
-        timedate_dict = DateType.parse_timedate(value, 'db')
-    except DateConvertError, e:
-        # Cannot parse
-        raise Invalid(str(e))
-    try:
-        value = DateType.format(timedate_dict, 'db')
-    except DateConvertError, e:
-        # Values out of range
+        value = date_parse(value)
+    except ValueError, e:
         raise Invalid(str(e))
 
     return value
