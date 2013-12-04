@@ -6,14 +6,6 @@ from ckan import model
 import ckan.new_authz as authz
 from ckan.lib.base import c
 import ckan.plugins as p
-from ckan.lib.navl.dictization_functions import validate
-
-from ckanext.iati.logic.validators import (iati_dataset_name_from_csv,
-                                           file_type_validator,
-                                           date_from_csv,
-                                           yes_no,
-                                           country_code)
-from ckanext.iati.logic.converters import strip
 from ckanext.iati.helpers import extras_to_dict
 
 log = logging.getLogger(__name__)
@@ -24,22 +16,22 @@ _ignore_missing = p.toolkit.get_validator('ignore_missing')
 _int_validator = p.toolkit.get_validator('int_validator')
 
 CSV_MAPPING = [
-        ('registry-publisher-id', 'organization', 'name', [_not_empty]),
-        ('registry-file-id', 'package', 'name', [_not_empty, iati_dataset_name_from_csv]),
-        ('title', 'package', 'title', []),
-        ('contact-email', 'package', 'author_email', []),
-        ('state', 'package', 'state', [_ignore_missing]),
-        ('source-url', 'resources', 'url', []),
-        ('format', 'resources', 'format', []),
-        ('file-type','extras', 'filetype', [_ignore_empty, file_type_validator]),
-        ('recipient-country','extras', 'country', [_ignore_empty, country_code]),
-        ('activity-period-start','extras', 'activity_period-from', [_ignore_empty, date_from_csv]),
-        ('activity-period-end','extras', 'activity_period-to', [_ignore_empty, date_from_csv]),
-        ('last-updated-datetime','extras', 'data_updated', [_ignore_empty, date_from_csv]),
-        ('activity-count','extras', 'activity_count', [_ignore_empty,_int_validator]),
-        ('verification-status','extras', 'verified', [_ignore_empty,yes_no]),
-        ('default-language','extras', 'language', []),
-        ('secondary-publisher', 'extras', 'secondary_publisher', [strip]),
+        ('registry-publisher-id', 'organization', 'name'),
+        ('registry-file-id', 'package', 'name'),
+        ('title', 'package', 'title'),
+        ('contact-email', 'package', 'author_email'),
+        ('state', 'package', 'state'),
+        ('source-url', 'resources', 'url'),
+        ('format', 'resources', 'format'),
+        ('file-type','extras', 'filetype'),
+        ('recipient-country','package', 'country'),
+        ('activity-period-start','package', 'activity_period-from'),
+        ('activity-period-end','package', 'activity_period-to'),
+        ('last-updated-datetime','package', 'data_updated'),
+        ('activity-count','package', 'activity_count'),
+        ('verification-status','package', 'verified'),
+        ('default-language','package', 'language'),
+        ('secondary-publisher', 'package', 'secondary_publisher'),
         ]
 
 class CSVController(p.toolkit.BaseController):
@@ -233,16 +225,6 @@ class CSVController(p.toolkit.BaseController):
             row_index = str(i + 1)
             errors[row_index] = {}
             try:
-                # We will now run the IATI specific validation, CKAN core will
-                # run the default one later on
-                schema = dict([(f[0],f[3]) for f in CSV_MAPPING])
-                row, row_errors = validate(row,schema,context)
-                if row_errors:
-                    for key, msgs in row_errors.iteritems():
-                        log.error('Error in row %i: %s: %s' % (i+1,key,str(msgs)))
-                        errors[row_index][key] = msgs
-                    continue
-
                 package_dict = self.get_package_dict_from_row(row, context)
                 self.create_or_update_package(package_dict,counts,context=context)
 
@@ -250,7 +232,7 @@ class CSVController(p.toolkit.BaseController):
             except p.toolkit.ValidationError,e:
                 iati_keys = dict([(f[2],f[0]) for f in CSV_MAPPING])
                 for key, msgs in e.error_dict.iteritems():
-                    iati_key = iati_keys[key]
+                    iati_key = iati_keys.get(key, key)
                     log.error('Error in row %i: %s: %s' % (i+1,iati_key,str(msgs)))
                     errors[row_index][iati_key] = msgs
             except p.toolkit.NotAuthorized,e:
@@ -270,7 +252,7 @@ class CSVController(p.toolkit.BaseController):
     def get_package_dict_from_row(self, row, context):
         package = {}
         extras_dict = []
-        for fieldname, entity, key, v in CSV_MAPPING:
+        for fieldname, entity, key in CSV_MAPPING:
             if fieldname in row:
                 # If value is None (empty cell), property will be set to blank
                 value = row[fieldname]
