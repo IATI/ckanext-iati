@@ -288,26 +288,19 @@ class CSVController(p.toolkit.BaseController):
         return package
 
     def create_or_update_package(self, package_dict, counts = None, context = None):
-        if not context:
-            context = {
-                'model': model,
-                'session': model.Session,
-                'user': c.user,
-                'api_version':'1'
-            }
-
+        context = {
+            'model': model,
+            'session': model.Session,
+            'user': c.user,
+        }
         # Check if package exists
-        data_dict = {}
-        data_dict['id'] = package_dict['name']
 
         package_dict['title'] = package_dict['title'].decode('utf-8')
         try:
-            existing_package_dict = p.toolkit.get_action('package_show')(context, data_dict)
-
+            existing_package_dict = p.toolkit.get_action('package_show')(context, {'id': package_dict['name']})
             # Update package
             log.info('Package with name "%s" exists and will be updated' % package_dict['name'])
 
-            context.update({'id':existing_package_dict['id']})
             package_dict.update({'id':existing_package_dict['id']})
 
             context['message'] = 'CSV import: update dataset %s' % package_dict['name']
@@ -319,6 +312,8 @@ class CSVController(p.toolkit.BaseController):
         except p.toolkit.ObjectNotFound:
             # Package needs to be created
             log.info('Package with name "%s" does not exist and will be created' % package_dict['name'])
+
+            package_dict.pop('id', None)
 
             context['message'] = 'CSV import: create dataset %s' % package_dict['name']
             # This is a work around for #1257. package_create auth function
