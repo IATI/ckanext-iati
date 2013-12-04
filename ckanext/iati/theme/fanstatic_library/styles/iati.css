@@ -10986,6 +10986,11 @@ form .info-block.info-inline {
 .media-item .prose {
   margin-bottom: 0;
 }
+.module-content .image img {
+  width: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
 .nav-simple li {
   position: relative;
 }
