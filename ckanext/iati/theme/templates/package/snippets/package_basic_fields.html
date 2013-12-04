@@ -36,6 +36,20 @@
   </div>
   <p class="help-block"><span class="field-xml">[file-type]</span> Choose from dropdown. Either "Activity" or "Organisation".</p>
 
+  {% if data.id and h.check_access('package_delete', {'id': data.id}) and data.state != 'active' %}
+    <div class="control-group">
+      <label for="field-state" class="control-label">{{ _('State') }}</label>
+      <div class="controls">
+        <select id="field-state" name="state">
+          <option value="active" {% if data.get('state', 'none') == 'active' %} selected="selected" {% endif %}>{{ _('Active') }}</option>
+          <option value="deleted" {% if data.get('state', 'none') == 'deleted' %} selected="selected" {% endif %}>{{ _('Deleted') }}</option>
+        </select>
+      </div>
+    </div>
+    <p class="help-block">Choose "Active" to reactivate a deleted dataset.</p>
+  {% endif %}
+
+
 </fieldset>
 
 <fieldset>
