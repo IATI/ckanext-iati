@@ -56,9 +56,9 @@ def return_select_options(name, data):
     return_options = []
     return_selected = False
 
-    if name == 'publisher_type':
+    if name == 'publisher_source_type':
         options = get_publisher_source_types()
-        return_selected = data.get('type')
+        return_selected = data.get('publisher_source_type')
         for value, label in options:
             return_options.append({ 'text': label, 'value': value })
     elif name == 'license_id':

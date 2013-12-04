@@ -21,7 +21,7 @@
     {{ form.input('publisher_iati_id', label=_('IATI Identifier'), id='field-publisher_iati_id', value=data.publisher_iati_id, error=errors.publisher_iati_id) }}
     <p class="help-block">The organisation identifier used in the IATI-xml files to identify the reporting organisation. (&lt;reporting-org ref="!!!"&gt;).</p>
 
-    {{ select('publisher_type', label=_('Source'), data=data) }}
+    {{ select('publisher_source_type', label=_('Source'), data=data) }}
     <p class="help-block">Primary - publishers authorised to report their own (or associated organisations') data. Secondary - publishers reporting the activities of other organisations.</p>
 
     {{ select('license_id', label=_('License'), data=data, autocomplete=true) }}
