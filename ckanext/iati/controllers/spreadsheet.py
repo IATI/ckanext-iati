@@ -154,7 +154,7 @@ class CSVController(p.toolkit.BaseController):
                 if package:
                     row = {}
                     extras_dict = extras_to_dict(package)
-                    for fieldname, entity, key, v in CSV_MAPPING:
+                    for fieldname, entity, key in CSV_MAPPING:
                         if key == 'state':
                             continue
                         value = None
