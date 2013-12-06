@@ -1,0 +1,31 @@
+# Ansible playbook for updating the CKAN IATI extension
+#
+# Add the staging server IP tp your /etc/ansible/hosts file (check if the IP
+# is up to date):
+#
+#   [staging]
+#   XX.XX.XX.XX
+#
+# Install ansible and run this playbook:
+#
+#   ansible-playbook update_source.yml -u user_name -s
+#
+
+---
+- hosts: iati
+  vars:
+    site: "iati2"
+    version: "master"
+
+  tasks:
+    - name: Checkout version
+      action: git repo=https://github.com/okfn/ckanext-iati dest=/usr/lib/ckan/{{ site }}/src/ckanext-iati version={{ version }} force=yes
+
+    - name: Pull code
+      action: command chdir=/usr/lib/ckan/{{ site }}/src/ckanext-iati/ git pull
+      register: update
+
+    - name: Reload apache
+      action: service name=apache2 state=reloaded
+      when: update.changed
+
