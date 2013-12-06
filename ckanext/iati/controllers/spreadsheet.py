@@ -23,7 +23,7 @@ CSV_MAPPING = [
         ('state', 'package', 'state'),
         ('source-url', 'resources', 'url'),
         ('format', 'resources', 'format'),
-        ('file-type','extras', 'filetype'),
+        ('file-type','package', 'filetype'),
         ('recipient-country','package', 'country'),
         ('activity-period-start','package', 'activity_period-from'),
         ('activity-period-end','package', 'activity_period-to'),
@@ -164,12 +164,11 @@ class CSVController(p.toolkit.BaseController):
                         elif entity == 'resources':
                             if len(package['resources']) and key in package['resources'][0]:
                                 value = package['resources'][0][key]
-                        elif entity == 'extras':
-                            if key in extras_dict:
-                                value = extras_dict[key]
                         else:
                             if key in package:
                                 value = package[key]
+                            elif key in extras_dict:
+                                value = extras_dict[key]
                         row[fieldname] = value
 
                         if fieldname == 'title':
