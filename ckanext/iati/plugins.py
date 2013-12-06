@@ -332,11 +332,12 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
                 # Inherit license from publisher
                 license = self._get_license_register().get(org.get('license_id'))
-                data_dict['license_id'] = license.id
-                if license.url:
-                    data_dict['license_url']= license.url
-                if license.title:
-                    data_dict['license_title']= license.title
+                if license:
+                    data_dict['license_id'] = license.id
+                    if license.url:
+                        data_dict['license_url']= license.url
+                    if license.title:
+                        data_dict['license_title']= license.title
 
         return data_dict
 
