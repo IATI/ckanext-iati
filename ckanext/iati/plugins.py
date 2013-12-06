@@ -312,6 +312,12 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
         return schema
 
+    def _get_license_register(self):
+        if not hasattr(self, '_license_register'):
+            import ckan.model.license as _license
+            self._license_register = _license.LicenseRegister()
+        return self._license_register
+
     ## IPackageController
     def after_show(self, context, data_dict):
         if data_dict.get('owner_org'):
@@ -323,6 +329,14 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
                     new_extras.append({'key': key, 'value': org.get(key, '')})
 
                 data_dict['extras'].extend(new_extras)
+
+                # Inherit license from publisher
+                license = self._get_license_register().get(org.get('license_id'))
+                data_dict['license_id'] = license.id
+                if license.url:
+                    data_dict['license_url']= license.url
+                if license.title:
+                    data_dict['license_title']= license.title
 
         return data_dict
 
