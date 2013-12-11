@@ -78,6 +78,27 @@ def organization_update(context, data_dict):
 
     return new_org_dict
 
+@p.toolkit.side_effect_free
+def group_list(context, data_dict):
+    '''
+        Warning: This API request is deprecated. Please use the equivalent one
+        on version 3 of the API:
+        http://iatiregistry.org/api/action/organization_list
+    '''
+    p.toolkit.check_access('group_list', context, data_dict)
+    data_dict['groups'] = data_dict.pop('organizations', [])
+    data_dict['type'] = 'organization'
+    return get_core._group_or_org_list(context, data_dict, is_org=True)
+
+@p.toolkit.side_effect_free
+def group_show(context, data_dict):
+    '''
+        Warning: This API request is deprecated. Please use the equivalent one
+        on version 3 of the API:
+        http://iatiregistry.org/api/action/organization_show
+    '''
+    return get_core.group_show(context, data_dict)
+
 def _remove_extras_from_data_dict(data_dict):
     # Remove these extras, as they are always inherited from the publishers
     # and we don't want to store them

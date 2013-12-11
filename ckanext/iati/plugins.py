@@ -410,6 +410,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'organization_create',
             'organization_update',
             'issues_report_csv',
+            'group_list',
+            'group_show',
         )
         return _get_module_functions(iati_actions, function_names)
 
