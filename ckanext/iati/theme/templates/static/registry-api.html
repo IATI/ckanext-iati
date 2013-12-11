@@ -15,31 +15,31 @@
   <h2>Example usage (version 1 API)</h2>
 
   <p>To fetch all organisation files:</p>
-  <p><a href="http://www.iatiregistry.org/api/search/dataset?filetype=organisation">http://www.iatiregistry.org/api/search/dataset?filetype=organisation</a></p>
+  <p><a href="http://www.iatiregistry.org/api/search/dataset?extras_filetype=organisation">http://www.iatiregistry.org/api/search/dataset?extras_filetype=organisation</a></p>
 
   <p>To fetch all activity files:</p>
-  <p><a href="http://www.iatiregistry.org/api/search/dataset?filetype=activity">http://www.iatiregistry.org/api/search/dataset?filetype=activity</a></p>
+  <p><a href="http://www.iatiregistry.org/api/search/dataset?extras_filetype=activity">http://www.iatiregistry.org/api/search/dataset?extras_filetype=activity</a></p>
 
   <p>Page through results with the offset and limit parameters. For example:</p>
-  <p><a href="http://www.iatiregistry.org/api/search/dataset?filetype=activity&amp;offset=100&amp;limit=100">http://www.iatiregistry.org/api/search/dataset?filetype=activity&amp;offset=100&amp;limit=100</a></p>
+  <p><a href="http://www.iatiregistry.org/api/search/dataset?extras_filetype=activity&amp;offset=100&amp;limit=100">http://www.iatiregistry.org/api/search/dataset?extras_filetype=activity&amp;offset=100&amp;limit=100</a></p>
 
   <p>To fetch an individual dataset use it’s identifier. Full dataset details contain information on downloadable resources (i.e. the IATI XML files)</p>
   <p><a href="http://www.iatiregistry.org/api/rest/dataset/aa-organisation">http://www.iatiregistry.org/api/rest/dataset/aa-organisation</a></p>
 
   <p>You can also fetch almost all the details of a dataset in the initial response to an API call using the all_fields parameter. For example:</p>
-  <p><a href="http://www.iatiregistry.org/api/search/dataset?filetype=activity&amp;all_fields=1&amp;offset=0&amp;limit=25">http://www.iatiregistry.org/api/search/dataset?filetype=activity&amp;all_fields=1&amp;offset=0&amp;limit=25</a></p>
+  <p><a href="http://www.iatiregistry.org/api/search/dataset?extras_filetype=activity&amp;all_fields=1&amp;offset=0&amp;limit=25">http://www.iatiregistry.org/api/search/dataset?extras_filetype=activity&amp;all_fields=1&amp;offset=0&amp;limit=25</a></p>
 
   <p>The downloadable file details can be found in the res_url field of the JSON response</p>
 
   <h4>Filters</h4>
 
-  <p>You can filter the responses on the basis of country (by ISO 2-digit code) or publisher (known as ‘groups’ internally in the registry).</p>
+  <p>You can filter the responses on the basis of country (by ISO 2-digit code) or publisher (known as ‘organizations’ internally in the registry).</p>
 
   <p>For example, to fetch all the activity files from DFID use:</p>
-  <p><a href="http://www.iatiregistry.org/api/search/dataset?filetype=activity&amp;groups=dfid&amp;all_fields=1&amp;limit=200">http://www.iatiregistry.org/api/search/dataset?filetype=activity&amp;groups=dfid&amp;all_fields=1&amp;limit=200</a></p>
+  <p><a href="http://www.iatiregistry.org/api/search/dataset?extras_filetype=activity&amp;organization=dfid&amp;all_fields=1&amp;limit=200">http://www.iatiregistry.org/api/search/dataset?extras_filetype=activity&amp;organization=dfid&amp;all_fields=1&amp;limit=200</a></p>
 
   <p>To fetch all the activity files which have Ghana as their primary segment, use:</p>
-  <p><a href="http://www.iatiregistry.org/api/search/dataset?filetype=activity&amp;country=GH&amp;all_fields=1&amp;limit=200" target="_blank">http://www.iatiregistry.org/api/search/dataset?filetype=activity&amp;country=GH&amp;all_fields=1&amp;limit=200</a></p>
+  <p><a href="http://www.iatiregistry.org/api/search/dataset?extras_filetype=activity&amp;extras_country=GH&amp;all_fields=1&amp;limit=200" target="_blank">http://www.iatiregistry.org/api/search/dataset?extras_filetype=activity&amp;extras_country=GH&amp;all_fields=1&amp;limit=200</a></p>
 
   <p>Note: querying for all the activity files with a country as their primary segment does not guarantee you will get all the activities in that country due to the way activities are split into files. For example, an activity that is 60% in Nigeria, and 40% in Ghana would be be in a Nigeria file. It is not currently possible to be sure you have all the activities for a country without processing all files. Work is ongoing to address this.</p>
 
