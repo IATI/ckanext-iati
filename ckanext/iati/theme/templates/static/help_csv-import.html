@@ -7,6 +7,26 @@
   <h1>CSV Imports</h1>
 
   <p>The registry CSV Import utility allows you to publish, or re-publish, your metadata by uploading a spreadsheet.</p>
+  <p>The following table details the fields in the <a href="http://iatiregistry.org/csv/download/template">CSV file template</a>.  For example metadata, we have used the <a href="http://iatiregistry.org/dataset/dfid-af">DFID flle for Afghanistan</a>. </p>
+ 
+	<table border="1" cellpadding="1">
+	<tr>Field<td></td><td>Notes</td><td>Example</td></tr>
+	<tr><td>registry-publisher-id</td><td>This must match your registry ID that your user account has permission to update.</td><td>dfid</td></tr>
+	<tr><td>registry-file-id</td><td>This must be the id of the package you wish to create or update.</td><td>dfid-af</td></tr>
+	<tr><td>title</td><td>The title of this file</td><td>DFID Activity File Afghanistan</td></tr>
+	<tr><td>contact-email</td><td>The specific email contact for this file</td><td></td></tr>
+	<tr><td>source-url</td><td>The URL via which to access this data</td><td>http://iati.dfid.gov.uk/iati_files/Country/DFID-Afghanistan-AF.xml</td></tr>
+	<tr><td>format</td><td>This will always be IATI-XML</td><td>IATI-XML</td></tr>
+	<tr><td>file-type</td><td>State whether this is an activity or organisation file type</td><td>activity</td></tr>
+	<tr><td>recipient-country</td><td>The country code that applies to this file.  NB: not all files are specific to a country.  If this is the case, it can be left blank</td><td>AF</td></tr>
+	<tr><td>activity-period-start</td><td>The start date of the first activity in the file</td><td>2003-07-01</td></tr>
+	<tr><td>activity-period-end</td><td>The date of the latest activity in the file</td><td>2016-03-31</td></tr>
+	<tr><td>last-updated-datetime</td><td>The date the file was last updated.  NB: the registry will pick up subsequent update dates via the nightly check, so this field is not essential in the CSV upload.</td><td>2013-11-29 04:44</td></tr>
+	<tr><td>activity-count</td><td>The number of activities in the file</td><td>336</td></tr>
+	<tr><td>verification-status</td>Legacy field - not required<td></td><td></td></tr>
+	<tr><td>default-language</td><td>Legacy field - not required</td><td></td></tr>
+	<tr><td>secondary-publisher</td><td>If this file is published on behalf of another organisation, then enter the name here</td><td></td></tr>
+	</table>
 
 
 {% endblock %}
