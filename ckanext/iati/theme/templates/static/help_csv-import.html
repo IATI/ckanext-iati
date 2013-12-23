@@ -10,7 +10,10 @@
   <p>The following table details the fields in the <a href="http://iatiregistry.org/csv/download/template">CSV file template</a>.  For example metadata, we have used the <a href="http://iatiregistry.org/dataset/dfid-af">DFID flle for Afghanistan</a>. </p>
  
 	<table border="1" cellpadding="1">
-	<tr>Field<td></td><td>Notes</td><td>Example</td></tr>
+	<thead>
+	<tr><th>Field</th><th>Notes</th><th>Example</th></tr>
+	</thead>
+	<tbody>
 	<tr><td>registry-publisher-id</td><td>This must match your registry ID that your user account has permission to update.</td><td>dfid</td></tr>
 	<tr><td>registry-file-id</td><td>This must be the id of the package you wish to create or update.</td><td>dfid-af</td></tr>
 	<tr><td>title</td><td>The title of this file</td><td>DFID Activity File Afghanistan</td></tr>
@@ -23,9 +26,10 @@
 	<tr><td>activity-period-end</td><td>The date of the latest activity in the file</td><td>2016-03-31</td></tr>
 	<tr><td>last-updated-datetime</td><td>The date the file was last updated.  NB: the registry will pick up subsequent update dates via the nightly check, so this field is not essential in the CSV upload.</td><td>2013-11-29 04:44</td></tr>
 	<tr><td>activity-count</td><td>The number of activities in the file</td><td>336</td></tr>
-	<tr><td>verification-status</td>Legacy field - not required<td></td><td></td></tr>
+	<tr><td>verification-status</td><td>Legacy field - not required</td><td></td></tr>
 	<tr><td>default-language</td><td>Legacy field - not required</td><td></td></tr>
 	<tr><td>secondary-publisher</td><td>If this file is published on behalf of another organisation, then enter the name here</td><td></td></tr>
+	</tbody>
 	</table>
 
 <p>NB: users can only upload/update data that their user account has permission on. </p>
