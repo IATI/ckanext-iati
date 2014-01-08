@@ -275,6 +275,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
 
     from ckanext.archiver import tasks
 
+    res = None
     resource_changed = False
 
     link_context = "{}"
@@ -286,10 +287,9 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
     try:
         headers = json.loads(tasks.link_checker(link_context, link_data))
     except tasks.LinkCheckerError, e:
-        if 'method not allowed' in str(e).lower():
-            # The DFID server does not support HEAD requests*,
-            # so we need to handle the download manually
-            # * But only the first time a file is downloaded!?
+        if any(x in str(e).lower() for x in ('method not allowed', 'internal server error', )):
+            # If the HEAD method is not supported or if a 500
+            # error is returned we'll handle the download manually
             res = requests.get(resource['url'], timeout=url_timeout)
             headers = res.headers
         else:
@@ -326,8 +326,9 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
     # get the resource and archive it
     # TODO: remove the Accept-Encoding limitation after upgrading
     # archiver and requests
-    res = requests.get(resource['url'], timeout=url_timeout,
-                       headers={'Accept-Encoding': ''})
+    if not res:
+        res = requests.get(resource['url'], timeout=url_timeout,
+                           headers={'Accept-Encoding': ''})
     length, hash, saved_file = tasks._save_resource(resource, res,
                                                     max_content_length)
 
