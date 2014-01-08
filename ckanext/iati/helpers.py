@@ -1,3 +1,5 @@
+import urllib
+
 # Bad import: should be in toolkit
 from pylons import config
 from webhelpers.html import literal
@@ -135,6 +137,10 @@ def format_file_size(size):
         if size < 1024.0:
             return "%3.1f %s" % (size, label)
         size /= 1024.0
+
+def urlencode(string):
+    # Jinja 2.7 has this filter directly available
+    return urllib.quote(string)
 
 def extras_to_dict(pkg):
     extras_dict = {}

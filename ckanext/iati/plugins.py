@@ -397,6 +397,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'publishers_pagination',
             'get_global_facet_items_dict',
             'get_global_search_facets',
+            'urlencode',
         )
         return _get_module_functions(iati_helpers, function_names)
 
