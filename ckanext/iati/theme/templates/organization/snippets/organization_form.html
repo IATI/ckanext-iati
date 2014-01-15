@@ -46,6 +46,9 @@
   <fieldset>
     <legend>{{ _('Details') }}</legend>
 
+    {{ form.input('publisher_implementation_schedule', label=_('Implementation Schedule'), id='field-publisher_implementation_schedule', value=data.publisher_implementation_schedule, error=errors.publisher_implementation_schedule) }}
+    <p class="help-block">URL of an Implementation Schedule.</p>
+
     {{ form.textarea('publisher_contact', label=_('Contact'), id='field-publisher_contact', value=data.publisher_contact, error=errors.publisher_contact) }}
     <p class="help-block">Contact details for publisher.</p>
 

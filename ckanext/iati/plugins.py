@@ -153,6 +153,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
             'publisher_constraints': default_validators,
             'publisher_data_quality': default_validators,
             'publisher_organization_type': default_validators,
+            'publisher_implementation_schedule': default_validators,
         })
 
         return schema
@@ -189,6 +190,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
             'publisher_constraints': default_validators,
             'publisher_data_quality': default_validators,
             'publisher_organization_type': default_validators,
+            'publisher_implementation_schedule': default_validators,
             'groups': [_ignore],
             'tags': [_ignore],
             'approval_status': [_ignore],
