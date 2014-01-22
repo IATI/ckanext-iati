@@ -187,7 +187,7 @@ def get_global_facet_items_dict(facet, limit=10, exclude_active=False, search_fa
         elif not exclude_active:
             facets.append(dict(active=True, **facet_item))
     facets = sorted(facets, key=lambda item: item['count'], reverse=True)
-    if p.toolkit.c.search_facets_limits:
+    if not limit and p.toolkit.c.search_facets_limits:
         limit = p.toolkit.c.search_facets_limits.get(facet)
     if limit:
         return facets[:limit]
