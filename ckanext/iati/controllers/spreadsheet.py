@@ -34,6 +34,17 @@ CSV_MAPPING = [
         ('secondary-publisher', 'package', 'secondary_publisher'),
         ]
 
+
+def _fix_unicode(text, min_confidence=0.5):
+    import chardet
+    guess = chardet.detect(text)
+    if guess["confidence"] < min_confidence:
+        raise UnicodeDecodeError
+    text = unicode(text, guess["encoding"])
+    text = text.encode('utf-8')
+    return text
+
+
 class CSVController(p.toolkit.BaseController):
 
 
@@ -224,7 +235,14 @@ class CSVController(p.toolkit.BaseController):
             row_index = str(i + 1)
             errors[row_index] = {}
             try:
-                package_dict = self.get_package_dict_from_row(row, context)
+                try:
+                    package_dict = self.get_package_dict_from_row(row, context)
+                except UnicodeDecodeError,e:
+                    msg = 'Encoding error, could not decode dataset title: %s' % row['title']
+                    log.error('Error in row %i: %s' % (i+1,msg))
+                    errors[row_index]['title'] = [msg]
+                    continue
+
                 self.create_or_update_package(package_dict,counts,context=context)
 
                 del errors[row_index]
@@ -266,6 +284,14 @@ class CSVController(p.toolkit.BaseController):
                 else:
                     package[key] = value
         package['extras'] = extras_dict
+
+        # Try to handle rogue Windows encodings properly
+        try:
+            package['title'] = package['title'].decode('utf-8')
+        except UnicodeDecodeError:
+            package['title'] = _fix_unicode(package['title'])
+
+
         return package
 
     def create_or_update_package(self, package_dict, counts = None, context = None):
@@ -276,7 +302,11 @@ class CSVController(p.toolkit.BaseController):
         }
         # Check if package exists
 
-        package_dict['title'] = package_dict['title'].decode('utf-8')
+        try:
+            package_dict['title'] = package_dict['title'].decode('utf-8')
+        except UnicodeDecodeError,e:
+            import pdb; pdb.set_trace()
+
         try:
             existing_package_dict = p.toolkit.get_action('package_show')(context, {'id': package_dict['name']})
             # Update package
