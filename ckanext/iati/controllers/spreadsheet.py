@@ -301,12 +301,6 @@ class CSVController(p.toolkit.BaseController):
             'user': c.user,
         }
         # Check if package exists
-
-        try:
-            package_dict['title'] = package_dict['title'].decode('utf-8')
-        except UnicodeDecodeError,e:
-            import pdb; pdb.set_trace()
-
         try:
             existing_package_dict = p.toolkit.get_action('package_show')(context, {'id': package_dict['name']})
             # Update package
