@@ -301,12 +301,15 @@ class CSVController(p.toolkit.BaseController):
             'user': c.user,
         }
         # Check if package exists
+
         try:
             existing_package_dict = p.toolkit.get_action('package_show')(context, {'id': package_dict['name']})
             # Update package
             log.info('Package with name "%s" exists and will be updated' % package_dict['name'])
 
             package_dict.update({'id':existing_package_dict['id']})
+
+            package_dict['state'] = 'active'
 
             context['message'] = 'CSV import: update dataset %s' % package_dict['name']
 
