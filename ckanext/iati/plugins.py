@@ -12,6 +12,7 @@ from ckanext.iati.logic.validators import (db_date,
                                            iati_owner_org_validator,
                                            iati_dataset_name,
                                            iati_resource_count,
+                                           iati_one_resource,
                                           )
 from ckanext.iati.logic.converters import checkbox_value, strip
 import ckanext.iati.helpers as iati_helpers
@@ -268,7 +269,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'issue_date': [_ignore_missing, _convert_to_extras],
         })
 
-        schema['name'].append(iati_dataset_name)
+        schema['name'].extend([iati_dataset_name, iati_one_resource])
         schema['owner_org'].append(iati_owner_org_validator)
 
         schema['resources']['url'].append(iati_resource_count)

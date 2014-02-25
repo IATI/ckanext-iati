@@ -7,6 +7,11 @@ from ckan.lib.field_types import DateType, DateConvertError
 
 from ckanext.iati.lists import FILE_TYPES, COUNTRIES
 
+def iati_one_resource(key, data, errors, context):
+
+    if not ('resources', 0, 'url') in data:
+        raise Invalid('Datasets must have one resource (a link to an IATI XML file)')
+
 def iati_resource_count(key, data, errors, context):
     if len(key) > 1 and key[1] > 0:
         errors[key].append('Datasets can only have one resource (a single IATI XML file)')
