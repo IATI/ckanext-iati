@@ -19,6 +19,9 @@ def get_countries():
 def get_publisher_source_types():
     return lists.PUBLISHER_SOURCE_TYPES
 
+def get_publisher_frequencies():
+    return lists.PUBLISHER_FREQUENCIES
+
 def get_organization_types():
     return lists.ORGANIZATION_TYPES
 
@@ -61,6 +64,11 @@ def return_select_options(name, data):
     if name == 'publisher_source_type':
         options = get_publisher_source_types()
         return_selected = data.get('publisher_source_type')
+        for value, label in options:
+            return_options.append({ 'text': label, 'value': value })
+    if name == 'publisher_frequency_select':
+        options = get_publisher_frequencies()
+        return_selected = data.get('publisher_frequency_select')
         for value, label in options:
             return_options.append({ 'text': label, 'value': value })
     elif name == 'license_id':

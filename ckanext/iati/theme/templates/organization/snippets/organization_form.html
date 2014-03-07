@@ -61,8 +61,11 @@
     {{ form.textarea('publisher_timeliness', label=_('Timeliness of Data'), id='field-publisher_timeliness', value=data.publisher_timeliness, error=errors.publisher_timeliness) }}
     <p class="help-block">How soon after data is captured and available internally will data be published?</p>
 
-    {{ form.textarea('publisher_frequency', label=_('Frequency of publication'), id='field-publisher_frequency', value=data.publisher_frequency, error=errors.publisher_frequency) }}
-    <p class="help-block">How often is IATI data refreshed? Monthly/Quarterly?</p>
+    {{ select('publisher_frequency_select', label=_('Frequency of publication'), data=data) }}
+    <p class="help-block">How often is IATI data refreshed?</p>
+
+    {{ form.textarea('publisher_frequency', label=_('Frequency of publication (extra comments)'), id='field-publisher_frequency', value=data.publisher_frequency, error=errors.publisher_frequency) }}
+    <p class="help-block"></p>
 
     {{ form.textarea('publisher_units', label=_('Units of Aid'), id='field-publisher_units', value=data.publisher_units, error=errors.publisher_units) }}
     <p class="help-block">How is an activity defined e.g. projects and programmes, or some other structure? Do you have multi-tiered project structures e.g. projects and sub-projects or components? At which level/s do you intend to publish details?).</p>

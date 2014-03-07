@@ -140,6 +140,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
             'publisher_country': default_validators,
             'publisher_segmentation': default_validators,
             'publisher_ui': default_validators,
+            'publisher_frequency_select': default_validators,
             'publisher_frequency': default_validators,
             'publisher_thresholds': default_validators,
             'publisher_units': default_validators,
@@ -177,6 +178,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
             'publisher_iati_id': default_validators,
             'publisher_segmentation': default_validators,
             'publisher_ui': default_validators,
+            'publisher_frequency_select': default_validators,
             'publisher_frequency': default_validators,
             'publisher_thresholds': default_validators,
             'publisher_units': default_validators,
@@ -380,6 +382,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         function_names = (
             'get_countries',
             'get_publisher_source_types',
+            'get_publisher_frequencies',
             'get_licenses',
             'get_organization_types',
             'is_route_active',
