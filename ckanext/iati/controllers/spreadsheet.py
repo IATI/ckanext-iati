@@ -185,10 +185,9 @@ class CSVController(p.toolkit.BaseController):
                                 value = extras_dict[key]
                         row[fieldname] = value
 
-                        if fieldname == 'title':
-                            row['title'] = row['title'].encode('utf-8')
-                        elif fieldname == 'description':
-                            row['description'] = row['description'].encode('utf-8')
+                        for field_to_check in ('title', 'description'):
+                            if fieldname == field_to_check and row.get(field_to_check):
+                                row[field_to_check] = row[field_to_check].encode('utf-8')
 
                     writer.writerow(row)
             output = f.getvalue()
