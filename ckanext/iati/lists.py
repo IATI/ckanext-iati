@@ -15,6 +15,7 @@ PUBLISHER_FREQUENCIES = [
     ('not_specified', 'Not specified'),
     ('monthly', 'Monthly'),
     ('quarterly', 'Quarterly'),
+    ('six_monthly', 'Six Monthly'),
     ('annually', 'Annually'),
     ('lt_annually', 'Less than annually'),
 ]
