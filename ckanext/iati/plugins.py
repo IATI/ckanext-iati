@@ -389,6 +389,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_country_title',
             'get_file_type_title',
             'get_publisher_source_type_title',
+            'get_publisher_frequency_title',
             'get_organization_type_title',
             'get_issue_title',
             'get_publisher_organization_type',

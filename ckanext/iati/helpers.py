@@ -34,6 +34,9 @@ def get_file_type_title(code):
 def get_publisher_source_type_title(code):
     return _get_list_item_title(lists.PUBLISHER_SOURCE_TYPES, code)
 
+def get_publisher_frequency_title(code):
+    return _get_list_item_title(lists.PUBLISHER_FREQUENCIES, code)
+
 def get_organization_type_title(code):
     return _get_list_item_title(lists.ORGANIZATION_TYPES, code)
 
