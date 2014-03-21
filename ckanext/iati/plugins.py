@@ -141,6 +141,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
             'publisher_country': default_validators,
             'publisher_segmentation': default_validators,
             'publisher_ui': default_validators,
+            'publisher_frequency_select': default_validators,
             'publisher_frequency': default_validators,
             'publisher_thresholds': default_validators,
             'publisher_units': default_validators,
@@ -154,6 +155,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
             'publisher_constraints': default_validators,
             'publisher_data_quality': default_validators,
             'publisher_organization_type': default_validators,
+            'publisher_implementation_schedule': default_validators,
         })
 
         return schema
@@ -177,6 +179,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
             'publisher_iati_id': default_validators,
             'publisher_segmentation': default_validators,
             'publisher_ui': default_validators,
+            'publisher_frequency_select': default_validators,
             'publisher_frequency': default_validators,
             'publisher_thresholds': default_validators,
             'publisher_units': default_validators,
@@ -190,6 +193,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
             'publisher_constraints': default_validators,
             'publisher_data_quality': default_validators,
             'publisher_organization_type': default_validators,
+            'publisher_implementation_schedule': default_validators,
             'groups': [_ignore],
             'tags': [_ignore],
             'approval_status': [_ignore],
@@ -379,12 +383,14 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         function_names = (
             'get_countries',
             'get_publisher_source_types',
+            'get_publisher_frequencies',
             'get_licenses',
             'get_organization_types',
             'is_route_active',
             'get_country_title',
             'get_file_type_title',
             'get_publisher_source_type_title',
+            'get_publisher_frequency_title',
             'get_organization_type_title',
             'get_issue_title',
             'get_publisher_organization_type',
