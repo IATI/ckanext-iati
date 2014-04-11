@@ -11,6 +11,15 @@ PUBLISHER_SOURCE_TYPES = [
     ('secondary_source', 'Secondary source'),
 ]
 
+PUBLISHER_FREQUENCIES = [
+    ('not_specified', 'Not specified'),
+    ('monthly', 'Monthly'),
+    ('quarterly', 'Quarterly'),
+    ('six_monthly', 'Six Monthly'),
+    ('annually', 'Annually'),
+    ('lt_annually', 'Less than annually'),
+]
+
 ORGANIZATION_TYPES = [
     ('80', 'Academic, Training and Research'),
     ('60', 'Foundation'),
