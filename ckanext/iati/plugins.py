@@ -41,6 +41,30 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
         map.redirect('/publishers', '/publisher')
         map.redirect('/publishers/{url:.*}', '/publisher/{url}')
 
+        # Custom redirects for publisher renames
+        # Add a new line for each redirect, in the form
+        #
+        #   ('old_name', 'new_name',),
+        #
+        renames = [
+            ('amrefuk', 'amrefha',),
+            ('ausaid', 'ausgov',),
+        ]
+        for rename in renames:
+            # Publisher pages
+            map.redirect('/publisher/' + rename[0], '/publisher/' + rename[1],
+                     _redirect_code='301 Moved Permanently')
+            map.redirect('/publisher/{url:.*}/' + rename[0] , '/publisher/{url}/' + rename[1],
+                     _redirect_code='301 Moved Permanently')
+
+            # Dataset pages
+            map.redirect('/dataset/' + rename[0] + '-{code:.*}', '/dataset/' + rename[1] + '-{code:.*}',
+                     _redirect_code='301 Moved Permanently')
+            map.redirect('/dataset/{url:.*}/' + rename[0] + '-{code:.*}', '/dataset/{url}/' + rename[1] + '-{code:.*}',
+                     _redirect_code='301 Moved Permanently')
+
+
+
         org_controller = 'ckan.controllers.organization:OrganizationController'
         with SubMapper(map, controller=org_controller) as m:
             m.connect('publishers_index', '/publisher', action='index')
