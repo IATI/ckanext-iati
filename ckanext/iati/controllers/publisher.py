@@ -2,6 +2,7 @@ from ckan.lib.base import render, BaseController
 from ckan.common import c
 import ckan.logic as logic
 import ckan.model as model
+import ckan.plugins as p
 
 class PublisherController(BaseController):
 
@@ -15,7 +16,7 @@ class PublisherController(BaseController):
             )
             c.group_dict = logic.get_action('organization_show')(context, {'id': id})
         except logic.NotAuthorized:
-            abort(401, _('Unauthorized to read group members %s') % '')
+            p.toolkit.abort(401, p.toolkit._('Unauthorized to read group members %s') % '')
         except logic.NotFound:
-            abort(404, _('Group not found'))
+            p.toolkit.abort(404, p.toolkit._('Group not found'))
         return render('organization/members_read.html')
