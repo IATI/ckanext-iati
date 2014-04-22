@@ -46,14 +46,14 @@
   <fieldset>
     <legend>{{ _('Details') }}</legend>
 
-    {{ form.input('publisher_implementation_schedule', label=_('Implementation Schedule'), id='field-publisher_implementation_schedule', value=data.publisher_implementation_schedule, error=errors.publisher_implementation_schedule) }}
-    <p class="help-block">URL of an Implementation Schedule.</p>
-
     {{ form.textarea('publisher_contact', label=_('Contact'), id='field-publisher_contact', value=data.publisher_contact, error=errors.publisher_contact) }}
     <p class="help-block">Contact details for publisher.</p>
 
     {{ form.textarea('publisher_description', label=_('Description'), id='field-publisher_description', value=data.publisher_description, error=errors.publisher_description) }}
     <p class="help-block">General description of publisher's role and activities.</p>
+
+    {{ form.input('publisher_implementation_schedule', label=_('Implementation Schedule'), id='field-publisher_implementation_schedule', value=data.publisher_implementation_schedule, error=errors.publisher_implementation_schedule) }}
+    <p class="help-block">URL of an Implementation Schedule.</p>
 
     {{ form.textarea('publisher_agencies', label=_('Organisations / agencies covered'), id='field-publisher_agencies', value=data.publisher_agencies, error=errors.publisher_agencies) }}
     <p class="help-block">Which organisations/agencies does your IATI data cover?  (What % of your total development flows does this cover? What is missing?).</p>
