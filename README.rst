@@ -100,6 +100,50 @@ like ``ckan.site_id``, ``solr_url``, etc are not included)::
     # Subject of the email sent to publishers when acivated, default is 'IATI Registry Publisher Activation'
     #iati.publisher_activation_email_subject=
 
+To ensure that the logging for the archiver works fine and prevent permissions
+problems, use the following logging configuration::
+
+    ## Logging configuration
+    [loggers]
+    keys = root, ckan, ckanext, iati_archiver
+
+    [handlers]
+    keys = console
+
+    [formatters]
+    keys = generic
+
+    [logger_root]
+    level = WARNING
+    handlers = console
+
+    [logger_ckan]
+    level = INFO
+    handlers = console
+    qualname = ckan
+    propagate = 0
+
+    [logger_ckanext]
+    level = INFO
+    handlers = console
+    qualname = ckanext
+    propagate = 0
+
+    [logger_iati_archiver]
+    level = DEBUG
+    handlers = console
+    qualname = iati_archiver
+    propagate = 0
+
+    [handler_console]
+    class = StreamHandler
+    args = (sys.stderr,)
+    level = NOTSET
+    formatter = generic
+
+    [formatter_generic]
+    format = %(asctime)s %(levelname)-5.5s [%(name)s] %(message)s
+
 To set up the `Daily archiver and issue checker`_, you need to create a cron
 job that calls the command once a day. See the dedicated section for details.
 
