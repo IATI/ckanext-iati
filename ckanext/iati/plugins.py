@@ -300,7 +300,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         schema['name'].extend([iati_dataset_name, iati_one_resource])
         schema['owner_org'].append(iati_owner_org_validator)
 
-        schema['resources']['url'].append(iati_resource_count)
+        schema['resources']['url'].extend([iati_resource_count, strip])
 
         return schema
 
