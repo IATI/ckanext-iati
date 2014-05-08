@@ -19,6 +19,7 @@ CSV_MAPPING = [
         ('registry-publisher-id', 'organization', 'name'),
         ('registry-file-id', 'package', 'name'),
         ('title', 'package', 'title'),
+        ('description', 'package', 'notes'),
         ('contact-email', 'package', 'author_email'),
         ('state', 'package', 'state'),
         ('source-url', 'resources', 'url'),
@@ -33,6 +34,8 @@ CSV_MAPPING = [
         ('default-language','package', 'language'),
         ('secondary-publisher', 'package', 'secondary_publisher'),
         ]
+
+OPTIONAL_COLUMNS = ['state', 'description']
 
 
 def _fix_unicode(text, min_confidence=0.5):
@@ -182,8 +185,10 @@ class CSVController(p.toolkit.BaseController):
                                 value = extras_dict[key]
                         row[fieldname] = value
 
-                        if fieldname == 'title':
-                            row['title'] = row['title'].encode('utf-8')
+                        for field_to_check in ('title', 'description'):
+                            if fieldname == field_to_check and row.get(field_to_check):
+                                row[field_to_check] = row[field_to_check].encode('utf-8')
+
                     writer.writerow(row)
             output = f.getvalue()
         finally:
@@ -208,7 +213,7 @@ class CSVController(p.toolkit.BaseController):
             reader = csv.DictReader(csv_file, dialect=dialect)
 
             # Check if all columns are present
-            missing_columns = [f for f in fieldnames if f not in reader.fieldnames and f != 'state']
+            missing_columns = [f for f in fieldnames if f not in reader.fieldnames and f not in OPTIONAL_COLUMNS]
             if len(missing_columns):
                 error = {'file': 'Missing columns: %s' % ', '.join(sorted(missing_columns))}
                 return [], [], [], [('1',error)]
@@ -238,7 +243,8 @@ class CSVController(p.toolkit.BaseController):
                 try:
                     package_dict = self.get_package_dict_from_row(row, context)
                 except UnicodeDecodeError,e:
-                    msg = 'Encoding error, could not decode dataset title: %s' % row['title']
+                    msg = 'Encoding error, could not decode dataset title or description: {0}, {1}'.format(
+                            row['title'], row['description'])
                     log.error('Error in row %i: %s' % (i+1,msg))
                     errors[row_index]['title'] = [msg]
                     continue
@@ -286,11 +292,15 @@ class CSVController(p.toolkit.BaseController):
         package['extras'] = extras_dict
 
         # Try to handle rogue Windows encodings properly
-        try:
-            package['title'] = package['title'].decode('utf-8')
-        except UnicodeDecodeError:
-            package['title'] = _fix_unicode(package['title'])
+        for key in ('title', 'notes'):
+            if package.get(key):
+                try:
+                    package[key] = package[key].decode('utf-8')
+                except UnicodeDecodeError:
+                    package[key] = _fix_unicode(package[key])
 
+        # If no description provided, we assume delete it
+        package['notes'] = package.get('notes', '')
 
         return package
 
