@@ -418,6 +418,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_organization_type_title',
             'get_issue_title',
             'get_publisher_organization_type',
+            'normalize_publisher_name',
             'return_select_options',
             'get_config_option',
             'check_nav_dropdown',

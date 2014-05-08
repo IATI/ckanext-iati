@@ -212,3 +212,9 @@ def get_global_search_facets():
         'facet.field': p.toolkit.c.facet_titles.keys()
     })
     return query['search_facets']
+
+def normalize_publisher_name(name):
+
+    if name[:4].lower() == 'the ':
+        return name[4:] + ', The'
+    return name

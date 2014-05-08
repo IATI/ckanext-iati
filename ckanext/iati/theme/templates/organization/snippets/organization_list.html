@@ -20,7 +20,7 @@ Example:
   <tbody>
   {% for organization in organizations %}
     <tr>
-      <td><a href="/publisher/{{ organization.name }}">{{ organization.display_name }}</a></td>
+      <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.display_name) }}</a></td>
       <td>{{ h.get_publisher_organization_type(organization.id) }}</td>
       <td>{{ organization.packages }}</td>
     </tr>
