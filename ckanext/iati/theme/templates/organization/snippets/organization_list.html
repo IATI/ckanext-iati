@@ -20,13 +20,15 @@ Example:
 
   <tbody>
   {% for organization in organizations %}
-    {% set extra_fields = h.get_publisher_extra_fields(organization.id) %}
-    <tr>
-      <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.display_name) }}</a></td>
-      <td>{{ extra_fields.publisher_organization_type }}</td>
-      <td>{{ extra_fields.publisher_country }}</td>
-      <td>{{ organization.packages }}</td>
-    </tr>
+    {% if organization.packages > 0 %}
+      {% set extra_fields = h.get_publisher_extra_fields(organization.id) %}
+      <tr>
+        <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.display_name) }}</a></td>
+        <td>{{ extra_fields.publisher_organization_type }}</td>
+        <td>{{ extra_fields.publisher_country }}</td>
+        <td>{{ organization.packages }}</td>
+      </tr>
+    {% endif %}
   {% endfor %}
   </tbody>
 </table>
