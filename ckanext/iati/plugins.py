@@ -381,6 +381,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         # Add nicely formatted values for faceting
         fields = (
             ('country', iati_helpers.get_country_title),
+            ('publisher_country', iati_helpers.get_country_title),
             ('publisher_source_type', iati_helpers.get_publisher_source_type_title),
             ('filetype', iati_helpers.get_file_type_title),
             ('publisher_source_type', iati_helpers.get_publisher_source_type_title),
@@ -504,6 +505,7 @@ class IatiTheme(p.SingletonPlugin):
         facets_dict['publisher_source_type'] = p.toolkit._('Source')
         facets_dict['secondary_publisher'] = p.toolkit._('Secondary Publisher')
         facets_dict['organization'] = p.toolkit._('Publisher')
+        facets_dict['publisher_country'] = p.toolkit._('Publisher Country')
         facets_dict['publisher_organization_type'] = p.toolkit._('Organisation Type')
         facets_dict['country'] = p.toolkit._('Recipient Country')
         facets_dict['filetype'] = p.toolkit._('File Type')
