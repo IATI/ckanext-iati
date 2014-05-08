@@ -13,15 +13,18 @@ Example:
     <tr>
       <th title="Sort by publisher name">Publisher</th>
       <th title="Sort by organisation type">Organisation Type</th>
+      <th title="Sort by country">Country</th>
       <th title="Sort by number of published datasets">Datasets</th>
     </tr>
   </thead>
 
   <tbody>
   {% for organization in organizations %}
+    {% set extra_fields = h.get_publisher_extra_fields(organization.id) %}
     <tr>
       <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.display_name) }}</a></td>
-      <td>{{ h.get_publisher_organization_type(organization.id) }}</td>
+      <td>{{ extra_fields.publisher_organization_type }}</td>
+      <td>{{ extra_fields.publisher_country }}</td>
       <td>{{ organization.packages }}</td>
     </tr>
   {% endfor %}

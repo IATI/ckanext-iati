@@ -46,13 +46,17 @@ def get_issue_title(code):
 def get_licenses():
     return [('', '')] + model.Package.get_license_options()
 
-def get_publisher_organization_type(group_id):
+def get_publisher_extra_fields(group_id):
     group = model.Group.get(group_id)
-    if group:
-        org_type = group.extras.get('publisher_organization_type')
-        if org_type:
-            return get_organization_type_title(org_type)
-    return ''
+    extras = {}
+    if not group:
+        return extras
+    for extra, formatter in [
+        ('publisher_organization_type', get_organization_type_title,),
+        ('publisher_country', get_country_title,)
+    ]:
+        extras[extra] = formatter(group.extras.get(extra))
+    return extras
 
 def is_route_active(menu_item):
     _menu_items = config.get('routes.named_routes')
