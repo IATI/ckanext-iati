@@ -481,7 +481,10 @@ class IatiTheme(p.SingletonPlugin):
         with SubMapper(map, controller=static_controller) as m:
             m.connect('using-iati-data', '/using-iati-data',
                 action='using_iati_data')
-            m.connect('about-2', '/about-2', action='about')
+
+            map.redirect('/about-2', '/about',
+                     _redirect_code='301 Moved Permanently')
+            m.connect('about', '/about', action='about')
             m.connect('api', '/registry-api', action='api')
             m.connect('help', '/help', action='help')
             m.connect('help_csv-import', '/help_csv-import', action='help_csv')
