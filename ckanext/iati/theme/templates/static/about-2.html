@@ -1,33 +1,57 @@
-{% extends "static/base.html" %}
+<h1>About the IATI Registry</h1>
 
-{% block subtitle %}About the IATI Registry{% endblock %}
+<p class="lead">The IATI Registry provides links to all raw data officially published by organisations using the IATI Standard.</p>
 
-{% block primary_content %}
+<p>This is machine-readable data in XML format that can be exchanged between, and used by, a growing number of tools and applications.</p>
 
-  <h1>About the IATI Registry</h1>
+<h2>How the IATI Registry is structured</h2>
+The IATI Registry contains the following features:
+<ul>
+<li><strong>Publishers</strong> - entries for organisations that are publishing IATI data.</li>
+<li><strong>Dataset</strong> - records from Publishers that contain a direct link to IATI data, plus metadata.</li>
+<li><strong>Files</strong> - the direct link to an IATI data file - contained within a Package, maintained by a Publisher.</li>
+</ul>
 
-  <p class="lead">The International Aid Transparency Initiative (IATI) makes information about aid spending easier to access, use and understand.</p>
+<p>Together, the ecosystem of Publishers > Datasets > Files works to provide a system through which IATI data can be accessed, queried and tracked.</p>
 
-  <p>The IATI Registry is an index of data published on international development activities. The registry itself stores no data, but provides a searchable index of metadata, feeds, and links to datasets hosted by donor agencies, development organisations and partner countries.</p>
+<p><strong>Please note</strong> - the IATI Registry does not directly host or warehouse IATI data from Publishers.   The IATI Registry acts as a repository of links to the data, usually hosted directly by the Publisher.
+ 
+<h3>IATI Publishers</h3>
+<p>Organisations that publish IATI data are known as Publishers. A <a href="http://iatiregistry.org/publisher">full list of all Publishers is available</a>, which can be filtered by name, country and organisation type. The number of files these organisations have published is also listed.</p>
 
-  <p>Organisations publish IATI data onto their own websites. The IATI registry provides a convenient single point of access for users to find and stay current with these different  sources of information.</p>
+<p>Further details of the process each Publisher undertakes can be found on the Publisher page.  This may include information about the structure, scope and timescales of their data, along with a link to their Implementation Schedule, where appropriate.</p>
+  
+<h3>IATI Datasets</h3>
+<p>The IATI Registry contains links to the all the raw data published by organisations. This data is never hosted directly on the IATI Registry.
+Hence, the IATI Registry publishes IATI Datasets that contain the direct link to the raw data file, plus metadata.</p>
 
-  <h3>What is IATI?</h3>
+<h3>IATI Files</h3>
+<p>IATI Datasets contain links to data published to either the <a href="http://iatistandard.org/organisation-standard/">IATI Organisation Standard</a> or the <a href="http://iatistandard.org/activity-standard/">IATI Activity Standard</a>.  These links are the IATI Files.
+The IATI files may contain singular or multiple organisations or activities. This will depend on the scope and nature of the publishing organisation.</p>
 
-  <p>At the core of aid transparency is knowing the details of who is doing what, where. IATI is a multi-stakeholder effort to make this information available.</p>
+<h2>Viewing IATI data via the IATI Registry</h2>
+From any IATI Dataset it is possible to:
+<ul>
+	<li>Download the raw data. This will download the XML file. Depending upon the machine and configuration you are using, this ‘raw data’ will be opened in a variety of ways.</li>
 
-  <p>As part of the IATI process, donors, civil society organisations and recipient governments have agreed on what to publish, common definitions for sharing information and an electronic XML data standard.</p>
+	<li>Preview the data. This provides a simple view of the data, within a single webpage. </li>
 
-  <p>These steps will increase the effectiveness of aid by making it easier to administer, reducing the risk of diversion or corruption and improving coordination between stakeholders.</p>
+	<li>Access a CSV of the data. This provides an interface to convert the data into a spreadsheet format.</li>
 
-  <p>You can find more information at <a href="http://aidtransparency.net">http://aidtransparency.net</a> and to read more about how aid transparency will affect development, there a good article on the <a href="http://www.devex.com/en/blogs/full-disclosure/aid-transparency-how-it-will-affect-your-work">devex blog</a>.</p>
+</ul>
 
-  <h3>What is the IATI standard?</h3>
+<h2>Searching the IATI Registry</h2>
+<p>It is possible to search the IATI Datasets via a number of facets, including country, organisation type, and file type.</p>
 
-  <p>IATI consists of two main standards: an ‘organisation standard’, designed for publishing forward-looking budget data; and an ‘activity standard’ for publishing details of past, current and planned aid activities or projects.</p>
+<p>Please note: this search is at the metadata level - and so may not always reflect the data contained within the associated File(s).  It is therefore recommended to conduct data searches via the <a href="http://datastore.iatistandard.org/docs/">IATI Datastore</a>.</p>
 
-  <p>Additionally, there are various code lists that provide common definitions for specifying values such as sector descriptions, geographical information and types of financial transaction.</p>
+<p>Please note: larger publishing organisations tend to publish multiple IATI Datasets, segmented by country/region. This may not always be the best way to search for IATI data - best practice is to utilise the <a href="http://datastore.iatistandard.org/docs/">IATI Datastore</a>.</p>
 
-  <p>The standards and code lists, as well as XML schemas and user guides are available at <a href="http://iatistandard.org">http://iatistandard.org</a>.</p>
+<h2>Following updates to IATI Data</h2>
+<p>Publishers are able to update any Datasets at any time. These changes are logged in the Publisher and Package ‘history’.</p>
 
-{% endblock %}
+<p>In addition, the IATI Registry tracks every File on a nightly basis, looking for any change within the IATI data. If any update is found, an entry to the Dataset history is also recorded.</p>
+
+<p>Please note: the Registry is indiscriminate about the nature of changes recovered. This could simply be a change of date, or a complete change of data. Only a note of ‘a change’ is recorded in the Dataset history.</p>
+
+<p>Additionally, it is possible to ‘subscribe’ to updates on any particular Publisher or Dataset via the ‘follow’ buttons on relevant pages. This will result in updates being available at your own ‘dashboard’, when logged in.</p>
