@@ -21,7 +21,7 @@ from ckanext.iati.helpers import extras_to_dict, extras_to_list
 log = logging.getLogger('iati_archiver')
 # Max content-length of archived files, larger files will be ignored
 MAX_CONTENT_LENGTH = 50000000
-URL_TIMEOUT = 30
+URL_TIMEOUT = 60
 DATA_FORMATS = ['xml', 'iati-xml', 'application/xml', 'text/xml', 'text/html']
 
 
