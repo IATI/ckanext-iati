@@ -1,3 +1,4 @@
+from urlparse import urlparse, urlunparse
 from dateutil.parser import parse as date_parse
 
 from ckan.logic import get_action
@@ -16,6 +17,21 @@ def iati_resource_count(key, data, errors, context):
     if len(key) > 1 and key[1] > 0:
         errors[key].append('Datasets can only have one resource (a single IATI XML file)')
 
+def iati_resource_url(value, context):
+    try:
+        url = urlparse(value)
+    except ValueError:
+        raise Invalid('Invalid URL')
+
+    valid_schemes = ('http', 'https', 'ftp')
+    if not url.scheme in valid_schemes:
+        raise Invalid('Invalid URL scheme')
+    if not url.hostname:
+        raise Invalid('Invalid URL host name')
+
+    value = urlunparse(url)
+
+    return value
 
 def iati_owner_org_validator(key, data, errors, context):
 
