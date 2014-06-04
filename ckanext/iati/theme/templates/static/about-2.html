@@ -1,3 +1,9 @@
+{% extends "static/base.html" %}
+
+{% block subtitle %}About the IATI Registry{% endblock %}
+
+{% block primary_content %}
+
 <h1>About the IATI Registry</h1>
 
 <p class="lead">The IATI Registry provides links to all raw data officially published by organisations using the IATI Standard.</p>
@@ -55,3 +61,5 @@ From any IATI Dataset it is possible to:
 <p>Please note: the Registry is indiscriminate about the nature of changes recovered. This could simply be a change of date, or a complete change of data. Only a note of ‘a change’ is recorded in the Dataset history.</p>
 
 <p>Additionally, it is possible to ‘subscribe’ to updates on any particular Publisher or Dataset via the ‘follow’ buttons on relevant pages. This will result in updates being available at your own ‘dashboard’, when logged in.</p>
+
+{% endblock %}
