@@ -50,6 +50,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
         renames = [
             ('amrefuk', 'amrefha',),
             ('ausaid', 'ausgov',),
+            ('mrdf', 'allwecan',),
         ]
         for rename in renames:
             # Publisher pages
