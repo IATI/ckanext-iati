@@ -275,10 +275,15 @@ class CSVController(p.toolkit.BaseController):
     def get_package_dict_from_row(self, row, context):
         package = {}
         extras_dict = []
+
         for fieldname, entity, key in CSV_MAPPING:
             if fieldname in row:
                 # If value is None (empty cell), property will be set to blank
                 value = row[fieldname]
+
+                if fieldname in ('recipient-country', ):
+                    value = value.upper()
+
                 if entity == 'organization':
                     package['owner_org'] = value
                 elif entity == 'resources':
