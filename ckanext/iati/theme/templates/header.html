@@ -7,6 +7,14 @@
 {% endmacro %}
 
 {% block header_wrapper %}
+  {% if 'staging' in request.host or 'test' in request.host %}
+      <div class="alert">
+        <strong>Warning!</strong> This is a staging site. It runs the same code base as the
+        <a href="http://iatiregistry.org">production one</a> but data might be out of date.
+        Be aware that all new data in this instance might be deleted at any time.
+
+      </div>
+  {% endif %}
   <a href="#content" class="hide">{{ _('Skip to primary content') }}</a>
   <header id="header">
     <div class="container">
