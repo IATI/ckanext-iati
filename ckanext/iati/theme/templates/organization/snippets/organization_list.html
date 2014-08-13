@@ -20,7 +20,8 @@ Example:
 
   <tbody>
   {% for organization in organizations %}
-    {% if organization.packages > 0 %}
+
+    {% if organization.packages > 0 or 'dashboard' in request.url %}
       {% set extra_fields = h.get_publisher_extra_fields(organization.id) %}
       <tr>
         <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.display_name) }}</a></td>
