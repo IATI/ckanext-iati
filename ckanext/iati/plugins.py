@@ -52,6 +52,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
             ('ausaid', 'ausgov',),
             ('mrdf', 'allwecan',),
         ]
+
         for rename in renames:
             # Publisher pages
             map.redirect('/publisher/' + rename[0], '/publisher/' + rename[1],
@@ -64,8 +65,6 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
                      _redirect_code='301 Moved Permanently')
             map.redirect('/dataset/{url:.*}/' + rename[0] + '-{code:.*}', '/dataset/{url}/' + rename[1] + '-{code:.*}',
                      _redirect_code='301 Moved Permanently')
-
-
 
         org_controller = 'ckan.controllers.organization:OrganizationController'
         with SubMapper(map, controller=org_controller) as m:
@@ -262,6 +261,28 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         map.redirect('/feed/custom.atom', '/feeds/custom.atom', _redirect_code='301 Moved Permanently')
         map.redirect('/feed/country/{id}.atom', '/feeds/custom.atom?extras_country={id}', _redirect_code='301 Moved Permanently')
         map.redirect('/feed/organisation_type/{id}.atom', '/feeds/custom.atom?extras_publisher_organization_type={id}', _redirect_code='301 Moved Permanently')
+
+        # Custom redirects for dataset renames
+        # Add a new line for each redirect, in the form
+        #
+        #   ('old_name', 'new_name',),
+        #
+        renames = [
+            ('onl-org', 'onl-activity'),
+            ('ciuk-org', 'ciuk-activity'),
+            ('uncdf-org', 'uncdf-activity'),
+            ('plan_uk-org210613', 'plan_uk-activity'),
+            ('manxtimes-org', 'manxtimes-activity'),
+            ('international-alert-org', 'international-alert-activity'),
+            ('globalintegrity-org', 'globalintegrity-activity'),
+        ]
+
+        for rename in renames:
+            # Dataset pages
+            map.redirect('/dataset/' + rename[0], '/dataset/' + rename[1],
+                     _redirect_code='301 Moved Permanently')
+            map.redirect('/dataset/{url:.*}/' + rename[0], '/dataset/{url}/' + rename[1],
+                     _redirect_code='301 Moved Permanently')
 
         return map
 
