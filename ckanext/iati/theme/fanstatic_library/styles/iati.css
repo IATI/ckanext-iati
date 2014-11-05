@@ -10347,6 +10347,16 @@ iframe {
 #static_page h4 {
   color: #000;
 }
+.ckanext-pages-content {
+  width: 600px;
+  color: #666;
+}
+.ckanext-pages-content h1,
+.ckanext-pages-content h2,
+.ckanext-pages-content h3,
+.ckanext-pages-content h4 {
+  color: #000;
+}
 body,
 p,
 h1,
