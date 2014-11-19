@@ -97,8 +97,13 @@ like ``ckan.site_id``, ``solr_url``, etc are not included)::
     # Address from where the email notifactions are sent, default is 'no-reply@iatiregistry.org'
     #iati.email=
 
-    # Subject of the email sent to publishers when acivated, default is 'IATI Registry Publisher Activation'
+    # Subject of the email sent to publishers when activated, default is 'IATI Registry Publisher Activation'
     #iati.publisher_activation_email_subject=
+
+    # Allowed values for the IATI Standard Version (iati_version) field, default is '1.01 1.02 1.03 1.04 2.01'
+    #iati.standard_versions
+
+
 
 To ensure that the logging for the archiver works fine and prevent permissions
 problems, use the following logging configuration::

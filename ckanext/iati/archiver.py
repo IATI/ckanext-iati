@@ -17,6 +17,7 @@ from pylons import config
 from ckan import model
 import ckan.plugins.toolkit as toolkit
 from ckanext.iati.helpers import extras_to_dict, extras_to_list
+from ckanext.iati.lists import IATI_STANDARD_VERSIONS
 
 log = logging.getLogger('iati_archiver')
 # Max content-length of archived files, larger files will be ignored
@@ -178,6 +179,26 @@ def archive_package(package_id, context, consecutive_errors=0):
                                       ' {0}'.format(str(e)[:200]))
 
         new_extras = {}
+        # IATI standard version (iati_version extra)
+        if is_activity_package:
+            xpath = '/iati-activities/@version'
+        else:
+            xpath = '/iati-organisations/@version'
+
+        version = tree.xpath(xpath)
+
+        allowed_versions = config.get('iati.standard_versions')
+        if allowed_versions:
+            allowed_versions = allowed_versions.split()
+        else:
+            allowed_versions = IATI_STANDARD_VERSIONS
+
+        if len(version) and version[0] in allowed_versions:
+            version = version[0]
+        else:
+            version = 'n/a'
+        new_extras['iati_version'] = version
+
         if is_activity_package:
             # Number of activities (activity_count extra)
             new_extras['activity_count'] = int(tree.xpath(

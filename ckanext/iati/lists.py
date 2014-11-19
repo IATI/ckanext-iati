@@ -1,5 +1,9 @@
 from countries import COUNTRIES
 
+IATI_STANDARD_VERSIONS = [
+    '1.01', '1.02', '1.03', '1.04', '2.01',
+]
+
 FILE_TYPES = [
     ('activity', 'Activity'),
     ('organisation', 'Organisation'),
