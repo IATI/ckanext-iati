@@ -170,8 +170,6 @@ class TestCSVImporter():
 
         pkg = package_show_rest(self.context,{'id':'test-publisher-vu'})
 
-        assert pkg['extras']['activity_period-from'] == '1904-06-16 10:01'
-        assert pkg['extras']['activity_period-to'] == '1904-06-16'
         assert pkg['extras']['data_updated'] == '1904-06'
 
         # "Excel" style (DD/MM/YYYY HH:MM, DD/MM/YYYY, MM/YYYY, YYYY)
@@ -179,8 +177,6 @@ class TestCSVImporter():
 
         pkg = package_show_rest(self.context,{'id':'test-publisher-vu'})
 
-        assert pkg['extras']['activity_period-from'] == '1904-06-16 10:01'
-        assert pkg['extras']['activity_period-to'] == '1904-06-16'
         assert pkg['extras']['data_updated'] == '1904-06'
 
         # Wrong dates

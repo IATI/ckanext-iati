@@ -154,12 +154,6 @@
 <fieldset>
   <legend>Verification and Analysis</legend>
 
-  {{ form.input('activity_period-from', id='field-activity_period-from', label=_('Activity Period From'), value=extras_dict.get('activity_period-from'), error=errors.activity_period_from, classes=['control-full']) }}
-  <p class="help-block"><span class="field-xml">[activiy-period-start]</span> Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
-
-  {{ form.input('activity_period-to', id='field-activity-period_to', label=_('Activity Period To'), value=extras_dict.get('activity_period-to'), error=errors.activity_period_to, classes=['control-full']) }}
-  <p class="help-block"><span class="field-xml">[activiy-period-end]</span> Acceptable formats: 'YYYY-MM-DD HH:MM', 'YYYY-MM-DD', 'YYYY-MM', 'YYYY'.</p>
-
   {{ form.input('activity_count', id='field-activity-count', label=_('Num. Activities'), value=extras_dict.get('activity_count'), error=errors.activity_count, classes=['control-full']) }}
   <p class="help-block"><span class="field-xml">[activiy-count]</span> A count of the number of activities reported.</p>
 

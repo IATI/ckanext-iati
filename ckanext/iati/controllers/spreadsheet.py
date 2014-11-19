@@ -26,8 +26,6 @@ CSV_MAPPING = [
         ('format', 'resources', 'format'),
         ('file-type','package', 'filetype'),
         ('recipient-country','package', 'country'),
-        ('activity-period-start','package', 'activity_period-from'),
-        ('activity-period-end','package', 'activity_period-to'),
         ('last-updated-datetime','package', 'data_updated'),
         ('activity-count','package', 'activity_count'),
         ('default-language','package', 'language'),

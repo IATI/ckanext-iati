@@ -23,10 +23,6 @@
           <th scope="row" class="dataset-label"># of Activities</th>
           <td class="dataset-details">{{ extras.get('activity_count', '-') }}</td>
         </tr>
-        <tr>
-          <th scope="row" class="dataset-label">Activity Period</th>
-          <td class="dataset-details">{{ h.render_datetime(extras.get('activity_period-from', ''), date_format=date_format) }} - {{ h.render_datetime(extras.get('activity_period-to', ''), date_format=date_format) }}</td>
-        </tr>
       </tbody>
     </table>
 
