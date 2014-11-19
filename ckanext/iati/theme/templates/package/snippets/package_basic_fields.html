@@ -163,8 +163,4 @@
   {{ form.input('activity_count', id='field-activity-count', label=_('Num. Activities'), value=extras_dict.get('activity_count'), error=errors.activity_count, classes=['control-full']) }}
   <p class="help-block"><span class="field-xml">[activiy-count]</span> A count of the number of activities reported.</p>
 
-  {{ form.checkbox('archive_file', id='field-archive_file', label=_('Archive'), value="yes", checked=(true if extras_dict.get('archive_file') == "yes" else false), error=errors.archive_file, classes=['control-full']) }}
-
-  {{ form.checkbox('verified', id='field-verified', label=_('Verified'), value="yes", checked=(true if extras_dict.get('verified') == "yes" else false), error=errors.verified, classes=['control-full']) }}
-
 </fieldset>

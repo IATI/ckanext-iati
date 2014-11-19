@@ -30,7 +30,6 @@ CSV_MAPPING = [
         ('activity-period-end','package', 'activity_period-to'),
         ('last-updated-datetime','package', 'data_updated'),
         ('activity-count','package', 'activity_count'),
-        ('verification-status','package', 'verified'),
         ('default-language','package', 'language'),
         ('secondary-publisher', 'package', 'secondary_publisher'),
         ]
