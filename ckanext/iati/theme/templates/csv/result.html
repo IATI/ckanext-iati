@@ -38,7 +38,7 @@
 
     <h3 id="warnings">Warnings</h3>
     <ul>
-      {% for row,fields in c.warnings %}
+      {% for row,fields in warnings %}
     <li>Line {{row}}:
             <ul>
               {% for field, msgs in fields.iteritems() %}
