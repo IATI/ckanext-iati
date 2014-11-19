@@ -143,7 +143,7 @@
   {% endif %}
 
   {{ form.input('resources__0__url', id='resource-url', label=_('URL'), value=resources.get('url'), placeholder="eg. http://example.com/iati-activities.xml", error=errors_resources.url, classes=['control-full', 'control-large']) }}
-  <p class="help-block">This is the Internet link directly to the data - by selecting this link in a web browser, the user will immediately download the full dataset. All files should be in XML following the <a href="http://iatistandard.org" target="_blank">IATI standard</a>. Note that datasets are not hosted on this site, but by the publisher of the data.</p>
+  <p class="help-block">This is the Internet link directly to the data - by selecting this link in a web browser, the user will immediately download the full dataset. All files should be in XML following the <a href="http://iatistandard.org" target="_blank">IATI standard</a>. Note that datasets are not hosted on this site, but by the publisher of the data. Please ensure files are less than 40MB.</p>
 
   {{ form.input('resources__0__format', id='field-resource_format', label=_('Format'), value=resources.get('format') or 'IATI-XML', error=errors.format, classes=['control-medium']) }}
   <p class="help-block">This should give the file format in which the data is supplied. IATI-compliant data should specify "IATI-XML".</p>
