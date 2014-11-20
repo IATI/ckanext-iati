@@ -95,7 +95,7 @@ def run(package_id=None, publisher_id=None):
             log.error('Error downloading resource for dataset {0}: '
                       '{1}'.format(package_id, str(e)))
             log.error(text_traceback())
-            if consecutive_errors > 5:
+            if consecutive_errors > 15:
                 log.error('Too many errors, aborting...')
                 return False
             else:
