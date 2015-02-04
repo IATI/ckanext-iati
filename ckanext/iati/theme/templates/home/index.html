@@ -7,31 +7,39 @@
     {{ self.flash() }}
 
     {% trans %}
-      <h1>Welcome to <strong>IATI Data Registry</strong>, the place to find IATI raw data in XML format.</h1>
+      <h1><strong>IATI Data</strong>is the place to search, register and use IATI data.</h1>
     {% endtrans %}
   </div>
 
   <div id="home-icons">
     <div class="container">
       <div class="icon registry">
-        <h2><a href="/dataset">IATI Registry</a></h2>
-        <a href="/dataset" class="block">Search the Registry</a>
-        <p>The Registry provides links to data and a basic preview function</p>
+        <h2><a href="/datastore">Search IATI Data</a></h2>
+        <a href="/datastore" class="block">Datastore</a>
+        <p>The IATI Datastore gathers all data published to the IATI standard into a single queryable source.</p>
+        <ul>
+          <li><a href="/dataset">Search datasets on the IATI Registry</a></li>
+          <li><a href="/publisher">See a list of IATI publishers</a></li>        
+        </ul>
       </div>
       <div class="icon detail">
-        <h2><a href="/publisher">IATI Publishers</a></h2>
+        <h2><a href="/publisher">Register a Publisher</a></h2>
         <div class="block">
           <strong>{{ h.get_num_active_publishers() }}</strong> Organisations have published so far
         </div>
-        <p>The Registry began registering data in 2011, with the number of publishers increasing all of the time.<br><a href="/publisher">View list of publishers</a></p>
-      </div>
-      <div class="icon support">
-        <h2><a href="/help.html">Help</a></h2>
-        <p>Frequently Asked Questions for publishers.</p>
+        <p>The IATI Registry is the place for publishers to log links to their data.</p>
         <ul>
           <li><a href="/help">How do I register my data?</a></li>
-          <li><a href="/help">Why do I have to wait for my Publisher record to be authorised?</a></li>
-          <li><a href="mailto:support@iatistandard.org">Can't find the answer to your question? Ask for help.</a></li>
+          <li><a href="/about">How does the IATI Registry work?</a></li>        
+        </ul>
+      </div>
+      <div class="icon support">
+        <h2><a href="/using-iati-data.html">Using IATI data</a></h2>
+        <a href="/dashboard" class="block">Dashboard</a>
+        <p>The IATI Dashboard provides statistics, charts and metrics on IATI data</p>
+        <ul>
+          <li><a href="/tools">See a list of projects, websites and tools that utilise IATI data</a></li>
+          <li><a href="/registry-api">Developer?  Resources to help.</a></li>
         </ul>
       </div>
     </div>
