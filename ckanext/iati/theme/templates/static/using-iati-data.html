@@ -2,6 +2,13 @@
 
 {% block subtitle %}Using IATI Data{% endblock %}
 
+{% block secondary_content %}
+
+  {{ super() }}
+  {% snippet "snippets/datastore_box.html" %}
+
+{% endblock %}
+
 {% block primary_content %}
 
   <h1>Using IATI Data</h1>

@@ -14,6 +14,13 @@
 
 {% block page_heading %}{{ _('Publishers') }}{% endblock %}
 
+{% block secondary_content %}
+
+  {{ super() }}
+  {% snippet "snippets/datastore_box.html" %}
+
+{% endblock %}
+
 {% block organizations_search_form %}
 {% endblock %}
 
