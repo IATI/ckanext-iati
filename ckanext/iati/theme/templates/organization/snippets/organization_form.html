@@ -94,6 +94,10 @@
     {{ form.textarea('publisher_ui', label=_('User Interface'), id='field-publisher_ui', value=data.publisher_ui, error=errors.publisher_ui) }}
     <p class="help-block">Will IATI data be accessible for end users through an existing or a new user interface on your website?</p>
 
+    {{ form.input('publisher_ui_url', label=_('User Interface URL'), id='field-publisher_ui_url', value=data.publisher_ui_url, error=errors.publisher_ui_url) }}
+    <p class="help-block">If available, please provide the full URL to the website where your IATI data is accessible.</p>
+
+
   </fieldset>
 
 {% endblock %}

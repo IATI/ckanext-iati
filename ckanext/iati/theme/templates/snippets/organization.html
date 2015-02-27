@@ -26,15 +26,18 @@ Example:
         </a>
       </div>
       <h1 class="heading">{{ organization.title or organization.name }}</h1>
-      {% if organization.description %}
-        <p>
-          {{ h.markdown_extract(organization.description, 180) }}
-          {% link_for _('read more'), controller='organization', action='about', id=organization.name %}
-        </p>
-      {% endif %}
+
+      <p></p>
+
+      {% if organization.publisher_ui_url %}
       <div>
-        <i class="icon-dashboard"></i> <a href="http://dashboard.iatistandard.org/publisher/{{ organization.name }}.html" />IATI Dashboard</a>
-      </div> 
+        <p><i class="icon-globe"></i> <a href="{{ organization.publisher_ui_url }}" />Publisher page</a></p>
+      </div>
+      {% endif %}
+
+      <div>
+        <p><i class="icon-dashboard"></i> <a href="http://dashboard.iatistandard.org/publisher/{{ organization.name }}.html" />IATI Dashboard</a></p>
+      </div>
 
       {% if show_nums %}
         <div class="nums">
