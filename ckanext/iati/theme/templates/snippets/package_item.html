@@ -32,7 +32,7 @@
   {% endif %}
 
   <p>
-    Last modified: {{ h.get_pkg_dict_extra(package, 'data_updated', '-') }}
+    IATI data updated: {{ h.get_pkg_dict_extra(package, 'data_updated', '-') }}
     {% if (h.get_pkg_dict_extra(package, 'filetype') == 'activity') and h.get_pkg_dict_extra(package, 'activity_count') %}
       &middot;
       No. of Activities: {{ h.get_pkg_dict_extra(package, 'activity_count', '-') }}
