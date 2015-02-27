@@ -32,6 +32,10 @@ Example:
           {% link_for _('read more'), controller='organization', action='about', id=organization.name %}
         </p>
       {% endif %}
+      <div>
+        <i class="icon-dashboard"></i> <a href="http://dashboard.iatistandard.org/publisher/{{ organization.name }}.html" />IATI Dashboard</a>
+      </div> 
+
       {% if show_nums %}
         <div class="nums">
           <dl>
@@ -47,6 +51,7 @@ Example:
           {{ h.follow_button('group', organization.id) }}
         </div>
       {% endif %}
+
     </section>
   </div>
 {% endwith %}
