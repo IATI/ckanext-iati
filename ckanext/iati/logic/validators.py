@@ -18,6 +18,9 @@ def iati_resource_count(key, data, errors, context):
         errors[key].append('Datasets can only have one resource (a single IATI XML file)')
 
 def iati_resource_url(value, context):
+    if not value:
+        return
+
     try:
         url = urlparse(value)
     except ValueError:
