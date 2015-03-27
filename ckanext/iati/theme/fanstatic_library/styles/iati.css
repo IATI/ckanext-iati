@@ -10906,31 +10906,31 @@ form .info-block.info-inline {
   -moz-border-radius: 5px;
   border-radius: 5px;
 }
-.secondary .context-info:first-child .module-content {
+.secondary .context-info .module-content {
   border: 1px solid #DDD;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
 }
-.secondary .context-info:first-child p {
+.secondary .context-info p {
   overflow: auto;
 }
-.secondary .context-info:first-child code {
+.secondary .context-info code {
   display: block;
   font-weight: normal;
   padding: 0;
   margin: 0;
   overflow: auto;
 }
-.secondary .context-info:first-child .info {
+.secondary .context-info .info {
   margin-top: 15px;
 }
-.secondary .context-info:first-child .info dl dd {
+.secondary .context-info .info dl dd {
   margin-top: 3px;
   margin-left: 0;
 }
-.secondary .context-info:first-child .nums:before,
-.secondary .context-info:first-child .nums:after {
+.secondary .context-info .nums:before,
+.secondary .context-info .nums:after {
   content: " ";
   /* 1 */
 
@@ -10938,11 +10938,11 @@ form .info-block.info-inline {
   /* 2 */
 
 }
-.secondary .context-info:first-child .nums:after {
+.secondary .context-info .nums:after {
   clear: both;
 }
-.secondary .context-info:first-child .nums:before,
-.secondary .context-info:first-child .nums:after {
+.secondary .context-info .nums:before,
+.secondary .context-info .nums:after {
   content: " ";
   /* 1 */
 
@@ -10950,40 +10950,40 @@ form .info-block.info-inline {
   /* 2 */
 
 }
-.secondary .context-info:first-child .nums:after {
+.secondary .context-info .nums:after {
   clear: both;
 }
-.secondary .context-info:first-child .nums dl {
+.secondary .context-info .nums dl {
   float: left;
   width: 50%;
   margin: 5px 0 0 0;
 }
-.secondary .context-info:first-child .nums dl dt {
+.secondary .context-info .nums dl dt {
   display: block;
   color: #999999;
   font-weight: 300;
 }
-.secondary .context-info:first-child .nums dl dd {
+.secondary .context-info .nums dl dd {
   display: block;
   font-size: 30px;
   font-weight: 700;
   line-height: 36px;
   margin-left: 0;
 }
-.secondary .context-info:first-child .nums dl.wide {
+.secondary .context-info .nums dl.wide {
   float: none;
   width: 100%;
   margin-bottom: 15px;
 }
-.secondary .context-info:first-child .nums dl.wide dt {
+.secondary .context-info .nums dl.wide dt {
   margin-bottom: 5px;
 }
-.secondary .context-info:first-child .nums dl.wide dd {
+.secondary .context-info .nums dl.wide dd {
   font-size: 14px;
   line-height: 1.4;
   font-weight: normal;
 }
-.secondary .context-info:first-child .follow_button {
+.secondary .context-info .follow_button {
   margin-top: 15px;
 }
 .media-grid {

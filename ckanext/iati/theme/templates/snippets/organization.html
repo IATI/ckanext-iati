@@ -29,26 +29,21 @@ Example:
 
       <p></p>
 
-      {% if organization.publisher_ui_url %}
-      <div>
-        <p><i class="icon-globe"></i> <a href="{{ organization.publisher_ui_url }}" />Publisher's data platform</a></p>
-      </div>
-      {% endif %}
-
-      <div>
-        <p><i class="icon-dashboard"></i> <a href="http://dashboard.iatistandard.org/publisher/{{ organization.name }}.html" />IATI Dashboard</a></p>
-      </div>
-
       {% if organization.publisher_iati_id %}
       <div>
-        <p><i class="icon-bar-chart"></i> <a href="http://d-portal.org/ctrack.html?publisher={{ organization.publisher_iati_id }}" />Publisher d-portal</a></p>
+        <p>Identifier: {{ organization.publisher_iati_id }}</p>
       </div>
       {% endif %}
 
+      {% if organization.publisher_country %}
+      <div>
+        <p>HQ Country: {{ h.get_country_title(organization.publisher_country) }}</p>
+      </div>
+      {% endif %}
 
       {% if organization.publisher_url %}
       <div>
-        <p><i class="icon-building"></i> <a href="{{ organization.publisher_url }}" />Organization website</a></p>
+        <p><a href="{{ organization.publisher_url }}" />Organization website</a></p>
       </div>
       {% endif %}
 
@@ -71,4 +66,32 @@ Example:
 
     </section>
   </div>
+
+  <div class="module context-info">
+
+    <section class="module-content">
+
+      <h1 class="heading">Publisher IATI data</h1>
+
+      <p></p>
+
+      <div>
+        <p><i class="icon-dashboard"></i> <a href="http://dashboard.iatistandard.org/publisher/{{ organization.name }}.html" />IATI Dashboard</a></p>
+      </div>
+
+      {% if organization.publisher_iati_id %}
+      <div>
+        <p><i class="icon-bar-chart"></i> <a href="http://d-portal.org/ctrack.html?publisher={{ organization.publisher_iati_id }}" />Publisher d-portal</a></p>
+      </div>
+      {% endif %}
+
+      {% if organization.publisher_ui_url %}
+      <div>
+        <p><i class="icon-globe"></i> <a href="{{ organization.publisher_ui_url }}" />Publisher's data platform</a></p>
+      </div>
+      {% endif %}
+
+    </section>
+  </div>
+
 {% endwith %}
