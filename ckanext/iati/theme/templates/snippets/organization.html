@@ -39,6 +39,13 @@ Example:
         <p><i class="icon-dashboard"></i> <a href="http://dashboard.iatistandard.org/publisher/{{ organization.name }}.html" />IATI Dashboard</a></p>
       </div>
 
+      {% if organization.publisher_url %}
+      <div>
+        <p><i class="icon-building"></i> <a href="{{ organization.publisher_url }}" />Organization website</a></p>
+      </div>
+      {% endif %}
+
+
       {% if show_nums %}
         <div class="nums">
           <dl>
