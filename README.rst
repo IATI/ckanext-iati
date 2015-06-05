@@ -103,6 +103,8 @@ like ``ckan.site_id``, ``solr_url``, etc are not included)::
     # Allowed values for the IATI Standard Version (iati_version) field, default is '1.01 1.02 1.03 1.04 2.01'
     #iati.standard_versions
 
+    # Set a user agent string used by ckanext-archiver when making requests
+    ckanext.archiver.user_agent_string = "IATI Registry (CKAN)"
 
 
 To ensure that the logging for the archiver works fine and prevent permissions

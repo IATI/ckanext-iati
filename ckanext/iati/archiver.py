@@ -305,13 +305,19 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
         'url_timeout': url_timeout
     })
 
+    user_agent_string = config.get('ckanext.archiver.user_agent_string', None)
+
     try:
         headers = json.loads(tasks.link_checker(link_context, link_data))
     except tasks.LinkCheckerError, e:
         if any(x in str(e).lower() for x in ('method not allowed', 'internal server error', )):
             # If the HEAD method is not supported or if a 500
             # error is returned we'll handle the download manually
-            res = requests.get(resource['url'], timeout=url_timeout)
+            request_headers = {}
+            if user_agent_string is not None:
+                request_headers['User-Agent'] = user_agent_string
+            res = requests.get(resource['url'], timeout=url_timeout,
+                               headers=request_headers)
             headers = res.headers
         else:
             raise
@@ -348,8 +354,13 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
     # TODO: remove the Accept-Encoding limitation after upgrading
     # archiver and requests
     if not res:
+        request_headers = {
+            'Accept-Encoding': ''
+        }
+        if user_agent_string is not None:
+            request_headers['User-Agent'] = user_agent_string
         res = requests.get(resource['url'], timeout=url_timeout,
-                           headers={'Accept-Encoding': ''})
+                           headers=request_headers)
     length, hash, saved_file = tasks._save_resource(resource, res,
                                                     max_content_length)
 
