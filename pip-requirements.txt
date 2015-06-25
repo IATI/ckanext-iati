@@ -1,1 +1,5 @@
 -e git+https://github.com/okfn/ckanext-archiver#egg=ckanext-archiver
+ndg-httpsclient==0.4.0
+requests==2.3.0
+pyOpenSSL==0.15.1
+pyasn1==0.1.7
