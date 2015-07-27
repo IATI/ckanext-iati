@@ -70,7 +70,7 @@ class CSVController(p.toolkit.BaseController):
             except p.toolkit.ObjectNotFound:
                 p.toolkit.abort(404, 'Publisher not found')
 
-            if not org['id'] in self.authz_orgs and not self.is_sysadmin:
+            if not org['id'] in authz_org_ids and not self.is_sysadmin:
                 p.toolkit.abort(403,'Permission denied for this publisher organization')
 
         if self.is_sysadmin:
