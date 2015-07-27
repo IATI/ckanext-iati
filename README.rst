@@ -104,7 +104,7 @@ like ``ckan.site_id``, ``solr_url``, etc are not included)::
     #iati.standard_versions
 
     # Set a user agent string used by ckanext-archiver when making requests
-    ckanext.archiver.user_agent_string = "IATI Registry (CKAN)"
+    ckanext.archiver.user_agent_string = "IATI (CKAN)"
 
 
 To ensure that the logging for the archiver works fine and prevent permissions
