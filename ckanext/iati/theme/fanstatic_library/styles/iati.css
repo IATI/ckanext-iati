@@ -10623,7 +10623,7 @@ form .info-block.info-inline {
 #header nav #secondary-nav li a,
 #header nav #account-nav li a {
   background: transparent url(../images/secondary-nav-divider.png) no-repeat;
-  padding: 14px 14px 14px 15px;
+  padding: 14px 10px 14px 11px;
   color: white;
 }
 #header nav #secondary-nav li a.active,

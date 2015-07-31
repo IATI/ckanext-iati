@@ -1,0 +1,26 @@
+{% extends "static/base.html" %}
+
+{% block subtitle %}Dashboard{% endblock %}
+
+{% block primary_content %}
+
+<h1>Dashboard</h1>
+<p>The <a href="http://dashboard.iatistandard.org/index.html">IATI Dashboard</a> provides statistics, charts and metrics on all the data available on the IATI <a href="http://www.iatiregistry.org/">Registry</a>. The Dashboard is maintained by the IATI technical team and provides analysis of what is being published, where there are problems with the data and how publishers are doing in meeting the dimensions of good quality data.  These are broken down into four main sections, with each section providing detailed information on each publisher as follows:</p>
+
+<h2><a href="http://dashboard.iatistandard.org/headlines.html">Headlines</a></h2>
+<p>This section looks at the scope and scale of the data that has been published and gives an overview of a wide range of areas including number of publishers, number of activities for each publisher, file sizes and types of publisher.</p>
+
+<h2><a href="http://dashboard.iatistandard.org/data_quality.html">Data Quality</a></h2>
+<p>In this section a number of data quality measures are used to track various aspects of the quality of each publisher’s data. This allows you to see how each publisher’s data validates as xml and against the IATI schema, and other information such as who is publishing organisation files and which version of the IATI standard publishers are using.</p>
+
+<h2><a href="http://dashboard.iatistandard.org/exploring_data.html">Exploring Data</a></h2>
+<p>This is the place to find more detailed statistics on which aspects of the IATI standard are being used, including elements of the standard, which codelists are used and what date ranges publishers are using.</p>
+
+<h2><a href="http://dashboard.iatistandard.org/publishing_stats.html">Publishing Statistics</a></h2>
+<p>This section looks at how publishers are addressing the key dimensions of data quality – timeliness, forward-looking and comprehensiveness.</p>
+
+<p>While the Dashboard provides a comprehensive set of quantitative statistical information, it does not attempt to evaluate the actual content of publishers’ data.</p>
+
+<p>The Dashboard data is updated each night and is available to download in json and csv, and the Dashboard itself can be customised using the <a href="https://github.com/IATI/IATI-Dashboard/">open source code</a>.</p>
+
+{% endblock %}
