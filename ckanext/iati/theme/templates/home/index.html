@@ -35,7 +35,7 @@
       </div>
       <div class="icon support">
         <h2><a href="/using-iati-data">Using IATI data</a></h2>
-        <a href="/dashboard" class="block">Dashboard</a>
+        <a href="{{ h.url_for(controller='ckanext.iati.controllers.static:StaticController', action='dashboard') }}" class="block">Dashboard</a>
         <p>The IATI Dashboard provides statistics, charts and metrics on IATI data</p>
         <ul>
           <li><a href="http://opendevtoolkit.net/en-US/tools/ ">See a list of projects, websites and tools that utilise IATI data</a></li>

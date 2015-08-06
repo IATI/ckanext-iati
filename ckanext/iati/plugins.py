@@ -508,7 +508,7 @@ class IatiTheme(p.SingletonPlugin):
             m.connect('help', '/help', action='help')
             m.connect('help_csv-import', '/help_csv-import', action='help_csv')
             m.connect('help_delete', '/help_delete', action='help_delete')
-            m.connect('dashboard', '/dashboard', action='dashboard')
+            m.connect('dashboard', '/registry-dashboard', action='dashboard')
 
         return map
 
