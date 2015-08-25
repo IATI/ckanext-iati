@@ -52,7 +52,7 @@ class CSVController(p.toolkit.BaseController):
         super(CSVController,self).__before__(action, **params)
 
         if not c.user:
-            p.toolkit.abort(403,'Permission denied')
+            p.toolkit.abort(401, 'Permission denied, only publisher administrators can manage CSV files.')
 
         self.is_sysadmin = authz.is_sysadmin(c.user)
 
@@ -73,7 +73,8 @@ class CSVController(p.toolkit.BaseController):
             authz_org_ids = [o['id'] for o in self.authz_orgs]
 
             if not org['id'] in authz_org_ids and not self.is_sysadmin:
-                p.toolkit.abort(403,'Permission denied for this publisher organization')
+
+                p.toolkit.abort(401, 'Permission denied for this publisher organization')
 
         if self.is_sysadmin:
             if publisher:
@@ -95,7 +96,7 @@ class CSVController(p.toolkit.BaseController):
                 return p.toolkit.render('csv/index.html', extra_vars={'orgs': self.authz_orgs})
             else:
                 # User does not have permissions on any publisher
-                p.toolkit.abort(403, 'Permission denied')
+                p.toolkit.abort(401, 'Permission denied, only publisher administrators can manage CSV files.')
 
 
         file_name = publisher if publisher else 'iati-registry-records'
@@ -106,7 +107,7 @@ class CSVController(p.toolkit.BaseController):
     def upload(self):
         if not self.is_sysadmin and not self.authz_orgs:
             # User does not have permissions on any publisher
-            p.toolkit.abort(403,'Permission denied')
+            p.toolkit.abort(401, 'Permission denied, only publisher administrators can manage CSV files.')
 
         if p.toolkit.request.method == 'GET':
             return p.toolkit.render('csv/upload.html')
