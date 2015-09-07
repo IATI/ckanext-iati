@@ -47,19 +47,6 @@ def _fix_unicode(text, min_confidence=0.5):
 
 class CSVController(p.toolkit.BaseController):
 
-
-    def __before__(self, action, **params):
-        super(CSVController,self).__before__(action, **params)
-
-        if not c.user:
-            p.toolkit.abort(401, 'Permission denied, only publisher administrators can manage CSV files.')
-
-        self.is_sysadmin = authz.is_sysadmin(c.user)
-
-        # Orgs of which the logged user is admin
-        context = {'model': model, 'user': c.user or c.author}
-        self.authz_orgs = p.toolkit.get_action('organization_list_for_user')(context, {})
-
     def download(self, publisher=None):
 
         context = {'model': model, 'user': c.user or c.author}
@@ -70,34 +57,13 @@ class CSVController(p.toolkit.BaseController):
             except p.toolkit.ObjectNotFound:
                 p.toolkit.abort(404, 'Publisher not found')
 
-            authz_org_ids = [o['id'] for o in self.authz_orgs]
-
-            if not org['id'] in authz_org_ids and not self.is_sysadmin:
-
-                p.toolkit.abort(401, 'Permission denied for this publisher organization')
-
-        if self.is_sysadmin:
-            if publisher:
-                # Return CSV for provided publisher
-                output = self.write_csv_file(publisher)
-            else:
-                # Show list of all available publishers
-                orgs = p.toolkit.get_action('organization_list')(context, {'all_fields': True})
-                return p.toolkit.render('csv/index.html', extra_vars={'orgs': orgs})
+        if publisher:
+            # Return CSV for provided publisher
+            output = self.write_csv_file(publisher)
         else:
-            if publisher and publisher != 'all':
-                # Return CSV for provided publisher (we already checked the permissions)
-                output = self.write_csv_file(publisher)
-            elif len(self.authz_orgs) == 1:
-                # Return directly CSV for publisher
-                output = self.write_csv_file(self.authz_orgs[0].get('name'))
-            elif len(self.authz_orgs) > 1:
-                # Show list of available publishers for this user
-                return p.toolkit.render('csv/index.html', extra_vars={'orgs': self.authz_orgs})
-            else:
-                # User does not have permissions on any publisher
-                p.toolkit.abort(401, 'Permission denied, only publisher administrators can manage CSV files.')
-
+            # Show list of all available publishers
+            orgs = p.toolkit.get_action('organization_list')(context, {'all_fields': True})
+            return p.toolkit.render('csv/index.html', extra_vars={'orgs': orgs})
 
         file_name = publisher if publisher else 'iati-registry-records'
         p.toolkit.response.headers['Content-type'] = 'text/csv'
@@ -105,6 +71,16 @@ class CSVController(p.toolkit.BaseController):
         return output
 
     def upload(self):
+
+        if not c.user:
+            p.toolkit.abort(401, 'Permission denied, only publisher administrators can manage CSV files.')
+
+        self.is_sysadmin = authz.is_sysadmin(c.user)
+
+        # Orgs of which the logged user is admin
+        context = {'model': model, 'user': c.user or c.author}
+        self.authz_orgs = p.toolkit.get_action('organization_list_for_user')(context, {})
+
         if not self.is_sysadmin and not self.authz_orgs:
             # User does not have permissions on any publisher
             p.toolkit.abort(401, 'Permission denied, only publisher administrators can manage CSV files.')
