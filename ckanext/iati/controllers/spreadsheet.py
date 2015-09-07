@@ -216,6 +216,14 @@ class CSVController(p.toolkit.BaseController):
             row_index = str(i + 1)
             errors[row_index] = {}
             try:
+                org = p.toolkit.get_action('organization_show')(context, {'id': row.get('registry-publisher-id')})
+            except p.toolkit.ObjectNotFound:
+                msg = 'Publisher not found: %s' % row['registry-publisher-id']
+                log.error('Error in row %i: %s' % (i+1,msg))
+                errors[row_index]['registry-publisher-id'] = [msg]
+                continue
+
+            try:
                 try:
                     package_dict = self.get_package_dict_from_row(row, context)
                 except UnicodeDecodeError,e:
