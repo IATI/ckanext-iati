@@ -20,5 +20,10 @@
       <a href="/" title="{{ _('IATI Registry') }}">{{ _('IATI Registry') }}</a> ·
       {{ _('powered by') }} <a href="http://ckan.org">{{ _('CKAN') }}</a>
     </div>
+    {% block footer_debug %}
+      {% if g.debug %}
+        {% include 'snippets/debug.html' %}
+      {% endif %}
+    {% endblock %}
   </footer>
 {% endblock %}

@@ -17,6 +17,11 @@
   {% endif %}
   <a href="#content" class="hide">{{ _('Skip to primary content') }}</a>
   <header id="header">
+  {% block header_debug %}
+  {% if g.debug and not g.debug_supress_header %}
+    <div class="debug">Controller : {{ c.controller }}<br/>Action : {{ c.action }}</div>
+  {% endif %}
+  {% endblock %}
     <div class="container">
       {% block header_logo %}
         <a class="logo" href="{{ h.url('home') }}">
