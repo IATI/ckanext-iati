@@ -78,6 +78,9 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
                           'member_new',
                           'member_delete',
                           'history'
+                          'followers',
+                          'follow',
+                          'unfollow',
                       ])))
             m.connect('publisher_activity', '/publisher/activity/{id}',
                       action='activity', ckan_icon='time')
