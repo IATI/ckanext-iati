@@ -32,5 +32,6 @@ setup(name='ckanext-iati',
 
       [paste.paster_command]
       iati-archiver=ckanext.iati.commands:Archiver
+      iati-purge=ckanext.iati.commands:PurgeCmd
       """,
       )
