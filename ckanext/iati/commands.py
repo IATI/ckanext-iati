@@ -50,3 +50,48 @@ class Archiver(CkanCommand):
                 sys.exit(1)
         else:
             log.error('Command {0} not recognized'.format(cmd))
+
+
+class PurgeCmd(CkanCommand):
+    '''Purge deleted datasets.
+
+    Usage:
+      iati-purge - remove deleted datasets from db entirely
+    '''
+    summary = __doc__.split('\n')[0]
+    usage = __doc__
+    max_args = 2
+    min_args = 0
+
+    def command(self):
+        self._load_config()
+
+        if not self.args:
+            print(self.usage)
+        elif self.args[0] == 'purge':
+            self.iati_purge()
+
+    def iati_purge(self):
+        '''Purges deleted datasets.'''
+        import ckan.model as model
+
+        deleted_packages = list(model.Session.query(
+                    model.Package).filter_by(state=model.State.DELETED))
+        pkg_len = len(deleted_packages)
+
+        for i, pkg in enumerate(deleted_packages, start=1):
+
+            print('Purging {0}/{1}: {2}'.format(i, pkg_len, pkg.id))
+            members = model.Session.query(model.Member) \
+                           .filter(model.Member.table_id == pkg.id) \
+                           .filter(model.Member.table_name == 'package')
+            if members.count() > 0:
+                for m in members.all():
+                    m.purge()
+
+            pkg = model.Package.get(pkg.id)
+            model.repo.new_revision()
+            pkg.purge()
+            model.repo.commit_and_remove()
+
+        print('Purge complete')
