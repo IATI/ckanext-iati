@@ -338,7 +338,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
     # make sure resource content-length does not exceed our maximum
     if cl and int(cl) >= max_content_length:
         if resource_changed:
-            tasks._update_resource(context, resource)
+            tasks._update_resource(context, resource, log)
         # record fact that resource is too large to archive
         raise tasks.DownloadError("Content-length {0} exceeds maximum allowed"
                                   "value {1}".format(cl, max_content_length))
@@ -346,7 +346,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
     # check that resource is a data file
     if not ct.lower().strip('"') in data_formats:
         if resource_changed:
-            tasks._update_resource(context, resource)
+            tasks._update_resource(context, resource, log)
         raise tasks.DownloadError("Of content type {0}, not "
                                   "downloading".format(ct))
 
@@ -376,7 +376,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
     # TODO: remove partially archived file in this case
     if length >= max_content_length:
         if resource_changed:
-            tasks._update_resource(context, resource)
+            tasks._update_resource(context, resource, log)
         # record fact that resource is too large to archive
         raise tasks.DownloadError("Content-length after streaming reached "
                                   "maximum allowed value of "
