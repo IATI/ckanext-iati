@@ -322,6 +322,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
         else:
             raise
 
+    resource_format = resource.get('format', '').lower()
     ct = tasks._clean_content_type(headers.get('content-type', '').lower())
     cl = headers.get('content-length')
 
@@ -344,7 +345,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
                                   "value {1}".format(cl, max_content_length))
 
     # check that resource is a data file
-    if not ct.lower().strip('"') in data_formats:
+    if not (resource_format in data_formats or ct.lower().strip('"') in data_formats):
         if resource_changed:
             tasks._update_resource(context, resource, log)
         raise tasks.DownloadError("Of content type {0}, not "
