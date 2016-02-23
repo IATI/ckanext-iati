@@ -4,7 +4,6 @@ from dateutil.parser import parse as date_parse
 from ckan.logic import get_action
 from ckan import new_authz
 from ckan.lib.navl.dictization_functions import unflatten, Invalid
-from ckan.lib.field_types import DateType, DateConvertError
 
 from ckanext.iati.lists import FILE_TYPES, COUNTRIES
 
