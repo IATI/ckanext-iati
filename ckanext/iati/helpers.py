@@ -222,3 +222,6 @@ def normalize_publisher_name(name):
     if name[:4].lower() == 'the ':
         return name[4:] + ', The'
     return name
+
+def organization_list():
+    return p.toolkit.get_action('organization_list')({}, {'all_fields': True})

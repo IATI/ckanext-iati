@@ -3,7 +3,7 @@ import logging
 # Bad imports: this should be in the toolkit
 
 from routes.mapper import SubMapper     # Maybe not this one
-from ckan.lib.plugins import DefaultGroupForm
+from ckan.lib.plugins import DefaultOrganizationForm
 
 import ckan.plugins as p
 
@@ -20,7 +20,7 @@ import ckanext.iati.helpers as iati_helpers
 
 log = logging.getLogger(__name__)
 
-class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
+class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
 
     p.implements(p.IRoutes, inherit=True)
     p.implements(p.IGroupForm, inherit=True)
@@ -453,6 +453,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_global_facet_items_dict',
             'get_global_search_facets',
             'urlencode',
+            'organization_list',
         )
         return _get_module_functions(iati_helpers, function_names)
 
