@@ -17,3 +17,13 @@
     {% if show_buttons %}<i class="icon-external-link"></i> Preview{% endif %}
     {% if not show_buttons %}Preview <i class="icon-external-link"></i>{% endif %}
     </a>
+
+
+{% set is_org_file = (h.get_pkg_dict_extra(package, 'filetype') == 'organisation') %}
+{% if h.get_config_option('iati.csv_service') and not is_org_file %}
+  &middot;
+  <a href="{{ h.get_config_option('iati.csv_service') % h.urlencode(resource.url) }}" {% if show_buttons %} class="btn"{% endif %} target="_blank">
+    {% if show_buttons %}<i class="icon-external-link"></i> CSV{% endif %}
+    {% if not show_buttons %}CSV <i class="icon-external-link"></i>{% endif %}
+  </a>
+{% endif %}
