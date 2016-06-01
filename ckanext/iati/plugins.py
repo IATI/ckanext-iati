@@ -159,13 +159,14 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         # Import core converters and validators
         _convert_to_extras = p.toolkit.get_converter('convert_to_extras')
         _ignore_missing = p.toolkit.get_validator('ignore_missing')
+        _not_empty = p.toolkit.get_validator('not_empty')
 
         default_validators = [_ignore_missing, _convert_to_extras, unicode]
         schema.update({
             'state': [iati_publisher_state_validator],
             'license_id': [_convert_to_extras],
             'publisher_source_type': default_validators,
-            'publisher_iati_id': default_validators,
+            'publisher_iati_id': [_not_empty, _convert_to_extras, unicode],
             'publisher_country': default_validators,
             'publisher_segmentation': default_validators,
             'publisher_ui': default_validators,
