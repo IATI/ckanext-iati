@@ -43,7 +43,7 @@
       <div class="nums">
         <dl class="wide">
           <dt>Contact email</dt>
-          <dd>{{ c.pkg_author_link }}</dd>
+          <dd><a href="mailto:{{ pkg.author_email }}">{{ pkg.author_email }}</a></dd>
         </dl>
         {% if pkg.organization %}
           {% with organization=pkg.organization, truncate=truncate or 0, url=h.url_for(controller='organization', action='read', id=pkg.organization.name) %}
