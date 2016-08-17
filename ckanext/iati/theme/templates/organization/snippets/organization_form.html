@@ -18,8 +18,8 @@
     {{ form.input('title', label=_('Publisher Name'), id='field-title', value=data.title, error=errors.title) }}
     <p class="help-block">The Name of the Organisation publishing the data.</p>
 
-    {{ form.input('publisher_iati_id', label=_('IATI Identifier'), id='field-publisher_iati_id', value=data.publisher_iati_id, error=errors.publisher_iati_id) }}
-    <p class="help-block">The organisation identifier used in the IATI-xml files to identify the reporting organisation. (&lt;reporting-org ref="!!!"&gt;).</p>
+    {{ form.input('publisher_iati_id', label=_('IATI Organisation Identifier (required) *'), id='field-publisher_iati_id', value=data.publisher_iati_id, error=errors.publisher_iati_id) }}
+    <p class="help-block">The organisation identifier used in the IATI XML files to identify the reporting organisation. For more information please go to <a href="http://iatistandard.org/202/organisation-identifiers">http://iatistandard.org/202/organisation-identifiers</a>.</p>
 
     {{ select('publisher_source_type', label=_('Source'), data=data) }}
     <p class="help-block">Primary - publishers authorised to report their own (or associated organisations') data. Secondary - publishers reporting the activities of other organisations.</p>
@@ -49,8 +49,11 @@
     {{ form.input('publisher_url', label=_('Website'), id='field-publisher_url', value=data.publisher_url, error=errors.publisher_url) }}
     <p class="help-block">Full URL to the publisher website.</p>
 
-    {{ form.textarea('publisher_contact', label=_('Contact'), id='field-publisher_contact', value=data.publisher_contact, error=errors.publisher_contact) }}
-    <p class="help-block">Contact details for publisher.</p>
+    {{ form.textarea('publisher_contact', label=_('Address'), id='field-publisher_contact', value=data.publisher_contact, error=errors.publisher_contact) }}
+    <p class="help-block">Contact address for publisher.</p>
+
+    {{ form.input('publisher_contact_email', label=_('Contact Email'), id='field-publisher_contact_email', value=data.publisher_contact_email, error=errors.publisher_contact_email) }}
+    <p class="help-block">Contact email for publisher.</p>
 
     {{ form.textarea('publisher_description', label=_('Description'), id='field-publisher_description', value=data.publisher_description, error=errors.publisher_description) }}
     <p class="help-block">General description of publisher's role and activities.</p>
