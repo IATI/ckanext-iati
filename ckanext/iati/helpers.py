@@ -224,4 +224,5 @@ def normalize_publisher_name(name):
     return name
 
 def organization_list():
-    return p.toolkit.get_action('organization_list')({}, {'all_fields': True})
+    return p.toolkit.get_action('organization_list')({}, {'all_fields': True,
+                                                          'sort': 'title asc'})
