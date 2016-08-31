@@ -9,9 +9,8 @@
 {% block header_wrapper %}
   {% if 'staging' in request.host or 'test' in request.host %}
       <div class="alert">
-        <strong>Warning!</strong> This is a staging site. It runs the same code base as the
-        <a href="http://iatiregistry.org">production one</a> but data might be out of date.
-        Be aware that all new data in this instance might be deleted at any time.
+        <strong>Warning!</strong> This is a staging site. It runs an updated code base (<a href="http://docs.ckan.org/en/ckan-2.5.2/changelog.html">CKAN v2.5.2</a>) compared to the
+        <a href="http://iatiregistry.org">current live version</a> (which uses CKAN v2.1.4). Data might be out of date and be aware that all new data in this instance might be deleted at any time.
 
       </div>
   {% endif %}
