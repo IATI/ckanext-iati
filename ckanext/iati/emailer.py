@@ -9,7 +9,9 @@ from pylons import config
 log = logging.getLogger(__name__)
 
 FROM = config.get('iati.email', 'no-reply@iatiregistry.org')
-SMTP_SERVER = config.get('smtp_server', 'localhost')
+SMTP_SERVER = config.get('smtp.server', 'localhost')
+SMTP_USER = config.get('smtp.user', 'username')
+SMTP_PASSWORD = config.get('smtp.password', 'password')
 
 def send_email(content, subject, to, from_=FROM):
 
@@ -24,6 +26,7 @@ def send_email(content, subject, to, from_=FROM):
 
     try:
         s = smtplib.SMTP(SMTP_SERVER)
+        s.login(SMTP_USER, SMTP_PASSWORD)
         s.sendmail(from_, to, msg.as_string())
         s.quit()
     except socket_error:
