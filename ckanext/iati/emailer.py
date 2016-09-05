@@ -8,7 +8,7 @@ from pylons import config
 
 log = logging.getLogger(__name__)
 
-FROM = config.get('iati.email', 'no-reply@iatiregistry.org')
+FROM = config.get('smtp.mail.from', 'no-reply@iati-staging.ckan.io')
 SMTP_SERVER = config.get('smtp.server', 'localhost')
 SMTP_USER = config.get('smtp.user', 'username')
 SMTP_PASSWORD = config.get('smtp.password', 'password')
