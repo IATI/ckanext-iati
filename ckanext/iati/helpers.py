@@ -1,4 +1,6 @@
 import urllib
+import os
+from xml.etree import ElementTree
 
 # Bad import: should be in toolkit
 from pylons import config
@@ -14,7 +16,19 @@ import ckanext.iati.lists as lists
 
 
 def get_countries():
-    return lists.COUNTRIES
+    countries = (("", u"(No country assigned)"),)
+    get_countries_path = lambda: os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                                              'countries.xml')
+    root = ElementTree.parse(get_countries_path()).getroot()
+
+    for item in root.find('codelist-items').iter():
+        if item.tag == 'codelist-item':
+            code = item.find('code').text
+            name = item.find('name').find('narrative').text
+            
+            countries += (code, name), 
+
+    return countries
 
 def get_publisher_source_types():
     return lists.PUBLISHER_SOURCE_TYPES
