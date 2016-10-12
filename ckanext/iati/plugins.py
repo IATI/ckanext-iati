@@ -3,7 +3,7 @@ import logging
 # Bad imports: this should be in the toolkit
 
 from routes.mapper import SubMapper     # Maybe not this one
-from ckan.lib.plugins import DefaultGroupForm
+from ckan.lib.plugins import DefaultOrganizationForm
 
 import ckan.plugins as p
 
@@ -20,7 +20,7 @@ import ckanext.iati.helpers as iati_helpers
 
 log = logging.getLogger(__name__)
 
-class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
+class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
 
     p.implements(p.IRoutes, inherit=True)
     p.implements(p.IGroupForm, inherit=True)
@@ -159,13 +159,14 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
         # Import core converters and validators
         _convert_to_extras = p.toolkit.get_converter('convert_to_extras')
         _ignore_missing = p.toolkit.get_validator('ignore_missing')
+        _not_empty = p.toolkit.get_validator('not_empty')
 
         default_validators = [_ignore_missing, _convert_to_extras, unicode]
         schema.update({
             'state': [iati_publisher_state_validator],
             'license_id': [_convert_to_extras],
             'publisher_source_type': default_validators,
-            'publisher_iati_id': default_validators,
+            'publisher_iati_id': [_not_empty, _convert_to_extras, unicode],
             'publisher_country': default_validators,
             'publisher_segmentation': default_validators,
             'publisher_ui': default_validators,
@@ -176,6 +177,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
             'publisher_thresholds': default_validators,
             'publisher_units': default_validators,
             'publisher_contact': default_validators,
+            'publisher_contact_email': default_validators,
             'publisher_agencies': default_validators,
             'publisher_field_exclusions': default_validators,
             'publisher_description': default_validators,
@@ -216,6 +218,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultGroupForm):
             'publisher_thresholds': default_validators,
             'publisher_units': default_validators,
             'publisher_contact': default_validators,
+            'publisher_contact_email': default_validators,
             'publisher_agencies': default_validators,
             'publisher_field_exclusions': default_validators,
             'publisher_description': default_validators,
@@ -453,6 +456,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_global_facet_items_dict',
             'get_global_search_facets',
             'urlencode',
+            'organization_list',
         )
         return _get_module_functions(iati_helpers, function_names)
 

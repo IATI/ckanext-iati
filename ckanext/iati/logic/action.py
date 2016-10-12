@@ -97,7 +97,7 @@ def group_show(context, data_dict):
         on version 3 of the API:
         http://iatiregistry.org/api/action/organization_show
     '''
-    return get_core.group_show(context, data_dict)
+    return get_core.organization_show(context, data_dict)
 
 def _remove_extras_from_data_dict(data_dict):
     # Remove these extras, as they are always inherited from the publishers
