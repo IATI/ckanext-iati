@@ -11,6 +11,7 @@ import ckan.model as model # get_licenses should be in core
 import ckan.plugins as p
 import ckan.lib.helpers as helpers
 import ckan.lib.formatters as formatters
+from ckan.lib import search
 
 import ckanext.iati.lists as lists
 
@@ -240,3 +241,51 @@ def normalize_publisher_name(name):
 def organization_list():
     return p.toolkit.get_action('organization_list')({}, {'all_fields': True,
                                                           'sort': 'title asc'})
+
+
+def get_first_published_date(organization):
+    try:
+        return organization['publisher_first_publish_date']
+    except KeyError:
+        date_not_found_error = 'Date not found'
+        dates = []
+
+        data_dict = {
+            'fq': ' organization:{}'.format(organization['name']),
+            'rows': 1000000000
+        }
+
+        try:
+            package_search_results = p.toolkit.get_action('package_search')(
+                data_dict=data_dict)['results']
+        except:
+            return date_not_found_error
+
+        if len(package_search_results) == 0:
+            return 'No data published'
+
+        for package in package_search_results:
+            try:
+                resource_created_date = package['resources'][0]['created']
+            except:
+                continue
+
+            dates.append(resource_created_date)
+
+        if len(dates) == 0:
+            return date_not_found_error
+
+        publisher_first_publish_date = sorted(dates)[0]
+
+        if not publisher_first_publish_date:
+            return date_not_found_error
+
+        data_dict = {
+            'id': organization['id'],
+            'publisher_first_publish_date':
+                publisher_first_publish_date
+        }
+
+        p.toolkit.get_action('organization_patch')(data_dict=data_dict)
+
+        return publisher_first_publish_date
