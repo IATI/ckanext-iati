@@ -41,6 +41,13 @@ Example:
       </div>
       {% endif %}
 
+      {% if h.get_first_published_date(organization) != 'Date not found' and h.get_first_published_date(organization) != 'No data published' %}
+        {% set first_published_date = h.render_datetime(h.get_first_published_date(organization)) %}
+        <div>
+          <p>First published date: {{ first_published_date }}</p>
+        </div>
+      {% endif %}
+
       {% if organization.publisher_url %}
       <div>
         <p><a href="{{ organization.publisher_url }}" />Organization website</a></p>
