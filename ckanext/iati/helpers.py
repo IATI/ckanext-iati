@@ -12,6 +12,7 @@ import ckan.plugins as p
 import ckan.lib.helpers as helpers
 import ckan.lib.formatters as formatters
 from ckan.lib import search
+from ckan.logic import check_access, NotAuthorized
 
 import ckanext.iati.lists as lists
 
@@ -286,6 +287,10 @@ def get_first_published_date(organization):
                 publisher_first_publish_date
         }
 
-        p.toolkit.get_action('organization_patch')({}, data_dict=data_dict)
+        try:
+            check_access('organization_patch', {})
+            p.toolkit.get_action('organization_patch')({}, data_dict=data_dict)
+        except NotAuthorized:
+            pass
 
         return publisher_first_publish_date
