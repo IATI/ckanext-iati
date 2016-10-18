@@ -257,7 +257,7 @@ def get_first_published_date(organization):
 
         try:
             package_search_results = p.toolkit.get_action('package_search')(
-                data_dict=data_dict)['results']
+                {}, data_dict=data_dict)['results']
         except:
             return date_not_found_error
 
@@ -286,6 +286,6 @@ def get_first_published_date(organization):
                 publisher_first_publish_date
         }
 
-        p.toolkit.get_action('organization_patch')(data_dict=data_dict)
+        p.toolkit.get_action('organization_patch')({}, data_dict=data_dict)
 
         return publisher_first_publish_date
