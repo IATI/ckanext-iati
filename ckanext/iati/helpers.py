@@ -5,6 +5,7 @@ from xml.etree import ElementTree
 # Bad import: should be in toolkit
 from pylons import config
 from webhelpers.html import literal
+import dateutil
 
 import ckan.model as model # get_licenses should be in core
 
@@ -294,3 +295,13 @@ def get_first_published_date(organization):
             pass
 
         return publisher_first_publish_date
+
+
+def render_first_published_date(value, date_format='%d %B %Y'):
+    try:
+        date = dateutil.parser.parse(value)
+        native = date.replace(tzinfo=None)
+
+        return native.strftime(date_format)
+    except ValueError:
+        return 'Date is not valid'
