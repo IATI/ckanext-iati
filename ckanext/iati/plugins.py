@@ -459,7 +459,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_global_search_facets',
             'urlencode',
             'organization_list',
-            'get_first_published_date'
+            'get_first_published_date',
+            'render_first_published_date'
         )
         return _get_module_functions(iati_helpers, function_names)
 
