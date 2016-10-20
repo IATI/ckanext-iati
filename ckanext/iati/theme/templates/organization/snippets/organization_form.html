@@ -41,7 +41,13 @@
     {% endif %}
     <p class="help-block">Choose from dropdown: Active - publisher record is visibile on the Registry; Pending - approval needed prior to publication; Deleted.</p>
 
-    {{ form.input('publisher_first_publish_date', label=_('First published date'), value=data.publisher_first_publish_date.split('T')[0], attrs={'pattern': '(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))'}, error=errors.publisher_first_publish_date, classes=['control-full']) }}
+    {% if data.publisher_first_publish_date %}
+        {% set publisher_first_publish_date = data.publisher_first_publish_date.split('T')[0] %}
+    {% else %}
+        {% set publisher_first_publish_date = '' %}
+    {% endif %}
+
+    {{ form.input('publisher_first_publish_date', label=_('First published date'), value=publisher_first_publish_date, attrs={'pattern': '(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))'}, error=errors.publisher_first_publish_date, classes=['control-full']) }}
     <p class="help-block">Acceptable format: 'YYYY-MM-DD'.</p>
 
   </fieldset>
