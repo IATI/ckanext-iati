@@ -177,7 +177,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'publisher_thresholds': default_validators,
             'publisher_units': default_validators,
             'publisher_contact': default_validators,
-            'publisher_contact_email': default_validators,
+            'publisher_contact_email': [_not_empty, _convert_to_extras, unicode],
             'publisher_agencies': default_validators,
             'publisher_field_exclusions': default_validators,
             'publisher_description': default_validators,
@@ -188,6 +188,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'publisher_data_quality': default_validators,
             'publisher_organization_type': default_validators,
             'publisher_implementation_schedule': default_validators,
+            'publisher_first_publish_date': default_validators
         })
 
         return schema
@@ -229,6 +230,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'publisher_data_quality': default_validators,
             'publisher_organization_type': default_validators,
             'publisher_implementation_schedule': default_validators,
+            'publisher_first_publish_date': default_validators,
             'groups': [_ignore],
             'tags': [_ignore],
             'approval_status': [_ignore],
@@ -457,6 +459,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_global_search_facets',
             'urlencode',
             'organization_list',
+            'get_first_published_date',
+            'render_first_published_date'
         )
         return _get_module_functions(iati_helpers, function_names)
 

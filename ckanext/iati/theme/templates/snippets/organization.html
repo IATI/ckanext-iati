@@ -40,6 +40,15 @@ Example:
         <p>HQ Country: {{ h.get_country_title(organization.publisher_country) }}</p>
       </div>
       {% endif %}
+      
+      {% if h.get_first_published_date(organization) != 'Date not found' and h.get_first_published_date(organization) != 'No data published' %}
+        {% set date_format = '%d %B %Y' %}
+        {% set first_published_date = h.render_first_published_date(h.get_first_published_date(organization), date_format) %}
+        <div>
+          <p>First published date:</p>
+          <p>{{ first_published_date }}</p>
+        </div>
+      {% endif %}
 
       {% if organization.publisher_url %}
       <div>
@@ -49,7 +58,7 @@ Example:
 
       {% if organization.publisher_contact_email %}
       <div>
-        <p>{{ organization.publisher_contact_email }}</p>
+        <p>Contact: {{ organization.publisher_contact_email }}</p>
       </div>
       {% endif %}
 
