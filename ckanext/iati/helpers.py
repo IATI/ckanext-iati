@@ -288,6 +288,9 @@ def get_first_published_date(organization):
                 publisher_first_publish_date
         }
 
+        if 'publisher_contact_email' not in organization:
+            data_dict.update({'publisher_contact_email': 'Email not found'})
+
         try:
             check_access('organization_patch', {})
             p.toolkit.get_action('organization_patch')({}, data_dict=data_dict)
