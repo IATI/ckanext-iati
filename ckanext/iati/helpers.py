@@ -194,7 +194,7 @@ def publishers_pagination(q):
         with types support), so on the meantime we tweak the output of the
         default pagination
     '''
-    return p.toolkit.c.page.pager(q=q).replace('organization', 'publisher')
+    return p.toolkit.c.page.pager(q=q).replace('group', 'publisher')
 
 def get_global_facet_items_dict(facet, limit=10, exclude_active=False, search_facets=None):
     '''
