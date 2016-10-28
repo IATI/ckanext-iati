@@ -14,6 +14,7 @@ import ckan.lib.helpers as h
 import ckan.logic.action.get as get_core
 import ckan.logic.action.create as create_core
 import ckan.logic.action.update as update_core
+import ckan.logic.action.patch as patch_core
 
 import ckanext.iati.emailer as emailer
 
@@ -37,6 +38,14 @@ def package_update(context, data_dict):
     _remove_extras_from_data_dict(data_dict)
 
     return update_core.package_update(context, data_dict)
+
+def package_patch(context, data_dict):
+
+    # The only thing we do here is remove some extras that are always
+    # inherited from the dataset publisher, to avoid duplicating them
+    _remove_extras_from_data_dict(data_dict)
+
+    return patch_core.package_patch(context, data_dict)
 
 def organization_create(context, data_dict):
 
