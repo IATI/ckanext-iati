@@ -62,7 +62,7 @@ Individual files can be added via: {site_url}/dataset/new
 Multiple files can be added via a CSV upload function: {site_url}/csv/upload
 An API is also available for more technical access: {site_url}/registry-api
 
-Should you have any queries or support need, then please consult the IATI community which includes knowledge base articles and the ability to ask questions of the support team: http://support.iatistandard.org
+Should you have any queries or support need, then please consult the IATI Community: http://discuss.iatistandard.org/t/welcome-to-iati-discuss or email the support team at: support@iatistandard.org
 
 
 Best regards,
