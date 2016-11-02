@@ -41,7 +41,7 @@
     {% endif %}
     <p class="help-block">Choose from dropdown: Active - publisher record is visibile on the Registry; Pending - approval needed prior to publication; Deleted.</p>
 
-    {% if h.check_access('site_read') %}
+    {% if c.userobj.sysadmin %}
         {% if data.publisher_first_publish_date %}
             {% set date_format = '%d.%m.%Y' %}
             {% set publisher_first_publish_date = h.render_first_published_date(data.publisher_first_publish_date, date_format) %}
