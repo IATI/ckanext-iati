@@ -45,8 +45,7 @@ Example:
         {% set date_format = '%d %B %Y' %}
         {% set first_published_date = h.render_first_published_date(h.get_first_published_date(organization), date_format) %}
         <div>
-          <p>First published date:</p>
-          <p>{{ first_published_date }}</p>
+          <p>First published date:<br /> {{ first_published_date }}</p>
         </div>
       {% endif %}
 
