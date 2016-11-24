@@ -245,6 +245,11 @@ def organization_list():
                                                           'sort': 'title asc'})
 
 
+def organization_list_publisher_page():
+    return p.toolkit.get_action('organization_list_publisher_page')({}, {
+        'all_fields': True, 'sort': 'title asc'})
+
+
 def get_first_published_date(organization):
     try:
         return organization['publisher_first_publish_date']

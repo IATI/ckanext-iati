@@ -460,7 +460,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'urlencode',
             'organization_list',
             'get_first_published_date',
-            'render_first_published_date'
+            'render_first_published_date',
+            'organization_list_publisher_page',
         )
         return _get_module_functions(iati_helpers, function_names)
 
@@ -477,6 +478,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'issues_report_csv',
             'group_list',
             'group_show',
+            'organization_list_publisher_page',
         )
         return _get_module_functions(iati_actions, function_names)
 

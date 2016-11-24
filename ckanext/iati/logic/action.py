@@ -10,6 +10,7 @@ from ckan import logic
 
 import ckan.plugins as p
 import ckan.lib.helpers as h
+import ckan.lib.dictization.model_dictize as model_dictize
 
 import ckan.logic.action.get as get_core
 import ckan.logic.action.create as create_core
@@ -17,6 +18,9 @@ import ckan.logic.action.update as update_core
 import ckan.logic.action.patch as patch_core
 
 import ckanext.iati.emailer as emailer
+
+from paste.deploy.converters import asbool
+
 
 log = logging.getLogger(__name__)
 
@@ -263,3 +267,110 @@ def _send_activation_notification_email(context, organization_dict):
                     site_url=site_url)
             emailer.send_email(content, subject, user.email)
             log.debug('[email] Publisher activated notification email sent to user {0}'.format(user.name))
+
+def _unpick_search(sort, allowed_fields=None, total=None):
+    ''' This is a helper function that takes a sort string
+    eg 'name asc, last_modified desc' and returns a list of
+    split field order eg [('name', 'asc'), ('last_modified', 'desc')]
+    allowed_fields can limit which field names are ok.
+    total controls how many sorts can be specifed '''
+    sorts = []
+    split_sort = sort.split(',')
+    for part in split_sort:
+        split_part = part.strip().split()
+        field = split_part[0]
+        if len(split_part) > 1:
+            order = split_part[1].lower()
+        else:
+            order = 'asc'
+        if allowed_fields:
+            if field not in allowed_fields:
+                raise ValidationError('Cannot sort by field `%s`' % field)
+        if order not in ['asc', 'desc']:
+            raise ValidationError('Invalid sort direction `%s`' % order)
+        sorts.append((field, order))
+    if total and len(sorts) > total:
+        raise ValidationError(
+            'Too many sort criteria provided only %s allowed' % total)
+    return sorts
+
+def _group_or_org_list_optimized(context, data_dict, is_org=False):
+    model = context['model']
+    api = context.get('api_version')
+    groups = data_dict.get('groups')
+    group_type = data_dict.get('type', 'group')
+    ref_group_by = 'id' if api == 2 else 'name'
+
+    sort = data_dict.get('sort', 'name')
+    q = data_dict.get('q')
+
+    # order_by deprecated in ckan 1.8
+    # if it is supplied and sort isn't use order_by and raise a warning
+    order_by = data_dict.get('order_by', '')
+    if order_by:
+        log.warn('`order_by` deprecated please use `sort`')
+        if not data_dict.get('sort'):
+            sort = order_by
+    # if the sort is packages and no sort direction is supplied we want to do a
+    # reverse sort to maintain compatibility.
+    if sort.strip() in ('packages', 'package_count'):
+        sort = 'package_count desc'
+
+    sort_info = _unpick_search(sort,
+                               allowed_fields=['name', 'packages',
+                                               'package_count', 'title'],
+                               total=1)
+
+    all_fields = data_dict.get('all_fields', None)
+    include_extras = all_fields and \
+                     asbool(data_dict.get('include_extras', False))
+
+    query = model.Session.query(model.Group)
+    if include_extras:
+        # this does an eager load of the extras, avoiding an sql query every
+        # time group_list_dictize accesses a group's extra.
+        query = query.options(sqlalchemy.orm.joinedload(model.Group._extras))
+    query = query.filter(model.Group.state == 'active')
+    if groups:
+        query = query.filter(model.Group.name.in_(groups))
+    if q:
+        q = u'%{0}%'.format(q)
+        query = query.filter(_or_(
+            model.Group.name.ilike(q),
+            model.Group.title.ilike(q),
+            model.Group.description.ilike(q),
+        ))
+
+    query = query.filter(model.Group.is_organization == is_org)
+    if not is_org:
+        query = query.filter(model.Group.type == group_type)
+
+    groups = query.all()
+    if all_fields:
+        include_tags = asbool(data_dict.get('include_tags', False))
+    else:
+        include_tags = False
+    # even if we are not going to return all_fields, we need to dictize all the
+    # groups so that we can sort by any field.
+    group_list = model_dictize.group_list_dictize(
+        groups, context,
+        sort_key=lambda x: x[sort_info[0][0]],
+        reverse=sort_info[0][1] == 'desc',
+        with_package_counts=all_fields or
+        sort_info[0][0] in ('packages', 'package_count'),
+        include_groups=asbool(data_dict.get('include_groups', False)),
+        include_tags=include_tags,
+        include_extras=include_extras,
+        )
+
+    if not all_fields:
+        group_list = [group[ref_group_by] for group in group_list]
+
+    return group_list
+
+
+def organization_list_publisher_page(context, data_dict):
+    #_check_access('organization_list_publisher_page', context, data_dict)
+    data_dict['groups'] = data_dict.pop('organizations', [])
+    data_dict['type'] = 'organization'
+    return _group_or_org_list_optimized(context, data_dict, is_org=True)
