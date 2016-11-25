@@ -5,6 +5,7 @@ import tempfile
 from urlparse import urljoin
 
 from pylons import config
+import sqlalchemy
 
 from ckan import logic
 

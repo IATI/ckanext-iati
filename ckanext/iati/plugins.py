@@ -462,6 +462,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_first_published_date',
             'render_first_published_date',
             'organization_list_publisher_page',
+            'get_publisher_obj_extra_fields',
         )
         return _get_module_functions(iati_helpers, function_names)
 

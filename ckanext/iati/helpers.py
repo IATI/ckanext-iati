@@ -75,6 +75,21 @@ def get_publisher_extra_fields(group_id):
         extras[extra] = formatter(group.extras.get(extra))
     return extras
 
+def get_publisher_obj_extra_fields(group_dict):
+    extras = {}
+    if not group_dict:
+        return extras
+
+    formatter_map = {
+        'publisher_organization_type': get_organization_type_title,
+        'publisher_country': get_country_title,
+    }
+
+    for ex in group_dict.get("extras", []):
+        if ex.get("key", None) in formatter_map.keys():
+            extras[ex["key"]] = formatter_map[ex["key"]](ex.get("value", ""))
+    return extras
+
 def is_route_active(menu_item):
     _menu_items = config.get('routes.named_routes')
     if menu_item not in _menu_items:
@@ -247,7 +262,7 @@ def organization_list():
 
 def organization_list_publisher_page():
     return p.toolkit.get_action('organization_list_publisher_page')({}, {
-        'all_fields': True, 'sort': 'title asc'})
+        'all_fields': True, 'sort': 'title asc', 'include_extras': True})
 
 
 def get_first_published_date(organization):
