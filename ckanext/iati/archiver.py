@@ -322,7 +322,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
             if user_agent_string is not None:
                 request_headers['User-Agent'] = user_agent_string
             res = requests.get(resource['url'], timeout=url_timeout,
-                               headers=request_headers)
+                               headers=request_headers, verify=False)
             headers = res.headers
         else:
             raise
@@ -366,7 +366,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
         if user_agent_string is not None:
             request_headers['User-Agent'] = user_agent_string
         res = requests.get(resource['url'], timeout=url_timeout,
-                           headers=request_headers)
+                           headers=request_headers, verify=False)
     length, hash, saved_file = tasks._save_resource(resource, res,
                                                     max_content_length)
 
