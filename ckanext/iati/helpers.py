@@ -322,6 +322,11 @@ def get_first_published_date(organization):
 
 def render_first_published_date(value, date_format='%d %B %Y'):
     try:
-        return datetime.datetime.strptime(value, '%d.%m.%Y').strftime(date_format)
+        if len(value) <= 10:
+            current_date_format = '%d.%m.%Y'
+        else:
+            current_date_format = '%Y-%m-%dT%H:%M:%S.%f'
+
+        return datetime.datetime.strptime(value, current_date_format).strftime(date_format)
     except ValueError:
         return 'Date is not valid'
