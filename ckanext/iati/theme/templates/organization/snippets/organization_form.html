@@ -42,14 +42,7 @@
     <p class="help-block">Choose from dropdown: Active - publisher record is visibile on the Registry; Pending - approval needed prior to publication; Deleted.</p>
 
     {% if c.userobj.sysadmin %}
-        {% if data.publisher_first_publish_date %}
-            {% set date_format = '%d.%m.%Y' %}
-            {% set publisher_first_publish_date = h.render_first_published_date(data.publisher_first_publish_date, date_format) %}
-        {% else %}
-            {% set publisher_first_publish_date = '' %}
-        {% endif %}
-
-        {{ form.input('publisher_first_publish_date', label=_('First published date'), attrs={'pattern': '(0[1-9]|1[0-9]|2[0-9]|3[01]).(0[1-9]|1[012]).[0-9]{4}'}, value=publisher_first_publish_date, placeholder='Example: 20.10.2016', error=errors.publisher_first_publish_date, classes=['control-full']) }}
+        {{ form.input('publisher_first_publish_date', label=_('First published date'), attrs={'pattern': '(0[1-9]|1[0-9]|2[0-9]|3[01]).(0[1-9]|1[012]).[0-9]{4}'}, value=data.publisher_first_publish_date, placeholder='Example: 20.10.2016', error=errors.publisher_first_publish_date, classes=['control-full']) }}
         <p class="help-block">Acceptable format: 'DD.MM.YYYY'.</p>
     {% endif %}
   </fieldset>
