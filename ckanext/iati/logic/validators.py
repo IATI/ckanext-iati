@@ -1,6 +1,8 @@
 from urlparse import urlparse, urlunparse
 from dateutil.parser import parse as date_parse
 
+from email_validator import validate_email
+
 from ckan.logic import get_action
 from ckan import new_authz
 from ckan.lib.navl.dictization_functions import unflatten, Invalid
@@ -131,3 +133,10 @@ def country_code(value,context):
 
     return value
 
+def email_validator(key, data, errors, context):
+    email = data[key]
+
+    try:
+        v = validate_email(email)
+    except Exception as e:
+        errors[key].append('Please provide a valid email address. The email address should be for a mailbox that is regularly monitored.')

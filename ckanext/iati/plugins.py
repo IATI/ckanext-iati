@@ -14,6 +14,7 @@ from ckanext.iati.logic.validators import (db_date,
                                            iati_resource_count,
                                            iati_resource_url,
                                            iati_one_resource,
+                                           email_validator
                                           )
 from ckanext.iati.logic.converters import checkbox_value, strip
 import ckanext.iati.helpers as iati_helpers
@@ -177,7 +178,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'publisher_thresholds': default_validators,
             'publisher_units': default_validators,
             'publisher_contact': default_validators,
-            'publisher_contact_email': default_validators,
+            'publisher_contact_email': [_not_empty, _convert_to_extras, email_validator, unicode],
             'publisher_agencies': default_validators,
             'publisher_field_exclusions': default_validators,
             'publisher_description': default_validators,
