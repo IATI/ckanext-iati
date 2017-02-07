@@ -312,17 +312,26 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
 
     user_agent_string = config.get('ckanext.archiver.user_agent_string', None)
 
+    def _download_resource(resource_url, timeout):
+        request_headers = {}
+        if user_agent_string is not None:
+            request_headers['User-Agent'] = user_agent_string
+        res = requests.get(resource['url'], timeout=url_timeout,
+                           headers=request_headers, verify=False)
+        return res
+
     try:
         headers = json.loads(tasks.link_checker(link_context, link_data))
+    except tasks.LinkHeadMethodNotSupported, e:
+        res = _download_resource(resource_url=resource['url'],
+                                 timeout=url_timeout)
+        headers = res.headers
     except tasks.LinkCheckerError, e:
-        if any(x in str(e).lower() for x in ('method not allowed', 'internal server error', )):
+        if any(x in str(e).lower() for x in ('internal server error', )):
             # If the HEAD method is not supported or if a 500
             # error is returned we'll handle the download manually
-            request_headers = {}
-            if user_agent_string is not None:
-                request_headers['User-Agent'] = user_agent_string
-            res = requests.get(resource['url'], timeout=url_timeout,
-                               headers=request_headers, verify=False)
+            res = _download_resource(resource_url=resource['url'],
+                                     timeout=url_timeout)
             headers = res.headers
         else:
             raise
