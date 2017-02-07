@@ -302,6 +302,10 @@ class CSVController(p.toolkit.BaseController):
         # Check if package exists
 
         try:
+            # Get rid of auth audit on the context otherwise we'll get an
+            # exception
+            context.pop('__auth_audit', None)
+
             existing_package_dict = p.toolkit.get_action('package_show')(context, {'id': package_dict['name']})
             # Update package
             log.info('Package with name "%s" exists and will be updated' % package_dict['name'])
