@@ -326,6 +326,11 @@ class CSVController(p.toolkit.BaseController):
             # This is a work around for #1257. package_create auth function
             # looks for organization_id instead of owner_org.
             package_dict['organization_id'] = package_dict['owner_org']
+
+            # Get rid of auth audit on the context otherwise we'll get an
+            # exception
+            context.pop('__auth_audit', None)
+
             new_package = p.toolkit.get_action('package_create')(context, package_dict)
             if counts:
                 counts['added'].append(new_package['name'])
