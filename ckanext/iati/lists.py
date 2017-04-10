@@ -1,7 +1,7 @@
 from countries import COUNTRIES
 
 IATI_STANDARD_VERSIONS = [
-    '1.01', '1.02', '1.03', '1.04', '2.01',
+    '1.01', '1.02', '1.03', '1.04', '1.05', '2.01', '2.02'
 ]
 
 FILE_TYPES = [
