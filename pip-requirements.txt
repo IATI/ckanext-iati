@@ -1,4 +1,5 @@
--e git+https://github.com/ckan/ckanext-archiver#egg=ckanext-archiver
+-e git+https://github.com/keitaroinc/ckanext-archiver.git@v0.0.4#egg=ckanext-archiver
+-r https://raw.githubusercontent.com/keitaroinc/ckanext-archiver/v0.0.4/requirements.txt
 ndg-httpsclient>=0.4.0
 requests>=2.3.0
 pyOpenSSL>=0.15.1
