@@ -281,7 +281,6 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         #   ('old_name', 'new_name',),
         #
         renames = [
-            ('onl-org', 'onl-activity'),
             ('ciuk-org', 'ciuk-activity'),
             ('uncdf-org', 'uncdf-activity'),
             ('plan_uk-org210613', 'plan_uk-activity'),

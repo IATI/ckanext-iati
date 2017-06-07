@@ -53,7 +53,7 @@
           <dt>{{ _('Member Since') }}</dt>
           <dd>{{ h.render_datetime(user.created) }}</dd>
         </dl>
-        {% if c.is_myself %}
+        {% if c.is_myself or h.check_access('sysadmin') %}
         <dl>
           <dt class="key">{{ _('API Key') }} <span class="label" title="{{ _('This means only you can see this') }}">{{ _('Private') }}</span></dt>
           <dd class="value"><code>{{ user.apikey }}</code></dd>
