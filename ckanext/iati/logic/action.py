@@ -47,19 +47,20 @@ def package_update(context, data_dict):
     # closest date to date today and remove the others
     resources = data_dict['resources']
 
-    date_today = datetime.datetime.now()
-    resource_to_update = []
+    if len(resources) > 1:
+        date_today = datetime.datetime.now()
+        resource_to_update = []
 
 
-    resources_created = [x['created'] for x in resources]
-    near = min(resources_created,
-            key=lambda d: abs(datetime.datetime.strptime(d, "%Y-%m-%dT%H:%M:%S.%f") - date_today))
+        resources_created = [x['created'] for x in resources]
+        near = min(resources_created,
+                key=lambda d: abs(datetime.datetime.strptime(d, "%Y-%m-%dT%H:%M:%S.%f") - date_today))
 
-    for resource in resources:
-        if resource['created'] == near:
-            resource_to_update.append(resource)
+        for resource in resources:
+            if resource['created'] == near:
+                resource_to_update.append(resource)
 
-    data_dict['resources'] = resource_to_update
+        data_dict['resources'] = resource_to_update
 
     return update_core.package_update(context, data_dict)
 
