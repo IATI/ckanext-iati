@@ -11327,3 +11327,65 @@ form .info-block.info-inline {
 .ie7 #pre-footer .social li a {
   padding: 9px 0;
 }
+/* Filters modal */
+.no-text .text {
+  display: none;
+}
+.js body.filters-modal {
+  overflow: hidden;
+}
+.show-filters.btn,
+.hide-filters {
+  display: none;
+}
+@media (max-width: 768px) {
+  .wrapper {
+    margin: 0 -20px;
+    border-width: 0;
+    -webkit-box-shadow: 0;
+    -moz-box-shadow: 0;
+    box-shadow: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+  }
+  .js [role=main] .secondary .filters {
+    display: none;
+    position: fixed;
+    overflow: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    padding: 10px;
+    background-color: #000000;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .js body.filters-modal .secondary .filters {
+    display: block;
+  }
+  .js [role=main] .secondary .filters > div {
+    background-color: #fff;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .js [role=main] .secondary .filters > div .module-footer {
+    display: none;
+  }
+  .js body.filters-modal .secondary .filters .hide-filters {
+    display: inline-block;
+    position: absolute;
+    top: 14px;
+    right: 17px;
+    opacity: 0.6;
+  }
+  .js body.filters-modal .secondary .filters .hide-filters i {
+    font-size: 18px;
+  }
+  .js .show-filters.btn {
+    display: inline-block;
+  }
+}
