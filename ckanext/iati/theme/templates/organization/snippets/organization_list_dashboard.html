@@ -15,6 +15,9 @@ Example:
       <th title="Sort by organisation type">Organisation Type</th>
       <th title="Sort by country">HQ Country / Region</th>
       <th title="Sort by number of published datasets">Datasets</th>
+      {% if h.check_access('sysadmin') %}
+      <th title="Sort by status">Status</th>
+      {% endif %}
     </tr>
   </thead>
 
@@ -28,6 +31,9 @@ Example:
         <td>{{ extra_fields.publisher_organization_type }}</td>
         <td>{{ extra_fields.publisher_country }}</td>
         <td>{{ organization.package_count }}</td>
+        {% if h.check_access('sysadmin') %}
+        <td>{{ organization.approval_status }}</td>
+        {% endif %}
       </tr>
     {% endif %}
   {% endfor %}
