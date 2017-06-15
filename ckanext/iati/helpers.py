@@ -264,6 +264,9 @@ def organization_list_publisher_page():
     return p.toolkit.get_action('organization_list_publisher_page')({}, {
         'all_fields': True, 'sort': 'title asc', 'include_extras': True})
 
+def organization_list_pending():
+    return p.toolkit.get_action('organization_list_pending')({}, {
+        'all_fields': True, 'sort': 'title asc', 'include_extras': True})
 
 def get_first_published_date(organization):
     try:

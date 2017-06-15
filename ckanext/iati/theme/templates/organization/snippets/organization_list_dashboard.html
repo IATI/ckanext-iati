@@ -8,18 +8,18 @@ Example:
     {% snippet "organization/snippets/organization_list.html" %}
 
 #}
+{% if h.check_access('sysadmin') %}
 <table class="table table-hover table-bordered table-striped table-sorted" data-module="table-sorter">
   <thead>
     <tr>
       <th title="Sort by publisher name">Publisher</th>
       <th title="Sort by organisation type">Organisation Type</th>
       <th title="Sort by country">HQ Country / Region</th>
-      <th title="Sort by number of published datasets">Datasets</th>
     </tr>
   </thead>
 
   <tbody>
-  {% for organization in organizations %}
+  {% for organization in pending %}
 
     {% if organization.package_count > 0 or 'dashboard' in request.url %}
       {% set extra_fields = h.get_publisher_obj_extra_fields(organization) %}
@@ -27,11 +27,11 @@ Example:
         <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.display_name) }}</a></td>
         <td>{{ extra_fields.publisher_organization_type }}</td>
         <td>{{ extra_fields.publisher_country }}</td>
-        <td>{{ organization.package_count }}</td>
       </tr>
     {% endif %}
   {% endfor %}
   </tbody>
 </table>
+{% endif %}
 
 {% resource 'ckanext-iati/table_sorter' %}
