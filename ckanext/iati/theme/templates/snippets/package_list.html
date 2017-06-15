@@ -1,0 +1,9 @@
+{% ckan_extends %}
+
+
+{% block package_list %}
+{{ super() }}
+
+{{ c.page.pager() }}
+
+{% endblock %}
