@@ -261,7 +261,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     def before_map(self, map):
 
         reports_controller = 'ckanext.iati.controllers.reports:ReportsController'
-        map.connect('/dashboard/datasets', controller=reports_controller, action='dashboard_datasets', ckan_icon='sitemap')
+        map.connect('user_dashboard_datasets_custom', '/dashboard/datasets', controller=reports_controller, action='dashboard_datasets', ckan_icon='sitemap')
         map.connect('/report/issues', controller=reports_controller, action='issues_report')
         # Redirects needed after updating the datasets name for some of the publishers
         map.redirect('/dataset/wb-{code}','/dataset/worldbank-{code}',_redirect_code='301 Moved Permanently')
