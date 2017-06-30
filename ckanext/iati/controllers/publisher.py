@@ -20,3 +20,9 @@ class PublisherController(BaseController):
         except logic.NotFound:
             p.toolkit.abort(404, p.toolkit._('Group not found'))
         return render('organization/members_read.html')
+
+    def dashboard_pending_organizations(self):
+        context = {'for_view': True, 'user': c.user or c.author, 'auth_user_obj': c.userobj}
+        data_dict = {'user_obj': c.userobj}
+        # self._setup_template_variables(context, data_dict)
+        return render('user/dashboard_pending_organizations.html')

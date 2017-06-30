@@ -97,7 +97,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             m.connect('publisher_bulk_process',
                       '/publisher/bulk_process/{id}',
                       action='bulk_process', ckan_icon='sitemap')
-
+            
         map.redirect('/api/{ver:1|2|3}/rest/publisher',
                      '/api/{ver}/rest/group')
         map.redirect('/api/rest/publisher', '/api/rest/group')
@@ -109,6 +109,9 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         map.connect('publisher_members_read', '/publisher/members/{id}',
             controller='ckanext.iati.controllers.publisher:PublisherController',
             action='members_read', ckan_icon='group')
+        map.connect('user_dashboard_pending_organizations', '/dashboard/pending', 
+            controller='ckanext.iati.controllers.publisher:PublisherController',
+            action='dashboard_pending_organizations', ckan_icon='building')
 
         return map
 
@@ -461,6 +464,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_first_published_date',
             'render_first_published_date',
             'organization_list_publisher_page',
+            'organization_list_pending',
             'get_publisher_obj_extra_fields',
         )
         return _get_module_functions(iati_helpers, function_names)
@@ -479,6 +483,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'group_list',
             'group_show',
             'organization_list_publisher_page',
+            'organization_list_pending',
         )
         return _get_module_functions(iati_actions, function_names)
 
