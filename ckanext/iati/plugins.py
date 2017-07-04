@@ -15,7 +15,8 @@ from ckanext.iati.logic.validators import (db_date,
                                            iati_resource_url,
                                            iati_one_resource,
                                            email_validator,
-                                           file_type_validator
+                                           file_type_validator,
+                                           iati_org_identifier_validator
                                           )
 from ckanext.iati.logic.converters import checkbox_value, strip
 import ckanext.iati.helpers as iati_helpers
@@ -171,7 +172,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'state': [iati_publisher_state_validator],
             'license_id': [_convert_to_extras],
             'publisher_source_type': default_validators,
-            'publisher_iati_id': [_not_empty, _convert_to_extras, unicode],
+            'publisher_iati_id': [_not_empty, iati_org_identifier_validator, _convert_to_extras, unicode],
             'publisher_country': default_validators,
             'publisher_segmentation': default_validators,
             'publisher_ui': default_validators,
