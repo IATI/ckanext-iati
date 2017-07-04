@@ -146,6 +146,5 @@ def iati_org_identifier_validator(key, data, errors, context):
     session = context['session']
     value = data[key]
     exists = session.query(model.GroupExtra).filter(model.GroupExtra.value == value).first()
-
-   if exists:
+    if exists:
         errors[key].append('IATI identifier already exists in the database.')
