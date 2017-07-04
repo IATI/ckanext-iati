@@ -14,7 +14,9 @@ from ckanext.iati.logic.validators import (db_date,
                                            iati_resource_count,
                                            iati_resource_url,
                                            iati_one_resource,
-                                           email_validator
+                                           email_validator,
+                                           file_type_validator,
+                                           iati_org_identifier_validator
                                           )
 from ckanext.iati.logic.converters import checkbox_value, strip
 import ckanext.iati.helpers as iati_helpers
@@ -170,7 +172,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'state': [iati_publisher_state_validator],
             'license_id': [_convert_to_extras],
             'publisher_source_type': default_validators,
-            'publisher_iati_id': [_not_empty, _convert_to_extras, unicode],
+            'publisher_iati_id': [_not_empty, iati_org_identifier_validator, _convert_to_extras, unicode],
             'publisher_country': default_validators,
             'publisher_segmentation': default_validators,
             'publisher_ui': default_validators,
@@ -319,7 +321,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         _int_validator = p.toolkit.get_validator('int_validator')
 
         schema.update({
-            'filetype': [_ignore_missing, _convert_to_extras],
+            'filetype': [_ignore_missing,file_type_validator, _convert_to_extras],
             'country': [_ignore_missing, _convert_to_extras],
             'data_updated': [_ignore_missing, _ignore_empty, db_date, _convert_to_extras],
             'activity_count': [_ignore_missing, _int_validator, _convert_to_extras],
@@ -357,7 +359,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         _int_validator = p.toolkit.get_validator('int_validator')
 
         schema.update({
-            'filetype': [_ignore_missing, _convert_from_extras],
+            'filetype': [_ignore_missing, file_type_validator, _convert_from_extras],
             'country': [_ignore_missing, _convert_from_extras],
             'data_updated': [_ignore_missing, _ignore_empty, db_date, _convert_from_extras],
             'activity_count': [_ignore_missing, _int_validator, _convert_from_extras],
