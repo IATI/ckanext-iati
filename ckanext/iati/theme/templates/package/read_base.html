@@ -55,7 +55,7 @@
         {% endif %}
         <dl>
           <dt>{{ _('Followers') }}</dt>
-          <dd>{{ h.SI_number_span(h.get_action('dataset_follower_count', {'id': pkg.id})) }}</dd>
+          <dd>{{ h.SI_number_span(h.dataset_follower_count(None, {'id': pkg.id})) }}</dd>
         </dl>
       </div>
       <div class="follow_button">
