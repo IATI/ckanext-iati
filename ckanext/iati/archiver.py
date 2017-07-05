@@ -66,7 +66,8 @@ def run(package_id=None, publisher_id=None):
     elif publisher_id:
         try:
             org = toolkit.get_action('organization_show')(context,
-                                                          {'id': publisher_id})
+                                                          {'id': publisher_id,
+                                                           'include_datasets': True})
         except toolkit.ObjectNotFound:
             log.error('Could not find Publisher: {0}'.format(publisher_id))
             sys.exit(1)
