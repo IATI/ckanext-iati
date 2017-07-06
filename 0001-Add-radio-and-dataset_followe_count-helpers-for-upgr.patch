@@ -1,0 +1,60 @@
+From 76f96cdbdcb42fca5fe248ce414f4b02609f3468 Mon Sep 17 00:00:00 2001
+From: Jovanka Gulicoska <jovanka.gulicoska@keitaro.com>
+Date: Tue, 4 Jul 2017 12:49:55 +0200
+Subject: [PATCH] Add radio and dataset_followe_count helpers for upgrade to
+ CKAN 2.6.2
+
+---
+ ckanext/iati/helpers.py                             | 10 ++++++++++
+ ckanext/iati/plugins.py                             |  2 ++
+ ckanext/iati/theme/templates/package/read_base.html |  2 +-
+ 3 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/ckanext/iati/helpers.py b/ckanext/iati/helpers.py
+index 0e1c032..277d184 100644
+--- a/ckanext/iati/helpers.py
++++ b/ckanext/iati/helpers.py
+@@ -333,3 +333,13 @@ def render_first_published_date(value, date_format='%d %B %Y'):
+         return datetime.datetime.strptime(value, current_date_format).strftime(date_format)
+     except ValueError:
+         return 'Date is not valid'
++
++
++def dataset_follower_count(context, data_dict):
++    return  p.toolkit.get_action('dataset_follower_count')({}, data_dict=data_dict)
++
++
++def radio(selected, id, checked):
++    if checked == 'True':
++        return literal(('<input checked="checked" type="radio" id="%s_%s" name="%s" value="%s">') % (selected, id, selected, id))
++    return literal(('<input type="radio" id="%s_%s" name="%s" value="%s">') % (selected, id, selected, id))
+\ No newline at end of file
+diff --git a/ckanext/iati/plugins.py b/ckanext/iati/plugins.py
+index 5919487..524ddd5 100644
+--- a/ckanext/iati/plugins.py
++++ b/ckanext/iati/plugins.py
+@@ -467,6 +467,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
+             'organization_list_publisher_page',
+             'organization_list_pending',
+             'get_publisher_obj_extra_fields',
++            'dataset_follower_count',
++            'radio'
+         )
+         return _get_module_functions(iati_helpers, function_names)
+ 
+diff --git a/ckanext/iati/theme/templates/package/read_base.html b/ckanext/iati/theme/templates/package/read_base.html
+index b93d59f..0c7efb5 100644
+--- a/ckanext/iati/theme/templates/package/read_base.html
++++ b/ckanext/iati/theme/templates/package/read_base.html
+@@ -55,7 +55,7 @@
+         {% endif %}
+         <dl>
+           <dt>{{ _('Followers') }}</dt>
+-          <dd>{{ h.SI_number_span(h.get_action('dataset_follower_count', {'id': pkg.id})) }}</dd>
++          <dd>{{ h.SI_number_span(h.dataset_follower_count(None, {'id': pkg.id})) }}</dd>
+         </dl>
+       </div>
+       <div class="follow_button">
+-- 
+2.13.2
+
