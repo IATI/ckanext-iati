@@ -1,5 +1,6 @@
-International Aid Transparency Initiative (IATI) Registry Extension for CKAN
 
+International Aid Transparency Initiative (IATI) Registry Extension for CKAN
+============================================================================
 .. image:: https://api.travis-ci.org/ViderumGlobal/ckanext-iati.svg?branch=master
     :target: https://travis-ci.org/ViderumGlobal/ckanext-iati
 ============================================================================
