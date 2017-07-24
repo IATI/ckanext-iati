@@ -3,7 +3,7 @@ import csv
 import StringIO
 
 from ckan import model
-import ckan.new_authz as authz
+import ckan.authz as authz
 from ckan.lib.base import c
 import ckan.plugins as p
 from ckanext.iati.helpers import extras_to_dict

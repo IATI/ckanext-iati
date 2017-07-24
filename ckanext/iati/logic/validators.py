@@ -4,7 +4,7 @@ from dateutil.parser import parse as date_parse
 from email_validator import validate_email
 
 from ckan.logic import get_action
-from ckan import new_authz
+from ckan import authz as new_authz
 from ckan.lib.navl.dictization_functions import unflatten, Invalid
 
 from ckanext.iati.lists import FILE_TYPES, COUNTRIES

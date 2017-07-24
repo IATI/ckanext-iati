@@ -2,6 +2,7 @@ from ckan.lib.base import c, g, request, response, render, abort, BaseController
 from ckan.common import _
 from ckan import model
 from ckan import logic
+import ckan.plugins as p
 
 import ckan.lib.helpers as h
 
@@ -52,7 +53,14 @@ class ReportsController(BaseController):
         c.user_dict = user_dict
 
         items_per_page = g.datasets_per_page or 20  # , readme
-        page = self._get_page_number(request.params) or 1
+
+        # check ckan version and call appropriate get_page number
+        if p.toolkit.check_ckan_version(min_version='2.5.0',
+                                        max_version='2.5.3'):
+            page = self._get_page_number(request.params) or 1
+        else:
+            page = h.get_page_number(request.params)  or 1
+
         c.page = h.Page(
             collection=user_dict['datasets'],
             page=page,

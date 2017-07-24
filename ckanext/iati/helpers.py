@@ -209,7 +209,7 @@ def publishers_pagination(q):
         with types support), so on the meantime we tweak the output of the
         default pagination
     '''
-    return p.toolkit.c.page.pager(q=q).replace('group', 'publisher')
+    return p.toolkit.c.page.pager(q=q).replace('organization', 'publisher')
 
 def get_global_facet_items_dict(facet, limit=10, exclude_active=False, search_facets=None):
     '''
@@ -333,3 +333,13 @@ def render_first_published_date(value, date_format='%d %B %Y'):
         return datetime.datetime.strptime(value, current_date_format).strftime(date_format)
     except ValueError:
         return 'Date is not valid'
+
+
+def dataset_follower_count(context, data_dict):
+    return  p.toolkit.get_action('dataset_follower_count')({}, data_dict=data_dict)
+
+
+def radio(selected, id, checked):
+    if checked == 'True':
+        return literal(('<input checked="checked" type="radio" id="%s_%s" name="%s" value="%s">') % (selected, id, selected, id))
+    return literal(('<input type="radio" id="%s_%s" name="%s" value="%s">') % (selected, id, selected, id))
