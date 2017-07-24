@@ -486,6 +486,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'group_show',
             'organization_list_publisher_page',
             'organization_list_pending',
+            'user_show',
         )
         return _get_module_functions(iati_actions, function_names)
 
