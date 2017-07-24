@@ -144,10 +144,12 @@ def email_validator(key, data, errors, context):
 def iati_org_identifier_validator(key, data, errors, context):
     model = context['model']
     session = context['session']
-    value = data[key]
-    exists = session.query(model.Group)\
+    publisher_iati_id = data[key]
+    submitter_name = data[('name',)]
+
+    publisher_id_exists = session.query(model.Group)\
        .join((model.GroupExtra, model.Group.id==model.GroupExtra.group_id))\
-       .filter(model.GroupExtra.value == value,
-               model.Group.state=='active').first()
-    if exists:
+       .filter(model.GroupExtra.value == publisher_iati_id).first()
+
+    if publisher_id_exists and publisher_id_exists.name != submitter_name:
         errors[key].append('IATI identifier already exists in the database.')
