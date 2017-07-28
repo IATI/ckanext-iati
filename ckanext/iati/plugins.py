@@ -54,6 +54,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             ('amrefuk', 'amrefha',),
             ('ausaid', 'ausgov',),
             ('mrdf', 'allwecan',),
+            ('unesco-ihe', 'ihedelft'),
         ]
 
         for rename in renames:
