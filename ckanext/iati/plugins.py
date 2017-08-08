@@ -100,7 +100,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             m.connect('publisher_bulk_process',
                       '/publisher/bulk_process/{id}',
                       action='bulk_process', ckan_icon='sitemap')
-            
+
         map.redirect('/api/{ver:1|2|3}/rest/publisher',
                      '/api/{ver}/rest/group')
         map.redirect('/api/rest/publisher', '/api/rest/group')
@@ -112,7 +112,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         map.connect('publisher_members_read', '/publisher/members/{id}',
             controller='ckanext.iati.controllers.publisher:PublisherController',
             action='members_read', ckan_icon='group')
-        map.connect('user_dashboard_pending_organizations', '/dashboard/pending', 
+        map.connect('user_dashboard_pending_organizations', '/dashboard/pending',
             controller='ckanext.iati.controllers.publisher:PublisherController',
             action='dashboard_pending_organizations', ckan_icon='building')
 
@@ -592,6 +592,7 @@ class IatiCsvImporter(p.SingletonPlugin):
                     conditions=dict(method=['GET']))
         map.connect('/csv/upload', controller=csv_controller, action='upload',
                     conditions=dict(method=['POST']))
+        map.connect('/csv/check_status/{task_id}', controller=csv_controller, action='check_status')
         return map
 
     def after_map(self, map):
