@@ -259,7 +259,7 @@ def register_translator():
     registry.register(translator, translator_obj)
 
 
-@celery.task(name="iati.read_csv_file")
+@celery.task(name="iati.read_csv_file", serializer='json')
 def read_csv_file(ckan_ini_filepath, csv_file, user):
     load_config(ckan_ini_filepath)
     register_translator()
