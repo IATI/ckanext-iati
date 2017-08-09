@@ -141,15 +141,38 @@ def email_validator(key, data, errors, context):
     except Exception as e:
         errors[key].append('Please provide a valid email address. The email address should be for a mailbox that is regularly monitored.')
 
+
 def iati_org_identifier_validator(key, data, errors, context):
+    """
+    Enforce unique IATI IDs.
+
+    If an IATI ID does exist and it doesn't belong to the publisher submitting
+    the form or making the API request, throw a validation error.
+
+    Both `name` and `publisher_iati_id` must be unique (though `name` ==
+    `publisher_iati_id` is possible); users must be able to change them
+    independently of one another.
+    """
     model = context['model']
     session = context['session']
+    group = context.get('group')
     publisher_iati_id = data[key]
-    submitter_name = data[('name',)]
 
+    for i in context:
+        print i
+
+    print session
+    if group:
+        group_id = group.id
+    else:
+        group_id = data.get('id')
+
+    # check if the IATI ID exists
     publisher_id_exists = session.query(model.Group)\
-       .join((model.GroupExtra, model.Group.id==model.GroupExtra.group_id))\
-       .filter(model.GroupExtra.value == publisher_iati_id).first()
+        .join((model.GroupExtra, model.Group.id == model.GroupExtra.group_id))\
+        .filter(model.GroupExtra.value == publisher_iati_id).first()
 
-    if publisher_id_exists and publisher_id_exists.name != submitter_name:
+    # if the ID exists and it doesn't belong to the org submitting the form
+    # or the API request, block it
+    if publisher_id_exists and publisher_id_exists.id != group_id:
         errors[key].append('IATI identifier already exists in the database.')
