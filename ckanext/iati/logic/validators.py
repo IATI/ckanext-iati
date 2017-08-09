@@ -158,10 +158,6 @@ def iati_org_identifier_validator(key, data, errors, context):
     group = context.get('group')
     publisher_iati_id = data[key]
 
-    for i in context:
-        print i
-
-    print session
     if group:
         group_id = group.id
     else:
