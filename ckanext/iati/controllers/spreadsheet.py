@@ -136,6 +136,8 @@ class CSVController(p.toolkit.BaseController):
                         p.toolkit.abort(400, 'No data found in CSV file.')
                     job = celery.send_task("iati.read_csv_file", args=[ckan_ini_filepath, json.dumps(json_data), c.user], task_id=str(uuid.uuid4()))
                     print job.backend
+                    print "==============================================================================="
+                    print celery.conf
                     vars['task_id'] = job.task_id
                 else:
                     p.toolkit.abort(400, ('Error in CSV file : {0}; {1}'.format(warnings, errors)))
