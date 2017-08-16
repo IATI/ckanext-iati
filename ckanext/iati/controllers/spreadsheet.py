@@ -135,9 +135,6 @@ class CSVController(p.toolkit.BaseController):
                     if not json_data:
                         p.toolkit.abort(400, 'No data found in CSV file.')
                     job = celery.send_task("iati.read_csv_file", args=[ckan_ini_filepath, json.dumps(json_data), c.user], task_id=str(uuid.uuid4()))
-                    print job.backend
-                    print "==============================================================================="
-                    print celery.conf
                     vars['task_id'] = job.task_id
                 else:
                     p.toolkit.abort(400, ('Error in CSV file : {0}; {1}'.format(warnings, errors)))
@@ -162,7 +159,8 @@ class CSVController(p.toolkit.BaseController):
                     result['result']['errors'] = data['errors']
                     result['result']['warnings'] = data['warnings']
                 except Exception as e:
-                    result.update({'status': "Error getting upload result"})
+                    result.update({'status': "Something went wrong, please try again or contact support."})
+                    print job.traceback
         else:
             result.update({'status': 'Invalid request.'})
         return json.dumps(result)
@@ -295,6 +293,7 @@ def read_csv_file(ckan_ini_filepath, csv_file, user):
         for key in ('title', 'notes'):
             if package.get(key):
                 try:
+                    package[key] = package[key].encode('utf-8')
                     package[key] = package[key].decode('utf-8')
                 except UnicodeDecodeError:
                     package[key] = _fix_unicode(package[key])
@@ -377,7 +376,6 @@ def read_csv_file(ckan_ini_filepath, csv_file, user):
 
     for i, row in enumerate(data):
         errors[i] = {}
-        print row
         try:
             org = p.toolkit.get_action('organization_show')(context, {'id': row['registry-publisher-id']})
         except p.toolkit.ObjectNotFound:
