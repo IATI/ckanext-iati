@@ -7,6 +7,7 @@ from collections import OrderedDict
 import os
 import routes
 import urlparse
+import re
 
 from ckan import model
 import ckan.authz as authz
@@ -116,13 +117,32 @@ class CSVController(p.toolkit.BaseController):
                 surplus_columns = [f for f in columns if f not in fieldnames]
 
                 if len(surplus_columns):
-                    warnings['1'] = {}
-                    warnings['1']['file'] = 'Ignoring extra columns: %s' % ', '.join(sorted(surplus_columns))
                     warnings = {'Ignoring extra columns': '%s' % ', '.join(sorted(surplus_columns))}
 
                 if len(missing_columns):
                     errors = {'Missing columns': '%s' % ', '.join(sorted(missing_columns))}
-                    errors['1']['file'] = 'Ignoring extra columns: %s' % ', '.join(sorted(surplus_columns))
+
+                for entry in reader:
+                    if len(entry) <= 12:
+                        p.toolkit.abort(400, "Please make sure there are no line breaks in the file.")
+                data.seek(0)
+                reader = csv.reader(data)
+                next(reader)
+
+                publishers_in_csv = [row[0] for row in reader]
+                all_publishers = p.toolkit.get_action('group_list')({}, {})
+
+                unknown_publishers = [publisher
+                    for publisher in publishers_in_csv
+                    if publisher not in all_publishers
+                ]
+
+                if len(unknown_publishers):
+                    unknown_publishers_string = ', '.join(unknown_publishers)
+                    p.toolkit.abort(400, 'Unknown publisher(s): %s' % (unknown_publishers_string))
+                data.seek(0)
+                reader = csv.reader(data)
+                next(reader)
 
                 if not len(errors.keys()):
                     json_data = []
@@ -137,7 +157,9 @@ class CSVController(p.toolkit.BaseController):
                     job = celery.send_task("iati.read_csv_file", args=[ckan_ini_filepath, json.dumps(json_data), c.user], task_id=str(uuid.uuid4()))
                     vars['task_id'] = job.task_id
                 else:
-                    p.toolkit.abort(400, ('Error in CSV file : {0}; {1}'.format(warnings, errors)))
+                    p.toolkit.abort(400, ('Error in CSV file : {0}; {1}'.format
+                                    (re.sub("([\{\}'])+", "", str(warnings)),
+                                        re.sub("([\{\}'])+", "", str(errors)))))
             except Exception as e:
                 vars['errors'] = errors
                 vars['warnings'] = warnings
