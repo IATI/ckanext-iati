@@ -70,7 +70,7 @@ def iati_dataset_name(key,data,errors,context):
 
     if not unflattened.get('owner_org'):
         errors[key].append('Publisher name missing. Please select a publisher from the list.')
-         return
+        return
 
     org = get_action('organization_show')(context,{'id': unflattened['owner_org']})
     org_name = org['name']
