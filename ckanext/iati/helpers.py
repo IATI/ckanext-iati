@@ -269,7 +269,7 @@ def organization_list_pending():
         'all_fields': True, 'sort': 'title asc', 'include_extras': True})
 
 def get_first_published_date(organization):
-    if 'publisher_contact_email' not in organization:
+    if 'publisher_contact_email' not in organization or not organization['publisher_contact_email']:
         organization.update({'publisher_contact_email': 'Email not found'})
     try:
         return organization['publisher_first_publish_date']
@@ -312,6 +312,9 @@ def get_first_published_date(organization):
             'publisher_first_publish_date':
                 publisher_first_publish_date
         }
+
+        if 'publisher_contact_email' not in organization:
+            data_dict.update({'publisher_contact_email': 'Email not found'})
 
         try:
             check_access('organization_patch', {})
