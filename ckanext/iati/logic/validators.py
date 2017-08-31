@@ -134,13 +134,12 @@ def country_code(value,context):
     return value
 
 def email_validator(key, data, errors, context):
-    pass
-    # email = data[key]
-    #
-    # try:
-    #     v = validate_email(email)
-    # except Exception as e:
-    #     errors[key].append('Please provide a valid email address. The email address should be for a mailbox that is regularly monitored.')
+    email = data[key]
+
+    try:
+        v = validate_email(email)
+    except Exception as e:
+        errors[key].append('Please provide a valid email address. The email address should be for a mailbox that is regularly monitored.')
 
 
 def iati_org_identifier_validator(key, data, errors, context):
