@@ -313,7 +313,7 @@ def get_first_published_date(organization):
                 publisher_first_publish_date
         }
 
-        if 'publisher_contact_email' not in organization:
+        if 'publisher_contact_email' not in organization or not organization['publisher_contact_email']:
             data_dict.update({'publisher_contact_email': 'Email not found'})
 
         try:
