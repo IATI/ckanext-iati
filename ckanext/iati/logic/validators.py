@@ -69,18 +69,18 @@ def iati_dataset_name(key,data,errors,context):
     value = data[key]
 
     if not unflattened.get('owner_org'):
-         errors[key].append('Publisher name missing.' \
-                 ' Please select a publisher from the list.')
-         return
+        errors[key].append('Publisher name missing. Please select a publisher from the list.')
+        return
 
     org = get_action('organization_show')(context,{'id': unflattened['owner_org']})
     org_name = org['name']
 
     parts = value.split('-')
-    code_part = parts[-1]
-    group_part = parts[0] if len(parts) == 2 else '-'.join(parts[:-1])
-    if not code_part or not group_part or not group_part == org_name:
+    org_name_parts = org_name.split('-')
+
+    if value.startswith(org_name) is False or not set(org_name_parts) < set(parts):
         errors[key].append('Dataset name does not follow the convention <publisher>-<code>: "%s" (using publisher %s)' % (value, org_name))
+
 
 def iati_dataset_name_from_csv(key,data,errors,context):
 
@@ -167,6 +167,7 @@ def iati_org_identifier_validator(key, data, errors, context):
     publisher_id_exists = session.query(model.Group)\
         .join((model.GroupExtra, model.Group.id == model.GroupExtra.group_id))\
         .filter(model.GroupExtra.value == publisher_iati_id).first()
+
 
     # if the ID exists and it doesn't belong to the org submitting the form
     # or the API request, block it

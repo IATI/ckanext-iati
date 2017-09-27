@@ -33,5 +33,7 @@ setup(name='ckanext-iati',
       [paste.paster_command]
       iati-archiver=ckanext.iati.commands:Archiver
       iati-purge=ckanext.iati.commands:PurgeCmd
+      [ckan.celery_task]
+      tasks = ckanext.iati.celery_import:task_imports
       """,
       )

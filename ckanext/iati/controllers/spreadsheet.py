@@ -1,15 +1,23 @@
 import logging
 import csv
 import StringIO
+import uuid
+import json
+from collections import OrderedDict
+import os
+import routes
+import urlparse
+import re
 
 from ckan import model
 import ckan.authz as authz
 from ckan.lib.base import c
 import ckan.plugins as p
 from ckanext.iati.helpers import extras_to_dict
+from ckan.lib.celery_app import celery
+
 
 log = logging.getLogger(__name__)
-
 _not_empty = p.toolkit.get_validator('not_empty')
 _ignore_empty = p.toolkit.get_validator('ignore_empty')
 _ignore_missing = p.toolkit.get_validator('ignore_missing')
@@ -33,6 +41,8 @@ CSV_MAPPING = [
         ]
 
 OPTIONAL_COLUMNS = ['state', 'description']
+
+ckan_ini_filepath = os.environ.get('CKAN_CONFIG')
 
 
 def _fix_unicode(text, min_confidence=0.5):
@@ -71,6 +81,7 @@ class CSVController(p.toolkit.BaseController):
         return output
 
     def upload(self):
+        from pylons import config
 
         if not c.user:
             p.toolkit.abort(401, 'Permission denied, only publisher administrators can manage CSV files.')
@@ -89,23 +100,92 @@ class CSVController(p.toolkit.BaseController):
             return p.toolkit.render('csv/upload.html')
         elif p.toolkit.request.method == 'POST':
             csv_file = p.toolkit.request.POST['file']
-
-            if not hasattr(csv_file,'filename'):
-                p.toolkit.abort(400,'No CSV file provided')
+            if not hasattr(csv_file, 'filename'):
+                p.toolkit.abort(400, 'No CSV file provided')
             vars = {}
             vars['file_name'] = csv_file.filename
+            fieldnames = [f[0] for f in CSV_MAPPING]
+            warnings = {}
+            errors = {}
+            data = csv_file.file.read()
+            data = StringIO.StringIO(data)
+            try:
+                reader = csv.reader(data)
+                columns = next(reader)
 
-            added, updated, warnings, errors = self.read_csv_file(csv_file.file)
-            vars['added'] = added
-            vars['updated'] = updated
+                missing_columns = [f for f in fieldnames if f not in columns and f not in OPTIONAL_COLUMNS]
+                surplus_columns = [f for f in columns if f not in fieldnames]
 
-            vars['errors'] = errors
-            vars['warnings'] = warnings
+                if len(surplus_columns):
+                    warnings = {'Ignoring extra columns': '%s' % ', '.join(sorted(surplus_columns))}
 
-            log.info('CSV import finished: file %s, %i added, %i updated, %i warnings, %i errors' % \
-                    (vars['file_name'],len(vars['added']),len(vars['updated']),len(vars['warnings']),len(vars['errors'])))
+                if len(missing_columns):
+                    errors = {'Missing columns': '%s' % ', '.join(sorted(missing_columns))}
+
+                for entry in reader:
+                    if len(entry) <= 12:
+                        p.toolkit.abort(400, "Please make sure there are no line breaks in the file.")
+                data.seek(0)
+                reader = csv.reader(data)
+                next(reader)
+
+                publishers_in_csv = [row[0] for row in reader]
+                all_publishers = p.toolkit.get_action('group_list')({}, {})
+
+                unknown_publishers = [publisher
+                    for publisher in publishers_in_csv
+                    if publisher not in all_publishers
+                ]
+
+                if len(unknown_publishers):
+                    unknown_publishers_string = ', '.join(unknown_publishers)
+                    p.toolkit.abort(400, 'Unknown publisher(s): %s' % (unknown_publishers_string))
+                data.seek(0)
+                reader = csv.reader(data)
+                next(reader)
+
+                if not len(errors.keys()):
+                    json_data = []
+                    for row in reader:
+                        d = OrderedDict()
+                        for i, x in enumerate(row):
+                            d[columns[i]] = x
+                        json_data.append(d)
+                    ckan_ini_filepath = os.path.abspath(config['__file__'])
+                    if not json_data:
+                        p.toolkit.abort(400, 'No data found in CSV file.')
+                    job = celery.send_task("iati.read_csv_file", args=[ckan_ini_filepath, json.dumps(json_data), c.user], task_id=str(uuid.uuid4()))
+                    vars['task_id'] = job.task_id
+                else:
+                    p.toolkit.abort(400, ('Error in CSV file : {0}; {1}'.format
+                                    (re.sub("([\{\}'])+", "", str(warnings)),
+                                        re.sub("([\{\}'])+", "", str(errors)))))
+            except Exception as e:
+                vars['errors'] = errors
+                vars['warnings'] = warnings
+                p.toolkit.abort(400, ('Error opening CSV file: {0}'.format(e.message)))
 
             return p.toolkit.render('csv/result.html', extra_vars=vars)
+
+    def check_status(self, task_id=None):
+        result = {}
+        if task_id:
+            job = celery.AsyncResult(id=task_id)
+            result.update({'status': job.state})
+            if job.result:
+                result['result'] = {}
+                try:
+                    data = json.loads(job.result)
+                    result['result']['added'] = data['added']
+                    result['result']['updated'] = data['updated']
+                    result['result']['errors'] = data['errors']
+                    result['result']['warnings'] = data['warnings']
+                except Exception as e:
+                    result.update({'status': "Something went wrong, please try again or contact support."})
+                    print job.traceback
+        else:
+            result.update({'status': 'Invalid request.'})
+        return json.dumps(result)
 
     def write_csv_file(self, publisher):
         context = {'model': model, 'user': c.user or c.author}
@@ -172,89 +252,195 @@ class CSVController(p.toolkit.BaseController):
 
         return output
 
-    def read_csv_file(self,csv_file,context=None):
-        fieldnames = [f[0] for f in CSV_MAPPING]
+def load_config(ckan_ini_filepath):
+    import paste.deploy
+    config_abs_path = os.path.abspath(ckan_ini_filepath)
+    conf = paste.deploy.appconfig('config:' + config_abs_path)
+    import ckan
+    ckan.config.environment.load_environment(conf.global_conf,
+                                             conf.local_conf)
 
-        warnings = {}
+    ## give routes enough information to run url_for
+    parsed = urlparse.urlparse(conf.get('ckan.site_url', 'http://0.0.0.0'))
+    request_config = routes.request_config()
+    request_config.host = parsed.netloc + parsed.path
+    request_config.protocol = parsed.scheme
+
+
+
+def register_translator():
+    # Register a translator in this thread so that
+    # the _() functions in logic layer can work
+    from paste.registry import Registry
+    from pylons import translator
+    from ckan.lib.cli import MockTranslator
+    global registry
+    registry = Registry()
+    registry.prepare()
+    global translator_obj
+    translator_obj = MockTranslator()
+    registry.register(translator, translator_obj)
+
+
+@celery.task(name="iati.read_csv_file", serializer='json')
+def read_csv_file(ckan_ini_filepath, csv_file, user):
+    load_config(ckan_ini_filepath)
+    register_translator()
+
+    def get_package_dict_from_row(row, context):
+        package = {}
+        extras_dict = []
+
+        for fieldname, entity, key in CSV_MAPPING:
+            if fieldname in row:
+                # If value is None (empty cell), property will be set to blank
+                value = row[fieldname]
+
+                if fieldname in ('recipient-country', ):
+                    value = value.upper()
+
+                if entity == 'organization':
+                    package['owner_org'] = value
+                elif entity == 'resources':
+                    if 'resources' not in package:
+                        package['resources'] = [{}]
+                    package['resources'][0][key] = value
+                elif entity == 'extras':
+                    extras_dict.append({'key': key, 'value': value})
+                else:
+                    package[key] = value
+        package['extras'] = extras_dict
+
+        # Try to handle rogue Windows encodings properly
+        for key in ('title', 'notes'):
+            if package.get(key):
+                try:
+                    package[key] = package[key].encode('utf-8')
+                    package[key] = package[key].decode('utf-8')
+                except UnicodeDecodeError:
+                    package[key] = _fix_unicode(package[key])
+
+        # If no description provided, we assume delete it
+        package['notes'] = package.get('notes', '')
+
+        return package
+
+    def create_or_update_package(package_dict, counts=None, context=None):
+        context = {
+            'model': model,
+            'session': model.Session,
+            'user': user,
+        }
+        # Check if package exists
 
         try:
-            # Try to sniff the file dialect
-            dialect = csv.Sniffer().sniff(csv_file.read(1024),delimiters=[',',';','\t'])
-        except csv.Error:
-            # If there was an error, I'll bet you a pint it's an Excel file
-            dialect = csv.excel
+            # Get rid of auth audit on the context otherwise we'll get an
+            # exception
+            context.pop('__auth_audit', None)
 
-        csv_file.seek(0)
+            existing_package_dict = p.toolkit.get_action('package_show')(context, {'id': package_dict['name']})
+            # Update package
+            log.info('Package with name "%s" exists and will be updated' % package_dict['name'])
+
+            package_dict.update({'id': existing_package_dict['id']})
+
+            package_dict['state'] = 'active'
+
+            context['message'] = 'CSV import: update dataset %s' % package_dict['name']
+
+            updated_package = p.toolkit.get_action('package_update')(context, package_dict)
+            if counts:
+                counts['updated'].append(updated_package['name'])
+            log.debug('Package with name "%s" updated' % package_dict['name'])
+        except p.toolkit.ObjectNotFound:
+            # Package needs to be created
+            log.info('Package with name "%s" does not exist and will be created' % package_dict['name'])
+
+            package_dict.pop('id', None)
+
+            context['message'] = 'CSV import: create dataset %s' % package_dict['name']
+            # This is a work around for #1257. package_create auth function
+            # looks for organization_id instead of owner_org.
+            package_dict['organization_id'] = package_dict['owner_org']
+
+            # Get rid of auth audit on the context otherwise we'll get an
+            # exception
+            context.pop('__auth_audit', None)
+
+            new_package = p.toolkit.get_action('package_create')(context, package_dict)
+            if counts:
+                counts['added'].append(new_package['name'])
+            log.debug('Package with name "%s" created' % package_dict['name'])
+
+    fieldnames = [f[0] for f in CSV_MAPPING]
+    warnings = {}
+    errors = {}
+    data = json.loads(csv_file)
+
+    fields_from_csv = []
+    for key in data[0].iterkeys():
+        fields_from_csv.append(key)
+
+    missing_columns = [f for f in fieldnames if f not in fields_from_csv and f not in OPTIONAL_COLUMNS]
+    surplus_columns = [f for f in fields_from_csv if f not in fieldnames]
+
+    if len(surplus_columns):
+        warnings['1'] = {}
+        warnings['1']['file'] = 'Ignoring extra columns: %s' % ', '.join(sorted(surplus_columns))
+
+    if len(missing_columns):
+        error = {'file': 'Missing columns: %s' % ', '.join(sorted(missing_columns))}
+        return [], [], [], [('1', error)]
+
+    context = {'model': model, 'session': model.Session, 'user': user, 'api_version': '1'}
+
+    counts = {'added': [], 'updated': []}
+
+    for i, row in enumerate(data):
+        errors[i] = {}
         try:
-            reader = csv.DictReader(csv_file, dialect=dialect)
+            org = p.toolkit.get_action('organization_show')(context, {'id': row['registry-publisher-id']})
+        except p.toolkit.ObjectNotFound:
+            msg = 'Publisher not found: %s' % row['registry-publisher-id']
+            log.error('Error in row %i: %s' % (i, msg))
+            errors[i]['registry-publisher-id'] = [msg]
+            continue
 
-            # Check if all columns are present
-            missing_columns = [f for f in fieldnames if f not in reader.fieldnames and f not in OPTIONAL_COLUMNS]
-            if len(missing_columns):
-                error = {'file': 'Missing columns: %s' % ', '.join(sorted(missing_columns))}
-                return [], [], [], [('1',error)]
-
-            surplus_columns = [f for f in reader.fieldnames if f not in fieldnames]
-            if len(surplus_columns):
-                warnings['1'] = {}
-                warnings['1']['file'] = 'Ignoring extra columns: %s' % ', '.join(sorted(surplus_columns))
-
-        except csv.Error,e:
-            error = {'file': 'Error reading CSV file: %s' % str(e)}
-            return [], [], [], [('1',error)]
-
-
-        log.debug('Starting reading CSV file (delimiter "%s", escapechar "%s")' %
-                    (dialect.delimiter,dialect.escapechar))
-
-        if not context:
-            context = {'model':model, 'session':model.Session, 'user': c.user or c.author, 'api_version':'1'}
-
-        counts = {'added': [], 'updated': []}
-        errors = {}
-        for i,row in enumerate(reader):
-            row_index = str(i + 1)
-            errors[row_index] = {}
+        try:
             try:
-                org = p.toolkit.get_action('organization_show')(context, {'id': row.get('registry-publisher-id')})
-            except p.toolkit.ObjectNotFound:
-                msg = 'Publisher not found: %s' % row['registry-publisher-id']
-                log.error('Error in row %i: %s' % (i+1,msg))
-                errors[row_index]['registry-publisher-id'] = [msg]
+                package_dict = get_package_dict_from_row(row, context)
+            except UnicodeDecodeError, e:
+                msg = 'Encoding error, could not decode dataset title or description: {0}, {1}'.format(
+                        row['title'], row['description'])
+                log.error('Error in row %i: %s' % (i+1, msg))
+                errors[i]['title'] = [msg]
                 continue
 
-            try:
-                try:
-                    package_dict = self.get_package_dict_from_row(row, context)
-                except UnicodeDecodeError,e:
-                    msg = 'Encoding error, could not decode dataset title or description: {0}, {1}'.format(
-                            row['title'], row['description'])
-                    log.error('Error in row %i: %s' % (i+1,msg))
-                    errors[row_index]['title'] = [msg]
-                    continue
+            create_or_update_package(package_dict, counts, context=context)
 
-                self.create_or_update_package(package_dict,counts,context=context)
+            del errors[i]
+        except p.toolkit.ValidationError, e:
+            iati_keys = dict([(f[2], f[0]) for f in CSV_MAPPING])
+            for key, msgs in e.error_dict.iteritems():
+                iati_key = iati_keys.get(key, key)
+                log.error('Error in row %i: %s: %s' % (
+                    i+1, iati_key, str(msgs)))
+                errors[i][iati_key] = msgs
+        except p.toolkit.NotAuthorized, e:
+            msg = 'Not authorized to publish to this organization: %s' % row['registry-publisher-id']
+            log.error('Error in row %i: %s' % (i+1, msg))
+            errors[i]['registry-publisher-id'] = [msg]
+        except p.toolkit.ObjectNotFound, e:
+            msg = 'Publisher not found: %s' % row['registry-publisher-id']
+            log.error('Error in row %i: %s' % (i+1, msg))
+            errors[i]['registry-publisher-id'] = [msg]
 
-                del errors[row_index]
-            except p.toolkit.ValidationError,e:
-                iati_keys = dict([(f[2],f[0]) for f in CSV_MAPPING])
-                for key, msgs in e.error_dict.iteritems():
-                    iati_key = iati_keys.get(key, key)
-                    log.error('Error in row %i: %s: %s' % (i+1,iati_key,str(msgs)))
-                    errors[row_index][iati_key] = msgs
-            except p.toolkit.NotAuthorized,e:
-                msg = 'Not authorized to publish to this organization: %s' % row['registry-publisher-id']
-                log.error('Error in row %i: %s' % (i+1,msg))
-                errors[row_index]['registry-publisher-id'] = [msg]
-            except p.toolkit.ObjectNotFound,e:
-                msg = 'Publisher not found: %s' % row['registry-publisher-id']
-                log.error('Error in row %i: %s' % (i+1,msg))
-                errors[row_index]['registry-publisher-id'] = [msg]
+    warnings = sorted(warnings.iteritems())
+    errors = sorted(errors.iteritems())
+    counts['warnings'] = warnings
+    counts['errors'] = errors
 
-
-        warnings = sorted(warnings.iteritems())
-        errors = sorted(errors.iteritems())
-        return counts['added'], counts['updated'], warnings, errors
+    return json.dumps(counts)
 
     def get_package_dict_from_row(self, row, context):
         package = {}

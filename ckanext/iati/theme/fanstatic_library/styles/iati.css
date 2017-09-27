@@ -446,10 +446,10 @@ dd {
   .dl-horizontal dd:after {
     content: " ";
     /* 1 */
-  
+
     display: table;
     /* 2 */
-  
+
   }
   .dl-horizontal dd:after {
     clear: both;
@@ -458,10 +458,10 @@ dd {
   .dl-horizontal dd:after {
     content: " ";
     /* 1 */
-  
+
     display: table;
     /* 2 */
-  
+
   }
   .dl-horizontal dd:after {
     clear: both;
@@ -11388,4 +11388,71 @@ form .info-block.info-inline {
   .js .show-filters.btn {
     display: inline-block;
   }
+}
+@keyframes lds-bars {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@-webkit-keyframes lds-bars {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.lds-bars {
+  position: relative;
+}
+.lds-bars div {
+  position: absolute;
+  width: 20px;
+  height: 80px;
+  top: 60px;
+  -webkit-animation: lds-bars 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  animation: lds-bars 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+.lds-bars div:nth-child(1) {
+  left: 30px;
+  background: #a2ad00;
+  -webkit-animation-delay: -0.6s;
+  animation-delay: -0.6s;
+}
+.lds-bars div:nth-child(2) {
+  left: 70px;
+  background: #1a206d;
+  -webkit-animation-delay: -0.4s;
+  animation-delay: -0.4s;
+}
+.lds-bars div:nth-child(3) {
+  left: 110px;
+  background: #0098db;
+  -webkit-animation-delay: -0.2s;
+  animation-delay: -0.2s;
+}
+.lds-bars div:nth-child(4) {
+  left: 150px;
+  background: #00693c;
+}
+.lds-bars {
+  width: 200px !important;
+  height: 200px !important;
+  -webkit-transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
+  transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
+}
+.hidden{
+    visibility: hidden;
+}
+.shown{
+    visibility: visible;
 }

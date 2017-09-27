@@ -1,43 +1,43 @@
-{% extends "page.html" %}}
-
+{% extends "page.html" %}
 {% block title %}CSV Import Results - {{ super() }}{% endblock %}
 
 {% block primary_content %}
-
 <h2 class="page_heading">CSV Export</h2>
   <article>
-  <div>CSV file <strong>{{file_name}}</strong> imported. (<a href="/csv/upload">Upload another file</a>)</div>
+  <div>CSV file <strong>{{file_name}}</strong> imported. (<a href="/csv/upload">Upload another file</a>)</div> {{ result }}
     <hr class="cleared" />
-    <h3>Summary</h3>
-    <ul>
-      <li><a href="#added">Datasets created: {{ added|length }}</a></li>
-      <li><a href="#updated">Datasets updated: {{ updated|length }}</a></li>
-      <li><a href="#warnings">Warnings found: {{ warnings|length }}</a></li>
-      <li><a href="#errors">Errors found: {{ errors|length }}</a></li>
+
+    <div class="lds-css ng-scope" id="wait">
+      <div style="width:100%;height:100%" class="lds-bars">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+
+    <div id="result"></div>
+
+    <div id="summary" class="hidden">
+   <h3>Summary</h3>
+   <ul>
+      <li><a href="#added">Datasets created: <span id="added-count">{{ added|length }}</span></a></li>
+      <li><a href="#updated">Datasets updated: <span id="updated-count">{{ updated|length }}</span></a></li>
+      <li><a href="#warnings">Warnings found: <span id="warnings-count">{{ warnings|length }}</span></a></li>
+      <li><a href="#errors">Errors found: <span id="errors-count">{{ errors|length }}</span></a></li>
     </ul>
     <h3 id="added">Datasets added</h3>
-    <ul>
-      {% for pkg in added %}
-    <li><a href="{{h.url_for(controller='package', action='read', id=pkg)}}">{{g.site_url}}{{h.url_for(controller='package', action='read', id=pkg)}}</a></li>
-    {% endfor %}
-    {% if not added %}
+    <ul id="added-inner">
         <li><i>None</i></li>
-        {% endif %}
     </ul>
 
     <h3 id="updated">Datasets updated</h3>
-    <ul>
-      {% for pkg in updated %}
-    <li><a href="{{h.url_for(controller='package', action='read', id=pkg)}}">{{g.site_url}}{{h.url_for(controller='package', action='read', id=pkg)}}</a></li>
-    {% endfor %}
-    {% if not updated %}
+    <ul id="updated-inner">
         <li><i>None</i></li>
-        {% endif %}
-
     </ul>
 
     <h3 id="warnings">Warnings</h3>
-    <ul>
+    <ul id="warnings-inner">
       {% for row,fields in warnings %}
     <li>Line {{row}}:
             <ul>
@@ -54,7 +54,7 @@
     </ul>
 
     <h3 id="errors">Errors found</h3>
-    <ul>
+    <ul id="errors-inner">
       {% for row,fields in errors%}
     <li>Line {{row}}:
             <ul>
@@ -69,9 +69,16 @@
         {% endif %}
 
     </ul>
-
-    </div>
+</div>
   </article>
+  {% endblock %}
 
-  {% endblock %}}
+  {% block scripts %}
+      {{ super() }}
+      <script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
 
+    {% resource 'ckanext-iati/query_status' %}
+  {% endblock%}
