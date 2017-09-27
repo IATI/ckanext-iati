@@ -29,6 +29,8 @@ log = logging.getLogger(__name__)
 site_url = config.get('ckan.site_url', 'http://iatiregistry.org')
 
 _check_access = logic.check_access
+NotFound = logic.NotFound
+
 
 def package_create(context, data_dict):
 
@@ -512,7 +514,7 @@ def user_show(context, data_dict):
 
         fq = "+creator_user_id:{0}".format(user_dict['id'])
 
-        search_dict = {'rows': 1000} # The only change vs. the core function.
+        search_dict = {'rows': 1000}  # The only change vs. the core function.
 
         if include_private_and_draft_datasets:
             search_dict.update({

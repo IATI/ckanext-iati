@@ -284,14 +284,11 @@ def update_package(context, data_dict, message=None):
     message = (message or 'Daily archiver: update dataset '
                '{0}'.format(data_dict['name']))
     context['message'] = message
-    extras = data_dict['extras']
-    data_dict['extras'] = []
 
-    for extra in extras:
-        if extra['key'] == 'iati_version':
-            data_dict['extras'].append({'key': extra['key'], 'value': extra['value']})
-        else:
-            data_dict[extra['key']] = extra['value']
+    for extra in data_dict['extras']:
+        data_dict[extra['key']] = extra['value']
+
+    data_dict['extras'] = []
 
     updated_package = toolkit.get_action('package_update')(context, data_dict)
     log.debug('Package {0} updated with new extras'.format(data_dict['name']))
