@@ -90,6 +90,23 @@ def get_publisher_obj_extra_fields(group_dict):
             extras[ex["key"]] = formatter_map[ex["key"]](ex.get("value", ""))
     return extras
 
+def get_publisher_obj_extra_fields_pub_ids(group_dict):
+    extras = {}
+    if not group_dict:
+        return extras
+
+    formatter_map = {
+        'publisher_organization_type': get_organization_type_title,
+        'publisher_country': get_country_title,
+    }
+
+    for ex in group_dict.get("extras", []):
+        if ex.get("key", None) in formatter_map.keys():
+            extras[ex["key"]] = formatter_map[ex["key"]](ex.get("value", ""))
+    dict_extras = extras_to_dict(group_dict)
+    extras['publisher_iati_id'] = dict_extras['publisher_iati_id']
+    return extras
+
 def is_route_active(menu_item):
     _menu_items = config.get('routes.named_routes')
     if menu_item not in _menu_items:

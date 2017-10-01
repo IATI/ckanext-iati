@@ -471,6 +471,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'organization_list_publisher_page',
             'organization_list_pending',
             'get_publisher_obj_extra_fields',
+            'get_publisher_obj_extra_fields_pub_ids',
             'dataset_follower_count',
             'radio'
         )
