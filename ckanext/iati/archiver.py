@@ -226,9 +226,8 @@ def archive_package(package_id, context, consecutive_errors=0):
 
         # Check dates
         if last_updated_date:
-            format = ('%Y-%m-%d %H:%M' if (last_updated_date.hour and
-                      last_updated_date.minute) else '%Y-%m-%d')
-            new_extras['data_updated'] = last_updated_date.strftime(format)
+            fmt = '%Y-%m-%d %H:%M:%S'
+            new_extras['data_updated'] = last_updated_date.strftime(fmt)
         else:
             new_extras['data_updated'] = None
 
