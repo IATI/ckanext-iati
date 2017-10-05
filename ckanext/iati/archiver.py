@@ -188,7 +188,12 @@ def archive_package(package_id, context, consecutive_errors=0):
 
         version = tree.xpath(xpath)
 
-        allowed_versions = config.get('iati.standard_versions')
+        # Return the following code when the configuration issue is resolved
+        # allowed_versions = config.get('iati.standard_versions')
+
+        # Remove the following code when the configuration issue is resolved
+        allowed_versions = IATI_STANDARD_VERSIONS
+
         if allowed_versions:
             allowed_versions = allowed_versions.split()
         else:
