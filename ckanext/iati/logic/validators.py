@@ -139,6 +139,8 @@ def email_validator(key, data, errors, context):
     try:
         v = validate_email(email)
     except Exception as e:
+        print e
+        print key
         errors[key].append('Please provide a valid email address. The email address should be for a mailbox that is regularly monitored.')
 
 
