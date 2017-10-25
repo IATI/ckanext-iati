@@ -187,12 +187,10 @@ def archive_package(package_id, context, consecutive_errors=0):
             xpath = '/iati-organisations/@version'
 
         version = tree.xpath(xpath)
+	log.info(version)
+	log.info(version[0])
 
-        allowed_versions = config.get('iati.standard_versions')
-        if allowed_versions:
-            allowed_versions = allowed_versions.split()
-        else:
-            allowed_versions = IATI_STANDARD_VERSIONS
+        allowed_versions = IATI_STANDARD_VERSIONS
 
         if len(version) and version[0] in allowed_versions:
             version = version[0]
