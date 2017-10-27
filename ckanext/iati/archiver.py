@@ -61,6 +61,9 @@ def run(package_id=None, publisher_id=None):
                         'property in the config file')
         return False
 
+    # if we are updating a publisher
+    publisher_update = False
+
     if package_id:
         package_ids = [package_id]
     elif publisher_id:
@@ -72,6 +75,7 @@ def run(package_id=None, publisher_id=None):
             log.error('Could not find Publisher: {0}'.format(publisher_id))
             sys.exit(1)
         package_ids = [p['name'] for p in org['packages']]
+        publisher_update = True
     else:
         try:
             package_ids = toolkit.get_action('package_list')(context, {})
@@ -98,6 +102,9 @@ def run(package_id=None, publisher_id=None):
             log.error(text_traceback())
             if consecutive_errors > 15:
                 log.error('Too many errors...')
+                if publisher_update:
+                    log.error ('Aborting... The publisher can not be reached.')
+                    return False
             else:
                 continue
         else:
