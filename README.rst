@@ -292,6 +292,22 @@ to the relevant user crontab (generally ``okfn``)::
     05 00  *   *   *  /usr/lib/ckan/iati/bin/paster --plugin=ckanext-iati iati-archiver update -c /etc/ckan/iati/production.ini >> /tmp/iati_archiver_2_out.log 2>&1
 
 
+Nightly cronjobs runtimes
+++++++++++++++++++++++++++++++++
+
+Documenting cronjob running times for future reference:
+
+* Purging of deleted datasets runs at 1 AM
+
+* Reindexing after purging runs at 2 AM
+
+* Archiver operation runs at 3 AM
+
+
+*Times are UTC.
+
+
+
 Copying and License
 -------------------
 
