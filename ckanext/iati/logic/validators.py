@@ -75,10 +75,8 @@ def iati_dataset_name(key,data,errors,context):
     org = get_action('organization_show')(context,{'id': unflattened['owner_org']})
     org_name = org['name']
 
-    parts = value.split('-')
-    org_name_parts = org_name.split('-')
-
-    if value.startswith(org_name) is False or not set(org_name_parts) < set(parts):
+    if not value.startswith(org_name + '-') or \
+            len(value) <= len(org_name + '-'):
         errors[key].append('Dataset name does not follow the convention <publisher>-<code>: "%s" (using publisher %s)' % (value, org_name))
 
 
