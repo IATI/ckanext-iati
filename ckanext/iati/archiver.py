@@ -187,10 +187,7 @@ def archive_package(package_id, context, consecutive_errors=0):
 
         new_extras = {}
         # IATI standard version (iati_version extra)
-        if is_activity_package:
-            xpath = '/iati-activities/@version'
-        else:
-            xpath = '/iati-organisations/@version'
+        xpath = '/iati-activities/@version | /iati-organisations/@version'
 
         version = tree.xpath(xpath)
 	log.info(version)
