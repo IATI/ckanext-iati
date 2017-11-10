@@ -166,7 +166,7 @@ def archive_package(package_id, context, consecutive_errors=0):
 
         update = False
 
-        if old_hash != resource.get('hash'):
+        if old_hash != result.get('hash'):
             update = True
 
         with open(file_path, 'r') as f:
