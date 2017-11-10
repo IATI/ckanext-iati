@@ -2,6 +2,7 @@ from urlparse import urlparse, urlunparse
 from dateutil.parser import parse as date_parse
 
 from email_validator import validate_email
+import re
 
 from ckan.logic import get_action
 from ckan import authz as new_authz
@@ -64,7 +65,6 @@ def iati_publisher_state_validator(key, data, errors, context):
 
 
 def iati_dataset_name(key,data,errors,context):
-
     unflattened = unflatten(data)
     value = data[key]
 
@@ -75,10 +75,12 @@ def iati_dataset_name(key,data,errors,context):
     org = get_action('organization_show')(context,{'id': unflattened['owner_org']})
     org_name = org['name']
 
-    parts = value.split('-')
-    org_name_parts = org_name.split('-')
+    org_regex = re.compile(r'{org_name}-{any_code}'.format(
+      org_name=re.escape(org_name),
+      any_code='.+'
+    ))
 
-    if value.startswith(org_name) is False or not set(org_name_parts) < set(parts):
+    if not org_regex.match(value):
         errors[key].append('Dataset name does not follow the convention <publisher>-<code>: "%s" (using publisher %s)' % (value, org_name))
 
 
