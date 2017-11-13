@@ -9,7 +9,6 @@ import ckan.tests as tests
 from ckan.config.middleware import make_app
 from ckan.common import c
 from ckan.logic.action.get import package_list, package_show, package_show_rest
-from ckan.tests import CreateTestData
 from ckanext.iati.controllers.spreadsheet import CSVController
 
 
