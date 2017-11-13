@@ -22,6 +22,4 @@ class PublisherController(BaseController):
         return render('organization/members_read.html')
 
     def dashboard_pending_organizations(self):
-        context = {'for_view': True, 'user': c.user or c.author, 'auth_user_obj': c.userobj}
-        data_dict = {'user_obj': c.userobj}
         return render('user/dashboard_pending_organizations.html')
