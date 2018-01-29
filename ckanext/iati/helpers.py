@@ -12,7 +12,6 @@ import ckan.model as model # get_licenses should be in core
 import ckan.plugins as p
 import ckan.lib.helpers as helpers
 import ckan.lib.formatters as formatters
-from ckan.lib import search
 from ckan.logic import check_access, NotAuthorized
 
 import ckanext.iati.lists as lists

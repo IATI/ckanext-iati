@@ -18,7 +18,7 @@ from ckanext.iati.logic.validators import (db_date,
                                            file_type_validator,
                                            iati_org_identifier_validator
                                           )
-from ckanext.iati.logic.converters import checkbox_value, strip
+from ckanext.iati.logic.converters import strip
 import ckanext.iati.helpers as iati_helpers
 
 log = logging.getLogger(__name__)
