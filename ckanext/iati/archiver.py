@@ -400,8 +400,9 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
 
     # update the resource metadata in CKAN if the resource has changed
     # IATI: remove generated time tags before calculating the hash
-    content = open(saved_file, 'r').read()
-    content = re.sub('generated-datetime="(.*)"', '', content)
+    with open(saved_file, 'r') as f:
+        content = f.read()
+    content = re.sub(r'generated-datetime="[^"]+"', '', content)
 
     resource_hash = hashlib.sha1()
     resource_hash.update(content)
