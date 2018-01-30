@@ -534,3 +534,8 @@ def user_show(context, data_dict):
             {'id': user_dict['id']})
 
     return user_dict
+
+def resource_delete(context, data_dict):
+    '''Each dataset must have a single resource.
+    '''
+    return {'msg': 'Each dataset must contain a single resource. Did you mean to use package_delete?'}

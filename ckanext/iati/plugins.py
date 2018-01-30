@@ -493,6 +493,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'organization_list_publisher_page',
             'organization_list_pending',
             'user_show',
+            'resource_delete'
         )
         return _get_module_functions(iati_actions, function_names)
 
