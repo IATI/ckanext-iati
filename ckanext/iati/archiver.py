@@ -142,6 +142,7 @@ def archive_package(package_id, context, consecutive_errors=0):
                 message = str(e)[:str(e).find(' on')]
             else:
                 message = str(e)
+                print message
             return save_package_issue(context, package, extras_dict,
                                       'url-error', message)
         except tasks.DownloadError, e:
@@ -317,6 +318,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
         request_headers = {}
         if user_agent_string is not None:
             request_headers['User-Agent'] = user_agent_string
+        print "URL: ", resource['url'], "TIMEOUT: ", url_timeout, "HEADERS: ", request_headers
         res = requests.get(resource['url'], timeout=url_timeout,
                            headers=request_headers, verify=False)
         return res
