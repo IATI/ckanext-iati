@@ -14,7 +14,7 @@ import ckan.authz as authz
 from ckan.lib.base import c
 import ckan.plugins as p
 from ckanext.iati.helpers import extras_to_dict
-from ckan.lib.celery_app import celery
+import ckan.lib.jobs as jobs
 
 
 log = logging.getLogger(__name__)
@@ -154,8 +154,8 @@ class CSVController(p.toolkit.BaseController):
                     ckan_ini_filepath = os.path.abspath(config['__file__'])
                     if not json_data:
                         p.toolkit.abort(400, 'No data found in CSV file.')
-                    job = celery.send_task("iati.read_csv_file", args=[ckan_ini_filepath, json.dumps(json_data), c.user], task_id=str(uuid.uuid4()))
-                    vars['task_id'] = job.task_id
+                    job = jobs.enqueue( read_csv_file, [ckan_ini_filepath, json.dumps(json_data), c.user],{'id':str(uuid.uuid4())})
+                    vars['task_id'] = job.id
                 else:
                     p.toolkit.abort(400, ('Error in CSV file : {0}; {1}'.format
                                     (re.sub("([\{\}'])+", "", str(warnings)),
@@ -170,7 +170,7 @@ class CSVController(p.toolkit.BaseController):
     def check_status(self, task_id=None):
         result = {}
         if task_id:
-            job = celery.AsyncResult(id=task_id)
+            job = jobs.job_from_id(id=task_id)
             result.update({'status': job.state})
             if job.result:
                 result['result'] = {}
@@ -282,7 +282,6 @@ def register_translator():
     registry.register(translator, translator_obj)
 
 
-@celery.task(name="iati.read_csv_file", serializer='json')
 def read_csv_file(ckan_ini_filepath, csv_file, user):
     load_config(ckan_ini_filepath)
     register_translator()
