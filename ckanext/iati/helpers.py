@@ -320,13 +320,6 @@ def get_first_published_date(organization):
                 publisher_first_publish_date
         }
 
-        # Check if the email field is missing, so we can update
-        # publisher_first_publish_date w/o getting a validation error
-        email_missing = _check_publisher_contact_email(organization)
-
-        if email_missing:
-            data_dict.update(email_missing)
-
         try:
             check_access('organization_patch', {})
             p.toolkit.get_action('organization_patch')({}, data_dict=data_dict)
@@ -358,10 +351,21 @@ def radio(selected, id, checked):
     return literal(('<input type="radio" id="%s_%s" name="%s" value="%s">') % (selected, id, selected, id))
 
 
-def _check_publisher_contact_email(organization):
+def check_publisher_contact_email(organization):
     # publisher_contact_email was changed to be a required field
     # This function checks if the field is populated and fills an arbitrary value if empty
     if 'publisher_contact_email' not in organization or not organization['publisher_contact_email']:
-        return {'publisher_contact_email': 'please@update.email'}
+        data_dict = {
+            'id': organization['id'],
+            'publisher_contact_email': 'please@update.email'
+        }
+
+        try:
+            check_access('organization_patch', {})
+            p.toolkit.get_action('organization_patch')({}, data_dict=data_dict)
+        except NotAuthorized:
+            pass
+
+        return data_dict['publisher_contact_email']
     else:
-        return None
+        return organization['publisher_contact_email']

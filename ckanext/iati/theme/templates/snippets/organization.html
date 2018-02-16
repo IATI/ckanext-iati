@@ -41,6 +41,10 @@ Example:
       </div>
       {% endif %}
       
+      {% if not organization.publisher_contact_email %}
+        {% set contact_email = h.check_publisher_contact_email(organization) %}
+      {% endif %}
+
       {% set first_published_date = h.get_first_published_date(organization) %}
       {% if first_published_date != 'Date not found' and first_published_date != 'No data published' %}
         {% set date_format = '%d %B %Y' %}
@@ -57,9 +61,13 @@ Example:
       {% endif %}
 
       {% if organization.publisher_contact_email %}
-      <div>
-        <p>Contact: {{ organization.publisher_contact_email }}</p>
-      </div>
+        <div>
+          <p>Contact: {{ organization.publisher_contact_email }}</p>
+        </div>
+      {% else %}
+        <div>
+          <p>Contact: {{ contact_email }}</p>
+        </div>
       {% endif %}
 
 
