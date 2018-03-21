@@ -6,7 +6,7 @@
 
   <h1>Registry API</h1>
 
-  <p>The IATI Registry holds meta-data on files published in the <a href="http://www.iatistandard.org" target="_blank">IATI XML format</a>. The files themselves are stored in different places across the web, and you will need to fetch and process the original files yourself. If you are looking for an API directly onto IATI data, you can use the <a href="http://datastore.iatistandard.org/" target="_blank">IATI DataStore</a> or consult the <a href="http://opendevtoolkit.org" target="_blank">Open Development Toolkit</a> to learn about other third-party platforms. If in doubt, ask on <a href="http://discuss.iatistandard.org/">IATI Discuss</a> or email the technical team on <a href="mailto:support@iatistandard.org">support@iatistandard.org</a>.</p>
+  <p>The IATI Registry holds meta-data on files published in the <a href="http://www.iatistandard.org" target="_blank">IATI XML format</a>. The files themselves are stored in different places across the web, and you will need to fetch and process the original files yourself. If you are looking for an API directly onto IATI data, you can use the <a href="http://datastore.iatistandard.org/" target="_blank">IATI DataStore</a> or consult the <a href="http://opendevtoolkit.org" target="_blank">Open Development Toolkit</a> to learn about other third-party platforms. If in doubt, ask on <a href="http://discuss.iatistandard.org/" target="_blank">IATI Discuss</a> or email the technical team on <a href="mailto:support@iatistandard.org">support@iatistandard.org</a>.</p>
 
   <p>You can interact with the registry via its API, an implementation of the CKAN API. Full <a href="http://docs.ckan.org/en/latest/api/index.html" target="_blank">CKAN API documentation is available here</a>.</p>
 
@@ -15,18 +15,18 @@
   <h2>Example usage</h2>
 
   <p>To fetch organisation files:</p>
-  <p><a href="http://iatiregistry.org/api/3/action/package_search?q=extras_filetype:organisation">http://iatiregistry.org/api/3/action/package_search?q=extras_filetype:organisation</a></p>
+  <p><a href="http://iatiregistry.org/api/3/action/package_search?q=extras_filetype:organisation" target="_blank">http://iatiregistry.org/api/3/action/package_search?q=extras_filetype:organisation</a></p>
 
   <p>To fetch activity files:</p>
 
-  <p><a href="http://iatiregistry.org/api/3/action/package_search?q=extras_filetype:activity/%25s/iati2.staging.ckanhosted.com/iatiregistry.org/g/%25s/iati2.staging.ckanhosted.com/iatiregistry.org/g">http://iatiregistry.org/api/3/action/package_search?q=extras_filetype:activity</a></p>
+  <p><a href="http://iatiregistry.org/api/3/action/package_search?q=extras_filetype:activity/%25s/iati2.staging.ckanhosted.com/iatiregistry.org/g/%25s/iati2.staging.ckanhosted.com/iatiregistry.org/g" target="_blank">http://iatiregistry.org/api/3/action/package_search?q=extras_filetype:activity</a></p>
 
   <p>These calls will not return all results by default. Page through results with the offset and limit parameters. For example:</p>
 
-  <p><a href="http://iatiregistry.org/api/3/action/package_search?q=extras_filetype:activity&start=100&rows=100">http://iatiregistry.org/api/3/action/package_search?q=extras_filetype:activity&start=100&rows=100</a></p>
+  <p><a href="http://iatiregistry.org/api/3/action/package_search?q=extras_filetype:activity&start=100&rows=100" target="_blank">http://iatiregistry.org/api/3/action/package_search?q=extras_filetype:activity&start=100&rows=100</a></p>
 
   <p>To fetch an individual dataset use its identifier. Full dataset details contain information on downloadable resources (i.e. the IATI XML files)</p>
-  <p><a href="http://iatiregistry.org/api/3/action/package_show?id=aa-organisation">http://iatiregistry.org/api/3/action/package_show?id=aa-organisation</a></p>
+  <p><a href="http://iatiregistry.org/api/3/action/package_show?id=aa-organisation" target="_blank">http://iatiregistry.org/api/3/action/package_show?id=aa-organisation</a></p>
 
   <p>The downloadable file details can be found in the resource.url field of the JSON response.</p>
 
@@ -35,7 +35,7 @@
   <p>You can filter the responses on the basis of country (by ISO 2-digit code) or publisher (known as ‘organizations’ internally in the registry).</p>
 
   <p>For example, to fetch all the activity files from DFID use:</p>
-  <p><a href="http://iatiregistry.org/api/3/action/package_search?q=organization:dfid">http://iatiregistry.org/api/3/action/package_search?q=organization:dfid</a></p>
+  <p><a href="http://iatiregistry.org/api/3/action/package_search?q=organization:dfid" target="_blank">http://iatiregistry.org/api/3/action/package_search?q=organization:dfid</a></p>
 
   <p>To fetch all the activity files which have Ghana as their primary segment, use:</p>
   <p><a href="http://iatiregistry.org/api/3/action/package_search?q=extras_filetype:activity%20AND%20extras_country:gh" target="_blank">http://iatiregistry.org/api/3/action/package_search?q=extras_filetype:activity%20AND%20extras_country:gh</a></p>
@@ -44,6 +44,6 @@
 
   <h4>More support?</h4>
 
-  <p>Ask on the <a href="http://discuss.iatistandard.org/">IATI Discuss</a> or email the technical team on <a href="mailto:support@iatistandard.org">support@iatistandard.org</a>.</p>
+  <p>Ask on the <a href="http://discuss.iatistandard.org/" target="_blank">IATI Discuss</a> or email the technical team on <a href="mailto:support@iatistandard.org">support@iatistandard.org</a>.</p>
 
 {% endblock %}

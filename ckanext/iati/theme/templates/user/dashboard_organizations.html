@@ -2,18 +2,13 @@
 
 {% block dashboard_activity_stream_context %}{% endblock %}
 
-{% block page_primary_action %}
-  {% if h.check_access('organization_create') %}
-    {% link_for _('Add Organization'), controller='organization', action='new', class_="btn btn-primary", icon="plus-sign-alt" %}
-  {% endif %}
-{% endblock %}
-
 {% block primary_content_inner %}
   <h2 class="hide-heading">{{ _('My Organizations') }}</h2>
-  {% set organizations = h.organizations_available(permission='read') %}
+  {% set organizations = h.organizations_available() %}
   {% if organizations %}
     <div class="wide">
-      {% snippet "organization/snippets/organization_list.html", organizations=organizations %}
+      {% set organizations = h.organizations_available(permission='read', include_dataset_count=True) %}
+      {% snippet "organization/snippets/organization_list.html" %}
     </div>
   {% else %}
     <p class="empty">
