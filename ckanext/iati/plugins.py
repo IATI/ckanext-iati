@@ -65,6 +65,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
                      _redirect_code='301 Moved Permanently')
 
             # Dataset pages
+            map.redirect('/dataset_search','/dataset')
             map.redirect('/dataset/' + rename[0] + '-{code:.*}', '/dataset/' + rename[1] + '-{code:.*}',
                      _redirect_code='301 Moved Permanently')
             map.redirect('/dataset/{url:.*}/' + rename[0] + '-{code:.*}', '/dataset/{url}/' + rename[1] + '-{code:.*}',
