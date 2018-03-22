@@ -23,7 +23,7 @@
       {% for org in orgs %}
         {% if org.package_count > 0 %}
             <tr>
-              <td><a href="/publisher/{{ org.name }}">{{ h.normalize_publisher_name(org.display_name) }}</a></td>
+              <td><a href="/publisher/{{ org.name }}">{{ h.normalize_publisher_name(org.title) }}</a></td>
               <td>{{ org['package_count'] }}</td>
               <td><a href="{{ h.url_for(controller='ckanext.iati.controllers.spreadsheet:CSVController', action='download', publisher=org['name']) }}">Download</a></td>
             </tr>
