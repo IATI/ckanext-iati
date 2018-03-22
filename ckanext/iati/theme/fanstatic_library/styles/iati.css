@@ -4251,7 +4251,6 @@ body.modal-open,
   .modal-dialog {
     left: 50%;
     right: auto;
-    width: 600px;
     padding-top: 30px;
     padding-bottom: 30px;
   }
