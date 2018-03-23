@@ -1,9 +1,9 @@
 <a href="{{ resource.url }}"{% if show_buttons %} class="btn btn-primary"{% endif %} target="_blank">
   {% if show_buttons %}<i class="icon-download"></i>{% endif %}
-  Download
+ Download
 
-{% if resource.size and show_buttons %}
-  ({{ h.format_file_size(resource.size) }})
+{% if resource.Size and show_buttons %}
+  ({{ h.format_file_size(resource.Size) }})
 {% endif %}
 
   </a>
