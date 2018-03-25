@@ -83,7 +83,7 @@
                 ('/revision', _('Newsfeed')),
               ] %}
               {% set data_dropdown = [
-                ('add dataset', _('Register')) if can_package_create else empty,
+                ('/dataset/new', _('Register')) if can_package_create else empty,
                 ('/csv/download', _('Download current records')),
                 ('/csv/upload', _('Upload CSV file')) if can_package_create else empty,
                 ('/report/issues', _('Issues report')),
