@@ -405,7 +405,6 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         return data_dict
 
     def before_search(self, data_dict):
-        print "before =======>"+str(data_dict)
         if not data_dict.get('sort'):
             data_dict['sort'] = 'title_string asc'
 
@@ -416,7 +415,6 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             o = ' owner_org:"%s"'%c.group_dict.get('id')
             q = re.sub(o,'',q)
             data_dict['q'] = q 
-        print "=======>"+str(data_dict)
         return data_dict
 
     def before_index(self, data_dict):
