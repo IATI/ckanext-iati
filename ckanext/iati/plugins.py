@@ -1,5 +1,5 @@
 import logging
-
+from ckan.common import c
 # Bad imports: this should be in the toolkit
 
 from routes.mapper import SubMapper     # Maybe not this one
@@ -402,13 +402,21 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
                         data_dict['license_url']= license.url
                     if license.title:
                         data_dict['license_title']= license.title
-
         return data_dict
 
     def before_search(self, data_dict):
+        print "before =======>"+str(data_dict)
         if not data_dict.get('sort'):
             data_dict['sort'] = 'title_string asc'
 
+        if 'owner_org' in str(data_dict.get('q')):
+            data_dict['fq'] += ' organization:"%s"' % c.group_dict.get('name')
+            q = str(data_dict['q'])
+            import re
+            o = ' owner_org:"%s"'%c.group_dict.get('id')
+            q = re.sub(o,'',q)
+            data_dict['q'] = q 
+        print "=======>"+str(data_dict)
         return data_dict
 
     def before_index(self, data_dict):
@@ -421,13 +429,12 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             ('filetype', iati_helpers.get_file_type_title),
             ('publisher_source_type', iati_helpers.get_publisher_source_type_title),
             ('publisher_organization_type', iati_helpers.get_organization_type_title),
-            ('issue_type', iati_helpers.get_issue_title),
+            ('issue_type', iati_helpers.get_issue_title)
         )
 
         for name, func in fields:
             if data_dict.get('extras_{0}'.format(name)):
                 data_dict[name] = func(data_dict['extras_{0}'.format(name)])
-
         return data_dict
 
     ## IConfigurer
@@ -509,6 +516,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         )
         return _get_module_functions(iati_auth, function_names)
 
+def _get_module_functions(module, function_names):
+    functions = {}
 def _get_module_functions(module, function_names):
     functions = {}
     for f in function_names:
@@ -606,5 +615,3 @@ class IatiCsvImporter(p.SingletonPlugin):
     # IConfigurer
     def update_config(self, config):
         p.toolkit.add_template_directory(config, 'theme/templates')
-        p.toolkit.add_public_directory(config, 'theme/public')
-        p.toolkit.add_resource('theme/fanstatic_library', 'ckanext-iati')
