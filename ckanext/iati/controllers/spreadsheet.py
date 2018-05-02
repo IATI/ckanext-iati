@@ -154,7 +154,7 @@ class CSVController(p.toolkit.BaseController):
                     ckan_ini_filepath = os.path.abspath(config['__file__'])
                     if not json_data:
                         p.toolkit.abort(400, 'No data found in CSV file.')
-                    job = jobs.enqueue( read_csv_file, [ckan_ini_filepath, json.dumps(json_data), c.user],{'id':str(uuid.uuid4())})
+                    job = jobs.enqueue(read_csv_file, [ckan_ini_filepath, json.dumps(json_data), c.user])
                     vars['task_id'] = job.id
                 else:
                     p.toolkit.abort(400, ('Error in CSV file : {0}; {1}'.format
@@ -171,7 +171,7 @@ class CSVController(p.toolkit.BaseController):
         result = {}
         if task_id:
             job = jobs.job_from_id(id=task_id)
-            result.update({'status': job.state})
+            result.update({'status': job.get_status()})
             if job.result:
                 result['result'] = {}
                 try:
@@ -469,3 +469,4 @@ def get_packages_for_org(context, org_name):
             pending = False
 
     return packages
+
