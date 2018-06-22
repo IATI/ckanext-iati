@@ -10433,8 +10433,7 @@ form .info-block.info-inline {
 #header .logo {
   display: block;
   width: 270px;
-  height: 70px;
-  background: url("../images/logo.png") no-repeat;
+  background: url("http://styles.iatistandard.org/assets/svg/source/logo-colour.svg") no-repeat;
   margin: 26px 0 36px 0;
 }
 #header .logo span {
