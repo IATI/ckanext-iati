@@ -1,0 +1,129 @@
+/* Filters modal */
+.no-text .text {
+  display: none;
+}
+.js body.filters-modal {
+  overflow: hidden;
+}
+.show-filters.btn,
+.hide-filters {
+  display: none;
+}
+@media (max-width: 768px) {
+  .wrapper {
+    margin: 0 -20px;
+    border-width: 0;
+    -webkit-box-shadow: 0;
+    -moz-box-shadow: 0;
+    box-shadow: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+  }
+  .js [role=main] .secondary .filters {
+    display: none;
+    position: fixed;
+    overflow: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    padding: 10px;
+    background-color: #000000;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .js body.filters-modal .secondary .filters {
+    display: block;
+  }
+  .js [role=main] .secondary .filters > div {
+    background-color: #fff;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .js [role=main] .secondary .filters > div .module-footer {
+    display: none;
+  }
+  .js body.filters-modal .secondary .filters .hide-filters {
+    display: inline-block;
+    position: absolute;
+    top: 14px;
+    right: 17px;
+    opacity: 0.6;
+  }
+  .js body.filters-modal .secondary .filters .hide-filters i {
+    font-size: 18px;
+  }
+  .js .show-filters.btn {
+    display: inline-block;
+  }
+}
+@keyframes lds-bars {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@-webkit-keyframes lds-bars {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.lds-bars {
+  position: relative;
+}
+.lds-bars div {
+  position: absolute;
+  width: 20px;
+  height: 80px;
+  top: 60px;
+  -webkit-animation: lds-bars 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  animation: lds-bars 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+.lds-bars div:nth-child(1) {
+  left: 30px;
+  background: #a2ad00;
+  -webkit-animation-delay: -0.6s;
+  animation-delay: -0.6s;
+}
+.lds-bars div:nth-child(2) {
+  left: 70px;
+  background: #1a206d;
+  -webkit-animation-delay: -0.4s;
+  animation-delay: -0.4s;
+}
+.lds-bars div:nth-child(3) {
+  left: 110px;
+  background: #0098db;
+  -webkit-animation-delay: -0.2s;
+  animation-delay: -0.2s;
+}
+.lds-bars div:nth-child(4) {
+  left: 150px;
+  background: #00693c;
+}
+.lds-bars {
+  width: 200px !important;
+  height: 200px !important;
+  -webkit-transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
+  transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
+}
+.hidden{
+    visibility: hidden;
+}
+.shown{
+    visibility: visible;
+}
