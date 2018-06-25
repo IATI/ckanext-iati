@@ -11372,7 +11372,9 @@ form .info-block.info-inline {
 }
 .navigation-primary {
   display: block;
-  margin-bottom: 1.5em;
+  position: absolute;
+  right: 0;
+  top: 4.9em;
 }
 .navigation-primary__item:first-child {
   margin-left: 0;
