@@ -11372,8 +11372,7 @@ form .info-block.info-inline {
 }
 .navigation-primary {
   display: block;
-  float: right;
-  margin-top: 3.9em;
+  margin-bottom: 1.5em;
 }
 .navigation-primary__item:first-child {
   margin-left: 0;

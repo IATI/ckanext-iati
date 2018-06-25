@@ -33,7 +33,7 @@
         <li id="section-contact" class="navigation-utility__item"><a href="http://iatistandard.org/en/contact/">Contact</a></li>
       </ul>
         <nav class="navigation-primary" id="navigation-primary">
-          {% block header_nav_primary %}
+
             <ul id="navigation-primary__items">
               <li id="section-about" class="navigation-primary__item"><a href="http://iatistandard.org/en/about/">About</a></li>
       				<li id="section-standard" class="navigation-primary__item"><a href="http://iatistandard.org/en/">IATI Standard</a></li>
@@ -41,6 +41,9 @@
       				<li id="section-support" class="navigation-primary__item"><a href="http://iatistandard.org/en/guidance/">Guidance &amp; Support</a></li>
       				<li id="section-community" class="navigation-primary__item"><a href="http://iatistandard.org/en/">Community</a></li>
             </ul>
+          </nav>
+        <nav>
+          {% block header_nav_primary %}
           {% endblock %}
           {% block header_nav_account %}
             {% if c.userobj %}
