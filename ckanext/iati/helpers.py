@@ -342,6 +342,7 @@ def get_first_published_date(organization):
 
 
 def render_first_published_date(value, date_format='%d %B %Y'):
+
     try:
         if len(value) <= 10:
             current_date_format = '%d.%m.%Y'
