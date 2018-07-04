@@ -5,7 +5,7 @@
 # REQUIRED: nodejs
 
 # Installs less and nodewatch for the compiling of iati.css
-npm install less@1.4.1 watchr@2.4.3
+npm install less@1.5.0 watchr@2.4.3
 # tmp is required by bower to prevent bower install error
 npm install tmp@0.0.23
 # Gets the dependency manager bower
