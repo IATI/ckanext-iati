@@ -68,6 +68,7 @@ def run(package_id=None, publisher_id=None):
         package_ids = [package_id]
     elif publisher_id:
         try:
+            print 'checking publisher: '+ publisher_id
             org = toolkit.get_action('organization_show')(context,
                                                           {'id': publisher_id,
                                                            'include_datasets': True})
@@ -92,6 +93,7 @@ def run(package_id=None, publisher_id=None):
     consecutive_errors = 0
 
     for package_id in package_ids:
+        updated_package = False
         try:
             updated_package = archive_package(package_id, context,
                                               consecutive_errors)
@@ -127,7 +129,7 @@ def archive_package(package_id, context, consecutive_errors=0):
     is_activity_package = (True if 'activity' == extras_dict.get('filetype')
                            else False)
 
-    log.debug('Archiving dataset: {0} ({1} resources)'.format(
+    log.info('Archiving dataset: {0} ({1} resources)'.format(
               package.get('name'), len(package.get('resources', []))))
     for resource in package.get('resources', []):
         if not resource.get('url', ''):
