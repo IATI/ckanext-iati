@@ -68,7 +68,7 @@ def run(package_id=None, publisher_id=None):
         package_ids = [package_id]
     elif publisher_id:
         try:
-            print "archiver: checking organization" + publisher_id
+            print 'checking publisher: '+ publisher_id
             org = toolkit.get_action('organization_show')(context,
                                                           {'id': publisher_id,
                                                            'include_datasets': True})
@@ -77,7 +77,6 @@ def run(package_id=None, publisher_id=None):
             sys.exit(1)
         package_ids = [p['name'] for p in org['packages']]
         publisher_update = True
-        print 'archiver: Number of datasets to archive: {0}'.format(len(package_ids))
     else:
         try:
             package_ids = toolkit.get_action('package_list')(context, {})
@@ -130,7 +129,7 @@ def archive_package(package_id, context, consecutive_errors=0):
     is_activity_package = (True if 'activity' == extras_dict.get('filetype')
                            else False)
 
-    print('Archiving dataset: {0} ({1} resources)'.format(
+    log.info('Archiving dataset: {0} ({1} resources)'.format(
               package.get('name'), len(package.get('resources', []))))
     for resource in package.get('resources', []):
         if not resource.get('url', ''):
@@ -265,7 +264,7 @@ def save_package_issue(context, data_dict, extras_dict, issue_type,
     if 'issue_type' in extras_dict and 'issue_message' in extras_dict \
             and extras_dict['issue_type'] == issue_type \
             and extras_dict['issue_message'] == issue_message:
-        print('Dataset {0} still has the same issue ({1} - {2}), '
+        log.info('Dataset {0} still has the same issue ({1} - {2}), '
                  'skipping...'.format(data_dict['name'], issue_type,
                                       issue_message))
         return None
