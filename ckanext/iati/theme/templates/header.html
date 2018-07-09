@@ -32,7 +32,7 @@
             <ul id="navigation-primary__items">
               <li id="section-about" class="navigation-primary__item"><a href="http://iatistandard.org/en/about/">About</a></li>
       				<li id="section-standard" class="navigation-primary__item"><a href="http://iatistandard.org/en/iati-standard">IATI Standard</a></li>
-      				<li id="section-data" class="navigation-primary__item"><a href="http://iatistandard.org/en/using-data">Using Data</a></li>
+      				<li id="section-data" class="navigation-primary__item"><a href="http://iatistandard.org/en/using-data/">Using Data</a></li>
       				<li id="section-support" class="navigation-primary__item"><a href="http://iatistandard.org/en/guidance/">Guidance &amp; Support</a></li>
       				<li id="section-community" class="navigation-primary__item"><a href="https://discuss.iatistandard.org/">Community</a></li>
             </ul>
@@ -97,11 +97,6 @@
                 ('home', _('Home'), home_dropdown),
                 ('search', _('Data'), data_dropdown),
                 ('publishers_index', _('Publishers'), publisher_dropdown),
-                ('using-iati-data', _('Using IATI Data'), false),
-                ('dashboard', _('Dashboard'), false),
-                ('about', _('About'), false),
-                ('api', _('API'), false),
-                ('help', _('Help'), false)
               ] %}
               {% for route, label, check_dropdown in nav %}
                 {% set dropdown = h.check_nav_dropdown(check_dropdown) %}
@@ -116,6 +111,10 @@
                   {% endif %}
                 </li>
               {% endfor %}
+              <li> <a href="http://iatistandard.org/en/using-data/">Using IATI Data </a></li>
+              <li> <a href="http://iatistandard.org/en/guidance/publishing-data/data-quality-/how-to-improve-you-data-quality-with-the-iati-dashboard/">Dashboard</a></li>
+              <li> <a href="ttp://iatistandard.org/en/using-data/IATI-tools-and-resources/using-IATI-registry/">API</a></li>
+              <li> <a href="http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-register-with-iati/">Help</a></li>
             </ul>
           {% endblock %}
         </nav>

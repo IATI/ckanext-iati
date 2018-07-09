@@ -547,17 +547,10 @@ class IatiTheme(p.SingletonPlugin):
         static_controller = 'ckanext.iati.controllers.static:StaticController'
 
         with SubMapper(map, controller=static_controller) as m:
-            m.connect('using-iati-data', '/using-iati-data',
-                action='using_iati_data')
-
             map.redirect('/about-2', '/about',
                      _redirect_code='301 Moved Permanently')
-            m.connect('about', '/about', action='about')
-            m.connect('api', '/registry-api', action='api')
-            m.connect('help', '/help', action='help')
             m.connect('help_csv-import', '/help_csv-import', action='help_csv')
             m.connect('help_delete', '/help_delete', action='help_delete')
-            m.connect('dashboard', '/registry-dashboard', action='dashboard')
 
         return map
 
