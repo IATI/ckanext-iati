@@ -1,4 +1,4 @@
-from ckan.lib.base import render, BaseController
+from ckan.lib.base import redirect, render, BaseController
 
 # TODO: replace with ckanext-pages
 
@@ -6,16 +6,16 @@ from ckan.lib.base import render, BaseController
 class StaticController(BaseController):
 
     def using_iati_data(self):
-        return render('static/using-iati-data.html')
+        return redirect('http://iatistandard.org/en/using-data/')
 
     def about(self):
-        return render('static/about-2.html')
+        return redirect('http://iatistandard.org/en/using-data/IATI-tools-and-resources/using-IATI-registry/')
 
     def api(self):
-        return render('static/registry-api.html')
+        return redirect('http://iatistandard.org/en/using-data/IATI-tools-and-resources/using-IATI-registry/')
 
     def help(self):
-        return render('static/help.html')
+        return redirect('http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-register-with-iati/')
 
     def help_csv(self):
         return render('static/help_csv-import.html')
@@ -24,4 +24,4 @@ class StaticController(BaseController):
         return render('static/help_delete.html')
 
     def dashboard(self):
-        return render('static/dashboard.html')
+        return redirect('http://iatistandard.org/en/guidance/publishing-data/data-quality-/how-to-improve-you-data-quality-with-the-iati-dashboard/')
