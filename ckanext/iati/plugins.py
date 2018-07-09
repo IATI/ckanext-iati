@@ -117,6 +117,18 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             controller='ckanext.iati.controllers.publisher:PublisherController',
             action='dashboard_pending_organizations', ckan_icon='building')
 
+        #custom redirects
+        redirects = {
+            '/using-iati-data': 'http://iatistandard.org/en/using-data/',
+            '/registry-dashboard': 'http://iatistandard.org/en/guidance/publishing-data/data-quality-/how-to-improve-you-data-quality-with-the-iati-dashboard/',
+            '/about': 'http://iatistandard.org/en/using-data/IATI-tools-and-resources/using-IATI-registry/',
+            '/registry-api': 'http://iatistandard.org/en/using-data/IATI-tools-and-resources/using-IATI-registry/',
+            '/help': 'http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-register-with-iati/'
+        }
+
+        for k, v in redirects.iteritems():
+            map.redirect(k, v)
+
         return map
 
     ## IGroupForm
