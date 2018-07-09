@@ -9,15 +9,10 @@
 {% block header_wrapper %}
   {% if 'staging' in request.host or 'test' in request.host %}
       <div class="alert">
-        <strong>Warning!</strong> This is a staging site. It runs an updated code base (<a href="http://docs.ckan.org/en/ckan-2.5.2/changelog.html">CKAN v2.5.2</a>) compared to the
-        <a href="http://iatiregistry.org">current live version</a> (which uses CKAN v2.1.4). Data might be out of date and be aware that all new data in this instance might be deleted at any time.
+        <strong>Warning!</strong> This is a staging site. Data might be out of date and be aware that all new data in this instance might be deleted at any time.
 
       </div>
   {% endif %}
-  <div class="alert" style="text-align: center">
-    <strong>Important: </strong>The Registry will be in read-only mode from Friday 23rd March at 09:00 GMT until Tuesday 27th March 18:00 GMT.<br/>
-    <a href="https://discuss.iatistandard.org/t/iati-registry-migration-read-only-access-friday-23-monday-26-march/1261">More information here</a>.
-  </div>
   <a href="#content" class="hide">{{ _('Skip to primary content') }}</a>
   <header id="header">
     <div class="container">
@@ -37,7 +32,7 @@
             <ul id="navigation-primary__items">
               <li id="section-about" class="navigation-primary__item"><a href="http://iatistandard.org/en/about/">About</a></li>
       				<li id="section-standard" class="navigation-primary__item"><a href="http://iatistandard.org/en/iati-standard">IATI Standard</a></li>
-      				<li id="section-data" class="navigation-primary__item"><a href="http://iatistandard.org/en/using-data">Using IATI Data</a></li>
+      				<li id="section-data" class="navigation-primary__item"><a href="http://iatistandard.org/en/using-data">Using Data</a></li>
       				<li id="section-support" class="navigation-primary__item"><a href="http://iatistandard.org/en/guidance/">Guidance &amp; Support</a></li>
       				<li id="section-community" class="navigation-primary__item"><a href="https://discuss.iatistandard.org/">Community</a></li>
             </ul>
