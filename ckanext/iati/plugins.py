@@ -71,11 +71,11 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             map.redirect('/dataset/{url:.*}/' + rename[0] + '-{code:.*}', '/dataset/{url}/' + rename[1] + '-{code:.*}',
                      _redirect_code='301 Moved Permanently')
 
-        org_controller = 'ckan.controllers.organization:OrganizationController'
+        org_controller = 'ckanext.iati.controllers.publisher:PublisherController'
         with SubMapper(map, controller=org_controller) as m:
             m.connect('publishers_index', '/publisher', action='index')
-            m.connect('/publisher/list', action='list')
-            m.connect('/publisher/new', action='new')
+            m.connect('/publisher/list',  action='list')
+            m.connect('/publisher/new',  action='new')
             m.connect('/publisher/{action}/{id}',
                       requirements=dict(action='|'.join([
                           'delete',
