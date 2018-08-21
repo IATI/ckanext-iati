@@ -3,9 +3,9 @@
 {% block page_header %}
   <header class="module-content page-header hug">
     <ul class="nav nav-tabs">
-      {{ h.build_nav_icon('user_dashboard', _('News feed')) }}
-      {{ h.build_nav_icon('user_dashboard_datasets_custom', _('My Datasets')) }}
-      {{ h.build_nav_icon('user_dashboard_organizations', _('My Publishers')) }}
+      {{ h.build_nav_icon('dashboard.index', _('News feed')) }}
+      {{ h.build_nav_icon('dashboard.datasets', _('My Datasets')) }}
+      {{ h.build_nav_icon('dashboard.organizations', _('My Publishers')) }}
       {% if h.check_access('sysadmin') %}
       {{ h.build_nav('user_dashboard_pending_organizations', _('Pending')) }}
       {% endif %}
