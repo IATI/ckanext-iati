@@ -4202,7 +4202,7 @@ body.modal-open,
   .modal-dialog {
     left: 50%;
     right: auto;
-    width: 600px;
+    width: auto;
     padding-top: 30px;
     padding-bottom: 30px;
   }
