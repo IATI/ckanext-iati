@@ -180,7 +180,7 @@
         <codelist-item>
             <code>BQ</code>
             <name>
-                <narrative>BONAIRE, SAINT EUSTATIUS AND SABA</narrative>
+                <narrative>BONAIRE, SINT EUSTATIUS AND SABA</narrative>
             </name>
         </codelist-item>
         <codelist-item>
@@ -258,7 +258,7 @@
         <codelist-item>
             <code>CV</code>
             <name>
-                <narrative>CAPE VERDE</narrative>
+                <narrative>CABO VERDE</narrative>
             </name>
         </codelist-item>
         <codelist-item>
@@ -324,7 +324,7 @@
         <codelist-item>
             <code>CD</code>
             <name>
-                <narrative>CONGO, THE DEMOCRATIC REPUBLIC OF THE</narrative>
+                <narrative>CONGO (THE DEMOCRATIC REPUBLIC OF THE)</narrative>
             </name>
         </codelist-item>
         <codelist-item>
@@ -372,7 +372,7 @@
         <codelist-item>
             <code>CZ</code>
             <name>
-                <narrative>CZECH REPUBLIC (THE)</narrative>
+                <narrative>CZECHIA</narrative>
             </name>
         </codelist-item>
         <codelist-item>
@@ -720,13 +720,13 @@
         <codelist-item>
             <code>KP</code>
             <name>
-                <narrative>KOREA (DEMOCRATIC PEOPLE'S REPUBLIC OF)</narrative>
+                <narrative>KOREA (THE DEMOCRATIC PEOPLE'S REPUBLIC OF)</narrative>
             </name>
         </codelist-item>
         <codelist-item>
             <code>KR</code>
             <name>
-                <narrative>KOREA (REPUBLIC OF)</narrative>
+                <narrative>KOREA (THE REPUBLIC OF)</narrative>
             </name>
         </codelist-item>
         <codelist-item>
@@ -780,7 +780,7 @@
         <codelist-item>
             <code>LY</code>
             <name>
-                <narrative>LIBYAN ARAB JAMAHIRIYA</narrative>
+                <narrative>LIBYA</narrative>
             </name>
         </codelist-item>
         <codelist-item>
@@ -894,7 +894,7 @@
         <codelist-item>
             <code>MD</code>
             <name>
-                <narrative>MOLDOVA (REPUBLIC OF)</narrative>
+                <narrative>MOLDOVA (THE REPUBLIC OF)</narrative>
             </name>
         </codelist-item>
         <codelist-item>
@@ -963,7 +963,7 @@
                 <narrative>NETHERLANDS (THE)</narrative>
             </name>
         </codelist-item>
-        <codelist-item>
+        <codelist-item status="withdrawn">
             <code>AN</code>
             <name>
                 <narrative>NETHERLAND ANTILLES</narrative>
@@ -1044,7 +1044,7 @@
         <codelist-item>
             <code>PS</code>
             <name>
-                <narrative>PALESTINIAN TERRITORY, OCCUPIED</narrative>
+                <narrative>PALESTINE, STATE OF</narrative>
             </name>
         </codelist-item>
         <codelist-item>
@@ -1110,7 +1110,7 @@
         <codelist-item>
             <code>RE</code>
             <name>
-                <narrative>REUNION</narrative>
+                <narrative>RÉUNION</narrative>
             </name>
         </codelist-item>
         <codelist-item>
@@ -1308,7 +1308,7 @@
         <codelist-item>
             <code>SZ</code>
             <name>
-                <narrative>SWAZILAND</narrative>
+                <narrative>ESWATINI</narrative>
             </name>
         </codelist-item>
         <codelist-item>
