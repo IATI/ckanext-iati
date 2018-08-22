@@ -3,3 +3,5 @@ ckanext_iati.egg-info/
 node_modules
 bower_components
 .idea/
+#emacs cruft 
+*~
