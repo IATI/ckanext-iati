@@ -20,11 +20,10 @@ Example:
 
   <tbody>
   {% for organization in organizations %}
-
-    {% if organization.package_count > 0 or 'dashboard' in request.url %}
+    {% if (organization.package_count and organization.package_count > 0) or 'dashboard' in request.url %}
       {% set extra_fields = h.get_publisher_obj_extra_fields(organization) %}
       <tr>
-        <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.display_name) }}</a></td>
+        <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.title) }}</a></td>
         <td>{{ extra_fields.publisher_organization_type }}</td>
         <td>{{ extra_fields.publisher_country }}</td>
         <td>{{ organization.package_count }}</td>

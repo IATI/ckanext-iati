@@ -4,7 +4,16 @@ import ckan.logic as logic
 import ckan.model as model
 import ckan.plugins as p
 
-class PublisherController(BaseController):
+from ckan.controllers.organization import OrganizationController
+
+import logging
+log = logging.getLogger(__file__)
+log.setLevel(logging.DEBUG)
+
+class PublisherController(OrganizationController):
+
+    def _guess_group_type(self, expecting_name=False):
+        return 'organization'
 
     def members_read(self, id):
         context = {'model': model, 'session': model.Session,
@@ -23,3 +32,8 @@ class PublisherController(BaseController):
 
     def dashboard_pending_organizations(self):
         return render('user/dashboard_pending_organizations.html')
+
+    def index(self):
+        log.error('in the publisher controller')
+        log.error(self._guess_group_type())
+        return OrganizationController.index(self)

@@ -4,7 +4,12 @@
 {% block primary_content %}
 <h2 class="page_heading">CSV Export</h2>
   <article>
-  <div>CSV file <strong>{{file_name}}</strong> imported. (<a href="/csv/upload">Upload another file</a>)</div> {{ result }}
+  <div>
+    <p>Your CSV upload <strong>{{file_name}}</strong> has been imported and your files are now published.</p>
+    <p><a href="/csv/upload">Upload another file</a></p>
+  </div>
+  
+  {{ result }}
     <hr class="cleared" />
 
     <div class="lds-css ng-scope" id="wait">

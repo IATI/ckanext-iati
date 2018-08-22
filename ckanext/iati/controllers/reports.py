@@ -1,4 +1,4 @@
-from ckan.lib.base import c, g, request, response, render, abort, BaseController
+from ckan.lib.base import c,  request, response, render, abort, BaseController
 from ckan.common import _
 from ckan import model
 from ckan import logic
@@ -52,7 +52,7 @@ class ReportsController(BaseController):
             abort(401, _('Not authorized to see this page'))
         c.user_dict = user_dict
 
-        items_per_page = g.datasets_per_page or 20  # , readme
+        items_per_page =  20  # , readme
 
         # check ckan version and call appropriate get_page number
         if p.toolkit.check_ckan_version(min_version='2.5.0',

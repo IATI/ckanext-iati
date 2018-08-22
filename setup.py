@@ -18,7 +18,13 @@ setup(name='ckanext-iati',
       namespace_packages=['ckanext'],
       zip_safe=False,
       install_requires=[
-          # -*- Extra requirements: -*-
+          'ndg-httpsclient',
+          'requests',
+          'pyOpenSSL',
+          'pyasn1',
+          'lxml',
+          'email_validator',
+          'kombu==3.0.37',
       ],
       entry_points="""
       # -*- Entry points: -*-
@@ -32,7 +38,8 @@ setup(name='ckanext-iati',
       [paste.paster_command]
       iati-archiver=ckanext.iati.commands:Archiver
       iati-purge=ckanext.iati.commands:PurgeCmd
-      [ckan.celery_task]
-      tasks = ckanext.iati.celery_import:task_imports
       """,
+      #[ckan.celery_task]
+      #tasks = ckanext.iati.celery_import:task_imports
+
       )

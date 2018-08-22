@@ -17,7 +17,7 @@ Installation
 ------------
 
 The current version of ckanext-iati has been developed and tested again
-**CKAN 2.1.x**. We assume a running CKAN 2.1.x instance.
+**CKAN 2.8.1**. We assume a running CKAN 2.8.1 instance.
 
 The installation has the following steps, assuming you have a running
 copy of CKAN:

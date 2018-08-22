@@ -8,11 +8,12 @@
       <li>{% link_for _('Publishers'), controller='organization', action='index' %}</li>
       <li>{% link_for organization|truncate(30), controller='organization', action='read', id=pkg.organization.name %}</li>
     {% else %}
-      <li>{% link_for _('Datasets'), controller='package', action='search' %}</li>
+      <li><a href="/dataset">Datasets</a></li>
     {% endif %}
+
     <li{{ self.breadcrumb_content_selected() }}>{% link_for dataset|truncate(30), controller='package', action='read', id=pkg.name %}</li>
   {% else %}
-    <li>{% link_for _('Datasets'), controller='package', action='search' %}</li>
+      <li><a href="/dataset">Datasets</a></li>
     <li class="active"><a href="">{{ _('Create Dataset') }}</a></li>
   {% endif %}
 {% endblock %}

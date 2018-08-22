@@ -1,5 +1,5 @@
 import logging
-
+from ckan.common import c
 # Bad imports: this should be in the toolkit
 
 from routes.mapper import SubMapper     # Maybe not this one
@@ -65,16 +65,17 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
                      _redirect_code='301 Moved Permanently')
 
             # Dataset pages
+            map.redirect('/dataset_search','/dataset')
             map.redirect('/dataset/' + rename[0] + '-{code:.*}', '/dataset/' + rename[1] + '-{code:.*}',
                      _redirect_code='301 Moved Permanently')
             map.redirect('/dataset/{url:.*}/' + rename[0] + '-{code:.*}', '/dataset/{url}/' + rename[1] + '-{code:.*}',
                      _redirect_code='301 Moved Permanently')
 
-        org_controller = 'ckan.controllers.organization:OrganizationController'
+        org_controller = 'ckanext.iati.controllers.publisher:PublisherController'
         with SubMapper(map, controller=org_controller) as m:
             m.connect('publishers_index', '/publisher', action='index')
-            m.connect('/publisher/list', action='list')
-            m.connect('/publisher/new', action='new')
+            m.connect('/publisher/list',  action='list')
+            m.connect('/publisher/new',  action='new')
             m.connect('/publisher/{action}/{id}',
                       requirements=dict(action='|'.join([
                           'delete',
@@ -115,6 +116,18 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         map.connect('user_dashboard_pending_organizations', '/dashboard/pending',
             controller='ckanext.iati.controllers.publisher:PublisherController',
             action='dashboard_pending_organizations', ckan_icon='building')
+
+        #custom redirects
+        redirects = {
+            '/using-iati-data': 'http://iatistandard.org/en/using-data/',
+            '/registry-dashboard': 'http://iatistandard.org/en/guidance/publishing-data/data-quality-/how-to-improve-you-data-quality-with-the-iati-dashboard/',
+            '/about': 'http://iatistandard.org/en/using-data/IATI-tools-and-resources/using-IATI-registry/',
+            '/registry-api': 'http://iatistandard.org/en/using-data/IATI-tools-and-resources/using-IATI-registry/',
+            '/help': 'http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-register-with-iati/'
+        }
+
+        for k, v in redirects.iteritems():
+            map.redirect(k, v)
 
         return map
 
@@ -401,13 +414,19 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
                         data_dict['license_url']= license.url
                     if license.title:
                         data_dict['license_title']= license.title
-
         return data_dict
 
     def before_search(self, data_dict):
         if not data_dict.get('sort'):
             data_dict['sort'] = 'title_string asc'
 
+        if 'owner_org' in str(data_dict.get('q')):
+            data_dict['fq'] += ' organization:"%s"' % c.group_dict.get('name')
+            q = str(data_dict['q'])
+            import re
+            o = ' owner_org:"%s"'%c.group_dict.get('id')
+            q = re.sub(o,'',q)
+            data_dict['q'] = q 
         return data_dict
 
     def before_index(self, data_dict):
@@ -420,13 +439,12 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             ('filetype', iati_helpers.get_file_type_title),
             ('publisher_source_type', iati_helpers.get_publisher_source_type_title),
             ('publisher_organization_type', iati_helpers.get_organization_type_title),
-            ('issue_type', iati_helpers.get_issue_title),
+            ('issue_type', iati_helpers.get_issue_title)
         )
 
         for name, func in fields:
             if data_dict.get('extras_{0}'.format(name)):
                 data_dict[name] = func(data_dict['extras_{0}'.format(name)])
-
         return data_dict
 
     ## IConfigurer
@@ -511,6 +529,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
 def _get_module_functions(module, function_names):
     functions = {}
+def _get_module_functions(module, function_names):
+    functions = {}
     for f in function_names:
         functions[f] = module.__dict__[f]
 
@@ -528,17 +548,10 @@ class IatiTheme(p.SingletonPlugin):
         static_controller = 'ckanext.iati.controllers.static:StaticController'
 
         with SubMapper(map, controller=static_controller) as m:
-            m.connect('using-iati-data', '/using-iati-data',
-                action='using_iati_data')
-
             map.redirect('/about-2', '/about',
                      _redirect_code='301 Moved Permanently')
-            m.connect('about', '/about', action='about')
-            m.connect('api', '/registry-api', action='api')
-            m.connect('help', '/help', action='help')
             m.connect('help_csv-import', '/help_csv-import', action='help_csv')
             m.connect('help_delete', '/help_delete', action='help_delete')
-            m.connect('dashboard', '/registry-dashboard', action='dashboard')
 
         return map
 
@@ -606,5 +619,3 @@ class IatiCsvImporter(p.SingletonPlugin):
     # IConfigurer
     def update_config(self, config):
         p.toolkit.add_template_directory(config, 'theme/templates')
-        p.toolkit.add_public_directory(config, 'theme/public')
-        p.toolkit.add_resource('theme/fanstatic_library', 'ckanext-iati')

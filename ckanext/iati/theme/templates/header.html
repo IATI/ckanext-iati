@@ -9,8 +9,7 @@
 {% block header_wrapper %}
   {% if 'staging' in request.host or 'test' in request.host %}
       <div class="alert">
-        <strong>Warning!</strong> This is a staging site. It runs an updated code base (<a href="http://docs.ckan.org/en/ckan-2.5.2/changelog.html">CKAN v2.5.2</a>) compared to the
-        <a href="http://iatiregistry.org">current live version</a> (which uses CKAN v2.1.4). Data might be out of date and be aware that all new data in this instance might be deleted at any time.
+        <strong>Warning!</strong> This is a staging site. Data might be out of date and be aware that all new data in this instance might be deleted at any time.
 
       </div>
   {% endif %}
@@ -27,22 +26,23 @@
         </a>
       {% endblock %}
       {% block header_nav %}
+      <ul class="navigation-utility">
+        <li id="section-news" class="navigation-utility__item"><a href="http://iatistandard.org/en/news/">News</a></li>
+        <li id="section-events" class="navigation-utility__item"><a href="http://iatistandard.org/en/events/">Events</a></li>
+        <li id="section-contact" class="navigation-utility__item"><a href="http://iatistandard.org/en/contact/">Contact</a></li>
+      </ul>
+        <nav class="navigation-primary" id="navigation-primary">
+
+            <ul id="navigation-primary__items">
+              <li id="section-about" class="navigation-primary__item"><a href="http://iatistandard.org/en/about/">About</a></li>
+      				<li id="section-standard" class="navigation-primary__item"><a href="http://iatistandard.org/en/iati-standard">IATI Standard</a></li>
+      				<li id="section-data" class="navigation-primary__item"><a href="http://iatistandard.org/en/using-data/">Using Data</a></li>
+      				<li id="section-support" class="navigation-primary__item"><a href="http://iatistandard.org/en/guidance/">Guidance &amp; Support</a></li>
+      				<li id="section-community" class="navigation-primary__item"><a href="https://discuss.iatistandard.org/">Community</a></li>
+            </ul>
+          </nav>
         <nav>
           {% block header_nav_primary %}
-            <ul id="primary-nav">
-              <li class="transparency">
-                <a href="http://www.aidtransparency.net/">{{ _('Aid Transparency') }}</a>
-              </li>
-              <li class="standard">
-                <a href="http://www.iatistandard.org/">{{ _('IATI Standard') }}</a>
-              </li>
-              <li class="registry">
-                <a href="http://iatiregistry.org/">{{ _('IATI Data') }}</a>
-              </li>
-              <li class="community">
-                <a href="http://discuss.iatistandard.org/t/welcome-to-iati-discuss">{{ _('IATI Community') }}</a>
-              </li>
-            </ul>
           {% endblock %}
           {% block header_nav_account %}
             {% if c.userobj %}
@@ -88,7 +88,7 @@
                 ('/revision', _('Newsfeed')),
               ] %}
               {% set data_dropdown = [
-                ('add dataset', _('Register')) if can_package_create else empty,
+                ('/dataset/new', _('Register')) if can_package_create else empty,
                 ('/csv/download', _('Download current records')),
                 ('/csv/upload', _('Upload CSV file')) if can_package_create else empty,
                 ('/report/issues', _('Issues report')),
@@ -101,11 +101,6 @@
                 ('home', _('Home'), home_dropdown),
                 ('search', _('Data'), data_dropdown),
                 ('publishers_index', _('Publishers'), publisher_dropdown),
-                ('using-iati-data', _('Using IATI Data'), false),
-                ('dashboard', _('Dashboard'), false),
-                ('about', _('About'), false),
-                ('api', _('API'), false),
-                ('help', _('Help'), false)
               ] %}
               {% for route, label, check_dropdown in nav %}
                 {% set dropdown = h.check_nav_dropdown(check_dropdown) %}
@@ -120,6 +115,11 @@
                   {% endif %}
                 </li>
               {% endfor %}
+              <li> <a href="http://iatistandard.org/en/using-data/">Using IATI Data </a></li>
+              <li> <a href="http://iatistandard.org/en/guidance/publishing-data/data-quality-/how-to-improve-you-data-quality-with-the-iati-dashboard/">Dashboard</a></li>
+              <li> <a href="http://iatistandard.org/en/using-data/IATI-tools-and-resources/using-IATI-registry/">About</a></li>
+              <li> <a href="http://iatistandard.org/en/using-data/IATI-tools-and-resources/using-IATI-registry/">API</a></li>
+              <li> <a href="http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-register-with-iati/">Help</a></li>
             </ul>
           {% endblock %}
         </nav>

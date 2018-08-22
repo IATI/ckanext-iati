@@ -1,0 +1,2 @@
+graft ckanext
+include *.py
