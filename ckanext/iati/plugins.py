@@ -491,8 +491,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_publisher_obj_extra_fields',
             'get_publisher_obj_extra_fields_pub_ids',
             'dataset_follower_count',
-            'radio',
-            'check_publisher_contact_email',
+            'radio'
         )
         return _get_module_functions(iati_helpers, function_names)
 
