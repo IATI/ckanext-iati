@@ -84,7 +84,7 @@ like ``ckan.site_id``, ``solr_url``, etc are not included)::
     # File preview service URL and CSV export service URL.
     # If these are commented out, the links won't appear in the frontend
     iati.preview_service = http://tools.aidinfolabs.org/showmydata/index.php?url=%s
-    iati.csv_service = http://tools.aidinfolabs.org/csv/direct_from_registry/?xml=%s
+    iati.csv_service = http://datastore.iatistandard.org/api/1/access/activity.csv?registry-dataset=%s
 
     # User name and API key for the iati-archiver sysadmin user
     iati.admin_user.name=iati-archiver
