@@ -31,9 +31,10 @@ class PublisherController(OrganizationController):
         return render('organization/members_read.html')
 
     def dashboard_pending_organizations(self):
+        log.debug('dashboard pending orgainzations')
         return render('user/dashboard_pending_organizations.html')
 
     def index(self):
-        log.error('in the publisher controller')
-        log.error(self._guess_group_type())
+        log.debug('in the publisher controller')
+        log.debug(self._guess_group_type())
         return OrganizationController.index(self)
