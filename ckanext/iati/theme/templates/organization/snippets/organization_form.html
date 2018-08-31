@@ -19,6 +19,7 @@
     <p class="help-block">The Name of the Organisation publishing the data.</p>
 
     {{ form.input('publisher_iati_id', label=_('IATI Organisation Identifier (required) *'), id='field-publisher_iati_id', value=data.publisher_iati_id, error=errors.publisher_iati_id) }}
+    
     <p class="help-block">The organisation identifier used in the IATI XML files to identify the reporting organisation. For more information please go to <a href="http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-create-your-iati-organisation-identifier/">How to create your IATI organisation identifier</a>.</p>
 
     {{ select('publisher_source_type', label=_('Source'), data=data) }}
