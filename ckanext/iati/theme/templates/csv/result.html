@@ -5,76 +5,17 @@
 <h2 class="page_heading">CSV Export</h2>
   <article>
   <div>
-    <p>Your CSV upload <strong>{{file_name}}</strong> has been imported and your files are now published.</p>
+    <p>Your CSV upload <strong>{{file_name}}</strong> has been imported. Check the table below for progress monitoring.</p>
+
     <p><a href="/csv/upload">Upload another file</a></p>
   </div>
   
   {{ result }}
     <hr class="cleared" />
 
-    <div class="lds-css ng-scope" id="wait">
-      <div style="width:100%;height:100%" class="lds-bars">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-    </div>
-
     <div id="result"></div>
 
-    <div id="summary" class="hidden">
-   <h3>Summary</h3>
-   <ul>
-      <li><a href="#added">Datasets created: <span id="added-count">{{ added|length }}</span></a></li>
-      <li><a href="#updated">Datasets updated: <span id="updated-count">{{ updated|length }}</span></a></li>
-      <li><a href="#warnings">Warnings found: <span id="warnings-count">{{ warnings|length }}</span></a></li>
-      <li><a href="#errors">Errors found: <span id="errors-count">{{ errors|length }}</span></a></li>
-    </ul>
-    <h3 id="added">Datasets added</h3>
-    <ul id="added-inner">
-        <li><i>None</i></li>
-    </ul>
 
-    <h3 id="updated">Datasets updated</h3>
-    <ul id="updated-inner">
-        <li><i>None</i></li>
-    </ul>
-
-    <h3 id="warnings">Warnings</h3>
-    <ul id="warnings-inner">
-      {% for row,fields in warnings %}
-    <li>Line {{row}}:
-            <ul>
-              {% for field, msgs in fields.iteritems() %}
-            <li><strong>{{field}}</strong>: {{msgs}}</li>
-            {% endfor %}
-            </ul>
-        </li>
-        {% endfor %}
-        {% if not warnings %}
-        <li><i>None</i></li>
-        {% endif %}
-
-    </ul>
-
-    <h3 id="errors">Errors found</h3>
-    <ul id="errors-inner">
-      {% for row,fields in errors%}
-    <li>Line {{row}}:
-            <ul>
-              {% for field,msgs in fields.iteritems() %}
-            <li><strong>{{field}}</strong>: {{msgs}}</li>
-            {% endfor %}
-            </ul>
-        </li>
-        {% endfor %}
-        {% if not errors %}
-        <li><i>None</i></li>
-        {% endif %}
-
-    </ul>
-</div>
   </article>
   {% endblock %}
 
@@ -91,50 +32,110 @@
           return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
       }
 
-      function datasetLink(id) {
-          return "<div><li><a href=\"/dataset/" + id + "/\">" + id + "</a></li></div>"
+      function statusbutton(string) {
+          switch (string){
+             case "failed" :
+                    return  '<span class="label label-danger"  data-placement="right" title="Failed">Failed</span>'
+                    break ;Started
+             case "finished" :
+                    return '<span class="label label-success"  data-placement="right" title="Finished">Finished</span>'
+                    break ;
+             case "started" :
+                    return '<span class="label label-info"  data-placement="right" title="Started">Started</span>'
+                    break ;
+             default:
+                    return '<span class="label label-warning"  data-placement="right" title="'+string+'">'+capitalizeFirstLetter(string)+'</span>'
+          }
+
       }
 
-      function notificationPrint(notification) {
-          return "<div><li>" + notification + "</li></div>"
+      function datasetLink(id,summary,warning,error) {
+           if (id !== '#'){
+                link = "<a target=\"_blank\" href=\"/dataset/" + id + "/\">" + summary + "</a>";
+            }
+            else {
+                 link = summary;
+            }
+          if (warning){
+               link = link + '<br> <p style="color:orange">Warning(s):' + warning +'</p>';
+          }
+          if (error){
+               link = link + '<br> <p style="color:red">Error(s):' + error +'</p>';
+          }
+
+          return link;
+      }
+
+      function summaryPrint(status, task) {
+          var dataset_id ="#";
+          var summary_msg = "This dataset already exists.";
+          if (status === "failed") {
+               summary_msg = "Server Error. "
+          }
+          var warning_msg ="";
+          var error_msg = "";
+          $.each(task.result, function(key, value) {
+            if (key === "added" && value.length > 0){
+             dataset_id = value;
+             summary_msg = 'Dataset added';
+            }
+            if (key === "updated" && value.length > 0){
+                dataset_id = value;
+                summary_msg = 'Dataset updated';
+            }
+            if (key === "warnings" && value.length > 0){
+                if( value[0][1].file.length>0) {
+                    warning_msg = value[0][1].file;
+                }
+            }
+            if (key === "error" && value.length > 0){
+             error_msg = value.join();
+            }
+          })
+          return "<div>" + datasetLink(dataset_id,summary_msg, warning_msg, error_msg ) + "</div>"
       }
 
       var PollState = function(task_id) {
           $.ajax({
-              url: "/csv/check_status/" + "{{task_id}}",
+              url: "/csv/check_status/" + task_id,
               type: "GET",
           }).done(function(task) {
-              task = JSON.parse(task)
-              $("#result").html("<h4>Status: " + capitalizeFirstLetter(task.status) + "</h4>");
-              if (task.status !== "SUCCESS") {
-                  // $("#summary").css("display", "none");
-                  $("#wait").css("display", "block");
+              task = JSON.parse(task);
+              $("#status_" + task_id).html("<h4>" + statusbutton(task.status) + "</h4>");
+             if (task.status !== "finished" && task.status !== "failed") {
                   setTimeout(PollState, 5000, task_id)
-              } else if (task.status === 'SUCCESS') {
-                  $("#wait").css("display", "none");
-                  $("#summary").removeClass("hidden").addClass("shown");
-                  $.each(task.result, function(key, value) {
-                      if (key === "added" || key === "updated") {
-                          $("#" + key + "-count").text(value.length)
-                          if (value.length) {
-                              $("#" + key + "-inner").empty()
-                              $.each(value, function(index, res) {
-                                  $("#" + key + "-inner").append(datasetLink(res))
-                              })
-                          }
-                      } else if (key == "warnings" || key == "errors") {
-                          $("#" + key + "-count").text(value.length)
-                          $.each(value, function(row, fields) {
-                              $("#" + key + "-inner").empty()
-                              $("#" + key + "-inner").append(notificationPrint(fields[1]['file']))
-                          })
-                      }
-                  });
-
+              }else{
+                  $("#summary_" + task_id).html( summaryPrint(task.status, task));
               }
+          }).fail(function(task){
+              $("#status_" + task_id).html(statusbutton('failed'));
+              $("#summary_" + task_id).html(summaryPrint('failed',task));
           });
       }
-      PollState("{{task_id}}")
+      var i;
+      var all = "<table class=\"table\"> <thead> <tr> <th>Title</th> <th>Status</th>  <th>Summary</th> </tr></thead><tbody>";
+      var tasks = {{tasks | safe }};
+          for (i=0; i< tasks.length; i++){
+           var t = JSON.parse(tasks[i]);
+           all = all + "<tr><td id=dataset_"+t.task_id+">" + t.title + "</td><td id=status_"+t.task_id+"></td>"+"<td id=summary_"+t.task_id+"></td></tr>";
+          }
+
+
+            all = all + "</tbody>  </table>" ;
+           $("#result").html(all);
+
+          for (i=0; i< tasks.length; i++){
+               var t = JSON.parse(tasks[i]);
+               if (t.status === "failed"){
+                   $("#status_" + t.task_id).html( statusbutton(t.status) );
+                   if (t.error){
+                    $("#summary_" + t.task_id).html( t.error);
+                   }
+               }
+               else{
+                   PollState(t.task_id) ;
+                   }
+          }
       });
       </script>
   {% endblock%}

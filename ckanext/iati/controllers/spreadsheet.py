@@ -122,47 +122,73 @@ class CSVController(p.toolkit.BaseController):
                 if len(missing_columns):
                     errors = {'Missing columns': '%s' % ', '.join(sorted(missing_columns))}
 
-                for entry in reader:
-                    if len(entry) <= 12:
-                        p.toolkit.abort(400, "Please make sure there are no line breaks in the file.")
-                data.seek(0)
-                reader = csv.reader(data)
-                next(reader)
+                #for entry in reader:
+                #    if len(entry) <= 12:
+                #        p.toolkit.abort(400, "Please make sure there are no line breaks in the file.")
+                #data.seek(0)
+                #reader = csv.reader(data)
+                #next(reader)
 
-                publishers_in_csv = [row[0] for row in reader]
+                #publishers_in_csv = [row[0] for row in reader]
                 all_publishers = p.toolkit.get_action('group_list')({}, {})
 
-                unknown_publishers = [publisher
-                    for publisher in publishers_in_csv
-                    if publisher not in all_publishers
-                ]
+                #unknown_publishers = [publisher
+                #    for publisher in publishers_in_csv
+                #    if publisher not in all_publishers
+                #]
 
-                if len(unknown_publishers):
-                    unknown_publishers_string = ', '.join(unknown_publishers)
-                    p.toolkit.abort(400, 'Unknown publisher(s): %s' % (unknown_publishers_string))
-                data.seek(0)
-                reader = csv.reader(data)
-                next(reader)
+                #if len(unknown_publishers):
+                #    unknown_publishers_string = ', '.join(unknown_publishers)
+                #    p.toolkit.abort(400, 'Unknown publisher(s): %s' % (unknown_publishers_string))
+                #data.seek(0)
+                #reader = csv.reader(data)
+                #next(reader)
 
                 if not len(errors.keys()):
                     json_data = []
+                    tasks = []
+
                     for row in reader:
+                        task = OrderedDict()
+
                         d = OrderedDict()
                         for i, x in enumerate(row):
                             d[columns[i]] = x
-                        json_data.append(d)
-                    ckan_ini_filepath = os.path.abspath(config['__file__'])
-                    if not json_data:
-                        p.toolkit.abort(400, 'No data found in CSV file.')
-                    job = jobs.enqueue(read_csv_file, [ckan_ini_filepath, json.dumps(json_data), c.user])
-                    vars['task_id'] = job.id
+
+                        task[u'title'] = d['title'] or 'No Title'
+                        if len(row) <= 12:
+                            task[u'status'] = 'failed'
+                            if len(row) == 0:
+                                task[u'error'] = 'Empty line'
+                            else:
+                                task[u'error'] = 'Incomplete line'
+                            task[u'task_id'] = str(uuid.uuid4())
+                        else:
+                            task[u'task_id'] = str(uuid.uuid4()) #this is a random ID that will change with the job ID if it gets created
+                            if d['registry-publisher-id'] and d['registry-publisher-id'] in all_publishers :
+                                ckan_ini_filepath = os.path.abspath(config['__file__'])
+                                json_data =[]
+                                json_data.append(d)
+                                job = jobs.enqueue(read_csv_file, [ckan_ini_filepath, json.dumps(json_data), c.user])
+                                task[u'task_id'] = job.id
+                            else:
+                                task[u'status'] = 'failed'
+                                task[u'error'] = 'Invalid Publisher ID: '+d['registry-publisher-id']
+
+                        tasks.append(json.dumps(task))
+
+                    vars['tasks'] = tasks
                 else:
+                    vars['errors'] = errors
+                    vars['warnings'] = warnings
+                    vars['tasks'] = []
                     p.toolkit.abort(400, ('Error in CSV file : {0}; {1}'.format
-                                    (re.sub("([\{\}'])+", "", str(warnings)),
+                                   (re.sub("([\{\}'])+", "", str(warnings)),
                                         re.sub("([\{\}'])+", "", str(errors)))))
             except Exception as e:
                 vars['errors'] = errors
                 vars['warnings'] = warnings
+                vars['tasks'] = []
                 p.toolkit.abort(400, ('Error opening CSV file: {0}'.format(e.message)))
 
             return p.toolkit.render('csv/result.html', extra_vars=vars)
@@ -170,21 +196,29 @@ class CSVController(p.toolkit.BaseController):
     def check_status(self, task_id=None):
         result = {}
         if task_id:
-            job = jobs.job_from_id(id=task_id)
-            result.update({'status': job.get_status()})
-            if job.result:
-                result['result'] = {}
-                try:
-                    data = json.loads(job.result)
-                    result['result']['added'] = data['added']
-                    result['result']['updated'] = data['updated']
-                    result['result']['errors'] = data['errors']
-                    result['result']['warnings'] = data['warnings']
-                except Exception as e:
-                    result.update({'status': "Something went wrong, please try again or contact support."})
-                    print job.traceback
+            try:
+                job = jobs.job_from_id(id=task_id)
+                result.update({'status': job.get_status()})
+                if job.result:
+                    result['result'] = {}
+                    try:
+                        data = json.loads(job.result)
+                        result['result']['added'] = data['added']
+                        result['result']['updated'] = data['updated']
+                        result['result']['errors'] = data['errors']
+                        result['result']['warnings'] = data['warnings']
+                    except Exception as e:
+                        result.update({'status': "failed"})
+                        result['result']['errors'].add("Something went wrong, please try again or contact support.")
+                        #print job.traceback
+            except Exception as e:
+                result.update({'status': "failed"})
+                result['result']['errors'].add("Something went wrong, please try again or contact support quoting the error \"Background job was not created\"")
+
         else:
-            result.update({'status': 'Invalid request.'})
+            result.update({'status': 'failed'})
+            result['result']['errors'].add("Invalid request.")
+
         return json.dumps(result)
 
     def write_csv_file(self, publisher):
@@ -436,6 +470,7 @@ def read_csv_file(ckan_ini_filepath, csv_file, user):
 
     warnings = sorted(warnings.iteritems())
     errors = sorted(errors.iteritems())
+
     counts['warnings'] = warnings
     counts['errors'] = errors
 
