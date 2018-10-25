@@ -175,3 +175,8 @@ def iati_org_identifier_validator(key, data, errors, context):
     # or the API request, block it
     if publisher_id_exists and publisher_id_exists.id != group_id:
         errors[key].append('IATI identifier already exists in the database.')
+
+def remove_leading_or_trailing_spaces(value,context):
+    return value.strip()
+
+
