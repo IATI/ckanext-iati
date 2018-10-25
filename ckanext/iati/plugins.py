@@ -16,7 +16,8 @@ from ckanext.iati.logic.validators import (db_date,
                                            iati_one_resource,
                                            email_validator,
                                            file_type_validator,
-                                           iati_org_identifier_validator
+                                           iati_org_identifier_validator,
+                                           remove_leading_or_trailing_spaces
                                           )
 from ckanext.iati.logic.converters import strip
 import ckanext.iati.helpers as iati_helpers
@@ -184,9 +185,10 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         default_validators = [_ignore_missing, _convert_to_extras, unicode]
         schema.update({
             'state': [iati_publisher_state_validator],
+            'title': [_not_empty, remove_leading_or_trailing_spaces],
             'license_id': [_convert_to_extras],
             'publisher_source_type': default_validators,
-            'publisher_iati_id': [_not_empty, iati_org_identifier_validator, _convert_to_extras, unicode],
+            'publisher_iati_id': [_not_empty, remove_leading_or_trailing_spaces, iati_org_identifier_validator, _convert_to_extras, unicode],
             'publisher_country': default_validators,
             'publisher_segmentation': default_validators,
             'publisher_ui': default_validators,
@@ -491,7 +493,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_publisher_obj_extra_fields',
             'get_publisher_obj_extra_fields_pub_ids',
             'dataset_follower_count',
-            'radio'
+            'radio',
+            'check_publisher_contact_email',
         )
         return _get_module_functions(iati_helpers, function_names)
 
