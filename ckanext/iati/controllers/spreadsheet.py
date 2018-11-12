@@ -85,12 +85,14 @@ class CSVController(p.toolkit.BaseController):
 
         if not c.user:
             p.toolkit.abort(401, 'Permission denied, only publisher administrators can manage CSV files.')
+        try:
+            self.is_sysadmin = authz.is_sysadmin(c.user)
 
-        self.is_sysadmin = authz.is_sysadmin(c.user)
-
-        # Orgs of which the logged user is admin
-        context = {'model': model, 'user': c.user or c.author}
-        self.authz_orgs = p.toolkit.get_action('organization_list_for_user')(context, {})
+            # Orgs of which the logged user is admin
+            context = {'model': model, 'user': c.user or c.author}
+            self.authz_orgs = p.toolkit.get_action('organization_list_for_user')(context, {})
+        except Exception:
+            p.toolkit.abort(401, 'Try to refresh your session.')
 
         if not self.is_sysadmin and not self.authz_orgs:
             # User does not have permissions on any publisher
@@ -195,7 +197,7 @@ class CSVController(p.toolkit.BaseController):
 
     def check_status(self, task_id=None):
         result = {}
-        if task_id:
+        if task_id and task_id!='undefined':
             try:
                 job = jobs.job_from_id(id=task_id)
                 result.update({'status': job.get_status()})
@@ -213,13 +215,16 @@ class CSVController(p.toolkit.BaseController):
                         #print job.traceback
             except Exception as e:
                 result.update({'status': "failed"})
+                result['result'] = {}
                 result['result']['errors'].add("Something went wrong, please try again or contact support quoting the error \"Background job was not created\"")
 
         else:
             result.update({'status': 'failed'})
-            result['result']['errors'].add("Invalid request.")
+            result['result'] = {}
+            result['result']['errors'].add("Something went wrong, please try again or contact support quoting the error \"Background job was not created\"")
 
         return json.dumps(result)
+
 
     def write_csv_file(self, publisher):
         context = {'model': model, 'user': c.user or c.author}
@@ -414,18 +419,18 @@ def read_csv_file(ckan_ini_filepath, csv_file, user):
     for key in data[0].iterkeys():
         fields_from_csv.append(key)
 
-    missing_columns = [f for f in fieldnames if f not in fields_from_csv and f not in OPTIONAL_COLUMNS]
+    #missing_columns = [f for f in fieldnames if f not in fields_from_csv and f not in OPTIONAL_COLUMNS]
     surplus_columns = [f for f in fields_from_csv if f not in fieldnames]
 
     if len(surplus_columns):
         warnings['1'] = {}
         warnings['1']['file'] = 'Ignoring extra columns: %s' % ', '.join(sorted(surplus_columns))
 
-    if len(missing_columns):
-        error = {'file': 'Missing columns: %s' % ', '.join(sorted(missing_columns))}
-        return [], [], [], [('1', error)]
+    #if len(missing_columns):
+    #    error = {'file': 'Missing columns: %s' % ', '.join(sorted(missing_columns))}
+    #    return [], [], [], [('1', error)]
 
-    context = {'model': model, 'session': model.Session, 'user': user, 'api_version': '1'}
+    context = {'model': model, 'session': model.Session, 'user': user, 'api_version': '3'}
 
     counts = {'added': [], 'updated': []}
 

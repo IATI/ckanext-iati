@@ -305,7 +305,7 @@ def _group_or_org_list_optimized(context, data_dict, is_org=False):
     api = context.get('api_version')
     groups = data_dict.get('groups')
     group_type = data_dict.get('type', 'group')
-    ref_group_by = 'id' if api == 2 else 'name'
+    ref_group_by = 'id' if api == 3 else 'name'
 
     sort = data_dict.get('sort', 'name')
     q = data_dict.get('q')

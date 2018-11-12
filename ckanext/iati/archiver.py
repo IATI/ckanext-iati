@@ -131,6 +131,7 @@ def archive_package(package_id, context, consecutive_errors=0):
 
     log.info('Archiving dataset: {0} ({1} resources)'.format(
               package.get('name'), len(package.get('resources', []))))
+    print 'resources: '+str(len(package.get('resources', [])))
     for resource in package.get('resources', []):
         if not resource.get('url', ''):
             return save_package_issue(context, package, extras_dict, 'no-url',
@@ -186,10 +187,22 @@ def archive_package(package_id, context, consecutive_errors=0):
             return save_package_issue(context, package, extras_dict,
                                       'xml-error', 'Could not parse XML file:'
                                       ' {0}'.format(str(e)[:200]))
+        filetype ='unchecked'
+        if tree.tag == 'iati-activities':
+            filetype = 'activity'
+
+        if tree.tag == 'iati-organisations':
+            filetype = 'organisation'
+
+        if not is_activity_package and filetype!='organisation':
+            return save_package_issue(context, package, extras_dict,
+                                      'metadata error', 'Check the filetype metadata field')
 
         new_extras = {}
         # IATI standard version (iati_version extra)
         xpath = '/iati-activities/@version | /iati-organisations/@version'
+
+
 
         version = tree.xpath(xpath)
 	log.info(version)

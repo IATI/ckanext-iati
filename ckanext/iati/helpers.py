@@ -62,6 +62,30 @@ def get_issue_title(code):
 def get_licenses():
     return [('', '')] + model.Package.get_license_options()
 
+import ckan.logic as logic
+from ckan.common import c
+
+def organizations_available_with_extra_fields(permission='manage_group', include_dataset_count=False):
+    '''Return a list of organizations that the current user has the specified
+    permission for.
+    '''
+    context = {'user': c.user}
+    data_dict = {
+        'permission': permission,
+        'include_dataset_count': include_dataset_count}
+    organizations = logic.get_action('organization_list_for_user')(context, data_dict)
+    org_extra= []
+    for organization in organizations:
+        extras = get_publisher_extra_fields(organization['id'])
+        for key, value in extras:
+            organization[key] = value
+        org_extra.append(organization)
+
+    return org_extra
+
+
+
+
 def get_publisher_extra_fields(group_id):
     group = model.Group.get(group_id)
     extras = {}
@@ -288,8 +312,14 @@ def get_first_published_date(organization):
     if 'publisher_contact_email' not in organization or not organization['publisher_contact_email']:
         organization.update({'publisher_contact_email': 'Email not found'})
     try:
-        return organization['publisher_first_publish_date']
+        print 'returning organization[publisher_first_publish_date]'
+        publisher_first_publish_date = organization['publisher_first_publish_date']
+        if publisher_first_publish_date =='':
+            raise KeyError
+        else :
+            return publisher_first_publish_date
     except KeyError:
+        print 'no publisher_first_publish_date'
         date_not_found_error = 'Date not found'
         dates = []
 
@@ -306,7 +336,8 @@ def get_first_published_date(organization):
 
         if len(package_search_results) == 0:
             return 'No data published'
-
+        print 'checking packages'
+        print package_search_results
         for package in package_search_results:
             try:
                 resource_created_date = package['resources'][0]['created']
@@ -319,7 +350,8 @@ def get_first_published_date(organization):
             return date_not_found_error
 
         publisher_first_publish_date = sorted(dates)[0]
-
+        print 'dates to check'
+        print publisher_first_publish_date
         if not publisher_first_publish_date:
             return date_not_found_error
 
