@@ -13,15 +13,11 @@
 
       </div>
   {% endif %}
-  <div class="alert" style="text-align: center">
-    <strong>Important: </strong>The Registry will be in read-only mode from Friday 23rd March at 09:00 GMT until Tuesday 27th March 18:00 GMT.<br/>
-    <a href="https://discuss.iatistandard.org/t/iati-registry-migration-read-only-access-friday-23-monday-26-march/1261">More information here</a>.
-  </div>
   <a href="#content" class="hide">{{ _('Skip to primary content') }}</a>
   <header id="header">
     <div class="container">
       {% block header_logo %}
-        <a class="logo" href="{{ h.url('home') }}">
+        <a class="logo" href="{{ h.url('home.index') }}">
           <span>{{ _('IATI Registry') }}</span>
         </a>
       {% endblock %}
@@ -98,7 +94,7 @@
               ] %}
 
               {% set nav = [
-                ('home', _('Home'), home_dropdown),
+                ('home.index', _('Home'), home_dropdown),
                 ('search', _('Data'), data_dropdown),
                 ('publishers_index', _('Publishers'), publisher_dropdown),
               ] %}
