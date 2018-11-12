@@ -24,16 +24,17 @@ class PublisherController(OrganizationController):
                 context, {'id': id, 'object_type': 'user'}
             )
             c.group_dict = logic.get_action('organization_show')(context, {'id': id})
+            extra_vars = {}
+            extra_vars.update({'group_type': c.group_dict.get('type', '')})
         except logic.NotAuthorized:
             p.toolkit.abort(401, p.toolkit._('Unauthorized to read group members %s') % '')
         except logic.NotFound:
             p.toolkit.abort(404, p.toolkit._('Group not found'))
-        return render('organization/members_read.html')
+        return render('organization/members_read.html', extra_vars=extra_vars)
 
     def dashboard_pending_organizations(self):
+        log.debug('dashboard pending orgainzations')
         return render('user/dashboard_pending_organizations.html')
 
     def index(self):
-        log.error('in the publisher controller')
-        log.error(self._guess_group_type())
         return OrganizationController.index(self)

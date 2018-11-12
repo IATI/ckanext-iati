@@ -312,32 +312,27 @@ def get_first_published_date(organization):
     if 'publisher_contact_email' not in organization or not organization['publisher_contact_email']:
         organization.update({'publisher_contact_email': 'Email not found'})
     try:
-        print 'returning organization[publisher_first_publish_date]'
         publisher_first_publish_date = organization['publisher_first_publish_date']
         if publisher_first_publish_date =='':
             raise KeyError
         else :
             return publisher_first_publish_date
     except KeyError:
-        print 'no publisher_first_publish_date'
         date_not_found_error = 'Date not found'
-        dates = []
 
+        # Setup for search, since package_search action returns the first
+        # 1000 rows by default.
         data_dict = {
-            'fq': ' organization:{}'.format(organization['name']),
+            'fq': 'organization:{}'.format(organization['name']),
             'rows': 1000000000
         }
 
-        try:
-            package_search_results = p.toolkit.get_action('package_search')(
-                {}, data_dict=data_dict)['results']
-        except:
-            return date_not_found_error
+        package_search_results = p.toolkit.get_action('package_search')(
+            {}, data_dict=data_dict)['results']
 
         if len(package_search_results) == 0:
             return 'No data published'
-        print 'checking packages'
-        print package_search_results
+
         for package in package_search_results:
             try:
                 resource_created_date = package['resources'][0]['created']
@@ -350,8 +345,7 @@ def get_first_published_date(organization):
             return date_not_found_error
 
         publisher_first_publish_date = sorted(dates)[0]
-        print 'dates to check'
-        print publisher_first_publish_date
+
         if not publisher_first_publish_date:
             return date_not_found_error
 
@@ -360,9 +354,6 @@ def get_first_published_date(organization):
             'publisher_first_publish_date':
                 publisher_first_publish_date
         }
-
-        if 'publisher_contact_email' not in organization or not organization['publisher_contact_email']:
-            data_dict.update({'publisher_contact_email': 'Email not found'})
 
         try:
             check_access('organization_patch', {})
@@ -394,3 +385,23 @@ def radio(selected, id, checked):
     if checked == 'True':
         return literal(('<input checked="checked" type="radio" id="%s_%s" name="%s" value="%s">') % (selected, id, selected, id))
     return literal(('<input type="radio" id="%s_%s" name="%s" value="%s">') % (selected, id, selected, id))
+
+
+def check_publisher_contact_email(organization):
+    # publisher_contact_email was changed to be a required field
+    # This function checks if the field is populated and fills an arbitrary value if empty
+    if 'publisher_contact_email' not in organization or not organization['publisher_contact_email']:
+        data_dict = {
+            'id': organization['id'],
+            'publisher_contact_email': 'please@update.email'
+        }
+
+        try:
+            check_access('organization_patch', {})
+            p.toolkit.get_action('organization_patch')({}, data_dict=data_dict)
+        except NotAuthorized:
+            pass
+
+        return data_dict['publisher_contact_email']
+    else:
+        return organization['publisher_contact_email']
