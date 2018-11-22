@@ -1,3 +1,4 @@
+
 {#
 Embeds a organization within the sidebar of a page.
 
@@ -10,12 +11,15 @@ has_context_title - Boolean for whether to display a module-heading for when
 
 Example:
 
+
     {% snippet 'snippets/organization, organization=c.group_dict %}
 
 #}
 
 {% with truncate=truncate or 0, url=h.url_for(controller='organization', action='read', id=organization.name) %}
+
   <div class="module context-info">
+
     {% if has_context_title %}
       <h2 class="module-heading"><i class="icon-building"></i> {{ _('Publisher') }}</h2>
     {% endif %}

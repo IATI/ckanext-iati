@@ -5,10 +5,12 @@ import ckan.model as model
 import ckan.plugins as p
 
 from ckan.controllers.organization import OrganizationController
+from webhelpers.html import HTML, literal, tags, tools
 
 import logging
 log = logging.getLogger(__file__)
 log.setLevel(logging.DEBUG)
+
 
 class PublisherController(OrganizationController):
 
@@ -36,5 +38,19 @@ class PublisherController(OrganizationController):
         log.debug('dashboard pending orgainzations')
         return render('user/dashboard_pending_organizations.html')
 
+    def dashboard_my_organizations(self):
+        log.debug('dashboard my orgainzations')
+        return render('user/my_organizations.html')
+
     def index(self):
         return OrganizationController.index(self)
+
+    def archiver_page(self, id):
+
+        vars = {}
+        vars['id'] = id
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user or c.author}
+        c.group_dict = logic.get_action('organization_show')(context, {'id': id})
+        return render('user/archiver.html', extra_vars=vars)
+

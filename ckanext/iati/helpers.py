@@ -16,6 +16,9 @@ from ckan.logic import check_access, NotAuthorized
 
 import ckanext.iati.lists as lists
 
+import ckan.logic as logic
+from ckan.common import c
+
 
 def get_countries():
     countries = (("", u"(No country assigned)"),)
@@ -62,28 +65,27 @@ def get_issue_title(code):
 def get_licenses():
     return [('', '')] + model.Package.get_license_options()
 
-import ckan.logic as logic
-from ckan.common import c
 
-def organizations_available_with_extra_fields(permission='manage_group', include_dataset_count=False):
-    '''Return a list of organizations that the current user has the specified
-    permission for.
-    '''
+def organizations_available_with_extra_fields(permission='manage_group', include_dataset_count=True):
+
+    ''' Return a list of organizations that the current user has the specified permission for. '''
+
     context = {'user': c.user}
     data_dict = {
         'permission': permission,
         'include_dataset_count': include_dataset_count}
     organizations = logic.get_action('organization_list_for_user')(context, data_dict)
-    org_extra= []
+    org_extra = []
+
     for organization in organizations:
+
         extras = get_publisher_extra_fields(organization['id'])
-        for key, value in extras:
-            organization[key] = value
+
+        for key in extras:
+            organization[key] = extras[key]
         org_extra.append(organization)
-
-    return org_extra
-
-
+    #print("*********** extras", org_extra[0])
+    return organizations
 
 
 def get_publisher_extra_fields(group_id):
@@ -405,3 +407,19 @@ def check_publisher_contact_email(organization):
         return data_dict['publisher_contact_email']
     else:
         return organization['publisher_contact_email']
+
+
+def organizations_cntry_type_logged_user(permission='manage_group', include_dataset_count=False):
+
+    '''Return a list of organizations that the current user has the specified
+    permission for.
+    '''
+
+    context = {'user': c.user}
+    data_dict = {
+        'permission': permission,
+        'include_dataset_count': include_dataset_count}
+    organizations = logic.get_action('organization_list_for_user')(context, data_dict)
+    print(organizations)
+
+    return None

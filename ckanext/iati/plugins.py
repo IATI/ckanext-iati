@@ -90,6 +90,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
                       ])))
             m.connect('publisher_activity', '/publisher/activity/{id}',
                       action='activity', ckan_icon='time')
+
             m.connect('publisher_read', '/publisher/{id}', action='read')
             m.connect('publisher_about', '/publisher/about/{id}',
                       action='about', ckan_icon='info-sign')
@@ -117,6 +118,16 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         map.connect('user_dashboard_pending_organizations', '/dashboard/pending',
             controller='ckanext.iati.controllers.publisher:PublisherController',
             action='dashboard_pending_organizations', ckan_icon='building')
+        map.connect('user_dashboard_my_organizations', '/dashboard/mypublishers',
+                    controller='ckanext.iati.controllers.publisher:PublisherController',
+                    action='dashboard_my_organizations')
+        map.connect('publisher_archiver', '/publisher/archiver/{id}',
+                    controller='ckanext.iati.controllers.publisher:PublisherController', action='archiver_page')
+        map.connect('archiver_controller_run', '/publisher/archiver/run/{publisher_id}',
+                    controller='ckanext.iati.controllers.archiver_controller:ArchiverRunStatus', action='archiver_controller_run')
+        map.connect('archiver_status', '/publisher/archiver/status/{task_id}',
+                    controller='ckanext.iati.controllers.archiver_controller:ArchiverRunStatus',
+                    action='check_status')
 
         #custom redirects
         redirects = {
@@ -284,6 +295,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         reports_controller = 'ckanext.iati.controllers.reports:ReportsController'
         map.connect('user_dashboard_datasets_custom', '/dashboard/datasets', controller=reports_controller, action='dashboard_datasets', ckan_icon='sitemap')
         map.connect('/report/issues', controller=reports_controller, action='issues_report')
+        map.connect('/report/download_issues_report', controller=reports_controller, action='download_issues_report')
         # Redirects needed after updating the datasets name for some of the publishers
         map.redirect('/dataset/wb-{code}','/dataset/worldbank-{code}',_redirect_code='301 Moved Permanently')
         map.redirect('/dataset/minbuza_activities','/dataset/minbuza_nl-activities',_redirect_code='301 Moved Permanently')
@@ -495,6 +507,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'dataset_follower_count',
             'radio',
             'check_publisher_contact_email',
+            'organizations_available_with_extra_fields'
         )
         return _get_module_functions(iati_helpers, function_names)
 
@@ -613,6 +626,7 @@ class IatiCsvImporter(p.SingletonPlugin):
         map.connect('/csv/upload', controller=csv_controller, action='upload',
                     conditions=dict(method=['POST']))
         map.connect('/csv/check_status/{task_id}', controller=csv_controller, action='check_status')
+
         return map
 
     def after_map(self, map):

@@ -5,6 +5,7 @@ from ckan import logic
 import ckan.plugins as p
 
 import ckan.lib.helpers as h
+import csv
 
 
 NotFound = logic.NotFound
@@ -14,6 +15,40 @@ NotAuthorized = logic.NotAuthorized
 class ReportsController(BaseController):
 
     def issues_report(self):
+
+        vars = {}
+
+        context = {
+            'model': model,
+            'session': model.Session,
+            'user': c.user,
+        }
+        data_dict = {
+            'publisher': request.params.get('publisher', None)
+        }
+
+        try:
+            result = logic.get_action('issues_report_csv')(context, data_dict)
+        except logic.NotAuthorized:
+            vars['authorization'] = "fail"
+            abort(401, 'Not authorized to see this report')
+
+        issues_data = []
+
+        with open(result['file'], 'r') as f:
+            reader = csv.reader(f)
+            header = reader.next()
+
+            for row in reader:
+                row[5] = row[5].split("T")[0]
+                issues_data.append(row)
+
+        vars['authorization'] = 'success'
+        vars['issues_content'] = issues_data
+        vars['header'] = header
+        return render('user/archiver_report.html', extra_vars=vars)
+
+    def download_issues_report(self):
 
         context = {
             'model': model,
@@ -52,14 +87,14 @@ class ReportsController(BaseController):
             abort(401, _('Not authorized to see this page'))
         c.user_dict = user_dict
 
-        items_per_page =  20  # , readme
+        items_per_page = 20  # , readme
 
         # check ckan version and call appropriate get_page number
         if p.toolkit.check_ckan_version(min_version='2.5.0',
                                         max_version='2.5.3'):
             page = self._get_page_number(request.params) or 1
         else:
-            page = h.get_page_number(request.params)  or 1
+            page = h.get_page_number(request.params) or 1
 
         c.page = h.Page(
             collection=user_dict['datasets'],

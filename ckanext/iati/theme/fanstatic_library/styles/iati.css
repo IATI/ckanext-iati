@@ -11408,3 +11408,9 @@ form .info-block.info-inline {
   transform-origin: bottom right;
   transition: transform 0.25s ease-out;
 }
+
+#export_to_csv{
+background-color: #0098db;
+color: #ffffff
+}
+

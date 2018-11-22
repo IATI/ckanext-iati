@@ -8,6 +8,8 @@ Example:
     {% snippet "organization/snippets/organization_list.html" %}
 
 #}
+
+
 <table class="table table-hover table-bordered table-striped table-sorted" data-module="table-sorter">
   <thead>
     <tr>
@@ -17,20 +19,21 @@ Example:
       <th title="Sort by number of published datasets">Datasets</th>
     </tr>
   </thead>
-
-  <tbody>
-  {% for organization in organizations %}
-    {% if (organization.package_count and organization.package_count > 0) or 'dashboard' in request.url %}
-      {% set extra_fields = h.get_publisher_extra_fields(organization['id']) %}
+   <tbody>
+   {% for organization in organizations %}
+    {% if (organization.package_count and ((organization.package_count|int) > 0)) or 'dashboard' in request.url %}
+      {% if (organization.package_count and ((organization.package_count|int) > 0)) %}
       <tr>
         <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.title) }}</a></td>
-        <td>{{ extra_fields.publisher_organization_type }}</td>
-        <td>{{ extra_fields.publisher_country }}</td>
+        <td>{{ organization.publisher_organization_type }}</td>
+        <td>{{ organization.publisher_country }}</td>
         <td>{{ organization.package_count }}</td>
       </tr>
     {% endif %}
+   {% endif %}
   {% endfor %}
   </tbody>
 </table>
+
 
 {% resource 'ckanext-iati/table_sorter' %}

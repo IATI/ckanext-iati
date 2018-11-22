@@ -1,15 +1,36 @@
 {% extends "page.html" %}
 {% block title %}CSV Import Results - {{ super() }}{% endblock %}
 
+
+
 {% block primary_content %}
+
+{% if Stat %}
+
 <h2 class="page_heading">CSV Export</h2>
+
+  <article>
+  <div>
+      <p>Your CSV upload <strong>{{file_name}}</strong> has been unsuccessful. <strong>{{ Stat }}</strong>.</p>
+
+    <p><a href="/csv/upload">Upload another file</a></p>
+  </div>
+
+  </article>
+
+{% else %}
+
+<h2 class="page_heading">CSV Export</h2>
+
   <article>
   <div>
     <p>Your CSV upload <strong>{{file_name}}</strong> has been imported. Check the table below for progress monitoring.</p>
 
     <p><a href="/csv/upload">Upload another file</a></p>
   </div>
-  
+
+
+
   {{ result }}
     <hr class="cleared" />
 
@@ -17,7 +38,6 @@
 
 
   </article>
-  {% endblock %}
 
   {% block scripts %}
       {{ super() }}
@@ -185,4 +205,10 @@
           }
       });
       </script>
-  {% endblock%}
+{% endblock%}
+
+{% endif %}
+
+{% endblock %}
+
+

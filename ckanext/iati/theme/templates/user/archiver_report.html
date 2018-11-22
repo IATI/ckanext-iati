@@ -1,0 +1,60 @@
+{% extends "page.html" %}
+{% block title %}Issues Report - {{ super() }}{% endblock %}
+
+{% block primary_content %}
+{% if authorization == "success" %}
+
+<div class="container">
+    <h2 align="center" class="page_heading">IATI Issues Report</h2>
+    <div class="table-responsive">
+<table class="table table-hover table-bordered table-striped table-sorted table-condensed w-auto table-fit" data-module="table-sorter" id="issues_report_table">
+  <thead>
+    <tr>
+        <th title="Index No">No</th>
+      <th title="Sort by publisher name">Publisher</th>
+      <th title="Dataset Name">Dataset</th>
+      <th title="Url">Url</th>
+        <th title="File url">File url</th>
+      <th title="Issue type">Issue type</th>
+      <th title="Issue date">Issue date</th>
+        <th title="Issue message">Issue message</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  {% for row in issues_content %}
+
+      <tr>
+          <td>{{ loop.index }}</td>
+          <td><a href="/publisher/{{ row[0] }}">{{ row[0] }}</a></td>
+        <td>{{ row[1] }}</td>
+          <td><a href="{{ row[2] }}" target="_blank">{{ row[2] }}</a></td>
+          <td><a href="{{ row[3] }}" target="_blank">{{ row[3] }}</a></td>
+        <td>{{ row[4] }}</td>
+        <td>{{ row[5] }}</td>
+          <td>{{ row[6] }}</td>
+      </tr>
+
+  {% endfor %}
+  </tbody>
+</table>
+    </div>
+
+<div class="row">
+
+        <div class="col-md-4 center-block" style="width: 100%; text-align: center;">
+        <a href="{{ h.url_for(controller='ckanext.iati.controllers.reports:ReportsController', action='download_issues_report') }}" class="btn btn-secondary center-block" id="export_to_csv">Export to csv</a>
+        </div>
+
+</div>
+</div>
+
+{% else %}
+
+<div class="container">
+
+    <p><strong>You are not authorized to see the report. Please login with appropriate credentials.</strong></p>
+
+</div>
+{% endif %}
+{% endblock %}

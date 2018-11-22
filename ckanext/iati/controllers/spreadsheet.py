@@ -84,7 +84,11 @@ class CSVController(p.toolkit.BaseController):
         from pylons import config
 
         if not c.user:
-            p.toolkit.abort(401, 'Permission denied, only publisher administrators can manage CSV files.')
+            vars = {}
+            vars['file_name'] = ""
+            vars['Stat'] = "Permission denied, only publisher administrators can manage CSV files. Please login with proper credentials"
+            return p.toolkit.render('csv/result.html', extra_vars=vars)
+            #p.toolkit.abort(401, 'Permission denied, only publisher administrators can manage CSV files.')
         try:
             self.is_sysadmin = authz.is_sysadmin(c.user)
 
@@ -96,14 +100,22 @@ class CSVController(p.toolkit.BaseController):
 
         if not self.is_sysadmin and not self.authz_orgs:
             # User does not have permissions on any publisher
-            p.toolkit.abort(401, 'Permission denied, only publisher administrators can manage CSV files.')
+            vars = {}
+            vars['file_name'] = ""
+            vars['Stat'] = "Permission denied, only publisher administrators can manage CSV files. Please login with proper credentials"
+            p.toolkit.render('csv/result.html', extra_vars=vars)
+            #p.toolkit.abort(401, 'Permission denied, only publisher administrators can manage CSV files.')
 
         if p.toolkit.request.method == 'GET':
             return p.toolkit.render('csv/upload.html')
         elif p.toolkit.request.method == 'POST':
             csv_file = p.toolkit.request.POST['file']
             if not hasattr(csv_file, 'filename'):
-                p.toolkit.abort(400, 'No CSV file provided')
+                vars = {}
+                vars['Stat'] = "No CSV file provided. Please upload a csv file."
+                vars['file_name'] = ""
+                return p.toolkit.render('csv/result.html', extra_vars=vars)
+                #p.toolkit.abort(400, 'No CSV file provided')
             vars = {}
             vars['file_name'] = csv_file.filename
             fieldnames = [f[0] for f in CSV_MAPPING]
@@ -184,18 +196,36 @@ class CSVController(p.toolkit.BaseController):
                     vars['errors'] = errors
                     vars['warnings'] = warnings
                     vars['tasks'] = []
-                    p.toolkit.abort(400, ('Error in CSV file : {0}; {1}'.format
-                                   (re.sub("([\{\}'])+", "", str(warnings)),
-                                        re.sub("([\{\}'])+", "", str(errors)))))
+
+                    if vars['file_name'].lower().endswith('.csv'):
+
+                        vars['Stat'] = 'Error in CSV file: {0}; {1}'.format(re.sub("([\{\}'])+", "", str(warnings)),
+                                                                            re.sub("([\{\}'])+", "", str(errors)))
+                        return p.toolkit.render('csv/result.html', extra_vars=vars)
+                        #p.toolkit.abort(400, ('Error in CSV file: {0}; {1}'.format
+                                       #(re.sub("([\{\}'])+", "", str(warnings)),
+                                            #re.sub("([\{\}'])+", "", str(errors)))))
+                    else:
+
+                        vars['Stat'] = "Please upload a valid csv file"
+                        return p.toolkit.render('csv/result.html', extra_vars=vars)
+                        # p.toolkit.abort(400, ('Error in CSV file: {0}; {1}'.format
+                        # (re.sub("([\{\}'])+", "", str(warnings)),
+                        # re.sub("([\{\}'])+", "", str(errors)))))
+
             except Exception as e:
                 vars['errors'] = errors
                 vars['warnings'] = warnings
                 vars['tasks'] = []
-                p.toolkit.abort(400, ('Error opening CSV file: {0}'.format(e.message)))
+                vars['Stat'] = "Please make sure file encoding is UTF-8!"
+
+                return p.toolkit.render('csv/result.html', extra_vars=vars)
+                #p.toolkit.abort(400, ('Error opening CSV file: {0}'.format("Please make sure csv encoding is right!s")))
 
             return p.toolkit.render('csv/result.html', extra_vars=vars)
 
     def check_status(self, task_id=None):
+
         result = {}
         if task_id and task_id!='undefined':
             try:
