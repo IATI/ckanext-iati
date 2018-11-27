@@ -46,11 +46,17 @@ class PublisherController(OrganizationController):
         return OrganizationController.index(self)
 
     def archiver_page(self, id):
-
         vars = {}
         vars['id'] = id
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author}
         c.group_dict = logic.get_action('organization_show')(context, {'id': id})
+        vars['publisher_id'] = True
+        return render('user/archiver.html', extra_vars=vars)
+
+    def dataset_archiver_page(self, id):
+        vars = {}
+        vars['id'] = id
+        vars['package_id'] = True
         return render('user/archiver.html', extra_vars=vars)
 

@@ -42,7 +42,7 @@ def text_traceback():
 
 
 
-def run(package_id=None, publisher_id=None):
+def run(package_id=None, publisher_id=None, pub_id=None):
 
 
     # TODO: use this when it gets to default ckan
@@ -56,6 +56,9 @@ def run(package_id=None, publisher_id=None):
         'apikey': config.get('iati.admin_user.api_key'),
         'api_version': 3,
     }
+
+    results = []
+
     if not context['site_url']:
         raise Exception('You have to set the "ckan.site_url" property in the '
                         'config file')
@@ -83,6 +86,28 @@ def run(package_id=None, publisher_id=None):
                                                           {'id': publisher_id,
                                                            'include_datasets': True})
         except toolkit.ObjectNotFound:
+            res = {}
+            log.error('Could not find Publisher: {0}'.format(publisher_id))
+            res['publisher_id'] = pub_id
+            res['issue_type'] = "unknown publisher"
+            res['issue_message'] = 'Could not find Publisher: {0}'.format(publisher_id)
+            results.append(res)
+            return results
+
+        package_ids = [p['name'] for p in org['packages']]
+        publisher_update = True
+    else:
+        try:
+            package_ids = toolkit.get_action('package_list')(context, {})
+        except toolkit.ObjectNotFound:
+            res = {}
+            log.error('Could not find package: {0}'.format(package_id))
+            res['publisher_id'] = pub_id
+            res['issue_type'] = "unknown package"
+            res['issue_message'] = 'Could not find package: {0}'.format(package_id)
+            results.append(res)
+            return results
+
 
 
     t1 = datetime.datetime.now()
@@ -97,34 +122,51 @@ def run(package_id=None, publisher_id=None):
 
 
     for package_id in package_ids:
+        result = {}
         updated_package = False
-        print("*******************************************************************************************")
-
         try:
-            updated_package = archive_package(package_id, context,
-                                              consecutive_errors)
+            updated_package, issue_type, issue_message = archive_package(package_id, context, consecutive_errors)
+            print "========= checking package ========" +package_id
+            result['publisher_id'] = pub_id
+            result['package_id'] = package_id
+            result['issue_type'] = issue_type
+            result['issue_message'] = issue_message
+
+            results.append(result)
+
         except Exception, e:
             consecutive_errors += 1
             log.error('Error downloading resource for dataset {0}: '
                       '{1}'.format(package_id, str(e)))
             log.error(text_traceback())
+            result['publisher_id'] = pub_id
+            result['package_id'] = package_id
+            result['issue_message'] = 'Error downloading resource for dataset {0}: {1}'.format(package_id, str(e))
+            result['issue_type'] = 'Download Error'
+
+
             if consecutive_errors > 15:
                 log.error('Too many errors...')
+                result['publisher_id'] = pub_id
+                result['package_id'] = package_id
+                result['issue_message'] = 'Too many errors'
+                result['issue_type'] = 'Too many errors'
                 if publisher_update:
                     log.error ('Aborting... The publisher can not be reached.')
-                    return False
+                    result['publisher_id'] = pub_id
+                    result['package_id'] = package_id
+                    result['issue_message'] = 'The publisher can not be reached.'
+                    result['issue_type'] = 'publisher unreachable'
+                    return result
+                else:
+                    continue
             else:
-                continue
-        else:
-            consecutive_errors = 0
-        if updated_package:
-            updated += 1
+                consecutive_errors = 0
+            if updated_package:
+                updated += 1
+            results.append(result)
 
-
-    t2 = datetime.datetime.now()
-    log.info('IATI Archiver: Done. Updated {0} packages. Total time: '
-             '{1}'.format(int(updated), str(t2 - t1)))
-    return True
+    return results
 
 
 
@@ -284,10 +326,10 @@ def archive_package(package_id, context, consecutive_errors=0):
 
         if update:
             package['extras'] = extras_to_list(extras_dict)
-            return update_package(context, package)
+            return update_package(context, package), None, None
 
 
-    return None
+    return None, None, None
 
 
 
@@ -300,7 +342,7 @@ def save_package_issue(context, data_dict, extras_dict, issue_type,
         log.info('Dataset {0} still has the same issue ({1} - {2}), '
                  'skipping...'.format(data_dict['name'], issue_type,
                                       issue_message))
-        return None
+        return None, issue_type, issue_message
     else:
         extras_dict[u'issue_type'] = unicode(issue_type)
         extras_dict[u'issue_message'] = unicode(issue_message)
@@ -313,7 +355,7 @@ def save_package_issue(context, data_dict, extras_dict, issue_type,
                   '{2}'.format(data_dict['name'], issue_type, issue_message))
 
 
-        return update_package(context, data_dict)
+        return update_package(context, data_dict), issue_type, issue_message
 
 
 
@@ -351,7 +393,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
 
     res = None
     resource_changed = False
-
+    print("************************************************************************", resource['url'])
 
     link_context = "{}"
     link_data = json.dumps({

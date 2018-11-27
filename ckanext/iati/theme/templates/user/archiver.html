@@ -1,6 +1,8 @@
 
 {% extends "page.html" %}
 
+
+
 {% block primary %}
               <div class="primary col-sm-9 col-xs-12">
                 {#
@@ -26,27 +28,49 @@
                         <ul class="nav nav-tabs">
 
 {% block content_primary_nav %}
+   {% if not package_id %}
+      {{ h.build_nav_icon('publisher_read', _('Datasets'), id=c.group_dict.name) }}
+      {{ h.build_nav_icon('publisher_activity', _('Activity Stream'), id=c.group_dict.name) }}
+      {{ h.build_nav_icon('publisher_about', _('About'), id=c.group_dict.name) }}
+      {{ h.build_nav_icon('publisher_archiver', _('Archiver'), id=c.group_dict.name) }}
+   {% else %}
+       {{ h.build_nav_icon('dataset_read', _('Dataset'), id=id) }}
+  {{ h.build_nav_icon('dataset_activity', _('Activity Stream'), id=id) }}
+  {% set history_link = h.nav_link(_('History'), controller='package', action='history', id=id, icon='code-fork') %}
+{{ h.build_nav_icon('dataset_archiver', _('Archiver'), id=id) }}
+  {% set active_check = history_link|replace("active", "")|length %}
+  <li>{% if history_link|length != active_check %} class="active"> {% endif %}{{ history_link }}</li>
 
-  {{ h.build_nav_icon('publisher_read', _('Datasets'), id=c.group_dict.name) }}
-  {{ h.build_nav_icon('publisher_activity', _('Activity Stream'), id=c.group_dict.name) }}
-  {{ h.build_nav_icon('publisher_about', _('About'), id=c.group_dict.name) }}
-  {{ h.build_nav_icon('publisher_archiver', _('Archiver'), id=c.group_dict.name) }}
-
+    {% endif %}
 {% endblock %}
                         </ul>
                       </header>
                     {% endblock %}
-
+                    {% if not package_id %}
                     <div class="module-content">
                         <p>"This is to validate all the data sets belongs to the publisher <strong>{{ c.group_dict.name }}</strong>. Please note this may take several minutes to run dependiong on the number of datasets."</p>
                     <a href="/publisher/archiver/run/{{ c.group_dict.name }}" class="btn btn-secondary center-block" id="export_to_csv">Run Archiver</a>
                     </div>
+                      {% else %}
+                      <div class="module-content">
+                        <p>"This is to validate the data set <strong>{{ id }}</strong>. Please note this may take several minutes to run.."</p>
+                    <a href="/dataset/archiver/run/{{ id }}" class="btn btn-secondary center-block" id="export_to_csv">Run Archiver</a>
+                    </div>
+                      {% endif %}
                   </article>
                 {% endblock %}
               </div>
 
+              <aside class="secondary col-sm-3">
+
+                  {% snippet 'snippets/organization.html', organization=c.group_dict %}
+
+              </aside>
+
 
 {% endblock %}
+
+
 
 
 

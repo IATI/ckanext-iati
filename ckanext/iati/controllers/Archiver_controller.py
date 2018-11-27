@@ -15,7 +15,6 @@ import ckan.plugins as p
 log = logging.getLogger('iati_archiver')
 
 
-
 class ArchiverRunStatus(BaseController):
 
     def __init__(self):
@@ -34,35 +33,41 @@ class ArchiverRunStatus(BaseController):
 
                 if job.result:
                     result['result'] = {}
+
                     try:
 
                         print("*****************************status***********************************", job.result)
-                        #data = json.loads(job.result)
 
-                        #result['result']['added'] = data['added']
-                        #result['result']['updated'] = data['updated']
-                        #result['result']['errors'] = data['errors']
-                        #result['result']['warnings'] = data['warnings']
+                        result['result'].update(job.result[0])
+                        result['result']['task_id'] = task_id
 
                     except Exception as e:
 
                         result.update({'status': "failed"})
                         result['result'] = {}
-                        result['result']['errors'] = "Something went wrong, please try again or contact support."
+                        result['result']['issue_type'] = "unknown error"
+                        result['result']['issue_message'] = "Something went wrong, please try again or contact support."
+                        result['result']['task_id'] = task_id
 
             except Exception as e:
                 result.update({'status': "failed"})
                 result['result'] = {}
-                result['result']['errors'] = "Something went wrong 1, please try again or contact support quoting the error \"Background job was not created\""
+                result['result']['issue_type'] = "unknown error"
+                result['result']['issue_message'] = "Something went wrong, please try again or contact support quoting the error \"Background job was not created\""
+                result['result']['task_id'] = task_id
 
         else:
             result.update({'status': 'failed'})
             result['result'] = {}
-            result['result']['errors'] = "Something went wrong 2, please try again or contact support quoting the error \"Background job was not created\""
+            result['result']['issue_type'] = "unknown error"
+            result['result']['issue_message'] = "Something went wrong, please try again or contact support quoting the error \"Background job was not created\""
+            result['result']['task_id'] = task_id
 
         return json.dumps(result)
 
     def archiver_controller_run(self, publisher_id=None, package_id=None):
+
+        print "********************************** pkg **************************************" + str(package_id)
 
         context = {
             'model': model,
@@ -109,19 +114,28 @@ class ArchiverRunStatus(BaseController):
 
         for index, package_id in enumerate(package_ids):
             task = OrderedDict()
-            job = jobs.enqueue(arch.run, [package_id, publisher_id])
+
+            job = jobs.enqueue(arch.run, [package_id, None, publisher_id])
+
             task[u'task_id'] = job.id
             task[u'name'] = package_id
             task[u'status'] = 'Queued'
-            task[u'title'] = org['packages'][index-1]['title']
+            if publisher_id:
+                task[u'title'] = org['packages'][index]['title']
+            else:
+                pkg = toolkit.get_action('package_show')(context, {'id': package_id})
+                task[u'title'] = pkg['title']
             tasks.append(json.dumps(task))
         pkg_stat['status'] = "success"
         pkg_stat['message'] = "All jobs are initiated successfully"
         pkg_stat['tasks'] = tasks
-        pkg_stat['id'] = publisher_id
-        #context = {'model': model, 'session': model.Session,
-                   #'user': c.user or c.author}
-        #c.group_dict = logic.get_action('organization_show')(context, {'id': id})
+        if publisher_id:
+            pkg_stat['id'] = publisher_id
+        else:
+            pkg_stat['id'] = package_id
+
+        if publisher_id:
+            pkg_stat['from_publisher'] = True
 
         return render('user/archiver_result.html', extra_vars=pkg_stat)
 

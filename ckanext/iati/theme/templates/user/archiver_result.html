@@ -26,10 +26,20 @@
 
 {% block content_primary_nav %}
 
-  {{ h.build_nav_icon('publisher_read', _('Datasets'), id=id) }}
-  {{ h.build_nav_icon('publisher_activity', _('Activity Stream'), id=id) }}
-  {{ h.build_nav_icon('publisher_about', _('About'), id=id) }}
-  {{ h.build_nav_icon('publisher_archiver', _('Archiver'), id=id) }}
+   {% if from_publisher %}
+
+      {{ h.build_nav_icon('publisher_read', _('Datasets'), id=id) }}
+      {{ h.build_nav_icon('publisher_activity', _('Activity Stream'), id=id) }}
+      {{ h.build_nav_icon('publisher_about', _('About'), id=id) }}
+      {{ h.build_nav_icon('publisher_archiver', _('Archiver'), id=id) }}
+   {% else %}
+    {{ h.build_nav_icon('dataset_read', _('Dataset'), id=id) }}
+    {{ h.build_nav_icon('dataset_activity', _('Activity Stream'), id=id) }}
+    {% set history_link = h.nav_link(_('History'), controller='package', action='history', id=id, icon='code-fork') %}
+    {{ h.build_nav_icon('dataset_archiver', _('Archiver'), id=id) }}
+     {% set active_check = history_link|replace("active", "")|length %}
+  <li{% if history_link|length != active_check %} class="active"{% endif %}>{{ history_link }}</li>
+    {% endif %}
 
 {% endblock %}
                         </ul>
@@ -43,7 +53,7 @@
         <th title="Index No">No</th>
       <th title="Sort by publisher name">Dataset Name</th>
       <th title="Dataset Name">Status</th>
-      <th title="Message">Message</th>
+        <th title="Issue_message">Message</th>
     </tr>
   </thead>
 
@@ -53,35 +63,87 @@
 </table>
                     </div>
                   </article>
+
+
                 {% endblock %}
+
+
               </div>
+
 <script
         src="https://code.jquery.com/jquery-3.2.1.min.js"
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
 <script>
+var  activeTasks_avail = 10;
+var tasks = {{tasks | safe }};
+var task_ids_pending = []
+var prev_length = task_ids_pending.length
+
+function capitalizeFirstLetter(string) {
+          return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+      }
+
+var check = function(task_id){
+            if(activeTasks_avail > 0){
+                activeTasks_avail = activeTasks_avail - 1;
+                PollState(task_id) ;
+            }
+            else {
+                setTimeout(check, 1000, task_id); // check again in a second
+            }
+        }
 
 var PollState = function(task_id) {
           $.ajax({
-              url: "/publisher/archiver/status/" + task_id,
+              url: "/archiver/status/" + task_id,
               type: "GET",
           }).done(function(task) {
               task = JSON.parse(task);
-              console.log(task);
+              //console.log(task_id)
+              console.log(task)
+
              if (task.status !== "finished" && task.status !== "failed") {
                   if (task.status =="started"){
-                    setTimeout(PollState(task_id), 3000)
-                  }else{
-                    setTimeout(PollState(task_id), 10000)
-                  }
-              }else{
+                        //if (start == null){
+                        //console.log("dsf");
+                         //$("#" + task_id).toggleClass('label label-info disabled '+statusbutton("started"))
+                  //$("#" + task_id).text('Started');
+                  //start = "Started"}
 
-                //console.log(task);
+                    setTimeout(PollState, 10000, task_id)
+                  }else{
+                    setTimeout(PollState, 10000, task_id)
+                  }
+              }
+              else{
+
+                activeTasks_avail = activeTasks_avail + 1
+
+
+                if (task.status == "finished") {
+                    if ((task.result.issue_message != null) || (task.result.issue_type != null)){
+                    $("#" + task_id).toggleClass('label label-info disabled '+statusbutton("errors"))
+                    $("#" + task_id).text('Error')
+                    $("#issue_mssg" + task_id).html("<b>"+task.result.issue_type+": </b>"+task.result.issue_message)}
+                    else {
+                     $("#" + task_id).toggleClass('label label-info disabled '+statusbutton("finished"))
+                     $("#" + task_id).text('Success')
+                      $("#issue_mssg" + task_id).text("Verification complete without errors.")}
+                    }
+
+                else if(task.status == "failed"){
+
+                $("#" + task_id).toggleClass('label label-info disabled '+statusbutton(task.status))
+                $("#" + task_id).text('Failed')
+                $("#issue_mssg" + task_id).html("<b>"+task.result.issue_type+": </b>"+task.result.issue_message)}
+
               }
           }).fail(function(task){
 
-
-              //colnsole.log(task)
+                activeTasks_avail = activeTasks_avail + 1
+                 $("#" + task_id).html('label label-info disabled '+statusbutton(t.status))
+                 $("#issue_mssg" + task_id).html("<b>"+task.result.issue_type+": </b>"+task.result.issue_message)
           });
       }
 
@@ -99,20 +161,41 @@ function statusbutton(string) {
              case "started" :
                     buttonClass ="label label-info"
                     break ;
+             case "errors":
+                    buttonClass ="label label-danger"
+                    break ;
              default:
                     buttonClass ="label label-warning"
                     break;
           }
-          return '<span class="' + buttonClass +   '" data-placement="right" title="'+string+'">'+capitalizeFirstLetter(string)+'</span>'
+          return buttonClass
 
 
       }
 
-var tasks = {{tasks | safe }};
+
+
 for (i=0; i < tasks.length; i++){
-var task = JSON.parse(tasks[i])
+var task = JSON.parse(tasks[i]);
+console.log(task);
 var cnt = (i+1).toString();
-$('#issues_report_table').find('tbody').append('<tr><td>'+cnt+'</td><td>'+task.title+'</td><td><span class="label label-info" data-placement="right" title="queued" id='+task.task_id+'>'+task.status+'</span></td><td></td></tr>');
-PollState(task.task_id)}
+$('#issues_report_table').find('tbody').append('<tr><td>'+cnt+'</td><td><a href ='+"/package/"+task.name+'>'+task.title+'</a></td><td><span class="label label-info disabled" data-placement="right" title="queued" id='+task.task_id+'>'+task.status+'</span></td><td id='+"issue_mssg"+task.task_id+'></td></tr>');
+}
+
+
+for (i=0; i< tasks.length; i++){
+               var t = JSON.parse(tasks[i]);
+               if (t.status === "failed"){
+
+                   $("#" + t.task_id).html(statusbutton(t.status))
+
+               }
+               else{
+
+                      check(t.task_id) ;
+
+                   }
+          }
+
 </script>
 {% endblock %}

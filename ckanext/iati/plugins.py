@@ -125,9 +125,14 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
                     controller='ckanext.iati.controllers.publisher:PublisherController', action='archiver_page')
         map.connect('archiver_controller_run', '/publisher/archiver/run/{publisher_id}',
                     controller='ckanext.iati.controllers.archiver_controller:ArchiverRunStatus', action='archiver_controller_run')
-        map.connect('archiver_status', '/publisher/archiver/status/{task_id}',
+        map.connect('archiver_status', '/archiver/status/{task_id}',
                     controller='ckanext.iati.controllers.archiver_controller:ArchiverRunStatus',
                     action='check_status')
+        map.connect('dataset_archiver', '/dataset/archiver/{id}',
+                    controller='ckanext.iati.controllers.publisher:PublisherController', action='dataset_archiver_page')
+        map.connect('archiver_controller_run', '/dataset/archiver/run/{package_id}',
+                    controller='ckanext.iati.controllers.archiver_controller:ArchiverRunStatus',
+                    action='archiver_controller_run')
 
         #custom redirects
         redirects = {

@@ -22,8 +22,9 @@
   {{ h.build_nav_icon('dataset_read', _('Dataset'), id=pkg.name) }}
   {{ h.build_nav_icon('dataset_activity', _('Activity Stream'), id=pkg.name) }}
   {% set history_link = h.nav_link(_('History'), controller='package', action='history', id=pkg.name, icon='code-fork') %}
+{{ h.build_nav_icon('dataset_archiver', _('Archiver'), id=pkg.name) }}
   {% set active_check = history_link|replace("active", "")|length %}
-  <li>{% if history_link|length != active_check %} class="active" {% endif %}>{{ history_link }}</li>
+  <li{% if history_link|length != active_check %} class="active" {% endif %}>{{ history_link }}</li>
 {% endblock %}
 
 {% block package_info %}
