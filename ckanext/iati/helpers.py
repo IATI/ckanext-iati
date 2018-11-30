@@ -324,6 +324,7 @@ def get_first_published_date(organization):
 
         # Setup for search, since package_search action returns the first
         # 1000 rows by default.
+        dates = []
         data_dict = {
             'fq': 'organization:{}'.format(organization['name']),
             'rows': 1000000000

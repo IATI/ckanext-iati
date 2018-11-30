@@ -62,9 +62,8 @@
               </div>
 
               <aside class="secondary col-sm-3">
-
-                  {% snippet 'snippets/organization.html', organization=c.group_dict %}
-
+                  {% set org = organization or c.group_dict %}
+                  {% snippet 'snippets/organization.html', organization=org %}
               </aside>
 
 

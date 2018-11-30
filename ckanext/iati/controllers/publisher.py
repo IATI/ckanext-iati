@@ -57,6 +57,11 @@ class PublisherController(OrganizationController):
     def dataset_archiver_page(self, id):
         vars = {}
         vars['id'] = id
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user or c.author}
+        pkg = logic.get_action('package_show')(context, {'id': id})
+        print pkg['organization']
+        vars['organization'] = pkg['organization']
         vars['package_id'] = True
         return render('user/archiver.html', extra_vars=vars)
 
