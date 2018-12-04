@@ -7,7 +7,7 @@
     {{ self.flash() }}
 
     {% trans %}
-      <h1><strong>IATI Data</strong> is the place to search, register and use IATI data.</h1>
+      <h1><strong>IATI Registry</strong> is the place register your organisation and IATI datasets.</h1>
     {% endtrans %}
   </div>
 
@@ -38,8 +38,8 @@
         <a href="{{ h.url_for(controller='ckanext.iati.controllers.static:StaticController', action='dashboard') }}" class="block">Dashboard</a>
         <p>The IATI Dashboard provides statistics, charts and metrics on IATI data</p>
         <ul>
-          <li><a href="http://opendevtoolkit.org">See a list of projects, websites and tools that utilise IATI data</a></li>
-          <li><a href="/registry-api">Developer?  Resources to help.</a></li>
+          <li><a href="https://iatistandard.org/en/using-data/">Find out how use IATI data</a></li>
+          <li><a href="https://iatistandard.org/en/using-data/IATI-tools-and-resources/using-IATI-registry/">Find out about the Registry API</a></li>
         </ul>
       </div>
     </div>
