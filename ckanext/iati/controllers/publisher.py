@@ -46,13 +46,16 @@ class PublisherController(OrganizationController):
         return OrganizationController.index(self)
 
     def archiver_page(self, id):
-        vars = {}
-        vars['id'] = id
+        group_type = self._ensure_controller_matches_group_type(id)
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author}
         c.group_dict = logic.get_action('organization_show')(context, {'id': id})
-        vars['publisher_id'] = True
-        return render('user/archiver.html', extra_vars=vars)
+        group_type = c.group_dict['type']
+        self._setup_template_variables(context, {'id': id, 'organization':c.group_dict},
+                                       group_type=group_type)
+        return render('organization/archiver.html',
+                      extra_vars={'group_type': group_type})
+
 
     def dataset_archiver_page(self, id):
         vars = {}

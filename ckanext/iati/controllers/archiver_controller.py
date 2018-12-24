@@ -89,7 +89,7 @@ class ArchiverRunStatus(BaseController):
 
         tasks = []
         pkg_stat = {}
-
+       
         if package_id:
             package_ids = [package_id]
         elif publisher_id:
@@ -112,18 +112,18 @@ class ArchiverRunStatus(BaseController):
                 pkg_stat['message'] = 'Could not find Publisher: {0}'.format(publisher_id)
                 return pkg_stat
 
-        for index, package_id in enumerate(package_ids):
+        for index, pkg_id in enumerate(package_ids):
             task = OrderedDict()
 
-            job = jobs.enqueue(arch.run, [package_id, None, publisher_id])
+            job = jobs.enqueue(arch.run, [pkg_id, None, publisher_id])
 
             task[u'task_id'] = job.id
-            task[u'name'] = package_id
+            task[u'name'] = pkg_id
             task[u'status'] = 'Queued'
             if publisher_id:
                 task[u'title'] = org['packages'][index]['title']
             else:
-                pkg = toolkit.get_action('package_show')(context, {'id': package_id})
+                pkg = toolkit.get_action('package_show')(context, {'id': pkg_id})
                 task[u'title'] = pkg['title']
             tasks.append(json.dumps(task))
         pkg_stat['status'] = "success"
@@ -132,11 +132,13 @@ class ArchiverRunStatus(BaseController):
         if publisher_id:
             pkg_stat['id'] = publisher_id
         else:
-            pkg_stat['id'] = package_id
+            pkg_stat['id'] = pkg_id
 
         if publisher_id:
             pkg_stat['from_publisher'] = True
 
-        return render('user/archiver_result.html', extra_vars=pkg_stat)
-
+        if publisher_id:
+            return render('user/archiver_result.html', extra_vars=pkg_stat)
+        else:
+            return render('user/archiver_result.html', extra_vars=pkg_stat)
 
