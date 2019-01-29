@@ -89,3 +89,21 @@
 {% block package_organization %}{% endblock %}
 
 {% block package_license %}{% endblock %}
+
+{% block body_extras %}
+  {{ super() }}
+  {% block structured_data %}
+    {#
+    h.structured_data is defined in the 'structured_data' plugin,
+    you have to activate the plugin (or implement the method yourself)
+    to make use of this feature.
+    More information about structured data:
+    https://developers.google.com/search/docs/guides/intro-structured-data
+    #}
+
+    <script type="application/ld+json">
+    {{ h.structured_data_markup(pkg.id)|safe }}
+    </script>
+{% endblock %}
+{% endblock %}
+

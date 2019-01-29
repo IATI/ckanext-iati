@@ -512,7 +512,10 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'dataset_follower_count',
             'radio',
             'check_publisher_contact_email',
-            'organizations_available_with_extra_fields'
+            'organizations_available_with_extra_fields',
+            'structured_data_markup',
+            'email_validator',
+            'get_username'
         )
         return _get_module_functions(iati_helpers, function_names)
 
@@ -532,7 +535,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'organization_list_publisher_page',
             'organization_list_pending',
             'user_show',
-            'resource_delete'
+            'resource_delete',
+            'user_list'
         )
         return _get_module_functions(iati_actions, function_names)
 

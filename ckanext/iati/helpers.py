@@ -2,13 +2,14 @@ import urllib
 import os
 from xml.etree import ElementTree
 import datetime
+import json
 
 # Bad import: should be in toolkit
 from pylons import config
 from webhelpers.html import literal
 
 import ckan.model as model # get_licenses should be in core
-
+from ckan.model import User
 import ckan.plugins as p
 import ckan.lib.helpers as helpers
 import ckan.lib.formatters as formatters
@@ -19,6 +20,8 @@ import ckanext.iati.lists as lists
 import ckan.logic as logic
 from ckan.common import c
 
+from ckanext.dcat.processors import RDFSerializer
+    
 
 def get_countries():
     countries = (("", u"(No country assigned)"),)
@@ -424,3 +427,93 @@ def organizations_cntry_type_logged_user(permission='manage_group', include_data
     print(organizations)
 
     return None
+
+def dcat_markup_dataset_show(context, data_dict):
+
+    p.toolkit.check_access('dcat_dataset_show', context, data_dict)
+
+    dataset_dict = p.toolkit.get_action('package_show')(context, data_dict)
+    print dataset_dict
+    dataset_dict['notes'] = dataset_dict['title']
+    print dataset_dict
+
+    serializer = RDFSerializer(profiles=data_dict.get('profiles'))
+
+    output = serializer.serialize_dataset(dataset_dict,
+                                          _format=data_dict.get('format'))
+
+    return output
+
+def structured_data_markup(dataset_id, profiles=None, _format='jsonld'):
+    '''
+    Returns a string containing the structured data of the given
+    dataset id and using the given profiles (if no profiles are supplied
+    the default profiles are used).
+    This string can be used in the frontend.
+    This function was orignally defined in dcat extension. But as in IATI 
+    we have no descriptions of datasets, we simply have to add it manually here. 
+    '''
+    if not profiles:
+        profiles = ['schemaorg']
+
+    data =dcat_markup_dataset_show(
+        {},
+        {
+            'id': dataset_id, 
+            'profiles': profiles, 
+            'format': _format, 
+        }
+    )
+    # parse result again to prevent UnicodeDecodeError and add formatting
+    try:
+        json_data = json.loads(data)
+        return json.dumps(json_data, sort_keys=True,
+                          indent=4, separators=(',', ': '))
+    except ValueError:
+        # result was not JSON, return anyway
+        return data
+
+
+def email_validator(email):
+    ''' Validates the given email '''
+
+    val = email.split('@')
+
+    if len(val) == 2:
+
+        return True
+
+    else:
+        return False
+
+
+def get_username(value):
+
+    '''
+     Returns a username if the given value is email id else returns the same value -
+    '''
+
+    user = []
+
+    if '@' in value:
+
+        if email_validator(value):
+            potential_users = User.by_email(value)
+            if len(potential_users) == 1:
+
+                user = potential_users[0].__dict__
+
+                return [user]
+
+            elif len(potential_users) == 0:
+
+                return user
+
+            else:
+
+                return potential_users
+        else:
+            return user
+    else:
+
+        return user
