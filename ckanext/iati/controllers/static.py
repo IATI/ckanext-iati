@@ -1,4 +1,4 @@
-from ckan.lib.base import redirect, render, BaseController
+from ckan.lib.base import render, BaseController
 
 # TODO: replace with ckanext-pages
 

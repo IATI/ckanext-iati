@@ -17,7 +17,9 @@ from ckanext.iati.logic.validators import (db_date,
                                            email_validator,
                                            file_type_validator,
                                            iati_org_identifier_validator,
-                                           remove_leading_or_trailing_spaces
+                                           remove_leading_or_trailing_spaces,
+                                           licence_validator,
+                                           iati_resource_url_mandatory
                                           )
 from ckanext.iati.logic.converters import strip
 import ckanext.iati.helpers as iati_helpers
@@ -369,7 +371,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         schema['name'].extend([iati_dataset_name, iati_one_resource])
         schema['owner_org'].append(iati_owner_org_validator)
 
-        schema['resources']['url'].extend([iati_resource_count, strip, iati_resource_url])
+        schema['resources']['url'].extend([iati_resource_count, strip, iati_resource_url_mandatory])
 
         return schema
 
@@ -547,7 +549,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         function_names = (
             'package_create',
             'package_update',
-            'issues_report_csv',
+            'issues_report_csv'
         )
         return _get_module_functions(iati_auth, function_names)
 

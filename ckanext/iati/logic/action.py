@@ -23,14 +23,20 @@ import ckanext.iati.emailer as emailer
 import ckanext.iati.helpers as hlp
 
 from paste.deploy.converters import asbool
-
+from ckan.common import _
+import ckan
+import cStringIO
+import codecs
 
 log = logging.getLogger(__name__)
 
 site_url = config.get('ckan.site_url', 'http://iatiregistry.org')
 
+_validate = ckan.lib.navl.dictization_functions.validate
+_table_dictize = ckan.lib.dictization.table_dictize
 _check_access = logic.check_access
 NotFound = logic.NotFound
+ValidationError = logic.ValidationError
 _get_or_bust = logic.get_or_bust
 
 _select = sqlalchemy.sql.select
@@ -162,13 +168,35 @@ def package_show_rest(context, data_dict):
     return package_dict
 
 
+def issues_write_to_csv(field_names, issues):
+
+    fd, tmp_file_path = tempfile.mkstemp(suffix='.csv')
+
+    with open(tmp_file_path, 'w') as f:
+        writer = csv.DictWriter(f, fieldnames=field_names, quoting=csv.QUOTE_ALL)
+        writer.writerow(dict((n, n) for n in field_names))
+        for issue_row in issues:
+            del issue_row['publisher_title']
+            del issue_row['dataset_title']
+            writer.writerow(issue_row)
+
+    return {
+        'file': tmp_file_path,
+    }
+
+
 def issues_report_csv(context, data_dict):
+
+    is_download = data_dict.get('is_download', None)
+    del data_dict['is_download']
 
     logic.check_access('issues_report_csv', context, data_dict)
 
     publisher_name = data_dict.get('publisher', None)
 
     issues = {}
+    field_names = ['publisher', 'dataset', 'url', 'file_url', 'issue_type', 'issue_date', 'issue_message']
+    issuues_report = []
 
     # Get packages with issues
     if publisher_name:
@@ -190,9 +218,6 @@ def issues_report_csv(context, data_dict):
                 result = packages_with_issues_for_a_publisher(context, publisher_name)
                 issues[publisher_name] = result['results']
 
-
-    fd, tmp_file_path = tempfile.mkstemp(suffix='.csv')
-
     def get_extra(pkg_dict, key, default=None):
         for extra in pkg_dict['extras']:
             if extra['key'] == key:
@@ -202,31 +227,28 @@ def issues_report_csv(context, data_dict):
 
         return default
 
-    with open(tmp_file_path, 'w') as f:
-        field_names = ['publisher', 'dataset', 'url', 'file_url', 'issue_type', 'issue_date', 'issue_message']
-        writer = csv.DictWriter(f, fieldnames=field_names, quoting=csv.QUOTE_ALL)
-        writer.writerow(dict( (n,n) for n in field_names ))
-        for publisher, datasets in issues.iteritems():
-            for dataset in datasets:
-                url = urljoin(site_url, '/dataset/' + dataset['name'])
-                if len(dataset['resources']):
-                    file_url = dataset['resources'][0]['url']
-                else:
-                    file_url = ''
+    for publisher, datasets in issues.iteritems():
+        for dataset in datasets:
+            url = urljoin(site_url, '/dataset/' + dataset['name'])
+            if len(dataset['resources']):
+                file_url = dataset['resources'][0]['url']
+            else:
+                file_url = ''
 
-                writer.writerow({
-                    'publisher': publisher,
-                    'dataset': dataset['name'],
-                    'url': url,
-                    'file_url': file_url,
-                    'issue_type': get_extra(dataset, 'issue_type', ''),
-                    'issue_date': get_extra(dataset, 'issue_date', ''),
-                    'issue_message': get_extra(dataset, 'issue_message', ''),
-                })
-
-        return {
-            'file': tmp_file_path,
-        }
+            issuues_report.append({
+                                'publisher': publisher,
+                                'dataset': dataset['name'],
+                                'url': url,
+                                'file_url': file_url,
+                                'issue_type': get_extra(dataset, 'issue_type', ''),
+                                'issue_date': get_extra(dataset, 'issue_date', ''),
+                                'issue_message': get_extra(dataset, 'issue_message', ''),
+                                'publisher_title': dataset['organization']['title'],
+                                'dataset_title': format(dataset['title'])})
+    if is_download:
+        return issues_write_to_csv(field_names, issuues_report)
+    else:
+        return issuues_report
 
 
 def packages_with_issues_for_a_publisher(context, publisher_name):
@@ -238,6 +260,7 @@ def packages_with_issues_for_a_publisher(context, publisher_name):
 
         return logic.get_action('package_search')(context, data_dict)
 
+
 def _get_sysadmins(context):
 
     model = context['model']
@@ -245,6 +268,7 @@ def _get_sysadmins(context):
     q = model.Session.query(model.User) \
              .filter(model.User.sysadmin==True)
     return q.all()
+
 
 def _send_new_publisher_email(context, organization_dict):
 
@@ -384,6 +408,7 @@ def _group_or_org_list_optimized(context, data_dict, is_org=False):
         group_list = [group[ref_group_by] for group in group_list]
 
     return group_list
+
 
 def _approval_needed(context, data_dict, is_org=False):
     model = context['model']
@@ -572,11 +597,10 @@ def user_list(context, data_dict):
       or draft state.
 
     '''
-    print "********************** user list **************"
-    print data_dict['id']
 
-    if '@' in data_dict['id']:
-        return hlp.get_username(data_dict['id'])
+    if 'id' in data_dict.keys():
+        if '@' in data_dict['id']:
+            return hlp.get_username(data_dict['id'])
 
     model = context['model']
 

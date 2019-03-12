@@ -1,7 +1,4 @@
-
 {% extends "page.html" %}
-
-
 
 {% block primary %}
               <div class="primary col-sm-9 col-xs-12">
@@ -48,7 +45,7 @@
                     {% endblock %}
                     {% if not package_id %}
                     <div class="module-content">
-                        <p>"This is to validate all the data sets belongs to the publisher <strong>{{ c.group_dict.name }}</strong>. Please note this may take several minutes to run dependiong on the number of datasets."</p>
+                        <p>"This is to validate all the data sets belongs to the publisher <strong>{{ c.group_dict.name }}</strong>. Please note this may take several minutes to run depending on the number of datasets."</p>
                     <a href="/publisher/archiver/run/{{ c.group_dict.name }}" class="btn btn-secondary center-block" id="export_to_csv">Run Archiver</a>
                     </div>
                       {% else %}
@@ -62,8 +59,39 @@
               </div>
 
               <aside class="secondary col-sm-3">
-                  {% set org = organization or c.group_dict %}
-                  {% snippet 'snippets/organization.html', organization=org %}
+                  {% snippet 'snippets/dataset_snippet.html', pkg=pkg %}
+                  {% block package_social %}
+                      <div class="module">
+                        <h2 class="module-heading">
+                          <i class="icon-file"></i> Metadata
+                        </h2>
+                        <ul class="nav nav-simple">
+                          <li class="nav-item">
+                            {% set api_url = h.url_for(controller='api', logic_function='package_show', action='action', id=c.pkg.name, ver=3) %}
+                            <a href="{{ g.api_url ~ api_url }}">JSON</a>
+                          </li>
+                          {% if g.rdf_packages %}
+                            <li class="nav-item">
+                              <a href="{{ g.rdf_packages ~ pkg.name }}">RDF</a>
+                            </li>
+                          {% endif %}
+                        </ul>
+                      </div>
+                    {% set current_url = h.full_current_url() %}
+                    {% block social %}
+                      <section class="module module-narrow social">
+                        {% block social_title %}
+                          <h2 class="module-heading"><i class="fa fa-medium fa-share-square-o"></i> {{ _('Social') }}</h2>
+                        {% endblock %}
+                        {% block social_nav %}
+                          <ul class="nav nav-simple">
+                            <li class="nav-item"><a href="https://twitter.com/share?url={{ current_url }}" target="_blank"><i class="fa fa-twitter-square"></i> Twitter</a></li>
+                            <li class="nav-item"><a href="https://www.facebook.com/sharer.php?u={{ current_url }}" target="_blank"><i class="fa fa-facebook-square"></i> Facebook</a></li>
+                          </ul>
+                        {% endblock %}
+                      </section>
+                    {% endblock %}
+                  {% endblock %}
               </aside>
 
 

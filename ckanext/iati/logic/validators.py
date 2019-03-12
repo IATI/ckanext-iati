@@ -22,7 +22,7 @@ def iati_resource_count(key, data, errors, context):
 def iati_resource_url(value, context):
     if not value:
         return
-
+    
     try:
         url = urlparse(value)
     except ValueError:
@@ -36,6 +36,14 @@ def iati_resource_url(value, context):
 
     value = urlunparse(url)
 
+    return value
+
+def iati_resource_url_mandatory(value, context):
+
+    value = iati_resource_url(value, context)
+
+    if (not value) or (not value.strip()):
+        raise Invalid('URL cannot be empty')
     return value
 
 def iati_owner_org_validator(key, data, errors, context):
@@ -173,9 +181,23 @@ def iati_org_identifier_validator(key, data, errors, context):
     
     # if the ID exists and it doesn't belong to the org submitting the form
     # or the API request, block it
-    if publisher_id_exists.state != "deleted" and publisher_id_exists.id != group_id:
+    if publisher_id_exists and ( publisher_id_exists.state != "deleted") and (publisher_id_exists.id != group_id):
         errors[key].append('IATI identifier already exists in the database.')
+
 
 def remove_leading_or_trailing_spaces(value,context):
     return value.strip()
+
+
+def licence_validator(key, data, errors, context):
+
+    """ Validates the licence. License made mandatory field while creating a
+    new publisher"""
+    license_id = data[key]
+
+    if (license_id == "notspecified") or (not license_id.strip()):
+        errors[key].append('Please specify the License.')
+
+
+
 

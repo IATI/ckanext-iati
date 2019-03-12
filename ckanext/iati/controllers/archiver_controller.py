@@ -36,8 +36,6 @@ class ArchiverRunStatus(BaseController):
 
                     try:
 
-                        print("*****************************status***********************************", job.result)
-
                         result['result'].update(job.result[0])
                         result['result']['task_id'] = task_id
 
@@ -67,8 +65,6 @@ class ArchiverRunStatus(BaseController):
 
     def archiver_controller_run(self, publisher_id=None, package_id=None):
 
-        print "********************************** pkg **************************************" + str(package_id)
-
         context = {
             'model': model,
             'session': model.Session,
@@ -77,7 +73,7 @@ class ArchiverRunStatus(BaseController):
             'apikey': config.get('iati.admin_user.api_key'),
             'api_version': 3,
         }
-
+        import ckan.plugins as p
         if not c.user:
             p.toolkit.abort(403, 'Permission denied, only system administrators can run the archiver.')
 

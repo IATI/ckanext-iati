@@ -330,7 +330,7 @@ def get_first_published_date(organization):
         dates = []
         data_dict = {
             'fq': 'organization:{}'.format(organization['name']),
-            'rows': 1000000000
+            'rows': 100
         }
 
         package_search_results = p.toolkit.get_action('package_search')(
@@ -361,11 +361,11 @@ def get_first_published_date(organization):
                 publisher_first_publish_date
         }
 
-        try:
+        '''try:
             check_access('organization_patch', {})
             p.toolkit.get_action('organization_patch')({}, data_dict=data_dict)
         except NotAuthorized:
-            pass
+            pass'''
 
         return publisher_first_publish_date
 
@@ -476,44 +476,29 @@ def structured_data_markup(dataset_id, profiles=None, _format='jsonld'):
 
 def email_validator(email):
     ''' Validates the given email '''
-
     val = email.split('@')
-
     if len(val) == 2:
-
         return True
-
     else:
         return False
 
 
 def get_username(value):
-
     '''
      Returns a username if the given value is email id else returns the same value -
     '''
-
     user = []
-
     if '@' in value:
-
         if email_validator(value):
             potential_users = User.by_email(value)
             if len(potential_users) == 1:
-
                 user = potential_users[0].__dict__
-
                 return [user]
-
             elif len(potential_users) == 0:
-
                 return user
-
             else:
-
                 return potential_users
         else:
             return user
     else:
-
         return user

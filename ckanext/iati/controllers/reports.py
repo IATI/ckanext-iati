@@ -24,7 +24,8 @@ class ReportsController(BaseController):
             'user': c.user,
         }
         data_dict = {
-            'publisher': request.params.get('publisher', None)
+            'publisher': request.params.get('publisher', None),
+            'is_download': False
         }
 
         try:
@@ -33,19 +34,9 @@ class ReportsController(BaseController):
             vars['authorization'] = "fail"
             abort(401, 'Not authorized to see this report')
 
-        issues_data = []
-
-        with open(result['file'], 'r') as f:
-            reader = csv.reader(f)
-            header = reader.next()
-
-            for row in reader:
-                row[5] = row[5].split("T")[0]
-                issues_data.append(row)
-
         vars['authorization'] = 'success'
-        vars['issues_content'] = issues_data
-        vars['header'] = header
+        vars['issues_content'] = result
+        #vars['header'] = header
         return render('user/archiver_report.html', extra_vars=vars)
 
     def download_issues_report(self):
@@ -56,7 +47,8 @@ class ReportsController(BaseController):
             'user': c.user,
         }
         data_dict = {
-            'publisher': request.params.get('publisher', None)
+            'publisher': request.params.get('publisher', None),
+            'is_download': True
         }
 
         try:

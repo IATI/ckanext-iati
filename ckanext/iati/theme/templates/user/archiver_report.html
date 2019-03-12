@@ -7,35 +7,32 @@
 
 <div class="container">
     <h2 align="center" class="page_heading">IATI Issues Report</h2>
-
     <div class="col-md-3">
     <div class="table-responsive">
-<table class="table table-hover table-bordered table-striped table-sorted table-condensed w-auto table-fit" data-module="table-sorter" id="issues_report_table">
+<table class="table table-striped table-bordered table-sm" cellspacing="0" width="100%" id="issues_report_table">
   <thead>
     <tr>
-        <th title="Index No">No</th>
-      <th title="Sort by publisher name">Publisher</th>
-      <th title="Dataset Name">Dataset</th>
-      <th title="Url">Url</th>
-        <th title="File url">File url</th>
-      <th title="Issue type">Issue type</th>
-      <th title="Issue date">Issue date</th>
-        <th title="Issue message">Issue message</th>
+        <th class="th-sm" title="Index No">No</th>
+      <th class="th-sm" title="Sort by publisher name">Publisher</th>
+      <th class="th-sm" title="Dataset">Dataset</th>
+        <th class="th-sm" title="Resource url">File url</th>
+      <th class="th-sm" title="Issue type">Issue type</th>
+      <th class="th-sm" title="Issue date">Issue date</th>
+        <th class="th-sm" title="Issue message">Issue message</th>
     </tr>
   </thead>
 
   <tbody>
-  {% for row in issues_content %}
-
+  {% for issue in issues_content %}
+    {{ row }}
       <tr>
           <td>{{ loop.index }}</td>
-          <td><a href="/publisher/{{ row[0] }}">{{ row[0] }}</a></td>
-        <td>{{ row[1] }}</td>
-          <td><a href="{{ row[2] }}" target="_blank">{{ row[2] }}</a></td>
-          <td><a href="{{ row[3] }}" target="_blank">{{ row[3] }}</a></td>
-        <td>{{ row[4] }}</td>
-        <td>{{ row[5] }}</td>
-          <td>{{ row[6] }}</td>
+          <td><a href="/publisher/{{ issue.publisher }}">{{ issue.publisher_title }}</a></td>
+          <td><a href="{{ issue.url }}" target="_blank">{{ issue.dataset_title }}</a></td>
+          <td><a href="{{ issue.file_url }}" target="_blank">{{ issue.file_url }}</a></td>
+        <td>{{ issue.issue_type }}</td>
+        <td>{{ issue.issue_date }}</td>
+          <td>{{ issue.issue_message }}</td>
       </tr>
 
   {% endfor %}
@@ -60,5 +57,6 @@
     <p><strong>You are not authorized to see the report. Please login with appropriate credentials.</strong></p>
 
 </div>
+
 {% endif %}
 {% endblock %}

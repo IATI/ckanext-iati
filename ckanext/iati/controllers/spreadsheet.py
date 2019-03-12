@@ -8,14 +8,14 @@ import os
 import routes
 import urlparse
 import re
-
+import datetime as dt
 from ckan import model
 import ckan.authz as authz
 from ckan.lib.base import c
 import ckan.plugins as p
 from ckanext.iati.helpers import extras_to_dict
 import ckan.lib.jobs as jobs
-
+from dateutil.parser import parse as date_parse
 
 log = logging.getLogger(__name__)
 _not_empty = p.toolkit.get_validator('not_empty')
@@ -45,11 +45,97 @@ OPTIONAL_COLUMNS = ['state', 'description']
 ckan_ini_filepath = os.environ.get('CKAN_CONFIG')
 
 
+class FieldValidator:
+
+    def __init__(self):
+        pass
+
+    def is_empty_field(self):
+        pass
+
+    def is_contains_unicode(self, text):
+        guess = chardet.detect(text)
+        if guess["confidence"] < min_confidence:
+            raise True
+        text = unicode(text, guess["encoding"])
+        text = text.encode('utf-8')
+
+        return text
+
+    @staticmethod
+    def compare_clean_fields(fieldnames, columns, OPTIONAL_COLUMNS):
+
+        """ Checks if the mentioned names in csv is in required fields or sub string of the required fields
+        and replace with required name in columns - this is to handle dirty text and unicode problem"""
+
+        tot_col = fieldnames + OPTIONAL_COLUMNS
+
+        for indx, field in enumerate(columns):
+            for f in tot_col:
+                if f in field:
+                    columns[indx] = f
+
+        return columns
+
+    @staticmethod
+    def is_mandatory_fields_missing(fieldnames, columns, OPTIONAL_COLUMNS):
+
+        """ Checks for any mandatory missing columns and ignore extra columns """
+
+        result = {}
+
+        columns = FieldValidator.compare_clean_fields(fieldnames, columns, OPTIONAL_COLUMNS)
+
+        missing_columns = [f for f in fieldnames if f not in columns and f not in OPTIONAL_COLUMNS]
+        surplus_columns = [f for f in columns if f not in fieldnames]
+
+        if len(surplus_columns):
+            result['warnings'] = {'Ignoring extra columns': '%s' % ', '.join(sorted(surplus_columns))}
+            result['errors'] = {}
+
+        if len(missing_columns):
+            result['errors'] = {'Missing columns': '%s' % ', '.join(sorted(missing_columns))}
+            result['warnings'] = {}
+
+        # Check for empty dictionary
+        if not(bool(result)):
+            result['errors'] = {}
+            result['warnings'] = {}
+
+        return result, columns
+
+    @staticmethod
+    def parse_error_if_object(error_object):
+        """ This is to parse if the error message is dictionary object - this scenario occurs from URL validator"""
+        error_list = []
+
+        for element in error_object:
+            if type(element) is dict:
+                for key in element:
+                    error_list.append(str(element[key]))
+            else:
+                error_list.append(str(element))
+
+        return error_list
+
+    @staticmethod
+    def date_time_parser(datetime_object):
+        """ Only consider if the datetime column is of type "%Y-%m-%d %H:%M:%S.%f" """
+
+        date_time = date_parse(datetime_object)
+        date_time.date()
+
+        return datetime_object
+
+field_validator = FieldValidator()
+
+
 def _fix_unicode(text, min_confidence=0.5):
     import chardet
     guess = chardet.detect(text)
+
     if guess["confidence"] < min_confidence:
-        raise UnicodeDecodeError
+        return UnicodeDecodeError
     text = unicode(text, guess["encoding"])
     text = text.encode('utf-8')
     return text
@@ -88,10 +174,8 @@ class CSVController(p.toolkit.BaseController):
             vars['file_name'] = ""
             vars['Stat'] = "Permission denied, only publisher administrators can manage CSV files. Please login with proper credentials"
             return p.toolkit.render('csv/result.html', extra_vars=vars)
-            #p.toolkit.abort(401, 'Permission denied, only publisher administrators can manage CSV files.')
         try:
             self.is_sysadmin = authz.is_sysadmin(c.user)
-
             # Orgs of which the logged user is admin
             context = {'model': model, 'user': c.user or c.author}
             self.authz_orgs = p.toolkit.get_action('organization_list_for_user')(context, {})
@@ -104,7 +188,6 @@ class CSVController(p.toolkit.BaseController):
             vars['file_name'] = ""
             vars['Stat'] = "Permission denied, only publisher administrators can manage CSV files. Please login with proper credentials"
             p.toolkit.render('csv/result.html', extra_vars=vars)
-            #p.toolkit.abort(401, 'Permission denied, only publisher administrators can manage CSV files.')
 
         if p.toolkit.request.method == 'GET':
             return p.toolkit.render('csv/upload.html')
@@ -115,59 +198,46 @@ class CSVController(p.toolkit.BaseController):
                 vars['Stat'] = "No CSV file provided. Please upload a csv file."
                 vars['file_name'] = ""
                 return p.toolkit.render('csv/result.html', extra_vars=vars)
-                #p.toolkit.abort(400, 'No CSV file provided')
             vars = {}
             vars['file_name'] = csv_file.filename
             fieldnames = [f[0] for f in CSV_MAPPING]
-            warnings = {}
-            errors = {}
             data = csv_file.file.read()
             data = StringIO.StringIO(data)
             try:
                 reader = csv.reader(data)
                 columns = next(reader)
 
-                missing_columns = [f for f in fieldnames if f not in columns and f not in OPTIONAL_COLUMNS]
-                surplus_columns = [f for f in columns if f not in fieldnames]
+                #missing_columns = [f for f in fieldnames if f not in columns and f not in OPTIONAL_COLUMNS]
+                #surplus_columns = [f for f in columns if f not in fieldnames]
 
-                if len(surplus_columns):
-                    warnings = {'Ignoring extra columns': '%s' % ', '.join(sorted(surplus_columns))}
+                #if len(surplus_columns):
+                    #warnings = {'Ignoring extra columns': '%s' % ', '.join(sorted(surplus_columns))}
 
-                if len(missing_columns):
-                    errors = {'Missing columns': '%s' % ', '.join(sorted(missing_columns))}
+                #if len(missing_columns):
+                    #errors = {'Missing columns': '%s' % ', '.join(sorted(missing_columns))}
 
-                #for entry in reader:
-                #    if len(entry) <= 12:
-                #        p.toolkit.abort(400, "Please make sure there are no line breaks in the file.")
-                #data.seek(0)
-                #reader = csv.reader(data)
-                #next(reader)
+                missing_val, columns = field_validator.is_mandatory_fields_missing(fieldnames, columns, OPTIONAL_COLUMNS)
 
-                #publishers_in_csv = [row[0] for row in reader]
+                errors = missing_val['errors']
+                warnings = missing_val['warnings']
+
                 all_publishers = p.toolkit.get_action('group_list')({}, {})
-
-                #unknown_publishers = [publisher
-                #    for publisher in publishers_in_csv
-                #    if publisher not in all_publishers
-                #]
-
-                #if len(unknown_publishers):
-                #    unknown_publishers_string = ', '.join(unknown_publishers)
-                #    p.toolkit.abort(400, 'Unknown publisher(s): %s' % (unknown_publishers_string))
-                #data.seek(0)
-                #reader = csv.reader(data)
-                #next(reader)
 
                 if not len(errors.keys()):
                     json_data = []
                     tasks = []
 
-                    for row in reader:
+                    for row_no, row in enumerate(reader):
                         task = OrderedDict()
 
                         d = OrderedDict()
                         for i, x in enumerate(row):
-                            d[columns[i]] = x
+                            try:
+                                d[columns[i]] = x.encode('utf-8')
+                            except UnicodeDecodeError, e:
+                                task[u'status'] = 'failed'
+                                task[u'error'] = "Column: '{}' Cannot be decoded - contains special character"\
+                                    .format(columns[i])
 
                         task[u'title'] = d['title'] or 'No Title'
                         if len(row) <= 12:
@@ -179,12 +249,19 @@ class CSVController(p.toolkit.BaseController):
                             task[u'task_id'] = str(uuid.uuid4())
                         else:
                             task[u'task_id'] = str(uuid.uuid4()) #this is a random ID that will change with the job ID if it gets created
-                            if d['registry-publisher-id'] and d['registry-publisher-id'] in all_publishers :
+
+                            if d['registry-publisher-id'] and d['registry-publisher-id'] in all_publishers:
                                 ckan_ini_filepath = os.path.abspath(config['__file__'])
                                 json_data =[]
                                 json_data.append(d)
-                                job = jobs.enqueue(read_csv_file, [ckan_ini_filepath, json.dumps(json_data), c.user])
-                                task[u'task_id'] = job.id
+                                try:
+                                    job = jobs.enqueue(read_csv_file, [ckan_ini_filepath,
+                                                                       json.dumps(json_data, ensure_ascii=False), c.user])
+                                    task[u'task_id'] = job.id
+                                except Exception, e:
+                                    task[u'status'] = 'failed'
+                                    task[u'error'] = "File Cannot be decoded - contains unkown character"
+
                             else:
                                 task[u'status'] = 'failed'
                                 task[u'error'] = 'Invalid Publisher ID: '+d['registry-publisher-id']
@@ -202,22 +279,15 @@ class CSVController(p.toolkit.BaseController):
                         vars['Stat'] = 'Error in CSV file: {0}; {1}'.format(re.sub("([\{\}'])+", "", str(warnings)),
                                                                             re.sub("([\{\}'])+", "", str(errors)))
                         return p.toolkit.render('csv/result.html', extra_vars=vars)
-                        #p.toolkit.abort(400, ('Error in CSV file: {0}; {1}'.format
-                                       #(re.sub("([\{\}'])+", "", str(warnings)),
-                                            #re.sub("([\{\}'])+", "", str(errors)))))
                     else:
-
                         vars['Stat'] = "Please upload a valid csv file"
-                        return p.toolkit.render('csv/result.html', extra_vars=vars)
-                        # p.toolkit.abort(400, ('Error in CSV file: {0}; {1}'.format
-                        # (re.sub("([\{\}'])+", "", str(warnings)),
-                        # re.sub("([\{\}'])+", "", str(errors)))))
 
             except Exception as e:
-                vars['errors'] = errors
-                vars['warnings'] = warnings
+                vars['errors'] = {}
+                vars['warnings'] = {}
                 vars['tasks'] = []
-                vars['Stat'] = "Please make sure file encoding is UTF-8!"
+                vars['Stat'] = "Please make sure the csv file is clean, " \
+                               "there should not be any special characters, bold letters etc."
 
                 return p.toolkit.render('csv/result.html', extra_vars=vars)
                 #p.toolkit.abort(400, ('Error opening CSV file: {0}'.format("Please make sure csv encoding is right!s")))
@@ -445,6 +515,7 @@ def read_csv_file(ckan_ini_filepath, csv_file, user):
     errors = {}
     data = json.loads(csv_file)
 
+
     fields_from_csv = []
     for key in data[0].iterkeys():
         fields_from_csv.append(key)
@@ -466,7 +537,9 @@ def read_csv_file(ckan_ini_filepath, csv_file, user):
 
     for i, row in enumerate(data):
         errors[i] = {}
+
         try:
+            # Check if publisher id exists.
             org = p.toolkit.get_action('organization_show')(context, {'id': row['registry-publisher-id']})
         except p.toolkit.ObjectNotFound:
             msg = 'Publisher not found: %s' % row['registry-publisher-id']
@@ -477,6 +550,13 @@ def read_csv_file(ckan_ini_filepath, csv_file, user):
         try:
             try:
                 package_dict = get_package_dict_from_row(row, context)
+
+                try:
+                    package_dict['data_updated'] = FieldValidator.date_time_parser(package_dict['data_updated'])
+                except Exception, e:
+                    msg = str("Not in acceptable format - format should be YYYY-MM-DD HH:MM:SS or YYYY-MM-DD or format csv column to date/time")
+                    raise ValueError(msg)
+
             except UnicodeDecodeError, e:
                 msg = 'Encoding error, could not decode dataset title or description: {0}, {1}'.format(
                         row['title'], row['description'])
@@ -493,7 +573,7 @@ def read_csv_file(ckan_ini_filepath, csv_file, user):
                 iati_key = iati_keys.get(key, key)
                 log.error('Error in row %i: %s: %s' % (
                     i+1, iati_key, str(msgs)))
-                errors[i][iati_key] = msgs
+                errors[i][iati_key] = FieldValidator.parse_error_if_object(msgs)
         except p.toolkit.NotAuthorized, e:
             msg = 'Not authorized to publish to this organization: %s' % row['registry-publisher-id']
             log.error('Error in row %i: %s' % (i+1, msg))
@@ -502,6 +582,9 @@ def read_csv_file(ckan_ini_filepath, csv_file, user):
             msg = 'Publisher not found: %s' % row['registry-publisher-id']
             log.error('Error in row %i: %s' % (i+1, msg))
             errors[i]['registry-publisher-id'] = [msg]
+        except ValueError, e:
+            log.error('Error in row %i: %s' % (i + 1, str(e)))
+            errors[i]['last-updated-datetime'] = [str(e)]
 
     warnings = sorted(warnings.iteritems())
     errors = sorted(errors.iteritems())

@@ -11,7 +11,7 @@ import json
 import cgitb
 import warnings
 import logging
-
+import ckan.lib.helpers as h
 
 from pylons import config
 
@@ -82,17 +82,24 @@ def run(package_id=None, publisher_id=None):
             org = toolkit.get_action('organization_show')(context,
                                                           {'id': publisher_id,
                                                            'include_datasets': True})
+            package_ids = [p['name'] for p in org['packages']]
+            publisher_update = True
+            if len(package_ids) == 0:
+                log.error("No datasets available for a given publisher id {}".format(publisher_id))
+                #h.flash_error("No datasets available for a given publisher")
+                #h.redirect_to(controller='organization', action='read', id=publisher_id)
         except toolkit.ObjectNotFound:
             log.error('Could not find Publisher: {0}'.format(publisher_id))
-            sys.exit(1)
-        package_ids = [p['name'] for p in org['packages']]
-        publisher_update = True
+            #h.flash_error('Could not find Publisher: {0} to run an archiver'.format(publisher_id))
+            #h.redirect_to('/')
+
     else:
         try:
             package_ids = toolkit.get_action('package_list')(context, {})
+            if len(package_ids) == 0:
+                raise toolkit.ObjectNotFound
         except toolkit.ObjectNotFound:
-            log.error('Could not find package: {0}'.format(package_id))
-            sys.exit(1)
+            log.error('Could not find packages')
 
 
     t1 = datetime.datetime.now()
@@ -213,6 +220,21 @@ def archive_package(package_id, context, consecutive_errors=0):
             return save_package_issue(context, package, extras_dict,
                                       'xml-error', 'Could not parse XML file:'
                                       ' {0}'.format(str(e)[:200]))
+
+        filetype = 'unchecked'
+        if tree.tag == 'iati-activities':
+            filetype = 'activity'
+
+        if tree.tag == 'iati-organisations':
+            filetype = 'organisation'
+
+        if is_activity_package and filetype != 'activity':
+            return save_package_issue(context, package, extras_dict,
+                                      'metadata error', 'Check the filetype metadata field')
+
+        if not is_activity_package and filetype != 'organisation':
+            return save_package_issue(context, package, extras_dict,
+                                      'metadata error', 'Check the filetype metadata field')
 
 
         new_extras = {}
