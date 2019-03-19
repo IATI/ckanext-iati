@@ -51,15 +51,22 @@ _text = sqlalchemy.text
 
 def package_create(context, data_dict):
 
+    # Part of first publisher date patch
+    if 'owner_org' in data_dict.keys():
+        hlp.first_published_date_patch(data_dict.get('owner_org'))
     # The only thing we do here is remove some extras that are always
     # inherited from the dataset publisher, to avoid duplicating them
+
     _remove_extras_from_data_dict(data_dict)
 
     return create_core.package_create(context, data_dict)
 
 
 def package_update(context, data_dict):
-
+    
+    # Part of first publisher date patch
+    if 'owner_org' in data_dict.keys():
+        hlp.first_published_date_patch(data_dict.get('owner_org'))
     # The only thing we do here is remove some extras that are always
     # inherited from the dataset publisher, to avoid duplicating them
     _remove_extras_from_data_dict(data_dict)
@@ -99,10 +106,12 @@ def organization_create(context, data_dict):
 def organization_update(context, data_dict):
 
     # Check if state is set from pending to active so we can notify users
-
     old_org_dict = p.toolkit.get_action('organization_show')({},
             {'id': data_dict.get('id') or data_dict.get('name')})
     old_state = old_org_dict.get('state')
+
+    # Patch for publisher first published date
+    data_dict = hlp.publisher_first_published_date_validator(data_dict)
 
     new_org_dict = update_core.organization_update(context, data_dict)
     new_state = new_org_dict.get('state')

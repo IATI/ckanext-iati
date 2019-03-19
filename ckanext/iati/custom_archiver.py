@@ -393,7 +393,6 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
 
     res = None
     resource_changed = False
-    print("************************************************************************", resource['url'])
 
     link_context = "{}"
     link_data = json.dumps({

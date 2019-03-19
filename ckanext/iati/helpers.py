@@ -14,13 +14,12 @@ import ckan.plugins as p
 import ckan.lib.helpers as helpers
 import ckan.lib.formatters as formatters
 from ckan.logic import check_access, NotAuthorized
-
 import ckanext.iati.lists as lists
-
 import ckan.logic as logic
 from ckan.common import c
-
 from ckanext.dcat.processors import RDFSerializer
+import logging
+log = logging.getLogger(__name__)
     
 
 def get_countries():
@@ -87,7 +86,6 @@ def organizations_available_with_extra_fields(permission='manage_group', include
         for key in extras:
             organization[key] = extras[key]
         org_extra.append(organization)
-    #print("*********** extras", org_extra[0])
     return organizations
 
 
@@ -330,7 +328,7 @@ def get_first_published_date(organization):
         dates = []
         data_dict = {
             'fq': 'organization:{}'.format(organization['name']),
-            'rows': 100
+            'rows': 1000
         }
 
         package_search_results = p.toolkit.get_action('package_search')(
@@ -402,11 +400,11 @@ def check_publisher_contact_email(organization):
             'publisher_contact_email': 'please@update.email'
         }
 
-        try:
+        '''try:
             check_access('organization_patch', {})
             p.toolkit.get_action('organization_patch')({}, data_dict=data_dict)
         except NotAuthorized:
-            pass
+            pass'''
 
         return data_dict['publisher_contact_email']
     else:
@@ -502,3 +500,47 @@ def get_username(value):
             return user
     else:
         return user
+
+
+def publisher_first_published_date_validator(data_dict):
+    """  This is the patch if first published date is empty take first resource date.
+     which was done previously during read phase and it is inconsistent.
+     This can be done through helper function 'first_published_date_patch'. But,
+     Looks like organization_patch dosen't work while updating the organization and avoid multiple organization_show,
+     Hence improving the speed """
+    try:
+        invalid_dates = ['No data published', 'Date not found', 'Date is not valid', '']
+        first_pub_date = data_dict.get('publisher_first_publish_date', '')
+        if (first_pub_date in invalid_dates) or (first_pub_date is None):
+            first_pub_date = get_first_published_date(data_dict)
+
+        if str(first_pub_date).strip() not in invalid_dates:
+            data_dict['publisher_first_publish_date'] = first_pub_date
+    except Exception, e:
+        log.warning("Cannot get the first published date - {}", str(e))
+
+    return data_dict
+
+
+def first_published_date_patch(org_id):
+    """ This is the patch for publisher first published date - this patches the organization when
+    new public package is created. Alos updates date to db if it is empty while updating the package
+    e.g private to public or if the date is empty when resource,
+    this will be throwing error for editors who do not have writes to update organization. This error can be ignored"""
+    try:
+        organization = p.toolkit.get_action('organization_show')({}, {'id': org_id})
+
+        organization = publisher_first_published_date_validator(organization)
+
+        data_dict = {
+            'id': organization['id'],
+            'publisher_first_publish_date': organization['publisher_first_publish_date']
+        }
+
+        try:
+            check_access('organization_patch', {})
+            p.toolkit.get_action('organization_patch')({}, data_dict=data_dict)
+        except NotAuthorized:
+            pass
+    except Exception, e:
+        log.warning("Cannot be patched - {}", str(e))

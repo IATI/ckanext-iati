@@ -517,7 +517,9 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'organizations_available_with_extra_fields',
             'structured_data_markup',
             'email_validator',
-            'get_username'
+            'get_username',
+            'first_published_date_patch',
+            'publisher_first_published_date_validator'
         )
         return _get_module_functions(iati_helpers, function_names)
 
