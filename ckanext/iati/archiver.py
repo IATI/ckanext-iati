@@ -14,7 +14,7 @@ import logging
 import ckan.lib.helpers as h
 
 from pylons import config
-
+import tempfile
 
 from ckan import model
 import ckan.plugins.toolkit as toolkit
@@ -369,6 +369,35 @@ def update_package(context, data_dict, message=None):
     return updated_package
 
 
+def _save_resource(resource, response, max_file_size, chunk_size=1024*16):
+    """
+    Write the response content to disk.
+    Returns a tuple:
+        (file length: int, content hash: string, saved file path: string)
+    """
+    resource_hash = hashlib.sha1()
+    length = 0
+
+    fd, tmp_resource_file_path = tempfile.mkstemp()
+
+    with open(tmp_resource_file_path, 'wb') as fp:
+        for chunk in response.iter_content(chunk_size=chunk_size,
+                                           decode_unicode=False):
+            fp.write(chunk)
+            length += len(chunk)
+            resource_hash.update(chunk)
+
+            if length >= max_file_size:
+                fp.close()
+                os.remove(tmp_resource_file_path)
+                raise ChooseNotToDownload(
+                    _("Content-length %s exceeds maximum allowed value %s") %
+                    (length, max_file_size))
+
+    os.close(fd)
+
+    content_hash = unicode(resource_hash.hexdigest())
+    return length, content_hash, tmp_resource_file_path
 
 
 def download(context, resource, url_timeout=URL_TIMEOUT,
@@ -464,8 +493,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
             request_headers['User-Agent'] = user_agent_string
         res = requests.get(resource['url'], timeout=url_timeout,
                            headers=request_headers, verify=False)
-    length, hash, saved_file = tasks._save_resource(resource, res,
-                                                    max_content_length)
+    length, hash, saved_file = _save_resource(resource, res, max_content_length)
 
 
     # check if resource size changed

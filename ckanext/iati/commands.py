@@ -2,7 +2,7 @@ import sys
 import logging
 from ckan.lib.cli import CkanCommand
 
-from ckanext.iati.archiver import run as run_archiver
+from ckanext.iati.custom_archiver import run as run_archiver
 
 log = logging.getLogger('iati_archiver')
 

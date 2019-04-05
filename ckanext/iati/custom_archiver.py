@@ -11,7 +11,7 @@ import json
 import cgitb
 import warnings
 import logging
-
+import tempfile
 
 from pylons import config
 
@@ -20,7 +20,7 @@ from ckan import model
 import ckan.plugins.toolkit as toolkit
 from ckanext.iati.helpers import extras_to_dict, extras_to_list
 from ckanext.iati.lists import IATI_STANDARD_VERSIONS
-
+from ckanext.archiver import tasks
 
 log = logging.getLogger('iati_archiver')
 # Max content-length of archived files, larger files will be ignored
@@ -249,14 +249,29 @@ def archive_package(package_id, context, consecutive_errors=0):
                                       ' {0}'.format(str(e)[:200]))
 
 
+        filetype = 'unchecked'
+        if tree.tag == 'iati-activities':
+            filetype = 'activity'
+
+        if tree.tag == 'iati-organisations':
+            filetype = 'organisation'
+
+        if is_activity_package and filetype != 'activity':
+            return save_package_issue(context, package, extras_dict,
+                                      'metadata error', 'Check the filetype metadata field')
+
+        if not is_activity_package and filetype != 'organisation':
+            return save_package_issue(context, package, extras_dict,
+                                      'metadata error', 'Check the filetype metadata field')
+  
         new_extras = {}
         # IATI standard version (iati_version extra)
         xpath = '/iati-activities/@version | /iati-organisations/@version'
 
 
         version = tree.xpath(xpath)
-	log.info(version)
-	log.info(version[0])
+        log.info(version)
+        log.info(version[0])
 
 
         allowed_versions = IATI_STANDARD_VERSIONS
@@ -381,15 +396,40 @@ def update_package(context, data_dict, message=None):
     return updated_package
 
 
+def _save_resource(resource, response, max_file_size, chunk_size=1024*16):
+    """
+    Write the response content to disk.
+    Returns a tuple:
+        (file length: int, content hash: string, saved file path: string)
+    """
+    resource_hash = hashlib.sha1()
+    length = 0
+
+    fd, tmp_resource_file_path = tempfile.mkstemp()
+
+    with open(tmp_resource_file_path, 'wb') as fp:
+        for chunk in response.iter_content(chunk_size=chunk_size,
+                                           decode_unicode=False):
+            fp.write(chunk)
+            length += len(chunk)
+            resource_hash.update(chunk)
+
+            if length >= max_file_size:
+                fp.close()
+                os.remove(tmp_resource_file_path)
+                raise tasks.ChooseNotToDownload(
+                    _("Content-length %s exceeds maximum allowed value %s") %
+                    (length, max_file_size))
+
+    os.close(fd)
+
+    content_hash = unicode(resource_hash.hexdigest())
+    return length, content_hash, tmp_resource_file_path
 
 
 def download(context, resource, url_timeout=URL_TIMEOUT,
              max_content_length=MAX_CONTENT_LENGTH,
              data_formats=DATA_FORMATS):
-
-
-    from ckanext.archiver import tasks
-
 
     res = None
     resource_changed = False
@@ -475,8 +515,8 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
             request_headers['User-Agent'] = user_agent_string
         res = requests.get(resource['url'], timeout=url_timeout,
                            headers=request_headers, verify=False)
-    length, hash, saved_file = tasks._save_resource(resource, res,
-                                                    max_content_length)
+    length, hash, saved_file = _save_resource(resource, res, max_content_length)
+    #length = res.headers.get('Content-Length', 0)
 
 
     # check if resource size changed
