@@ -16,6 +16,7 @@ import ckan.plugins as p
 from ckanext.iati.helpers import extras_to_dict
 import ckan.lib.jobs as jobs
 from dateutil.parser import parse as date_parse
+import time
 
 log = logging.getLogger(__name__)
 _not_empty = p.toolkit.get_validator('not_empty')
@@ -122,10 +123,44 @@ class FieldValidator:
     def date_time_parser(datetime_object):
         """ Only consider if the datetime column is of type "%Y-%m-%d %H:%M:%S.%f" """
 
+        if len(datetime_object.strip()) == 0:
+            pass
+        elif len(datetime_object.strip()) < 8:
+            msg = "Not in acceptable format - format should be YYYY-MM-DD HH:MM:SS or YYYY-MM-DD or format csv column to date/time"
+            raise ValueError(msg)
+
         date_time = date_parse(datetime_object)
         date_time.date()
 
         return datetime_object
+    
+    @staticmethod
+    def publisher_id_validator(publisher_id):
+        all_publishers = p.toolkit.get_action('group_list')({}, {})
+        publisher_id = str(publisher_id).strip()
+
+        if (publisher_id != "") and (publisher_id in all_publishers):
+            msg = "pass"
+            return True, msg
+        else:
+            if publisher_id == "":
+                msg = "publisher id cannot be null"
+            else:
+                msg = "Unknown publisher id"
+
+            return False, msg
+
+    @staticmethod
+    def check_upload_file_is_csv(filename):
+        filename, file_extension = os.path.splitext(filename)
+        if file_extension.lower() != ".csv":
+            msg = "File is not a csv file. Please upload a valid csv file"
+            is_csv = False
+        else:
+            msg = ''
+            is_csv = True
+        return is_csv, msg
+
 
 field_validator = FieldValidator()
 
@@ -221,8 +256,6 @@ class CSVController(p.toolkit.BaseController):
                 errors = missing_val['errors']
                 warnings = missing_val['warnings']
 
-                all_publishers = p.toolkit.get_action('group_list')({}, {})
-
                 if not len(errors.keys()):
                     json_data = []
                     tasks = []
@@ -235,36 +268,39 @@ class CSVController(p.toolkit.BaseController):
                             try:
                                 d[columns[i]] = x.encode('utf-8')
                             except UnicodeDecodeError, e:
-                                task[u'status'] = 'failed'
+                                task[u'status'] = "failed"
                                 task[u'error'] = "Column: '{}' Cannot be decoded - contains special character"\
                                     .format(columns[i])
 
                         task[u'title'] = d['title'] or 'No Title'
                         if len(row) <= 12:
-                            task[u'status'] = 'failed'
+                            task[u'status'] = "failed"
                             if len(row) == 0:
-                                task[u'error'] = 'Empty line'
+                                task[u'error'] = "Empty line"
                             else:
-                                task[u'error'] = 'Incomplete line'
+                                task[u'error'] = "Incomplete line"
                             task[u'task_id'] = str(uuid.uuid4())
                         else:
                             task[u'task_id'] = str(uuid.uuid4()) #this is a random ID that will change with the job ID if it gets created
-
-                            if d['registry-publisher-id'] and d['registry-publisher-id'] in all_publishers:
+                            pub_id_validation, error_msg = field_validator.publisher_id_validator(d['registry-publisher-id'])
+                            if pub_id_validation:
                                 ckan_ini_filepath = os.path.abspath(config['__file__'])
                                 json_data =[]
                                 json_data.append(d)
                                 try:
-                                    job = jobs.enqueue(read_csv_file, [ckan_ini_filepath,
-                                                                       json.dumps(json_data, ensure_ascii=False), c.user])
-                                    task[u'task_id'] = job.id
+                                    job = jobs.enqueue(read_csv_file,
+                                                       [ckan_ini_filepath,
+                                                        json.dumps(json_data,
+                                                                   ensure_ascii=False), c.user])
+                                    time.sleep(0.05)
+                                    task[u'task_id'] = str(job.id)
                                 except Exception, e:
-                                    task[u'status'] = 'failed'
-                                    task[u'error'] = "File Cannot be decoded - contains unkown character"
+                                    task[u'status'] = "failed"
+                                    task[u'error'] = "File Cannot be decoded - contains unknown character"
 
                             else:
-                                task[u'status'] = 'failed'
-                                task[u'error'] = 'Invalid Publisher ID: '+d['registry-publisher-id']
+                                task[u'status'] = "failed"
+                                task[u'error'] = 'Invalid Publisher ID: '+error_msg
 
                         tasks.append(json.dumps(task))
 
@@ -274,13 +310,14 @@ class CSVController(p.toolkit.BaseController):
                     vars['warnings'] = warnings
                     vars['tasks'] = []
 
-                    if vars['file_name'].lower().endswith('.csv'):
+                    is_csv, csv_msg = field_validator.check_upload_file_is_csv(str(vars['file_name']))
+                    if is_csv:
 
                         vars['Stat'] = 'Error in CSV file: {0}; {1}'.format(re.sub("([\{\}'])+", "", str(warnings)),
                                                                             re.sub("([\{\}'])+", "", str(errors)))
                         return p.toolkit.render('csv/result.html', extra_vars=vars)
                     else:
-                        vars['Stat'] = "Please upload a valid csv file"
+                        vars['Stat'] = csv_msg
 
             except Exception as e:
                 vars['errors'] = {}
@@ -295,12 +332,16 @@ class CSVController(p.toolkit.BaseController):
             return p.toolkit.render('csv/result.html', extra_vars=vars)
 
     def check_status(self, task_id=None):
-
+        """ Checks status of all the assigned background jobs csv upload functionality """
         result = {}
-        if task_id and task_id!='undefined':
+
+        if task_id and task_id != 'undefined':
             try:
                 job = jobs.job_from_id(id=task_id)
                 result.update({'status': job.get_status()})
+                log.info(" csv check status info - job id: {}".format(task_id))
+                log.info(" csv check status info - job status: {}".format(job.get_status()))
+
                 if job.result:
                     result['result'] = {}
                     try:
@@ -311,17 +352,19 @@ class CSVController(p.toolkit.BaseController):
                         result['result']['warnings'] = data['warnings']
                     except Exception as e:
                         result.update({'status': "failed"})
-                        result['result']['errors'].add("Something went wrong, please try again or contact support.")
+                        result['result']['errors'] = "Something went wrong, while checking the job status."
                         #print job.traceback
             except Exception as e:
+                log.error("CSV Upload 1 check status error ********** {}".format(str(e)))
                 result.update({'status': "failed"})
                 result['result'] = {}
-                result['result']['errors'].add("Something went wrong, please try again or contact support quoting the error \"Background job was not created\"")
+                result['result']['errors'] = "Something went wrong, please try again or contact support quoting the error \"Background job was not created\""
 
         else:
+            log.error("CSV Upload check status 2 error ********** No task id")
             result.update({'status': 'failed'})
             result['result'] = {}
-            result['result']['errors'].add("Something went wrong, please try again or contact support quoting the error \"Background job was not created\"")
+            result['result']['errors'] = "Something went wrong, please try again or contact support quoting the error \"Background job was not created\""
 
         return json.dumps(result)
 
@@ -552,7 +595,7 @@ def read_csv_file(ckan_ini_filepath, csv_file, user):
                 package_dict = get_package_dict_from_row(row, context)
 
                 try:
-                    package_dict['data_updated'] = FieldValidator.date_time_parser(package_dict['data_updated'])
+                    package_dict['data_updated'] = field_validator.date_time_parser(str(package_dict['data_updated']))
                 except Exception, e:
                     msg = str("Not in acceptable format - format should be YYYY-MM-DD HH:MM:SS or YYYY-MM-DD or format csv column to date/time")
                     raise ValueError(msg)
@@ -571,6 +614,8 @@ def read_csv_file(ckan_ini_filepath, csv_file, user):
             iati_keys = dict([(f[2], f[0]) for f in CSV_MAPPING])
             for key, msgs in e.error_dict.iteritems():
                 iati_key = iati_keys.get(key, key)
+                if iati_key == "name_or_id":
+                    iati_key = 'registry-file-id'
                 log.error('Error in row %i: %s: %s' % (
                     i+1, iati_key, str(msgs)))
                 errors[i][iati_key] = FieldValidator.parse_error_if_object(msgs)

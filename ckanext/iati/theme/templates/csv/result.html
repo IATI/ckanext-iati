@@ -20,11 +20,11 @@
 
 {% else %}
 
-<h2 class="page_heading">CSV Export</h2>
+<h2 class="page_heading">CSV Import</h2>
 
   <article>
   <div>
-    <p>Your CSV upload <strong>{{file_name}}</strong> has been imported. Check the table below for progress monitoring.</p>
+    <p>Your CSV upload <strong>{{file_name}}</strong> has been started. Check the table below for progress monitoring.</p>
 
     <p><a href="/csv/upload">Upload another file</a></p>
   </div>
@@ -39,15 +39,13 @@
 
   </article>
 
-  {% block scripts %}
-      {{ super() }}
       <script
         src="https://code.jquery.com/jquery-3.2.1.min.js"
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
 
       <script type="text/javascript">
-        var  activeTasks = 10;
+        var counter = 0;
         $(document).ready(function() {
         function capitalizeFirstLetter(string) {
           return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
@@ -57,17 +55,19 @@
           var buttonClass="";
           switch (string){
              case "error(s)":
+                    buttonClass ="label label-danger";
+                    break;
              case "failed" :
-                    buttonClass ="label label-danger"
+                    buttonClass ="label label-danger";
                     break ;
              case "finished" :
-                    buttonClass ="label label-success"
+                    buttonClass ="label label-success";
                     break ;
              case "started" :
-                    buttonClass ="label label-info"
+                    buttonClass ="label label-info";
                     break ;
              default:
-                    buttonClass ="label label-warning"
+                    buttonClass ="label label-warning";
                     break;
           }
           return '<span class="' + buttonClass +   '" data-placement="right" title="'+string+'">'+capitalizeFirstLetter(string)+'</span>'
@@ -130,7 +130,7 @@
                        }
                     }
             }
-          })
+          });
           if (error_msg.length > 0){
             $("#status_" + task_id).html("<h4>" + statusbutton("error(s)") + "</h4>");
           }
@@ -143,69 +143,68 @@
           return "<div>" + datasetLink(dataset_id,summary_msg, warning_msg, error_msg ) + "</div>"
       }
 
-      var PollState = function(task_id) {
-          $.ajax({
-              url: "/csv/check_status/" + task_id,
-              type: "GET",
-          }).done(function(task) {
-              task = JSON.parse(task);
-              $("#status_" + task_id).html("<h4>" + statusbutton(task.status) + "</h4>");
-             if (task.status !== "finished" && task.status !== "failed") {
-                  if (task.status =="started"){
-                    setTimeout(PollState, 3000, task_id)
-                  }else{
-                    setTimeout(PollState, 10000, task_id)
-                  }
-              }else{
-                    activeTasks = activeTasks + 1 ;
-                  $("#summary_" + task_id).html( summaryPrint(task_id, task.status, task));
-              }
-          }).fail(function(task){
-              activeTasks = activeTasks +1 ;
-              $("#status_" + task_id).html(statusbutton('failed'));
-              $("#summary_" + task_id).html(summaryPrint(task_id,'failed',task));
-          });
-      }
+      var PollState = function(counter) {
+
+            if (counter < tasks.length) {
+                tasks_ind = JSON.parse(tasks[counter]);
+
+                 if ((tasks_ind.hasOwnProperty('status')) && (tasks_ind.status === "failed")){
+                   //$("#status_" + tasks_ind.task_id).html( statusbutton(tasks_ind.status) );
+                   $("#status_" + tasks_ind.task_id).html( statusbutton("error(s)") );
+                   console.log(tasks_ind);
+                   if (tasks_ind.error){
+                                    $("#summary_" + tasks_ind.task_id).html(tasks_ind.error);
+                                    }
+                   counter++;                 
+                   PollState(counter);
+                   }
+                   else {
+
+                         $.ajax({
+                             type: "GET",
+                             ajaxI: tasks_ind.task_id,
+                             url: "/csv/check_status/" + tasks_ind.task_id.toString()
+                         }).done(function (task) {
+                             task = JSON.parse(task);
+                             $("#status_" + this.ajaxI).html("<h4>" + statusbutton(task.status) + "</h4>");
+                             if (task.status !== "finished" && task.status !== "failed") {
+                                 if (task.status === "started") {
+                                     setTimeout(PollState, 3000, counter)
+                                 } else {
+                                     setTimeout(PollState, 10000, counter)
+                                 }
+                             } else {
+                                 counter++;
+                                 console.log(task);
+                                 $("#summary_" + this.ajaxI).html(summaryPrint(this.ajaxI, task.status, task));
+                                 PollState(counter);
+                             }
+                         }).fail(function (task) {
+                             counter++;
+                             $("#status_" + this.ajaxI).html(statusbutton('failed'));
+                             $("#summary_" + this.ajaxI).html(summaryPrint(this.ajaxI, 'failed', task));
+                             PollState(counter);
+                         });
+                     }
+            } else {
+                console.log("csv upload finished");
+            }
+      };
       var i;
       var all = "<table class=\"table\"> <thead> <tr> <th>Title</th> <th>Status</th>  <th>Summary</th> </tr></thead><tbody>";
-      var tasks = {{tasks | safe }};
+      var tasks = {{ tasks | safe }};
           for (i=0; i< tasks.length; i++){
            var t = JSON.parse(tasks[i]);
            all = all + "<tr><td id=dataset_"+t.task_id+">" + t.title + "</td><td id=status_"+t.task_id+"></td>"+"<td id=summary_"+t.task_id+"></td></tr>";
           }
 
-
-            all = all + "</tbody>  </table>" ;
+           all = all + "</tbody>  </table>" ;
            $("#result").html(all);
-
-        var check = function(task_id){
-            if(activeTasks > 0){
-                activeTasks = activeTasks - 1;
-                PollState(task_id) ;
-            }
-            else {
-                setTimeout(check, 1000, task_id); // check again in a second
-            }
-        }
-
-
-          for (i=0; i< tasks.length; i++){
-               var t = JSON.parse(tasks[i]);
-               if (t.status === "failed"){
-                   $("#status_" + t.task_id).html( statusbutton(t.status) );
-                   if (t.error){
-                    $("#summary_" + t.task_id).html( t.error);
-                   }
-               }
-               else{
-
-                      check(t.task_id) ;
-
-                   }
-          }
-      });
+          var tasks_ind;
+          PollState(counter);
+          });
       </script>
-{% endblock%}
+
 
 {% endif %}
 
