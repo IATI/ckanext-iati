@@ -19,7 +19,8 @@ from ckanext.iati.logic.validators import (db_date,
                                            iati_org_identifier_validator,
                                            remove_leading_or_trailing_spaces,
                                            licence_validator,
-                                           iati_resource_url_mandatory
+                                           iati_resource_url_mandatory,
+                                           country_code
                                           )
 from ckanext.iati.logic.converters import strip
 import ckanext.iati.helpers as iati_helpers
@@ -357,7 +358,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
         schema.update({
             'filetype': [_ignore_missing,file_type_validator, _convert_to_extras],
-            'country': [_ignore_missing, _convert_to_extras],
+            'country': [_ignore_missing, _convert_to_extras, country_code],
             'data_updated': [_ignore_missing, _ignore_empty, db_date, _convert_to_extras],
             'activity_count': [_ignore_missing, _int_validator, _convert_to_extras],
             'iati_version': [_ignore_missing, _convert_to_extras],

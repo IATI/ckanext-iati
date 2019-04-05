@@ -195,9 +195,7 @@ def licence_validator(key, data, errors, context):
     new publisher"""
     license_id = data[key]
 
-    if (license_id == "notspecified") or (not license_id.strip()):
+    if (license_id == "notspecified_lc") or (not license_id.strip()):
         errors[key].append('Please specify the License.')
-
-
 
 
