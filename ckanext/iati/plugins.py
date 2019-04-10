@@ -122,8 +122,8 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         redirects = {
             '/using-iati-data': 'http://iatistandard.org/en/using-data/',
             '/registry-dashboard': 'http://iatistandard.org/en/guidance/publishing-data/data-quality-/how-to-improve-you-data-quality-with-the-iati-dashboard/',
-            '/about': 'http://iatistandard.org/en/using-data/IATI-tools-and-resources/using-IATI-registry/',
-            '/registry-api': 'http://iatistandard.org/en/using-data/IATI-tools-and-resources/using-IATI-registry/',
+            '/about': 'http://iatistandard.org/en/using-data/iati-tools-and-resources/using-iati-registry/',
+            '/registry-api': 'http://iatistandard.org/en/using-data/iati-tools-and-resources/using-iati-registry/',
             '/help': 'http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-register-with-iati/'
         }
 
