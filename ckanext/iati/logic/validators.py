@@ -190,12 +190,20 @@ def remove_leading_or_trailing_spaces(value,context):
 
 
 def licence_validator(key, data, errors, context):
-
     """ Validates the licence. License made mandatory field while creating a
-    new publisher"""
-    license_id = data[key]
+        new publisher"""
 
-    if (license_id == "notspecified_lc") or (not license_id.strip()):
+    licenses = get_action('license_list')(context)
+
+    license_found = False
+
+    for license in licenses:
+        if (license['id'] == data[key]) and (data[key] != 'lc_notspecified'):
+            license_found = True
+
+    if not license_found:
         errors[key].append('Please specify the License.')
+
+
 
 
