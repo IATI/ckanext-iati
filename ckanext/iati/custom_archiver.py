@@ -242,7 +242,7 @@ def archive_package(package_id, context, consecutive_errors=0):
 
 
         try:
-            tree = etree.fromstring(xml)
+            tree = etree.fromstring(xml, parser=etree.XMLParser(huge_tree=True))
         except etree.XMLSyntaxError, e:
             return save_package_issue(context, package, extras_dict,
                                       'xml-error', 'Could not parse XML file:'
