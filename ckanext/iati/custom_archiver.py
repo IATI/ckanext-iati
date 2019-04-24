@@ -446,19 +446,10 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
 
     def _download_resource(resource_url, timeout):
         request_headers = {}
-        log.info('User agent: {0}'.format(user_agent_string))
         if user_agent_string is not None:
             request_headers['User-Agent'] = user_agent_string
-        # Part of 403 url error - if user agent is missing or
-        # some sites do not accept IATI (CKAN) as user agent.
-        # hence setting default user agent to Mozilla/5.0.
-        try:
-            res = requests.get(resource['url'], timeout=url_timeout,
-                               headers=request_headers, verify=False)
-        except Exception, e:
-            request_headers['User-Agent'] = 'Mozilla/5.0'
-            res = requests.get(resource['url'], timeout=url_timeout,
-                               headers=request_headers, verify=False)
+        res = requests.get(resource['url'], timeout=url_timeout,
+                           headers=request_headers, verify=False)
         return res
 
 
@@ -469,8 +460,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
                                  timeout=url_timeout)
         headers = res.headers
     except tasks.LinkCheckerError, e:
-        if any(x in str(e).lower() for x in ('internal server error', '403',
-                                             )):
+        if any(x in str(e).lower() for x in ('internal server error', )):
             # If the HEAD method is not supported or if a 500
             # error is returned we'll handle the download manually
             res = _download_resource(resource_url=resource['url'],
