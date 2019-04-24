@@ -10,7 +10,7 @@
     "od_conformance": "not reviewed",
     "osd_conformance": "not reviewed",
     "status": "active",
-    "title": "Licence Not Specified",
+    "title": " ",
     "url": ""
   },
   {
@@ -166,47 +166,5 @@
     "status": "active",
     "title": "UK Open Government Licence (OGL)",
     "url": "http://reference.data.gov.uk/id/open-government-licence"
-  },
-  {
-    "domain_content": false,
-    "domain_data": false,
-    "domain_software": false,
-    "family": "",
-    "id": "cc-nc",
-    "is_generic": false,
-    "maintainer": "",
-    "od_conformance": "approved",
-    "osd_conformance": "not reviewed",
-    "status": "active",
-    "title": "Creative Commons Non-Commercial (Any)",
-    "url": "http://creativecommons.org/licenses/by-nc/2.0/"
-  },
-  {
-    "domain_content": false,
-    "domain_data": false,
-    "domain_software": false,
-    "family": "",
-    "id": "other-nc",
-    "is_generic": true,
-    "maintainer": "",
-    "od_conformance": "approved",
-    "osd_conformance": "not reviewed",
-    "status": "active",
-    "title": "Other (Non-Commercial)",
-    "url": ""
-  },
-  {
-    "domain_content": false,
-    "domain_data": false,
-    "domain_software": false,
-    "family": "",
-    "id": "other-closed",
-    "is_generic": true,
-    "maintainer": "",
-    "od_conformance": "approved",
-    "osd_conformance": "not reviewed",
-    "status": "active",
-    "title": "Other (Not Open)",
-    "url": ""
-  }
+  }   
 ]
