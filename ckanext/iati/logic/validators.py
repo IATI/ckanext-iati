@@ -195,14 +195,11 @@ def licence_validator(key, data, errors, context):
 
     licenses = get_action('license_list')(context)
 
-    license_found = False
+    licenses_list = [license['id'] for license in licenses]
+    
+    if (data[key] not in licenses_list) or (data[key] == 'lc_notspecified'):
+	errors[key].append('Please specify the License.')
 
-    for license in licenses:
-        if (license['id'] == data[key]) and (data[key] != 'lc_notspecified'):
-            license_found = True
-
-    if not license_found:
-        errors[key].append('Please specify the License.')
 
 
 
