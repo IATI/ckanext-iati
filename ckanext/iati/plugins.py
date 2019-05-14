@@ -205,7 +205,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         schema.update({
             'state': [iati_publisher_state_validator],
             'title': [_not_empty, remove_leading_or_trailing_spaces],
-            'license_id': [_convert_to_extras],
+            'license_id': [_convert_to_extras, licence_validator],
             'publisher_source_type': default_validators,
             'publisher_iati_id': [_not_empty, remove_leading_or_trailing_spaces, iati_org_identifier_validator, _convert_to_extras, unicode],
             'publisher_country': default_validators,
