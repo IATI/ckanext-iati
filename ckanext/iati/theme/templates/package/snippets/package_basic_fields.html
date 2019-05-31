@@ -21,7 +21,7 @@
   </p>
 
   {{ form.input('author_email', id='field-author_email', label=_('Contact e-mail'), value=data.author_email, error=errors.author_email) }}
-    <p class="help-block"><span class="field-xml">[contact-email]</span> A contact address for anyone wishing to query you about your data.</p>
+    <p class="help-block"><span class="field-xml">[contact-email]</span> A contact address for anyone wishing to query you about your data. Please note that IATI is an open data standard and the email provided here will be visible to others via the IATI Registry.</p>
 
   <div class="control-group">
     {% set error = errors.filetype %}

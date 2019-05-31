@@ -65,7 +65,7 @@
     <p class="help-block">Contact address for publisher.</p>
 
     {{ form.input('publisher_contact_email', attrs={'required': 'true'}, label=_('Contact Email (required) *'), id='field-publisher_contact_email', value=data.publisher_contact_email, error=errors.publisher_contact_email, type='text') }}
-    <p class="help-block">Contact email for publisher.</p>
+    <p class="help-block">Contact email for publisher. Please note that IATI is an open data standard and the email provided here will be visible to others via the IATI Registry.</p>
 
     {{ form.textarea('publisher_description', label=_('Description'), id='field-publisher_description', value=data.publisher_description, error=errors.publisher_description) }}
     <p class="help-block">General description of publisher's role and activities.</p>
