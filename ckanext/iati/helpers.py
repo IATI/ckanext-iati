@@ -422,7 +422,7 @@ def organizations_cntry_type_logged_user(permission='manage_group', include_data
         'permission': permission,
         'include_dataset_count': include_dataset_count}
     organizations = logic.get_action('organization_list_for_user')(context, data_dict)
-    print(organizations)
+    #print(organizations)
 
     return None
 
@@ -431,9 +431,9 @@ def dcat_markup_dataset_show(context, data_dict):
     p.toolkit.check_access('dcat_dataset_show', context, data_dict)
 
     dataset_dict = p.toolkit.get_action('package_show')(context, data_dict)
-    print dataset_dict
+    #print dataset_dict
     dataset_dict['notes'] = dataset_dict['title']
-    print dataset_dict
+    #print dataset_dict
 
     serializer = RDFSerializer(profiles=data_dict.get('profiles'))
 
