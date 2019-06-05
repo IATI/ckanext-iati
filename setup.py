@@ -38,6 +38,7 @@ setup(name='ckanext-iati',
       [paste.paster_command]
       iati-archiver=ckanext.iati.commands:Archiver
       iati-purge=ckanext.iati.commands:PurgeCmd
+      iati-first-publisher-date=ckanext.iati.commands:UpdatePublisherDate
       """,
       #[ckan.celery_task]
       #tasks = ckanext.iati.celery_import:task_imports

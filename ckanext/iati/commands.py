@@ -3,6 +3,7 @@ import logging
 from ckan.lib.cli import CkanCommand
 
 from ckanext.iati.custom_archiver import run as run_archiver
+from ckanext.iati import publisher_date as pub_date
 
 log = logging.getLogger('iati_archiver')
 
@@ -95,3 +96,27 @@ class PurgeCmd(CkanCommand):
             model.repo.commit_and_remove()
 
         print('Purge complete')
+
+
+class UpdatePublisherDate(CkanCommand):
+    """
+        Update first publisher date as cron job or command line.
+    """
+    summary = __doc__.split('\n')[0]
+    usage = __doc__
+    min_args = 0
+    max_args = 2
+
+    def command(self):
+
+        if not self.args or self.args[0] in ['--help', '-h', 'help']:
+            print Archiver.__doc__
+            return
+
+        cmd = self.args[0]
+        self._load_config()
+
+        if cmd == 'update_first_publisher_date':
+            pub_date.run()
+        else:
+            log.error('Command {0} not recognized'.format(cmd))

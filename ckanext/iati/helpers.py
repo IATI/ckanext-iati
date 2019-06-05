@@ -453,9 +453,10 @@ def structured_data_markup(dataset_id, profiles=None, _format='jsonld'):
     '''
     if not profiles:
         profiles = ['schemaorg']
-
+    
+    context = {'user': c.user}
     data =dcat_markup_dataset_show(
-        {},
+        context,
         {
             'id': dataset_id, 
             'profiles': profiles, 
