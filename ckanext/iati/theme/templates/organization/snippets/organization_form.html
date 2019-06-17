@@ -25,7 +25,7 @@
     {{ select('publisher_source_type', label=_('Source'), data=data) }}
     <p class="help-block">Primary - publishers authorised to report their own (or associated organisations') data. Secondary - publishers reporting the activities of other organisations.</p>
 
-    {{ select('license_id', label=_('License'), data=data, autocomplete=true) }}
+    {{ select('license_id', label=_('License *'), data=data, autocomplete=true) }}
     <p class="help-block">Choose from the dropdown the appropriate licence under which your data is being published. For more information on IATI's licensing guidelines go to <a href="http://iatistandard.org/en/guidance/preparing-organisation/organisation-data-publication/how-to-license-you-data/">How to license your data</a>.</p>
 
     {{ select('publisher_organization_type', label=_('Type'), data=data) }}
