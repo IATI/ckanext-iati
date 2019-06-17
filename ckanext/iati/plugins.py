@@ -28,6 +28,7 @@ import ckanext.iati.helpers as iati_helpers
 
 log = logging.getLogger(__name__)
 
+
 class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
 
     p.implements(p.IRoutes, inherit=True)
@@ -137,6 +138,9 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         map.connect('archiver_controller_run', '/dataset/archiver/run/{package_id}',
                     controller='ckanext.iati.controllers.archiver_controller:ArchiverRunStatus',
                     action='archiver_controller_run')
+        map.connect('dataset_trash', '/ckan-admin/trash',
+                    controller='ckanext.iati.controllers.admin_controller:PurgeController', action='trash',
+                    conditions=dict(method=['POST']))
 
         #custom redirects
         redirects = {
