@@ -275,7 +275,7 @@ def _get_sysadmins(context):
     model = context['model']
 
     q = model.Session.query(model.User) \
-             .filter(model.User.sysadmin==True)
+             .filter(_and_(model.User.sysadmin==True, model.User.state=='active'))
     return q.all()
 
 
