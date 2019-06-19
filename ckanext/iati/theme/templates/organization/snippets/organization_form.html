@@ -12,14 +12,19 @@
   <fieldset>
     <legend>{{ _('Basic fields') }}</legend>
 
-    {{ form.input('name', label=_('Publisher Id (required) *'), id='field-name', value=data.name, error=errors.name) }}
+    {% if c.userobj.sysadmin or data.state != 'active' %}
+      {% set attrs = {} %}
+    {% else %}
+      {% set attrs = {'disabled':"disabled"} %}
+    {% endif %}
+
+    {{ form.input('name', label=_('Publisher Id (required) *'), id='field-name', value=data.name, error=errors.name, attrs=attrs) }}
     <p class="help-block">This will be the <strong>unique identifier</strong> for the publisher. Where possible use a short abbreviation of your organisation's name. For example: "dfid" or "worldbank" Must be at least three characters long and lower case. Can include letters, numbers and also - (dash) and _ (underscore).</p>
 
     {{ form.input('title', label=_('Publisher Name'), id='field-title', value=data.title, error=errors.title) }}
     <p class="help-block">The Name of the Organisation publishing the data.</p>
 
-    {{ form.input('publisher_iati_id', label=_('IATI Organisation Identifier (required) *'), id='field-publisher_iati_id', value=data.publisher_iati_id, error=errors.publisher_iati_id) }}
-    
+    {{ form.input('publisher_iati_id', label=_('IATI Organisation Identifier (required) *'), id='field-publisher_iati_id', value=data.publisher_iati_id, error=errors.publisher_iati_id, attrs=attrs) }}
     <p class="help-block">The organisation identifier used in the IATI XML files to identify the reporting organisation. For more information please go to <a href="http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-create-your-iati-organisation-identifier/">How to create your IATI organisation identifier</a>.</p>
 
     {{ select('publisher_source_type', label=_('Source'), data=data) }}
@@ -39,8 +44,9 @@
 
     {% if c.userobj.sysadmin %}
       {{ select('state', label=_('State'), data=data) }}
+      <p class="help-block">Choose from dropdown: Active - publisher record is visibile on the Registry; Pending - approval needed prior to publication; Deleted.</p>
     {% endif %}
-    <p class="help-block">Choose from dropdown: Active - publisher record is visibile on the Registry; Pending - approval needed prior to publication; Deleted.</p>
+    
 
     {% if c.userobj.sysadmin %}
         {% if data.publisher_first_publish_date %}

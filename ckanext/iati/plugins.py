@@ -20,7 +20,8 @@ from ckanext.iati.logic.validators import (db_date,
                                            remove_leading_or_trailing_spaces,
                                            licence_validator,
                                            iati_resource_url_mandatory,
-                                           country_code
+                                           country_code,
+                                           change_publisher_id_or_org_id
                                           )
 from ckanext.iati.logic.converters import strip
 import ckanext.iati.helpers as iati_helpers
@@ -201,13 +202,19 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         _ignore_missing = p.toolkit.get_validator('ignore_missing')
         _not_empty = p.toolkit.get_validator('not_empty')
 
+        _unicode_safe = p.toolkit.get_validator('unicode_safe')
+        _name_validator = p.toolkit.get_validator('name_validator')
+        _group_name_validator = p.toolkit.get_validator('group_name_validator')
+
         default_validators = [_ignore_missing, _convert_to_extras, unicode]
         schema.update({
             'state': [iati_publisher_state_validator],
             'title': [_not_empty, remove_leading_or_trailing_spaces],
+            'name': [_not_empty, _unicode_safe, _name_validator, _group_name_validator, change_publisher_id_or_org_id],
             'license_id': [_convert_to_extras, licence_validator],
             'publisher_source_type': default_validators,
-            'publisher_iati_id': [_not_empty, remove_leading_or_trailing_spaces, iati_org_identifier_validator, _convert_to_extras, unicode],
+            'publisher_iati_id': [_not_empty, remove_leading_or_trailing_spaces, iati_org_identifier_validator,
+                                  _convert_to_extras, unicode, change_publisher_id_or_org_id],
             'publisher_country': default_validators,
             'publisher_segmentation': default_validators,
             'publisher_ui': default_validators,

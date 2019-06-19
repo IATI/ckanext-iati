@@ -167,6 +167,7 @@ def iati_org_identifier_validator(key, data, errors, context):
     session = context['session']
     group = context.get('group')
     publisher_iati_id = data[key]
+    user = context.get('user')
 
     if group:
         group_id = group.id
@@ -198,7 +199,33 @@ def licence_validator(key, data, errors, context):
     licenses_list = [license['id'] for license in licenses]
     
     if (data[key] not in licenses_list) or (data[key] == 'lc_notspecified'):
-	errors[key].append('Please specify the License.')
+        errors[key].append('Please specify the License.')
+
+
+def _check_access_to_change_ids(key, data, group, user):
+
+    if isinstance(key, tuple):
+        key = key[0]
+
+    if key =='publisher_iati_id':
+        val = group.extras.get('publisher_iati_id', '')
+    else:
+        val = group.name
+
+    if val != data.get(key) and group.state == 'active':
+        if not new_authz.is_sysadmin(user):
+            return False
+    return True
+
+
+def change_publisher_id_or_org_id(key, data, errors, context):
+
+    group = context.get('group')
+    user = context.get('user')
+
+    if group:
+        if not _check_access_to_change_ids(key, data, group, user):
+            errors[key].append('Only system admin can change this {} for an active dataset.'.format(key[0]))
 
 
 
