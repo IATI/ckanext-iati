@@ -18,7 +18,7 @@
     "domain_data": true,
     "domain_software": false,
     "family": "",
-    "id": "pddl",
+    "id": "odc-pddl",
     "is_generic": false,
     "maintainer": "",
     "od_conformance": "approved",
