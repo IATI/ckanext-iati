@@ -29,7 +29,14 @@ Example:
         <td>{{ organization.publisher_country }}</td>
         <td>{{ organization.package_count }}</td>
       </tr>
-    {% endif %}
+     {% else %}
+       <tr>
+        <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.title) }}</a></td>
+        <td>{{ organization.publisher_organization_type }}</td>
+        <td>{{ organization.publisher_country }}</td>
+        <td>{{ "No Dataset/Not Published" }}</td>
+      </tr>
+     {% endif %}
    {% endif %}
   {% endfor %}
   </tbody>
