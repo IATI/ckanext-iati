@@ -207,7 +207,7 @@ def _check_access_to_change_ids(key, data, group, user):
     if isinstance(key, tuple):
         key = key[0]
 
-    if key =='publisher_iati_id':
+    if key == 'publisher_iati_id':
         val = group.extras.get('publisher_iati_id', '')
     else:
         val = group.name
@@ -227,7 +227,3 @@ def change_publisher_id_or_org_id(key, data, errors, context):
         if not _check_access_to_change_ids(key, data, group, user):
             errors[key].append('Only system administrators can change this ' +
                                'field for an active publisher.')
-
-
-
-
