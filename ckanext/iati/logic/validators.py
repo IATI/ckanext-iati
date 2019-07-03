@@ -225,8 +225,8 @@ def change_publisher_id_or_org_id(key, data, errors, context):
 
     if group:
         if not _check_access_to_change_ids(key, data, group, user):
-            errors[key].append('Only system admin can change this {} for an active dataset.'.format(key[0]))
-
+            errors[key].append('Only system administrators can change this ' +
+                               'field for an active publisher.')
 
 
 
