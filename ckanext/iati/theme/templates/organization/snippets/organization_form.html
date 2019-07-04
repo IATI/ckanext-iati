@@ -15,7 +15,7 @@
     {% if c.userobj.sysadmin or data.state != 'active' %}
       {% set attrs = {} %}
     {% else %}
-      {% set attrs = {'disabled':"disabled"} %}
+      {% set attrs = {'readonly':"readonly"} %}
     {% endif %}
 
     {{ form.input('name', label=_('Publisher Id (required) *'), id='field-name', value=data.name, error=errors.name, attrs=attrs) }}
