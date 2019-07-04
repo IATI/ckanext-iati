@@ -203,14 +203,20 @@ def licence_validator(key, data, errors, context):
 
 
 def _check_access_to_change_ids(key, data, group, user):
+    print("****************")
+    print(key)
+    print("**********")
+    print(data)
 
     if isinstance(key, tuple):
-        key = key[0]
+        key_comp = key[0]
 
-    if key =='publisher_iati_id':
+    if key_comp =='publisher_iati_id':
         val = group.extras.get('publisher_iati_id', '')
-    else:
+    elif key_comp == 'name':
         val = group.name
+
+    print(data.get(key))
 
     if val != data.get(key) and group.state == 'active':
         if not new_authz.is_sysadmin(user):
@@ -226,8 +232,4 @@ def change_publisher_id_or_org_id(key, data, errors, context):
     if group:
         if not _check_access_to_change_ids(key, data, group, user):
             errors[key].append('Only system admin can change this {} for an active dataset.'.format(key[0]))
-
-
-
-
 
