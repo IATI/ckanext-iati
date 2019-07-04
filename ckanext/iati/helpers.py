@@ -7,7 +7,7 @@ import json
 # Bad import: should be in toolkit
 from pylons import config
 from webhelpers.html import literal
-
+import ckan.authz as authz
 import ckan.model as model # get_licenses should be in core
 from ckan.model import User
 import ckan.plugins as p
@@ -545,3 +545,18 @@ def first_published_date_patch(org_id):
             pass
     except Exception, e:
         log.warning("Cannot be patched - {}", str(e))
+
+def organization_form_read_only(data):
+    """
+    data contains most of the publisher data. However, for the first time it contains state of the dataset
+    but if any validation error in the form, then data doest contain state. Hence, organization_show is necessary
+    which is a quite an expensive process for the validation.
+    """
+    organization = p.toolkit.get_action('organization_show')({}, {'id': data.get('name')})
+    sysadmin = authz.is_sysadmin(c.user)
+    attrs = {}
+  
+    if not sysadmin and organization.get('state') == 'active':
+        attrs = {'readonly':"readonly"}
+    return attrs
+ 

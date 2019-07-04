@@ -203,10 +203,6 @@ def licence_validator(key, data, errors, context):
 
 
 def _check_access_to_change_ids(key, data, group, user):
-    print("****************")
-    print(key)
-    print("**********")
-    print(data)
 
     if isinstance(key, tuple):
         key_comp = key[0]
@@ -216,9 +212,7 @@ def _check_access_to_change_ids(key, data, group, user):
     elif key_comp == 'name':
         val = group.name
 
-    print(data.get(key))
-
-    if val != data.get(key) and group.state == 'active':
+    if val and val != data.get(key) and group.state == 'active':
         if not new_authz.is_sysadmin(user):
             return False
     return True

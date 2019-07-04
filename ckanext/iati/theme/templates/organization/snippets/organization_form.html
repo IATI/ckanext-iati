@@ -11,12 +11,7 @@
 
   <fieldset>
     <legend>{{ _('Basic fields') }}</legend>
-
-    {% if c.userobj.sysadmin or data.state != 'active' %}
-      {% set attrs = {} %}
-    {% else %}
-      {% set attrs = {'readonly':"readonly"} %}
-    {% endif %}
+    {% set attrs = h.organization_form_read_only(data) %}
 
     {{ form.input('name', label=_('Publisher Id (required) *'), id='field-name', value=data.name, error=errors.name, attrs=attrs) }}
     <p class="help-block">This will be the <strong>unique identifier</strong> for the publisher. Where possible use a short abbreviation of your organisation's name. For example: "dfid" or "worldbank" Must be at least three characters long and lower case. Can include letters, numbers and also - (dash) and _ (underscore).</p>
