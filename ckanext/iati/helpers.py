@@ -552,11 +552,11 @@ def organization_form_read_only(data):
     but if any validation error in the form, then data doest contain state. Hence, organization_show is necessary
     which is a quite an expensive process for the validation.
     """
-    organization = p.toolkit.get_action('organization_show')({}, {'id': data.get('name')})
+    
     sysadmin = authz.is_sysadmin(c.user)
     attrs = {}
   
-    if not sysadmin and organization.get('state') == 'active':
-        attrs = {'readonly':"readonly"}
+    if not sysadmin and data and data.get('state', '') == 'active':
+       attrs = {'readonly':"readonly"}
     return attrs
  

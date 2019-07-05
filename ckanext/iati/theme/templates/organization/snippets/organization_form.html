@@ -11,12 +11,12 @@
 
   <fieldset>
     <legend>{{ _('Basic fields') }}</legend>
-    {% set attrs = h.organization_form_read_only(data) %}
+    {% set attrs = h.organization_form_read_only(c.group_dict) %}
 
     {{ form.input('name', label=_('Publisher Id (required) *'), id='field-name', value=data.name, error=errors.name, attrs=attrs) }}
     <p class="help-block">This will be the <strong>unique identifier</strong> for the publisher. Where possible use a short abbreviation of your organisation's name. For example: "dfid" or "worldbank" Must be at least three characters long and lower case. Can include letters, numbers and also - (dash) and _ (underscore).</p>
 
-    {{ form.input('title', label=_('Publisher Name'), id='field-title', value=data.title, error=errors.title, attrs=attrs) }}
+    {{ form.input('title', label=_('Publisher Name'), id='field-title', value=data.title, error=errors.title) }}
     <p class="help-block">The Name of the Organisation publishing the data.</p>
 
     {{ form.input('publisher_iati_id', label=_('IATI Organisation Identifier (required) *'), id='field-publisher_iati_id', value=data.publisher_iati_id, error=errors.publisher_iati_id, attrs=attrs) }}
