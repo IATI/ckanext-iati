@@ -21,7 +21,6 @@ Example:
   </thead>
    <tbody>
    {% for organization in organizations %}
-    {% if (organization.package_count and ((organization.package_count|int) > 0)) or 'dashboard' in request.url %}
       {% if (organization.package_count and ((organization.package_count|int) > 0)) %}
       <tr>
         <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.title) }}</a></td>
@@ -29,14 +28,13 @@ Example:
         <td>{{ organization.publisher_country }}</td>
         <td>{{ organization.package_count }}</td>
       </tr>
-     {% else %}
+     {% elif 'dashboard' in request.url %}
        <tr>
         <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.title) }}</a></td>
         <td>{{ organization.publisher_organization_type }}</td>
         <td>{{ organization.publisher_country }}</td>
         <td>{{ "No Dataset/Not Published" }}</td>
       </tr>
-     {% endif %}
    {% endif %}
   {% endfor %}
   </tbody>

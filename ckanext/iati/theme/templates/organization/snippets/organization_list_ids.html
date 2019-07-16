@@ -32,14 +32,6 @@ Example:
         <td>{{ extra_fields.publisher_country }}</td>
         <td>{{ organization.package_count }}</td>
       </tr>
-    {% elif admin %}
-      <tr>
-        <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.display_name) }}</a></td>
-        <td>{{ extra_fields.publisher_iati_id }}</td>
-        <td>{{ extra_fields.publisher_organization_type }}</td>
-        <td>{{ extra_fields.publisher_country }}</td>
-        <td>{{ "No Dataset/Not Published" }}</td>
-      </tr>
     {% endif %}
   {% endfor %}
   </tbody>
