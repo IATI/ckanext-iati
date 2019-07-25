@@ -311,14 +311,15 @@ def organization_list_pending():
     return p.toolkit.get_action('organization_list_pending')({}, {
         'all_fields': True, 'sort': 'title asc', 'include_extras': True})
 
+
 def get_first_published_date(organization):
     if 'publisher_contact_email' not in organization or not organization['publisher_contact_email']:
         organization.update({'publisher_contact_email': 'Email not found'})
     try:
         publisher_first_publish_date = organization['publisher_first_publish_date']
-        if publisher_first_publish_date =='':
+        if publisher_first_publish_date == '':
             raise KeyError
-        else :
+        else:
             return publisher_first_publish_date
     except KeyError:
         date_not_found_error = 'Date not found'
@@ -372,7 +373,7 @@ def render_first_published_date(value, date_format='%d %B %Y'):
 
     try:
         if len(value) <= 10:
-            current_date_format = '%d.%m.%Y'
+            current_date_format = '%Y-%m-%d'
         else:
             current_date_format = '%Y-%m-%dT%H:%M:%S.%f'
 
@@ -508,16 +509,23 @@ def publisher_first_published_date_validator(data_dict):
      which was done previously during read phase and it is inconsistent.
      This can be done through helper function 'first_published_date_patch'. But,
      Looks like organization_patch dosen't work while updating the organization and avoid multiple organization_show,
-     Hence improving the speed """
+      """
     try:
         invalid_dates = ['No data published', 'Date not found', 'Date is not valid', '']
         first_pub_date = data_dict.get('publisher_first_publish_date', '')
-        if (first_pub_date in invalid_dates) or (first_pub_date is None):
+        if not first_pub_date or (first_pub_date in invalid_dates) or (first_pub_date is None):
             first_pub_date = get_first_published_date(data_dict)
+        else:
+            try:
+                datetime.datetime.strptime(first_pub_date, "%Y-%m-%dT%H:%M:%S.%f")
+            except ValueError:
+                _date = datetime.datetime.strptime(first_pub_date, "%Y-%m-%d")
+                first_pub_date = _date.strftime("%Y-%m-%dT%H:%M:%S.%f")
 
         if str(first_pub_date).strip() not in invalid_dates:
             data_dict['publisher_first_publish_date'] = first_pub_date
     except Exception, e:
+        print(e)
         log.warning("Cannot get the first published date - {}", str(e))
 
     return data_dict
@@ -546,6 +554,7 @@ def first_published_date_patch(org_id):
     except Exception, e:
         log.warning("Cannot be patched - {}", str(e))
 
+
 def organization_form_read_only(data):
     """
     data contains most of the publisher data. However, for the first time it contains state of the dataset
@@ -559,4 +568,4 @@ def organization_form_read_only(data):
     if not sysadmin and data and data.get('state', '') == 'active':
        attrs = {'readonly':"readonly"}
     return attrs
- 
+

@@ -1,6 +1,6 @@
 from urlparse import urlparse, urlunparse
 from dateutil.parser import parse as date_parse
-
+from datetime import datetime
 from email_validator import validate_email
 import re
 
@@ -227,3 +227,13 @@ def change_publisher_id_or_org_id(key, data, errors, context):
         if not _check_access_to_change_ids(key, data, group, user):
             errors[key].append('Only system admin can change this {} for an active dataset.'.format(key[0]))
 
+
+def first_publisher_date_validator(key, data, errors, context):
+
+    given_date = data[key]
+    if given_date:
+        try:
+            # If the given date format is YYYY-MM-DD convert to ISO format
+            datetime.strptime(given_date, "%Y-%m-%dT%H:%M:%S.%f").isoformat()
+        except ValueError:
+            errors[key].append("Incorrect date format. Pleas enter date in format YYYY-MM-DD")

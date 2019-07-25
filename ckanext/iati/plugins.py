@@ -21,7 +21,8 @@ from ckanext.iati.logic.validators import (db_date,
                                            licence_validator,
                                            iati_resource_url_mandatory,
                                            country_code,
-                                           change_publisher_id_or_org_id
+                                           change_publisher_id_or_org_id,
+                                           first_publisher_date_validator
                                           )
 from ckanext.iati.logic.converters import strip
 import ckanext.iati.helpers as iati_helpers
@@ -215,7 +216,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'state': [iati_publisher_state_validator],
             'title': [_not_empty, remove_leading_or_trailing_spaces],
             'name': [_not_empty, _unicode_safe, _name_validator, _group_name_validator, change_publisher_id_or_org_id],
-            'license_id': [_convert_to_extras, licence_validator],
+            'license_id': [_convert_to_extras],
             'publisher_source_type': default_validators,
             'publisher_iati_id': [_not_empty, remove_leading_or_trailing_spaces, iati_org_identifier_validator,
                                   _convert_to_extras, unicode, change_publisher_id_or_org_id],
@@ -240,7 +241,8 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'publisher_data_quality': default_validators,
             'publisher_organization_type': default_validators,
             'publisher_implementation_schedule': default_validators,
-            'publisher_first_publish_date': default_validators
+            'publisher_first_publish_date': [_ignore_missing, _convert_to_extras, unicode,
+                                             first_publisher_date_validator]
         })
 
         return schema
