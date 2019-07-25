@@ -123,6 +123,15 @@ def organization_update(context, data_dict):
 
     return new_org_dict
 
+
+def organization_patch(context, data_dict):
+
+    if "publisher_first_publish_date" in data_dict:
+        data_dict = hlp.publisher_first_published_date_validator(data_dict)
+
+    return patch_core.organization_patch(context, data_dict)
+
+
 @p.toolkit.side_effect_free
 def group_list(context, data_dict):
     '''

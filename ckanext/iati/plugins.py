@@ -555,7 +555,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'organization_list_pending',
             'user_show',
             'resource_delete',
-            'user_list'
+            'user_list',
+            'organization_patch'
         )
         return _get_module_functions(iati_actions, function_names)
 
