@@ -65,7 +65,7 @@ class UpdateFirstPublishedDate:
         if len(dates) == 0:
             return ''
 
-        date_string = str(sorted([date_parse(x) for x in dates])[0].date().strftime('%d.%m.%Y'))
+        date_string = str(sorted([date_parse(x) for x in dates])[0].date().strftime('%Y-%m-%d'))
 
         return date_string
 
