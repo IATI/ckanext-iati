@@ -3,7 +3,7 @@ import os
 from xml.etree import ElementTree
 import datetime
 import json
-
+from markupsafe import Markup, escape
 # Bad import: should be in toolkit
 from pylons import config
 from webhelpers.html import literal
@@ -569,3 +569,16 @@ def organization_form_read_only(data):
        attrs = {'readonly':"readonly"}
     return attrs
 
+
+def get_publisher_list_download_formats():
+
+    formats = ('csv', 'xls', 'xml', 'json')
+    _link = "/publisher/download_list/{}"
+    html = ['<div class="dropdown-menu">']
+
+    for _format in formats:
+        html.append('<li><a class="dropdown-item" href="'+_link.format(_format)+'">'+_format.upper()+'</a></li>')
+
+    html.append("</div>")
+
+    return Markup("".join(html))

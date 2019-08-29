@@ -24,6 +24,7 @@ setup(name='ckanext-iati',
           'pyasn1',
           'lxml',
           'email_validator',
+          'xlwt',
           'kombu==3.0.37',
       ],
       entry_points="""
