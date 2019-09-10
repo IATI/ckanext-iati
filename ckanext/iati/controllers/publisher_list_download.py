@@ -76,7 +76,8 @@ class PublishersListDownload:
         writer.writerow(list(self._headers))
         _org_data = PublishersListDownload._get_publisher_data()
         for org in _org_data:
-            writer.writerow(self._prepare(org))
+            if org['state'] == 'active' and org['package_count'] > 0:
+                writer.writerow(self._prepare(org))
 
         output = f.getvalue()
         f.close()
@@ -89,7 +90,8 @@ class PublishersListDownload:
 
         _org_data = PublishersListDownload._get_publisher_data()
         for org in _org_data:
-            json_data.append(OrderedDict(zip(self._headers, self._prepare(org))))
+            if org['state'] == 'active' and org['package_count'] > 0:
+                json_data.append(OrderedDict(zip(self._headers, self._prepare(org))))
 
         json.dump(json_data, f)
         output = f.getvalue()
@@ -109,20 +111,21 @@ class PublishersListDownload:
 
         _org_data = PublishersListDownload._get_publisher_data()
         for org in _org_data:
-            _dt = self._prepare(org)
-            _iati_identifier = _dt.pop(1)
-            xml.append('<iati-identifier id="{}">'.format(_iati_identifier))
-            for _index, _field in enumerate(fields):
-                field = self._get_xml_name(_field)
-                if field == "datasets-link":
-                    xml.append('<iati-publisher-page xmlns:xlink="http://www.w3.org/1999/xlink">')
-                    xml.append('    <iati-publisher-page xlink:type="simple" '
-                               'xlink:href="{}">{}</iati-publisher-page>'.format(_dt[_index],
-                                                                                 self._get_xml_value(_dt[0])))
-                    xml.append('</iati-publisher-page>')
-                else:
-                    xml.append(_observations.format(field, self._get_xml_value(_dt[_index]), field))
-            xml.append('</iati-identifier>')
+            if org['state'] == 'active' and org['package_count'] > 0:
+                _dt = self._prepare(org)
+                _iati_identifier = _dt.pop(1)
+                xml.append('<iati-identifier id="{}">'.format(_iati_identifier))
+                for _index, _field in enumerate(fields):
+                    field = self._get_xml_name(_field)
+                    if field == "datasets-link":
+                        xml.append('<iati-publisher-page xmlns:xlink="http://www.w3.org/1999/xlink">')
+                        xml.append('    <iati-publisher-page xlink:type="simple" '
+                                   'xlink:href="{}">{}</iati-publisher-page>'.format(_dt[_index],
+                                                                                     self._get_xml_value(_dt[0])))
+                        xml.append('</iati-publisher-page>')
+                    else:
+                        xml.append(_observations.format(field, self._get_xml_value(_dt[_index]), field))
+                xml.append('</iati-identifier>')
 
         xml.append('</iati-publishers-list>')
 
@@ -144,11 +147,14 @@ class PublishersListDownload:
             sheet1.write(0, _index, _field)
 
         # Write Rows and Values
-        for _row, org in enumerate(_org_data, 1):
-            _dt = self._prepare(org)
-            # Write Items
-            for _col, _item in enumerate(_dt):
-                sheet1.write(_row, _col, _item)
+        _row = 1
+        for org in _org_data:
+            if org['state'] == 'active' and org['package_count'] > 0:
+                _dt = self._prepare(org)
+                # Write Items
+                for _col, _item in enumerate(_dt):
+                    sheet1.write(_row, _col, _item)
+                _row += 1
 
         wb.save(f)
         output = f.getvalue()
