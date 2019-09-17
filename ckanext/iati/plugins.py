@@ -217,7 +217,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'state': [iati_publisher_state_validator],
             'title': [_not_empty, remove_leading_or_trailing_spaces],
             'name': [_not_empty, _unicode_safe, _name_validator, _group_name_validator, change_publisher_id_or_org_id],
-            'license_id': [_convert_to_extras],
+            'license_id': [_convert_to_extras, licence_validator],
             'publisher_source_type': default_validators,
             'publisher_iati_id': [_not_empty, remove_leading_or_trailing_spaces, iati_org_identifier_validator,
                                   _convert_to_extras, unicode, change_publisher_id_or_org_id],
