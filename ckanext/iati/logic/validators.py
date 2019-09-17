@@ -3,7 +3,7 @@ from dateutil.parser import parse as date_parse
 from datetime import datetime
 from email_validator import validate_email
 import re
-
+from sqlalchemy import and_
 from ckan.logic import get_action
 from ckan import authz as new_authz
 from ckan.lib.navl.dictization_functions import unflatten, Invalid
@@ -177,7 +177,7 @@ def iati_org_identifier_validator(key, data, errors, context):
     # check if the IATI ID exists
     publisher_id_exists = session.query(model.Group)\
         .join((model.GroupExtra, model.Group.id == model.GroupExtra.group_id))\
-        .filter(model.GroupExtra.value == publisher_iati_id).first()
+        .filter(and_(model.GroupExtra.value == publisher_iati_id, model.GroupExtra.key == 'publisher_iati_id')).first()
 
     
     # if the ID exists and it doesn't belong to the org submitting the form

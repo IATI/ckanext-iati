@@ -8,30 +8,36 @@ Example:
     {% snippet "organization/snippets/organization_list_dashboard.html" %}
 
 #}
-{% if h.check_access('sysadmin') %}
-<table class="table table-hover table-bordered table-striped table-sorted" data-module="table-sorter">
-  <thead>
-    <tr>
-      <th title="Sort by publisher name">Publisher</th>
-      <th title="Sort by organisation type">Organisation Type</th>
-      <th title="Sort by country">HQ Country / Region</th>
-    </tr>
-  </thead>
+{% if pending %}
+    <table class="table table-hover table-bordered table-striped table-sorted" data-module="table-sorter">
+      <thead>
+        <tr>
+          <th title="Sort by publisher name">Publisher</th>
+          <th title="Sort by organisation type">Organisation Type</th>
+          <th title="Sort by country">HQ Country / Region</th>
+        </tr>
+      </thead>
 
-  <tbody>
-  {% for organization in pending %}
+      <tbody>
 
-    {% if organization.package_count > 0 or 'dashboard' in request.url %}
-      {% set extra_fields = h.get_publisher_obj_extra_fields(organization) %}
-      <tr>
-        <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.display_name) }}</a></td>
-        <td>{{ extra_fields.publisher_organization_type }}</td>
-        <td>{{ extra_fields.publisher_country }}</td>
-      </tr>
-    {% endif %}
-  {% endfor %}
-  </tbody>
-</table>
+      {% for organization in pending %}
+
+        {% if organization.package_count > 0 or 'dashboard' in request.url %}
+          {% set extra_fields = h.get_publisher_obj_extra_fields(organization) %}
+          <tr>
+            <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.display_name) }}</a></td>
+            <td>{{ extra_fields.publisher_organization_type }}</td>
+            <td>{{ extra_fields.publisher_country }}</td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+      </tbody>
+    </table>
+
+
+    {% resource 'ckanext-iati/table_sorter' %}
+{% else %}
+  <div class="module-content no-pending-org">
+    <h2> No Pending publishers to display.</h2>
+  </div>
 {% endif %}
-
-{% resource 'ckanext-iati/table_sorter' %}

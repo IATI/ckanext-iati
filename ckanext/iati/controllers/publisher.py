@@ -36,11 +36,22 @@ class PublisherController(OrganizationController):
 
     def dashboard_pending_organizations(self):
         log.debug('dashboard pending orgainzations')
-        return render('user/dashboard_pending_organizations.html')
+        # Anonymous user should not be allowed to visit the link
+        try:
+            if not c.user:
+                raise logic.NotAuthorized
+            return render('user/dashboard_pending_organizations.html')
+        except logic.NotAuthorized:
+            p.toolkit.abort(401, p.toolkit._('Unauthorized to visit pending publisher page %s') % '')
 
     def dashboard_my_organizations(self):
         log.debug('dashboard my orgainzations')
-        return render('user/my_organizations.html')
+        try:
+            if not c.user:
+                raise logic.NotAuthorized
+            return render('user/my_organizations.html')
+        except logic.NotAuthorized:
+            p.toolkit.abort(401, p.toolkit._('Unauthorized to visit my publisher page  %s') % '')
 
     def index(self):
         return OrganizationController.index(self)

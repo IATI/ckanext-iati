@@ -3,13 +3,14 @@ import os
 from xml.etree import ElementTree
 import datetime
 import json
-
+from markupsafe import Markup, escape
 # Bad import: should be in toolkit
 from pylons import config
 from webhelpers.html import literal
 import ckan.authz as authz
 import ckan.model as model # get_licenses should be in core
 from ckan.model import User
+import ckan.lib.dictization.model_dictize as model_dictize
 import ckan.plugins as p
 import ckan.lib.helpers as helpers
 import ckan.lib.formatters as formatters
@@ -307,9 +308,14 @@ def organization_list_publisher_page():
     return p.toolkit.get_action('organization_list_publisher_page')({}, {
         'all_fields': True, 'sort': 'title asc', 'include_extras': True})
 
+
 def organization_list_pending():
-    return p.toolkit.get_action('organization_list_pending')({}, {
-        'all_fields': True, 'sort': 'title asc', 'include_extras': True})
+
+    if authz.is_sysadmin(c.user):
+        return p.toolkit.get_action('organization_list_pending')({}, {
+            'all_fields': True, 'sort': 'title asc', 'include_extras': True})
+    else:
+        return _pending_organization_list_for_user()
 
 
 def get_first_published_date(organization):
@@ -569,3 +575,52 @@ def organization_form_read_only(data):
        attrs = {'readonly':"readonly"}
     return attrs
 
+
+def get_publisher_list_download_formats():
+
+    formats = ('csv', 'xls', 'xml', 'json')
+    _link = "/publisher/download_list/{}"
+    html = ['<div class="dropdown-menu">']
+
+    for _format in formats:
+        html.append('<li><a class="dropdown-item" href="'+_link.format(_format)+'">'+_format.upper()+'</a></li>')
+
+    html.append("</div>")
+
+    return Markup("".join(html))
+
+
+def _pending_organization_list_for_user():
+
+    """
+    This will extract the pending publisher for the given user.
+    :return: Pending Organizations
+    """
+
+    context = {'user': c.user, "model": model}
+    user_obj = model.User.by_name(context.get('user'))
+
+    try:
+        q = model.Session.query(model.Member, model.Group) \
+            .filter(model.Member.table_name == 'user') \
+            .filter(model.Member.capacity == 'admin') \
+            .filter(model.Member.table_id == user_obj.id) \
+            .filter(model.Member.state == 'active') \
+            .join(model.Group).all()
+
+        print("*********************")
+        print(q)
+
+        _organizations = [_org.Group for _org in q if (_org.Group.state == "approval_needed" and
+                                                       _org.Group.type == 'organization')]
+        if _organizations:
+            results = model_dictize.group_list_dictize(_organizations, context, include_extras=True)
+        else:
+            return []
+        log.info("Total pending organizations for the user: {}".format(user_obj.id))
+        log.info(len(results))
+        return results
+    except Exception as e:
+        log.error("Unexpected error while getting pending organization for the user.")
+        log.error("User id: {}".format(user_obj.id))
+        log.error(e)

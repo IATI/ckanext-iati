@@ -110,6 +110,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
                       '/publisher/bulk_process/{id}',
                       action='bulk_process', ckan_icon='sitemap')
 
+
         map.redirect('/api/{ver:1|2|3}/rest/publisher',
                      '/api/{ver}/rest/group')
         map.redirect('/api/rest/publisher', '/api/rest/group')
@@ -534,7 +535,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_username',
             'first_published_date_patch',
             'publisher_first_published_date_validator',
-            'organization_form_read_only'
+            'organization_form_read_only',
+            'get_publisher_list_download_formats'
         )
         return _get_module_functions(iati_helpers, function_names)
 
@@ -655,6 +657,9 @@ class IatiCsvImporter(p.SingletonPlugin):
         map.connect('/csv/upload', controller=csv_controller, action='upload',
                     conditions=dict(method=['POST']))
         map.connect('/csv/check_status/{task_id}', controller=csv_controller, action='check_status')
+
+        map.connect("/publisher/download_list/{download_format}", controller=csv_controller,
+                    action="publisher_list_download")
 
         return map
 

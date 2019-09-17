@@ -26,12 +26,21 @@
 
 {% block organizations_list %}
 {% if c.page.items or request.params %}
+
+  <h3>IATI Publishers List</h3>
+  <div class="btn-group publisher-list-download" style="display:none">
+    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">Download List <i class="fa fa-arrow-down" aria-hidden="true"></i>
+    </button>
+    {{ h.get_publisher_list_download_formats() }}
+  </div>
+
   {% snippet "organization/snippets/organization_list_ids.html", organizations=h.organization_list_publisher_page() %}
 {% else %}
   <p class="empty">
     {{ _('There are currently no organizations for this site') }}.
     {% if h.check_access('organization_create') %}
-      {% link_for _('How about creating one?'), controller='organization', action='new' %}</a>.
+      {% link_for _('How about creating one?'), controller='organization', action='new' %}
     {% endif %}
   </p>
 {% endif %}

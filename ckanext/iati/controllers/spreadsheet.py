@@ -18,6 +18,7 @@ import ckan.lib.jobs as jobs
 from dateutil.parser import parse as date_parse
 import time
 from ckanext.iati import custom_archiver as ach
+from ckanext.iati.controllers.publisher_list_download import PublishersListDownload
 
 log = logging.getLogger(__name__)
 _not_empty = p.toolkit.get_validator('not_empty')
@@ -429,6 +430,13 @@ class CSVController(p.toolkit.BaseController):
 
         return output
 
+    def publisher_list_download(self, download_format):
+
+        pub_list = PublishersListDownload(download_format)
+        
+        return pub_list.download()
+
+
 def load_config(ckan_ini_filepath):
     import paste.deploy
     config_abs_path = os.path.abspath(ckan_ini_filepath)
@@ -442,7 +450,6 @@ def load_config(ckan_ini_filepath):
     request_config = routes.request_config()
     request_config.host = parsed.netloc + parsed.path
     request_config.protocol = parsed.scheme
-
 
 
 def register_translator():
