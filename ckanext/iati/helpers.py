@@ -608,6 +608,9 @@ def _pending_organization_list_for_user():
             .filter(model.Member.state == 'active') \
             .join(model.Group).all()
 
+        print("*********************")
+        print(q)
+
         _organizations = [_org.Group for _org in q if (_org.Group.state == "approval_needed" and
                                                        _org.Group.type == 'organization')]
         if _organizations:

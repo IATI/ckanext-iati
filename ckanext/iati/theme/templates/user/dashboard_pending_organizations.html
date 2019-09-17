@@ -5,10 +5,10 @@
 
 {% block primary_content_inner %}
   <h2 class="hide-heading">{{ _('My Organizations') }}</h2>
-  {% set organizations = h.organizations_available() %}
-  {% if organizations %}
+  {% set pending_organizations = h.organization_list_pending() %}
+  {% if pending_organizations %}
     <div class="wide">
-      {% snippet "organization/snippets/organization_list_dashboard.html", pending=h.organization_list_pending() %}
+      {% snippet "organization/snippets/organization_list_dashboard.html", pending=pending_organizations %}
     </div>
   {% else %}
     <p class="empty">
