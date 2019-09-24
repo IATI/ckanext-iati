@@ -28,12 +28,17 @@
 {% if c.page.items or request.params %}
 
   <h3>IATI Publishers List</h3>
-  <div class="btn-group publisher-list-download" style="display:none">
-    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-            aria-expanded="false">Download List <i class="fa fa-arrow-down" aria-hidden="true"></i>
-    </button>
-    {{ h.get_publisher_list_download_formats() }}
+  {% set download_list = h.get_publisher_list_download_formats() %}
+  <div class="btn-group publisher-list-download">
+  <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">Download List
+  <i class="fa fa-caret-down"></i></button>
+  <div class="dropdown-menu">
+    {% for _format in download_list %}
+      <li><a class="dropdown-item" href="{{ download_list[_format] }}">{{ _format }}</a></li>
+    {% endfor %}
   </div>
+</div>
 
   {% snippet "organization/snippets/organization_list_ids.html", organizations=h.organization_list_publisher_page() %}
 {% else %}
