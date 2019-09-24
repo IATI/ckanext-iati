@@ -19,6 +19,7 @@ import ckanext.iati.lists as lists
 import ckan.logic as logic
 from ckan.common import c
 from ckanext.dcat.processors import RDFSerializer
+from collections import OrderedDict
 import logging
 log = logging.getLogger(__name__)
     
@@ -578,16 +579,14 @@ def organization_form_read_only(data):
 
 def get_publisher_list_download_formats():
 
-    formats = ('csv', 'xls', 'xml', 'json')
+    formats = ('CSV', 'XLS', 'XML', 'JSON')
     _link = "/publisher/download_list/{}"
-    html = ['<div class="dropdown-menu">']
+    downloads = OrderedDict()
 
     for _format in formats:
-        html.append('<li><a class="dropdown-item" href="'+_link.format(_format)+'">'+_format.upper()+'</a></li>')
+        downloads[_format] = _link.format(_format.lower())
 
-    html.append("</div>")
-
-    return Markup("".join(html))
+    return downloads
 
 
 def _pending_organization_list_for_user():
@@ -607,9 +606,6 @@ def _pending_organization_list_for_user():
             .filter(model.Member.table_id == user_obj.id) \
             .filter(model.Member.state == 'active') \
             .join(model.Group).all()
-
-        print("*********************")
-        print(q)
 
         _organizations = [_org.Group for _org in q if (_org.Group.state == "approval_needed" and
                                                        _org.Group.type == 'organization')]
