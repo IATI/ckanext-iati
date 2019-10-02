@@ -307,6 +307,11 @@ Documenting cronjob running times for future reference:
 *Times are UTC.
 
 
+GitHub Repository - Production Code
+++++++++++++++++++++++++++++++++
+Repo: https://github.com/IATI/ckanext-iati
+Branch: master
+
 
 Copying and License
 -------------------
