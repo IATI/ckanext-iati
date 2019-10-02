@@ -233,72 +233,76 @@ class CSVController(p.toolkit.BaseController):
             fieldnames = [f[0] for f in CSV_MAPPING]
             data = csv_file.file.read()
             data = StringIO.StringIO(data)
+            log.info("Reading CSV file....")
             try:
                 reader = csv.reader(data)
                 columns = next(reader)
-
-                #missing_columns = [f for f in fieldnames if f not in columns and f not in OPTIONAL_COLUMNS]
-                #surplus_columns = [f for f in columns if f not in fieldnames]
-
-                #if len(surplus_columns):
-                    #warnings = {'Ignoring extra columns': '%s' % ', '.join(sorted(surplus_columns))}
-
-                #if len(missing_columns):
-                    #errors = {'Missing columns': '%s' % ', '.join(sorted(missing_columns))}
-
-                missing_val, columns = field_validator.is_mandatory_fields_missing(fieldnames, columns, OPTIONAL_COLUMNS)
+                missing_val, columns = field_validator.is_mandatory_fields_missing(fieldnames,
+                                                                                   columns, OPTIONAL_COLUMNS)
 
                 errors = missing_val['errors']
                 warnings = missing_val['warnings']
 
                 if not len(errors.keys()):
-                    json_data = []
                     tasks = []
 
                     for row_no, row in enumerate(reader):
                         task = OrderedDict()
-
                         d = OrderedDict()
-                        for i, x in enumerate(row):
-                            try:
-                                d[columns[i]] = x.encode('utf-8')
-                            except UnicodeDecodeError, e:
-                                task[u'status'] = "failed"
-                                task[u'error'] = "Column: '{}' Cannot be decoded - contains special character"\
-                                    .format(columns[i])
-
-                        task[u'title'] = d['title'] or 'No Title'
-
-                        if len(row) < 7:
-                            task[u'status'] = "failed"
-                            if len(row) == 0:
-                                task[u'error'] = "Empty line"
-                            else:
-                                task[u'error'] = "Incomplete line - please see the csv template for upload"
-                            task[u'task_id'] = str(uuid.uuid4())
-                        else:
-                            task[u'task_id'] = str(uuid.uuid4()) #this is a random ID that will change with the job ID if it gets created
-                            pub_id_validation, error_msg = field_validator.publisher_id_validator(d['registry-publisher-id'])
-                            if pub_id_validation:
-                                ckan_ini_filepath = os.path.abspath(config['__file__'])
-                                json_data =[]
-                                json_data.append(d)
+                        try:
+                            # try catch block for each row.
+                            for i, x in enumerate(row):
                                 try:
-                                    job = jobs.enqueue(read_csv_file,
-                                                       [ckan_ini_filepath,
-                                                        json.dumps(json_data,
-                                                                   ensure_ascii=False), c.user])
-                                    time.sleep(0.05)
-                                    task[u'task_id'] = str(job.id)
-                                except Exception, e:
+                                    d[columns[i]] = x
+                                except UnicodeDecodeError as e:
+                                    log.error(e)
                                     task[u'status'] = "failed"
-                                    task[u'error'] = "File Cannot be decoded - contains unknown character"
+                                    task[u'error'] = "Column: '{}' Cannot be decoded - contains special character"\
+                                        .format(columns[i])
+                                    raise UnicodeError
 
-                            else:
+                            task[u'title'] = d.get('title', 'No Title')
+
+                            if len(row) < 7:
                                 task[u'status'] = "failed"
-                                task[u'error'] = 'Invalid Publisher ID: '+error_msg
+                                if len(row) == 0:
+                                    task[u'error'] = task.get(u'error', "Empty line")
+                                else:
+                                    task[u'error'] = "Incomplete line - please see the csv template for upload"
+                                task[u'task_id'] = str(uuid.uuid4())
+                            else:
+                                task[u'task_id'] = str(uuid.uuid4())
+                                pub_id_validation, error_msg = \
+                                    field_validator.publisher_id_validator(d['registry-publisher-id'])
+                                if pub_id_validation:
+                                    ckan_ini_filepath = os.path.abspath(config['__file__'])
+                                    json_data =[]
+                                    json_data.append(d)
+                                    try:
+                                        job = jobs.enqueue(read_csv_file,
+                                                           [ckan_ini_filepath,
+                                                            json.dumps(json_data,
+                                                                       ensure_ascii=False), c.user])
+                                        time.sleep(0.05)
+                                        task[u'task_id'] = str(job.id)
+                                    except Exception as e:
+                                        task[u'status'] = "failed"
+                                        task[u'error'] = "File Cannot be decoded - contains unknown character"
 
-                        tasks.append(json.dumps(task))
+                                else:
+                                    task[u'status'] = "failed"
+                                    task[u'error'] = 'Invalid Publisher ID: '+error_msg
+
+                            tasks.append(json.dumps(task))
+                        except Exception as e:
+                            log.error(e)
+                            if not task:
+                                task[u'task_id'] = str(uuid.uuid4())
+                                task[u'status'] = "failed"
+                                task[u'error'] = "unknown error for the row - please check data"
+                                task[u'title'] = "NA"
+                            tasks.append(json.dumps(task))
+                            continue
 
                     vars['tasks'] = tasks
                 else:
@@ -314,8 +318,8 @@ class CSVController(p.toolkit.BaseController):
                         return p.toolkit.render('csv/result.html', extra_vars=vars)
                     else:
                         vars['Stat'] = csv_msg
-
             except Exception as e:
+                log.error(e)
                 vars['errors'] = {}
                 vars['warnings'] = {}
                 vars['tasks'] = []
@@ -323,7 +327,6 @@ class CSVController(p.toolkit.BaseController):
                                "there should not be any special characters, bold letters etc."
 
                 return p.toolkit.render('csv/result.html', extra_vars=vars)
-                #p.toolkit.abort(400, ('Error opening CSV file: {0}'.format("Please make sure csv encoding is right!s")))
 
             return p.toolkit.render('csv/result.html', extra_vars=vars)
 

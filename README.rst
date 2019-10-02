@@ -24,7 +24,7 @@ copy of CKAN:
 
 #. Install the extension from its source repository::
 
-    (pyenv) $ pip install -e git+https://github.com/okfn/ckanext-iati#egg=ckanext-iati
+    (pyenv) $ pip install -e git+https://github.com/IATI/ckanext-iati#egg=ckanext-iati
 
 #. Install dependencies::
 
