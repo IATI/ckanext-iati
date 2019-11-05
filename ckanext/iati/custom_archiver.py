@@ -21,14 +21,15 @@ import ckan.plugins.toolkit as toolkit
 from ckanext.iati.helpers import extras_to_dict, extras_to_list
 from ckanext.iati.lists import IATI_STANDARD_VERSIONS
 from ckanext.archiver import tasks
+from ckanext.iati.linkchecker_patch import link_checker as checker
+
+tasks.link_checker = checker
 
 log = logging.getLogger('iati_archiver')
 # Max content-length of archived files, larger files will be ignored
 MAX_CONTENT_LENGTH = 50000000
 URL_TIMEOUT = 120
 DATA_FORMATS = ['xml', 'iati-xml', 'application/xml', 'text/xml', 'text/html', 'application/octet-stream']
-
-
 
 
 def text_traceback():
@@ -38,9 +39,6 @@ def text_traceback():
             cgitb.text(sys.exc_info()).split('the original traceback:')[1:]
         ).strip()
     return res
-
-
-
 
 def run(package_id=None, publisher_id=None, pub_id=None):
 
