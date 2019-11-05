@@ -9,6 +9,9 @@ import logging
 log = logging.getLogger(__name__)
 USER_AGENT = 'ckanext-archiver'
 
+
+# This is the patch for URL Error bad handshake SSL.
+# Added verify=False while getting a head request
 def link_checker(context, data):
     """
     Check that the resource's url is valid, and accepts a HEAD request.
