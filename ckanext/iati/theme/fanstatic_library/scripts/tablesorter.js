@@ -12,7 +12,17 @@ this.ckan.module('table-sorter', function (jQuery, _) {
     },
 
     _onReady: function(el) {
-      el.tablesorter({sortList: [[0,0]]});
-   }
+      var given_order = $("#field-order-by").val();
+      console.log(given_order);
+      if (given_order == "name asc"){
+          // Ascending order
+          el.tablesorter({sortList: [[0,0]]});
+      }else if (given_order === "name desc"){
+          // Descending order
+	  el.tablesorter({sortList: [[0,1]]});
+      }else{
+         // This is default order
+         el.tablesorter({sortList: [[0,0]]});
+      }}
  }
 });
