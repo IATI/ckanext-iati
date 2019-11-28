@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import httplib
 import requests
 import json

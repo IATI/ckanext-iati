@@ -3,7 +3,7 @@
 
 {% block search_input %}
     <div class="search-input control-group search-giant">
-      <label for="field-giant-search">{% block header_site_search_label %}{{ _('Search Datasets') }}{% endblock %}</label>
+      <label for="field-giant-search">{% block header_site_search_label %}{{ site_search_label }}{% endblock %}</label>
       <input id="field-giant-search" type="text" class="search" name="q" value="{{ query }}" autocomplete="off" placeholder="{{ placeholder }}">
       {% block search_input_button %}
         <button style="margin:auto;" type="submit" value="search">
@@ -12,5 +12,17 @@
         </button>
       {% endblock %}
     </div>
+  {% endblock %}
+
+
+{% block search_title %}
+    
+    {% if not error %}
+      {% if not not_disp_query %}
+       <h2>{% snippet 'snippets/search_result_text.html', query=query, count=count, type=type %}</h2>
+      {% endif %}
+    {% else %}
+      <h2>Error</h2>
+    {% endif %}
   {% endblock %}
 
