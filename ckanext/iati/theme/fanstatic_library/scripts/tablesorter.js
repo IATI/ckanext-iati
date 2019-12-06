@@ -14,10 +14,10 @@ this.ckan.module('table-sorter', function (jQuery, _) {
     _onReady: function(el) {
       var given_order = $("#field-order-by").val();
       console.log(given_order);
-      if (given_order == "name asc"){
+      if (given_order == "name asc" || given_order == "title asc"){
           // Ascending order
           el.tablesorter({sortList: [[0,0]]});
-      }else if (given_order === "name desc"){
+      }else if (given_order === "name desc" || given_order === "title desc"){
           // Descending order
 	  el.tablesorter({sortList: [[0,1]]});
       }else{
