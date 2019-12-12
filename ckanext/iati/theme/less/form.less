@@ -1,0 +1,102 @@
+.form-horizontal {
+  .control-label {
+    float: left;
+    font-weight: normal;
+  }
+  .control-group {
+    margin-bottom: (@unit*1.5);
+  }
+  .help-block {
+    margin-left: 130px;
+    margin-bottom: @unit;
+    margin-top: -15px;
+    padding-top: 0;
+  }
+  label.checkbox {
+    font-weight: normal;
+    padding-top: 0;
+    padding-left: 0;
+    input {
+      float: none;
+      top: 0;
+      margin-left: 0;
+      margin-right: 5px;
+      width: auto;
+    }
+  }
+}
+
+.stages {
+  margin: 0 0 (@unit*2) 0;
+  .border-radius(@border-radius);
+}
+
+form .info-block.info-inline {
+  display: none;
+}
+
+.radio.inline {
+  display: inline;
+}
+
+.dataset-form-resource-types {
+  margin-bottom: 10px !important;
+}
+.dataset-form-resource-types input[type=radio]:checked+label:after {
+  bottom: -19px;
+}
+
+.form-actions {
+  margin: @unit 0 0 0;
+  padding: @unit 0 0 0;
+  border-top: 3px solid @gray-lighter;
+  .btn {
+    .btn-lg;
+  }
+}
+.form-horizontal .form-actions {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.editor .editor-info-block {
+  border-color: #CCC;
+  background-color: #F6F6F6;
+}
+
+.input-append,
+.input-prepend {
+  .clearfix;
+  input,
+  select {
+    float: left;
+  }
+  .add-on {
+    float: left;
+    line-height: 32px;
+    margin: 0 3px;
+  }
+}
+
+.control-custom .checkbox.btn {
+  width: 30px;
+  height: 30px;
+  line-height: 21px;
+}
+
+.select2-container {
+  max-width: 558px;
+}
+
+.field-xml {
+  font-weight: normal;
+  font-size: small;
+  font-style: italic;
+  color: #2B2B2B;
+  margin-right: 5px;
+}
+
+.upload-animation {
+  margin-left: 10px;
+  font-style: italic;
+}

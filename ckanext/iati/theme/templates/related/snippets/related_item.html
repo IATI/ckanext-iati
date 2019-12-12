@@ -1,0 +1,11 @@
+<li class="media-item">
+  <img src="{{ '/images/' ~ related.image }}" alt="{{ related.title }}" class="media-image">
+  <h3 class="media-heading">{{ related.title }}</h3>
+  {% if related.author %}
+    <p>by: <strong>{{ related.author }}</strong></p>
+  {% endif %}
+  <p class="prose">{{ related.description }}</p>
+  <a class="media-view" href="{{ related.url }}"{{ ' target="' ~ related.target ~ '"' if related.target }}>
+    <span>Goto {{ related.title }}</span>
+  </a>
+</li>

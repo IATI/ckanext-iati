@@ -1,0 +1,52 @@
+{% ckan_extends %}
+
+{% block content %}
+
+  <div id="home-welcome" class="container">
+
+    {{ self.flash() }}
+
+    {% trans %}
+      <h1>The <strong>IATI Registry</strong> is the place to register your organisation and IATI datasets.</h1>
+    {% endtrans %}
+  </div>
+
+  <div id="home-icons">
+    <div class="container">
+      <div class="icon registry">
+        <h2><a href="http://datastore.iatistandard.org/docs/">Search IATI Data</a></h2>
+        <a href="http://datastore.iatistandard.org/docs/" class="block">Datastore</a>
+        <p>The IATI Datastore gathers all data published to the IATI standard into a single queryable source.</p>
+        <ul>
+          <li><a href="/dataset">Search datasets on the IATI Registry</a></li>
+          <li><a href="/publisher">See a list of IATI publishers</a></li>
+        </ul>
+      </div>
+      <div class="icon detail">
+        <h2><a href="/help">Register a Publisher</a></h2>
+        <div class="block">
+          <a href="/publisher"><strong>{{ h.get_num_active_publishers() }}</strong> Organisations have published so far</a>
+        </div>
+        <p>The IATI Registry is the place for publishers to register their data.</p>
+        <ul>
+          <li><a href="/help">How do I register my data?</a></li>
+          <li><a href="/about">How does the IATI Registry work?</a></li>
+        </ul>
+      </div>
+      <div class="icon support">
+        <h2><a href="/using-iati-data">Using IATI data</a></h2>
+        <a href="{{ h.url_for(controller='ckanext.iati.controllers.static:StaticController', action='dashboard') }}" class="block">Dashboard</a>
+        <p>The IATI Dashboard provides statistics, charts and metrics on IATI data</p>
+        <ul>
+          <li><a href="https://iatistandard.org/en/using-data/">Find out how to use IATI data</a></li>
+          <li><a href="https://iatistandard.org/en/using-data/IATI-tools-and-resources/using-IATI-registry/">Find out about the Registry API</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div id="home-apps" class="container">
+    {% snippet "home/apps.html" %}
+  </div>
+
+{% endblock %}

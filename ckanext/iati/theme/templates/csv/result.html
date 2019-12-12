@@ -1,0 +1,213 @@
+{% extends "page.html" %}
+{% block title %}CSV Import Results - {{ super() }}{% endblock %}
+
+
+
+{% block primary_content %}
+
+{% if Stat %}
+
+<h2 class="page_heading">CSV Export</h2>
+
+  <article>
+  <div>
+      <p>Your CSV upload <strong>{{file_name}}</strong> has been unsuccessful. <strong>{{ Stat }}</strong>.</p>
+
+    <p><a href="/csv/upload">Upload another file</a></p>
+  </div>
+
+  </article>
+
+{% else %}
+
+<h2 class="page_heading">CSV Import</h2>
+
+  <article>
+  <div>
+    <p>Your CSV upload <strong>{{file_name}}</strong> has been started. Check the table below for progress monitoring.</p>
+
+    <p><a href="/csv/upload">Upload another file</a></p>
+  </div>
+
+
+
+  {{ result }}
+    <hr class="cleared" />
+
+    <div id="result"></div>
+
+
+  </article>
+
+      <script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+
+      <script type="text/javascript">
+        var counter = 0;
+        $(document).ready(function() {
+        function capitalizeFirstLetter(string) {
+          return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+      }
+
+      function statusbutton(string) {
+          var buttonClass="";
+          switch (string){
+             case "error(s)":
+                    buttonClass ="label label-danger";
+                    break;
+             case "failed" :
+                    buttonClass ="label label-danger";
+                    break ;
+             case "finished" :
+                    buttonClass ="label label-success";
+                    break ;
+             case "started" :
+                    buttonClass ="label label-info";
+                    break ;
+             default:
+                    buttonClass ="label label-warning";
+                    break;
+          }
+          return '<span class="' + buttonClass +   '" data-placement="right" title="'+string+'">'+capitalizeFirstLetter(string)+'</span>'
+
+
+      }
+
+      function datasetLink(id,summary,warning,error) {
+           if (id !== '#'){
+                link = "<a target=\"_blank\" href=\"/dataset/" + id + "/\">" + summary + "</a>";
+            }
+            else {
+                 link = summary;
+            }
+          if (warning){
+               link = link + '<br> <p style="color:orange">Warning(s):' + warning +'</p>';
+          }
+          if (error){
+               link = link + '<br> <p style="color:red">Error(s):' + error +'</p>';
+          }
+
+          return link;
+      }
+
+      function summaryPrint(task_id, status, task) {
+          var dataset_id ="#";
+          var summary_msg = "";
+          if (status === "failed") {
+               summary_msg = "Server Error. "
+          }
+          var warning_msg ="";
+          var error_msg = "";
+          $.each(task.result, function(key, value) {
+            if (key === "added" && value.length > 0){
+             dataset_id = value;
+             summary_msg = 'Dataset added';
+            }
+            if (key === "updated" && value.length > 0){
+                dataset_id = value;
+                summary_msg = 'Dataset updated';
+            }
+            if (key === "warnings" && value.length > 0){
+                   var warnings = value[0];
+                   for (i = 0; i < warnings.length ; i++) {
+                       for (var key in warnings[i]){
+                            if (warnings[i].hasOwnProperty(key)){
+                             warning_msg += "<li>" + key +":"+ warnings[i][key] + "</li>"
+                             }
+                       }
+                    }
+            }
+
+            if (key === "errors" && value.length > 0){
+                   var errors = value[0];
+                   for (i = 0; i < errors.length ; i++) {
+                       for (var key in errors[i]){
+                            if (errors[i].hasOwnProperty(key)){
+                             error_msg += "<li>" + key +":"+ errors[i][key] + "</li>"
+                             }
+                       }
+                    }
+            }
+          });
+          if (error_msg.length > 0){
+            $("#status_" + task_id).html("<h4>" + statusbutton("error(s)") + "</h4>");
+          }
+          else{
+          if (warning_msg.length > 0){
+            $("#status_" + task_id).html("<h4>" + statusbutton("warning(s)") + "</h4>");
+          }
+
+          }
+          return "<div>" + datasetLink(dataset_id,summary_msg, warning_msg, error_msg ) + "</div>"
+      }
+
+      var PollState = function(counter) {
+
+            if (counter < tasks.length) {
+                tasks_ind = JSON.parse(tasks[counter]);
+
+                 if ((tasks_ind.hasOwnProperty('status')) && (tasks_ind.status === "failed")){
+                   //$("#status_" + tasks_ind.task_id).html( statusbutton(tasks_ind.status) );
+                   $("#status_" + tasks_ind.task_id).html( statusbutton("error(s)") );
+                   console.log(tasks_ind);
+                   if (tasks_ind.error){
+                                    $("#summary_" + tasks_ind.task_id).html(tasks_ind.error);
+                                    }
+                   counter++;                 
+                   PollState(counter);
+                   }
+                   else {
+
+                         $.ajax({
+                             type: "GET",
+                             ajaxI: tasks_ind.task_id,
+                             url: "/csv/check_status/" + tasks_ind.task_id.toString()
+                         }).done(function (task) {
+                             task = JSON.parse(task);
+                             $("#status_" + this.ajaxI).html("<h4>" + statusbutton(task.status) + "</h4>");
+                             if (task.status !== "finished" && task.status !== "failed") {
+                                 if (task.status === "started") {
+                                     setTimeout(PollState, 3000, counter)
+                                 } else {
+                                     setTimeout(PollState, 10000, counter)
+                                 }
+                             } else {
+                                 counter++;
+                                 console.log(task);
+                                 $("#summary_" + this.ajaxI).html(summaryPrint(this.ajaxI, task.status, task));
+                                 PollState(counter);
+                             }
+                         }).fail(function (task) {
+                             counter++;
+                             $("#status_" + this.ajaxI).html(statusbutton('failed'));
+                             $("#summary_" + this.ajaxI).html(summaryPrint(this.ajaxI, 'failed', task));
+                             PollState(counter);
+                         });
+                     }
+            } else {
+                console.log("csv upload finished");
+            }
+      };
+      var i;
+      var all = "<table class=\"table\"> <thead> <tr> <th>Title</th> <th>Status</th>  <th>Summary</th> </tr></thead><tbody>";
+      var tasks = {{ tasks | safe }};
+          for (i=0; i< tasks.length; i++){
+           var t = JSON.parse(tasks[i]);
+           all = all + "<tr><td id=dataset_"+t.task_id+">" + t.title + "</td><td id=status_"+t.task_id+"></td>"+"<td id=summary_"+t.task_id+"></td></tr>";
+          }
+
+           all = all + "</tbody>  </table>" ;
+           $("#result").html(all);
+          var tasks_ind;
+          PollState(counter);
+          });
+      </script>
+
+
+{% endif %}
+
+{% endblock %}
+
+

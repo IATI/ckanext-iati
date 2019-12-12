@@ -1,0 +1,109 @@
+{% ckan_extends %}
+
+{% block primary_content %}
+  
+  {% if c.pkg_dict.state == 'pending' %}
+    <div class="alert alert-warning m-top">
+    This dataset is in a pending state.
+    </div>
+  {% endif %}
+
+  {% if c.pkg_dict.state == 'deleted' %}
+    <div class="alert alert-danger m-top">
+    This dataset has been deleted.
+    </div>
+  {% endif %}
+
+  {{ super() }}
+
+{% endblock %}
+
+{% block content_primary_nav %}
+  {{ h.build_nav_icon('dataset_read', _('Dataset'), id=pkg.name) }}
+  {{ h.build_nav_icon('dataset_activity', _('Activity Stream'), id=pkg.name) }}
+  {% set history_link = h.nav_link(_('History'), controller='package', action='history', id=pkg.name, icon='code-fork') %}
+{{ h.build_nav_icon('dataset_archiver', _('Archiver'), id=pkg.name) }}
+  {% set active_check = history_link|replace("active", "")|length %}
+  <li{% if history_link|length != active_check %} class="active" {% endif %}>{{ history_link }}</li>
+{% endblock %}
+
+{% block package_info %}
+  <div class="module context-info">
+    <div class="module-content">
+        {% if pkg.organization and pkg.organization.image_url %}
+          {% with organization=pkg.organization, url=h.url_for(controller='organization', action='read', id=pkg.organization.name) %}
+          <div class="image">
+            <a href="{{ url }}">
+              <img src="{{ organization.image_url }}" alt="{{ organization.name }}" />
+            </a>
+          </div>
+          {% endwith %}
+        {% endif %}
+
+      <h1 class="heading">{{ pkg.title or pkg.name }}</h1>
+      <div class="nums">
+        <dl class="wide">
+          <dt>Contact email</dt>
+          <dd><a href="mailto:{{ pkg.author_email }}">{{ pkg.author_email }}</a></dd>
+        </dl>
+        {% if pkg.organization %}
+          {% with organization=pkg.organization, truncate=truncate or 0, url=h.url_for(controller='organization', action='read', id=pkg.organization.name) %}
+            <dl class="wide">
+              <dt>Publisher</dt>
+              <dd><a href="{{ url }}">{{ organization.title or organization.name }}</a></dd>
+            </dl>
+          {% endwith %}
+        {% endif %}
+        <dl>
+          <dt>{{ _('Followers') }}</dt>
+          <dd>{{ h.SI_number_span(h.dataset_follower_count(None, {'id': pkg.id})) }}</dd>
+        </dl>
+      </div>
+      <div class="follow_button">
+        {{ h.follow_button('dataset', pkg.name) }}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block package_social %}
+  <div class="module">
+    <h2 class="module-heading">
+      <i class="icon-file"></i> Metadata
+    </h2>
+    <ul class="nav nav-simple">
+      <li class="nav-item">
+        {% set api_url = h.url_for(controller='api', logic_function='package_show', action='action', id=c.pkg.name, ver=3) %}
+        <a href="{{ g.api_url ~ api_url }}">JSON</a>
+      </li>
+      {% if g.rdf_packages %}
+        <li class="nav-item">
+          <a href="{{ g.rdf_packages ~ pkg.name }}">RDF</a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+  {{ super() }}
+{% endblock %}
+
+{% block package_organization %}{% endblock %}
+
+{% block package_license %}{% endblock %}
+
+{% block body_extras %}
+  {{ super() }}
+  {% block structured_data %}
+    {#
+    h.structured_data is defined in the 'structured_data' plugin,
+    you have to activate the plugin (or implement the method yourself)
+    to make use of this feature.
+    More information about structured data:
+    https://developers.google.com/search/docs/guides/intro-structured-data
+    #}
+
+    <script type="application/ld+json">
+    {{ h.structured_data_markup(pkg.id)|safe }}
+    </script>
+{% endblock %}
+{% endblock %}
+

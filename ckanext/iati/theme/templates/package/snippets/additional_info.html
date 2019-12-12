@@ -1,0 +1,54 @@
+{% ckan_extends %}
+
+{% set date_format='%Y-%m-%d %H:%M' %}
+
+{% macro package_additional_info_row(label, name, formatter=false, empty='-', full=false, force_value=false) %}
+  {% set data = h.get_pkg_dict_extra(pkg_dict, name, '') %}
+  {% set value = formatter(data) if formatter else data %}
+  <tr>
+    <th scope="row" class="dataset-label">{{ label }}</th>
+    <td class="dataset-details">
+      {% if value and full %}
+        {{ full }}
+      {% else %}
+        {{ force_value or value or empty }}
+      {% endif %}
+    </td>
+  </tr>
+{% endmacro %}
+
+{% block package_additional_info %}
+
+  <tr>
+    <th scope="row" class="dataset-label">{{ _('License') }}</th>
+    <td class="dataset-details">
+      {% if pkg_dict.license_id %}
+        {% if 'license_url' in pkg_dict %}
+          <a href="{{ pkg_dict.license_url }}" rel="dc:rights">{{ pkg_dict.license_title }}</a>
+        {% else %}
+          <span property="dc:rights">{{ pkg_dict.license_title }}</span>
+        {% endif %}
+        {% if pkg_dict.isopen %}
+          <a href="http://opendefinition.org/okd/" title="{{ _('This dataset satisfies the Open Definition.') }}">
+            <img class="open-data" src="//assets.okfn.org/images/ok_buttons/od_80x15_blue.png" alt="[Open Data]" />
+          </a>
+        {% endif %}
+      {% else %}
+        {{ _('No License Provided') }}
+      {% endif %}
+    </td>
+  </tr>
+
+  {{ package_additional_info_row('File Type', 'filetype', formatter=h.get_file_type_title) }}
+  {{ package_additional_info_row('Language', 'language') }}
+  {{ package_additional_info_row('Recipient Country', 'country', formatter=h.get_country_title, empty='(Unknown)') }}
+
+  {{ package_additional_info_row('Publisher Type', 'publisher_source_type', formatter=h.get_publisher_source_type_title) }}
+  {{ package_additional_info_row('Publisher Organisation Type', 'publisher_organization_type', formatter=h.get_organization_type_title) }}
+  {{ package_additional_info_row('Publisher Identifier', 'publisher_iati_id') }}
+  {{ package_additional_info_row('Publisher Country', 'publisher_country', formatter=h.get_country_title, empty='(Unknown)') }}
+
+  {{ package_additional_info_row('IATI data updated', 'data_updated', force_value=h.render_datetime(h.get_pkg_dict_extra(pkg_dict, 'data_updated', ''), date_format=date_format)) }}
+  {{ package_additional_info_row('IATI registry updated', 'data_recorded', force_value=h.render_datetime(pkg_dict.metadata_modified, date_format=date_format)) }}
+
+{% endblock %}

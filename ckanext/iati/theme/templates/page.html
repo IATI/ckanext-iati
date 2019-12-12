@@ -1,0 +1,82 @@
+{% ckan_extends %}
+
+          {% block toolbar %}
+            <div class="toolbar">
+              {% block breadcrumb %}
+                {% if self.breadcrumb_content() | trim %}
+                  <ol class="breadcrumb">
+                    {% snippet 'snippets/home_breadcrumb_item.html' %}
+                    {% block breadcrumb_content %}{% endblock %}
+                  </ol>
+                {% endif %}
+              {% endblock %}
+            </div>
+          {% endblock %}
+{% block primary %}
+              <div class="primary col-sm-9 col-xs-12">
+                {#
+                The primary_content block can be used to add content to the page.
+                This is the main block that is likely to be used within a template.
+
+                Example:
+
+                  {% block primary_content %}
+                    <h1>My page content</h1>
+                    <p>Some content for the page</p>
+                  {% endblock %}
+                #}
+                {% block primary_content %}
+                  <article class="module">
+                    {% block page_header %}
+                      <header class="module-content page-header">
+                        {% if self.content_action() | trim %}
+                          <div class="content_action">
+                            {% block content_action %}{% endblock %}
+                          </div>
+                        {% endif %}
+                        <ul class="nav nav-tabs">
+
+                          {% block content_primary_nav %}{% endblock %}
+                        </ul>
+                      </header>
+                    {% endblock %}
+
+                    <div class="module-content">
+                      {% if self.page_primary_action() | trim %}
+                        <div class="page_primary_action">
+
+                          {% block page_primary_action %}{% endblock %}
+                        </div>
+                      {% endif %}
+                      {% block primary_content_inner %}
+                      {% endblock %}
+                    </div>
+                  </article>
+                {% endblock %}
+              </div>
+            {% endblock %}
+
+{% block footer %}
+  <footer id="pre-footer">
+    <div class="container">
+      <div class="disclaimer">
+        {% trans %}
+          <h3>Cookie Disclaimer</h3>
+          <p>Cookies are small text files that are stored by the browser (e.g. Internet Explorer, Chrome, Firefox) on your computer or mobile phone. This site uses anonymous Analytics cookies which allow us to track how many unique individual users we have, and how often they visit the site. Unless a user signs in, these cookies cannot be used to identify an individual; they are used for statistical purposes only. If you are logged in, we will also know the details you gave to us for this, such as username and email address. By continuing to use this site, you are agreeing to the use of cookies.</p>
+        <p><a href="https://www.aidtransparency.net/privacy-policy">Privacy policy</a></p>
+        {% endtrans %}
+      </div>
+      <ul class="social">
+        <li class="twitter"><a href="https://twitter.com/IATI_aid" target="_blank"><i class="icon-twitter"></i></a></li>
+        <li class="rss"><a href="http://www.iatiregistry.org/feed/registry.atom" target="_blank"><i class="icon-rss"></i></a></li>
+      </ul>
+    </div>
+  </footer>
+  <footer id="footer">
+    <div class="container">
+      <a href="/" title="{{ _('IATI Registry') }}">{{ _('IATI Registry') }}</a> ·
+      {{ _('powered by') }} <a href="http://ckan.org">{{ _('CKAN') }}</a>·
+      {{ _('maintained by') }} <a href="https://derilinx.com">{{ _('Derilinx') }}</a>
+    </div>
+  </footer>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "page.html" %}
+
+{% block breadcrumbs %}{% endblock %}
+{% block secondary %}
+{{ super() }}
+{% endblock %}
+
+{% block primary %}
+  <section id="static_page" class="primary">
+    {% block primary_content %}
+    {% endblock %}
+  </section>
+{% endblock %}

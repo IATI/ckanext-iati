@@ -1,0 +1,44 @@
+{#
+Display a grid of organization items.
+
+organizations - A list of organizations.
+
+Example:
+
+    {% snippet "organization/snippets/organization_list.html" %}
+
+#}
+
+
+<table class="table table-hover table-bordered table-striped table-sorted" data-module="table-sorter">
+  <thead>
+    <tr>
+      <th title="Sort by publisher name">Publisher</th>
+      <th title="Sort by organisation type">Organisation Type</th>
+      <th title="Sort by country">HQ Country / Region</th>
+      <th title="Sort by number of published datasets">Datasets</th>
+    </tr>
+  </thead>
+   <tbody>
+   {% for organization in organizations %}
+      {% if (organization.package_count and ((organization.package_count|int) > 0)) %}
+      <tr>
+        <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.title) }}</a></td>
+        <td>{{ organization.publisher_organization_type }}</td>
+        <td>{{ organization.publisher_country }}</td>
+        <td>{{ organization.package_count }}</td>
+      </tr>
+     {% elif 'dashboard' in request.url %}
+       <tr>
+        <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.title) }}</a></td>
+        <td>{{ organization.publisher_organization_type }}</td>
+        <td>{{ organization.publisher_country }}</td>
+        <td>{{ "No Dataset/Not Published" }}</td>
+      </tr>
+   {% endif %}
+  {% endfor %}
+  </tbody>
+</table>
+
+
+{% resource 'ckanext-iati/table_sorter' %}

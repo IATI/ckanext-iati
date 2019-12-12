@@ -1,0 +1,61 @@
+{% ckan_extends %}
+
+{% block organization_description %}
+{% endblock %}
+
+{% set fields = [
+  ('publisher_contact',
+   'Contact'),
+  ('publisher_url',
+   'Website'),
+  ('publisher_description',
+   'Description'),
+  ('publisher_iati_id',
+   'IATI identifier'),
+  ('publisher_implementation_schedule',
+   'Implementation Schedule'),
+  ('publisher_agencies',
+   'Organisations / agencies covered'),
+  ('publisher_timeliness',
+   'Timeliness of Data'),
+  ('publisher_frequency_select',
+   'Frequency of publication'),
+  ('publisher_frequency',
+   'Frequency of publication (extra comments)'),
+  ('publisher_units',
+   'Units of Aid'),
+  ('publisher_segmentation',
+   'Segmentation of Published Data'),
+  ('publisher_refs',
+   'Data Definitions and References'),
+  ('publisher_field_exclusions',
+   'Field Exclusions'),
+  ('publisher_record_exclusions',
+   'Record Exclusions'),     
+  ('publisher_thresholds',
+   'Thresholds'),
+  ('publisher_constraints',
+   'Other Constraints'),
+  ('publisher_data_quality',
+   'Data Quality'),
+  ('publisher_ui',
+   'User Interface'),
+  ('publisher_ui_url',
+   'User Interface Website'),
+  ] %}
+
+{% block organization_extras %}
+  {% if c.group_dict %}
+    {% for id, key in fields %}
+      {% set value = c.group_dict[id] or 'n/a' %}
+        <h3>{{ _(key) }}</h3>
+        {% if id == 'publisher_frequency_select' %}
+            <p>{{ h.get_publisher_frequency_title(value) }}</p>
+        {% elif id == 'publisher_implementation_schedule' and value[:4].lower() == 'http' %}
+            <p><a href="{{ value }}" target="_blank">{{ value }}</a></p>
+        {% else %}
+            <p>{{ value }}</p>
+        {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,40 @@
+{#
+Display a grid of organization items.
+
+organizations - A list of organizations.
+
+Example:
+
+    {% snippet "organization/snippets/organization_list_ids.html" %}
+
+#}
+{% set admin = h.check_access('sysadmin') %}
+<table class="table table-hover table-bordered table-striped table-sorted" data-module="table-sorter">
+  <thead>
+    <tr>
+      <th title="Sort by publisher name">Publisher</th>
+      <th title="Sort by organisation identifier">IATI Organisation Identifier</th>
+      <th title="Sort by organisation type">Organisation Type</th>
+      <th title="Sort by country">HQ Country / Region</th>
+      <th title="Sort by number of published datasets">Datasets</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  {% for organization in organizations %}
+   {% set extra_fields = h.get_publisher_obj_extra_fields_pub_ids(organization) %}
+
+    {% if organization.package_count > 0 or 'dashboard' in request.url %}
+      <tr>
+        <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.display_name) }}</a></td>
+        <td>{{ extra_fields.publisher_iati_id }}</td>
+        <td>{{ extra_fields.publisher_organization_type }}</td>
+        <td>{{ extra_fields.publisher_country }}</td>
+        <td>{{ organization.package_count }}</td>
+      </tr>
+    {% endif %}
+  {% endfor %}
+  </tbody>
+</table>
+
+{% resource 'ckanext-iati/table_sorter' %}

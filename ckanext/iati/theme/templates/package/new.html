@@ -1,0 +1,12 @@
+{% ckan_extends %}
+
+{% block subtitle %}{{ _('Register dataset') }}{% endblock %}
+
+{% block secondary_content %}
+	{% snippet "package/snippets/helper.html" %}
+{% endblock %}
+
+{% block breadcrumb_content %}
+      <li><a href="/dataset">Datasets</a></li>
+  <li class="active"><a href="">{{ _('Register dataset') }}</a></li>
+{% endblock %}

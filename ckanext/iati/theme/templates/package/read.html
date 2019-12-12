@@ -1,0 +1,31 @@
+{% ckan_extends %}
+
+{% block package_resources %}
+  {% snippet 'package/snippets/issue.html', package=pkg %}
+  {{ super() }}
+{% endblock %}
+
+{% block package_additional_info %}
+  {{ super() }}
+  <section>
+  <h3>Contents</h3>
+
+  {% set date_format='%Y-%m-%d %H:%M' %}
+  {% set extras = h.extras_to_dict(pkg) %}
+    <table class="table table-striped table-bordered table-condensed">
+      <tbody>
+        <tr>
+          <th scope="row" class="dataset-label">IATI Standard Version</th>
+          <td class="dataset-details">{{ extras.get('iati_version', '-') }}</td>
+        </tr>
+
+        <tr>
+          <th scope="row" class="dataset-label"># of Activities</th>
+          <td class="dataset-details">{{ extras.get('activity_count', '-') }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+
+
+{% endblock %}

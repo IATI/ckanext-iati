@@ -1,0 +1,38 @@
+{% block package_info %}
+  <div class="module context-info">
+    <div class="module-content">
+        {% if pkg.organization and pkg.organization.image_url %}
+          {% with organization=pkg.organization, url=h.url_for(controller='organization', action='read', id=pkg.organization.name) %}
+          <div class="image">
+            <a href="{{ url }}">
+              <img src="{{ organization.image_url }}" alt="{{ organization.name }}" />
+            </a>
+          </div>
+          {% endwith %}
+        {% endif %}
+
+      <h1 class="heading">{{ pkg.title or pkg.name }}</h1>
+      <div class="nums">
+        <dl class="wide">
+          <dt>Contact email</dt>
+          <dd><a href="mailto:{{ pkg.author_email }}">{{ pkg.author_email }}</a></dd>
+        </dl>
+        {% if pkg.organization %}
+          {% with organization=pkg.organization, truncate=truncate or 0, url=h.url_for(controller='organization', action='read', id=pkg.organization.name) %}
+            <dl class="wide">
+              <dt>Publisher</dt>
+              <dd><a href="{{ url }}">{{ organization.title or organization.name }}</a></dd>
+            </dl>
+          {% endwith %}
+        {% endif %}
+        <dl>
+          <dt>{{ _('Followers') }}</dt>
+          <dd>{{ h.SI_number_span(h.dataset_follower_count(None, {'id': pkg.id})) }}</dd>
+        </dl>
+      </div>
+      <div class="follow_button">
+        {{ h.follow_button('dataset', pkg.name) }}
+      </div>
+    </div>
+  </div>
+{% endblock %}

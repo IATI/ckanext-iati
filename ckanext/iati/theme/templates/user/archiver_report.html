@@ -1,0 +1,62 @@
+
+{% extends "page.html" %}
+{% block title %}Issues Report - {{ super() }}{% endblock %}
+
+{% block primary_content %}
+{% if authorization == "success" %}
+
+<div class="container">
+    <h2 align="center" class="page_heading">IATI Issues Report</h2>
+    <div class="col-md-3">
+    <div class="table-responsive">
+<table class="table table-striped table-bordered table-sm" cellspacing="0" width="100%" id="issues_report_table">
+  <thead>
+    <tr>
+        <th class="th-sm" title="Index No">No</th>
+      <th class="th-sm" title="Sort by publisher name">Publisher</th>
+      <th class="th-sm" title="Dataset">Dataset</th>
+        <th class="th-sm" title="Resource url">File url</th>
+      <th class="th-sm" title="Issue type">Issue type</th>
+      <th class="th-sm" title="Issue date">Issue date</th>
+        <th class="th-sm" title="Issue message">Issue message</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  {% for issue in issues_content %}
+    {{ row }}
+      <tr>
+          <td>{{ loop.index }}</td>
+          <td><a href="/publisher/{{ issue.publisher }}">{{ issue.publisher_title }}</a></td>
+          <td><a href="{{ issue.url }}" target="_blank">{{ issue.dataset_title }}</a></td>
+          <td><a href="{{ issue.file_url }}" target="_blank">{{ issue.file_url }}</a></td>
+        <td>{{ issue.issue_type }}</td>
+        <td>{{ issue.issue_date }}</td>
+          <td>{{ issue.issue_message }}</td>
+      </tr>
+
+  {% endfor %}
+  </tbody>
+</table>
+    </div>
+
+<div class="row">
+
+        <div class="col-md-4 center-block" style="width: 100%; text-align: center;">
+        <a href="{{ h.url_for(controller='ckanext.iati.controllers.reports:ReportsController', action='download_issues_report') }}" class="btn btn-secondary center-block" id="export_to_csv">Export to csv</a>
+        </div>
+
+</div>
+</div>
+    </div>
+
+{% else %}
+
+<div class="container">
+
+    <p><strong>You are not authorized to see the report. Please login with appropriate credentials.</strong></p>
+
+</div>
+
+{% endif %}
+{% endblock %}

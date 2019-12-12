@@ -1,0 +1,126 @@
+{% ckan_extends %}
+
+{% macro nav_item(route, label) %}
+  {% set url = h.url_for(route) %}
+  {% set is_active = h.is_route_active(route) %}
+  <a href="{{ url }}"{% if is_active %} class="active"{% endif %}>{{ label }}</a>
+{% endmacro %}
+
+{% block header_wrapper %}
+  {% if 'staging' in request.host or 'test' in request.host %}
+      <div class="alert">
+        <strong>Warning!</strong> This is a staging site. Data might be out of date and be aware that all new data in this instance might be deleted at any time.
+
+      </div>
+  {% endif %}
+  <a href="#content" class="hide">{{ _('Skip to primary content') }}</a>
+  <header id="header">
+    <div class="container">
+      {% block header_logo %}
+        <a class="logo" href="{{ h.url('home.index') }}">
+          <span>{{ _('IATI Registry') }}</span>
+        </a>
+      {% endblock %}
+      {% block header_nav %}
+      <ul class="navigation-utility">
+        <li id="section-news" class="navigation-utility__item"><a href="http://iatistandard.org/en/news/">News</a></li>
+        <li id="section-events" class="navigation-utility__item"><a href="http://iatistandard.org/en/events/">Events</a></li>
+        <li id="section-contact" class="navigation-utility__item"><a href="http://iatistandard.org/en/contact/">Contact</a></li>
+      </ul>
+        <nav class="navigation-primary" id="navigation-primary">
+
+            <ul id="navigation-primary__items">
+              <li id="section-about" class="navigation-primary__item"><a href="http://iatistandard.org/en/about/">About</a></li>
+      				<li id="section-standard" class="navigation-primary__item"><a href="http://iatistandard.org/en/iati-standard">IATI Standard</a></li>
+      				<li id="section-data" class="navigation-primary__item"><a href="http://iatistandard.org/en/using-data/">Using Data</a></li>
+      				<li id="section-support" class="navigation-primary__item"><a href="http://iatistandard.org/en/guidance/">Guidance &amp; Support</a></li>
+      				<li id="section-community" class="navigation-primary__item"><a href="https://discuss.iatistandard.org/">Community</a></li>
+            </ul>
+          </nav>
+        <nav>
+          {% block header_nav_primary %}
+          {% endblock %}
+          {% block header_nav_account %}
+            {% if c.userobj %}
+              <ul id="account-nav" class="authed avatar" data-module="me" data-me="{{ c.userobj.id }}">
+                {% if c.userobj.sysadmin %}
+                  <li>
+                    <a href="{{ h.url_for(controller='admin', action='index') }}" title="{{ _('Sysadmin settings') }}">
+                      Sysadmin
+                    </a>
+                  </li>
+                {% endif %}
+                <li>
+                  <a href="{{ h.url_for('dashboard.index') }}" title="My Data">
+                    My Data
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ h.url_for(controller='user', action='read', id=c.userobj.name) }}" title="My account">
+                    My Account
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ h.url_for('/user/_logout') }}" title="{{ _('Logout') }}">
+                    Logout
+                  </a>
+                </li>
+              </ul>
+            {% else %}
+              <ul id="account-nav" class="not-authed">
+                <li>{% link_for _('Log in'), controller='user', action='login' %}</li>
+                <li>{% link_for _('Register'), controller='user', action='register', class_='sub' %}</li>
+              </ul>
+            {% endif %}
+          {% endblock %}
+          {% block header_nav_secondary %}
+            <ul id="secondary-nav">
+              {% set is_superadmin = c.userobj.sysadmin %}
+              {% set can_package_create = h.check_access('package_create') %}
+              {% set can_organization_create = h.check_access('organization_create') %}
+              {% set empty = ('', '') %}
+
+              {% set home_dropdown = [
+                ('/revision', _('Newsfeed')),
+                ('/pages/iati-change-logs', _('Change Logs'))
+              ] %}
+              {% set data_dropdown = [
+                ('/dataset/new', _('Register')) if can_package_create else empty,
+                ('/csv/download', _('Download current records')),
+                ('/csv/upload', _('Upload CSV file')) if can_package_create else empty,
+                ('/report/issues', _('Issues report')),
+              ] %}
+              {% set publisher_dropdown = [
+                ('organization_new', _('Create a new publisher')) if can_organization_create else empty
+              ] %}
+
+              {% set nav = [
+                ('home.index', _('Home'), home_dropdown),
+                ('search', _('Data'), data_dropdown),
+                ('publishers_index', _('Publishers'), publisher_dropdown),
+              ] %}
+              {% for route, label, check_dropdown in nav %}
+                {% set dropdown = h.check_nav_dropdown(check_dropdown) %}
+                <li>
+                  {{ nav_item(route, label) }}
+                  {% if dropdown %}
+                    <ul class="dropdown">
+                      {% for route, label in dropdown %}
+                        <li>{{ nav_item(route, label) }}</li>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                </li>
+              {% endfor %}
+              <li> <a href="http://iatistandard.org/en/using-data/">Using IATI Data </a></li>
+              <li> <a href="http://iatistandard.org/en/guidance/publishing-data/data-quality-/how-to-improve-you-data-quality-with-the-iati-dashboard/">Dashboard</a></li>
+              <li> <a href="http://iatistandard.org/en/using-data/IATI-tools-and-resources/using-IATI-registry/">About</a></li>
+              <li> <a href="http://iatistandard.org/en/using-data/IATI-tools-and-resources/using-IATI-registry/">API</a></li>
+              <li> <a href="http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-register-with-iati/">Help</a></li>
+            </ul>
+          {% endblock %}
+        </nav>
+      {% endblock %}
+    </div>
+  </header>
+{% endblock %}

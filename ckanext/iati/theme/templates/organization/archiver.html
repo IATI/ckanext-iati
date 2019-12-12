@@ -1,0 +1,10 @@
+{% extends "organization/read_base.html" %}
+
+{% block primary_content_inner %}
+<div class="module-content">
+      <p>"You can run the Archiver to check the datasets for this publisher: <strong>{{ c.group_dict.name }}</strong>.</p> 
+      <p> Please note this may take several minutes to run depending on the number of datasets."</p>
+      <a href="/publisher/archiver/run/{{ c.group_dict.name }}" class="btn btn-secondary center-block" id="export_to_csv">Run Archiver</a>
+</div>
+{% endblock %}
+
