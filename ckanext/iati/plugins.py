@@ -153,7 +153,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             '/help': 'http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-register-with-iati/'
         }
 
-        for k, v in redirects.iteritems():
+        for k, v in redirects.items():
             map.redirect(k, v)
 
         return map
@@ -212,7 +212,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         _name_validator = p.toolkit.get_validator('name_validator')
         _group_name_validator = p.toolkit.get_validator('group_name_validator')
 
-        default_validators = [_ignore_missing, _convert_to_extras, unicode]
+        default_validators = [_ignore_missing, _convert_to_extras, str]
         schema.update({
             'state': [iati_publisher_state_validator],
             'title': [_not_empty, remove_leading_or_trailing_spaces],
@@ -220,18 +220,18 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'license_id': [_convert_to_extras, licence_validator],
             'publisher_source_type': default_validators,
             'publisher_iati_id': [_not_empty, remove_leading_or_trailing_spaces, iati_org_identifier_validator,
-                                  _convert_to_extras, unicode, change_publisher_id_or_org_id],
+                                  _convert_to_extras, str, change_publisher_id_or_org_id],
             'publisher_country': default_validators,
             'publisher_segmentation': default_validators,
             'publisher_ui': default_validators,
-            'publisher_ui_url': [_ignore_missing, iati_resource_url, _convert_to_extras, unicode],
-            'publisher_url': [_ignore_missing, iati_resource_url, _convert_to_extras, unicode],
+            'publisher_ui_url': [_ignore_missing, iati_resource_url, _convert_to_extras, str],
+            'publisher_url': [_ignore_missing, iati_resource_url, _convert_to_extras, str],
             'publisher_frequency_select': default_validators,
             'publisher_frequency': default_validators,
             'publisher_thresholds': default_validators,
             'publisher_units': default_validators,
             'publisher_contact': default_validators,
-            'publisher_contact_email': [_not_empty, _convert_to_extras, email_validator, unicode],
+            'publisher_contact_email': [_not_empty, _convert_to_extras, email_validator, str],
             'publisher_agencies': default_validators,
             'publisher_field_exclusions': default_validators,
             'publisher_description': default_validators,
@@ -242,7 +242,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'publisher_data_quality': default_validators,
             'publisher_organization_type': default_validators,
             'publisher_implementation_schedule': default_validators,
-            'publisher_first_publish_date': [_ignore_missing, _convert_to_extras, unicode,
+            'publisher_first_publish_date': [_ignore_missing, _convert_to_extras, str,
                                              first_publisher_date_validator]
         })
 
@@ -484,7 +484,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
         try:
             _organization_title = json.loads(data_dict['data_dict'])['organization']['title']
-            data_dict[u'extras_org_title'] = _organization_title
+            data_dict['extras_org_title'] = _organization_title
         except Exception as e:
             log.error(e)
             pass

@@ -2,7 +2,7 @@ import logging
 import json
 import csv
 import tempfile
-from urlparse import urljoin
+from urllib.parse import urljoin
 import inspect
 from pylons import config
 import sqlalchemy
@@ -25,7 +25,7 @@ import ckanext.iati.helpers as hlp
 from paste.deploy.converters import asbool
 from ckan.common import _
 import ckan
-import cStringIO
+import io
 import codecs
 
 log = logging.getLogger(__name__)
@@ -52,7 +52,7 @@ _text = sqlalchemy.text
 def package_create(context, data_dict):
 
     # Part of first publisher date patch
-    if 'owner_org' in data_dict.keys():
+    if 'owner_org' in list(data_dict.keys()):
         hlp.first_published_date_patch(data_dict.get('owner_org'))
     # The only thing we do here is remove some extras that are always
     # inherited from the dataset publisher, to avoid duplicating them
@@ -65,7 +65,7 @@ def package_create(context, data_dict):
 def package_update(context, data_dict):
     
     # Part of first publisher date patch
-    if 'owner_org' in data_dict.keys():
+    if 'owner_org' in list(data_dict.keys()):
         hlp.first_published_date_patch(data_dict.get('owner_org'))
     # The only thing we do here is remove some extras that are always
     # inherited from the dataset publisher, to avoid duplicating them
@@ -232,7 +232,7 @@ def issues_report_csv(context, data_dict):
         result = logic.get_action('package_search')(context, data_dict)
         if result['count'] > 0:
             publishers = result['facets']['organization']
-            for publisher_name, count in publishers.iteritems():
+            for publisher_name, count in publishers.items():
                 result = packages_with_issues_for_a_publisher(context, publisher_name)
                 issues[publisher_name] = result['results']
 
@@ -245,7 +245,7 @@ def issues_report_csv(context, data_dict):
 
         return default
 
-    for publisher, datasets in issues.iteritems():
+    for publisher, datasets in issues.items():
         for dataset in datasets:
             url = urljoin(site_url, '/dataset/' + dataset['name'])
             if len(dataset['resources']):
@@ -393,7 +393,7 @@ def _group_or_org_list_optimized(context, data_dict, is_org=False):
     if groups:
         query = query.filter(model.Group.name.in_(groups))
     if q:
-        q = u'%{0}%'.format(q)
+        q = '%{0}%'.format(q)
         query = query.filter(_or_(
             model.Group.name.ilike(q),
             model.Group.title.ilike(q),
@@ -468,7 +468,7 @@ def _approval_needed(context, data_dict, is_org=False):
     if groups:
         query = query.filter(model.Group.name.in_(groups))
     if q:
-        q = u'%{0}%'.format(q)
+        q = '%{0}%'.format(q)
         query = query.filter(_or_(
             model.Group.name.ilike(q),
             model.Group.title.ilike(q),
@@ -616,7 +616,7 @@ def user_list(context, data_dict):
 
     '''
 
-    if 'id' in data_dict.keys():
+    if 'id' in list(data_dict.keys()):
         if '@' in data_dict['id']:
             return hlp.get_username(data_dict['id'])
 

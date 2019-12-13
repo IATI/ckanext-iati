@@ -1,12 +1,12 @@
 import logging
 import csv
-import StringIO
+import io
 import uuid
 import json
 from collections import OrderedDict
 import os
 import routes
-import urlparse
+import urllib.parse
 import re
 import datetime as dt
 from ckan import model
@@ -60,7 +60,7 @@ class FieldValidator:
         guess = chardet.detect(text)
         if guess["confidence"] < min_confidence:
             raise True
-        text = unicode(text, guess["encoding"])
+        text = str(text, guess["encoding"])
         text = text.encode('utf-8')
 
         return text
@@ -166,7 +166,7 @@ def _fix_unicode(text, min_confidence=0.5):
 
     if guess["confidence"] < min_confidence:
         return UnicodeDecodeError
-    text = unicode(text, guess["encoding"])
+    text = str(text, guess["encoding"])
     text = text.encode('utf-8')
     return text
 
@@ -232,7 +232,7 @@ class CSVController(p.toolkit.BaseController):
             vars['file_name'] = csv_file.filename
             fieldnames = [f[0] for f in CSV_MAPPING]
             data = csv_file.file.read()
-            data = StringIO.StringIO(data)
+            data = io.StringIO(data)
             log.info("Reading CSV file....")
             try:
                 reader = csv.reader(data)
@@ -243,7 +243,7 @@ class CSVController(p.toolkit.BaseController):
                 errors = missing_val['errors']
                 warnings = missing_val['warnings']
 
-                if not len(errors.keys()):
+                if not len(list(errors.keys())):
                     tasks = []
 
                     for row_no, row in enumerate(reader):
@@ -256,22 +256,22 @@ class CSVController(p.toolkit.BaseController):
                                     d[columns[i]] = x
                                 except UnicodeDecodeError as e:
                                     log.error(e)
-                                    task[u'status'] = "failed"
-                                    task[u'error'] = "Column: '{}' Cannot be decoded - contains special character"\
+                                    task['status'] = "failed"
+                                    task['error'] = "Column: '{}' Cannot be decoded - contains special character"\
                                         .format(columns[i])
                                     raise UnicodeError
 
-                            task[u'title'] = d.get('title', 'No Title')
+                            task['title'] = d.get('title', 'No Title')
 
                             if len(row) < 7:
-                                task[u'status'] = "failed"
+                                task['status'] = "failed"
                                 if len(row) == 0:
-                                    task[u'error'] = task.get(u'error', "Empty line")
+                                    task['error'] = task.get('error', "Empty line")
                                 else:
-                                    task[u'error'] = "Incomplete line - please see the csv template for upload"
-                                task[u'task_id'] = str(uuid.uuid4())
+                                    task['error'] = "Incomplete line - please see the csv template for upload"
+                                task['task_id'] = str(uuid.uuid4())
                             else:
-                                task[u'task_id'] = str(uuid.uuid4())
+                                task['task_id'] = str(uuid.uuid4())
                                 pub_id_validation, error_msg = \
                                     field_validator.publisher_id_validator(d['registry-publisher-id'])
                                 if pub_id_validation:
@@ -284,23 +284,23 @@ class CSVController(p.toolkit.BaseController):
                                                             json.dumps(json_data,
                                                                        ensure_ascii=False), c.user])
                                         time.sleep(0.05)
-                                        task[u'task_id'] = str(job.id)
+                                        task['task_id'] = str(job.id)
                                     except Exception as e:
-                                        task[u'status'] = "failed"
-                                        task[u'error'] = "File Cannot be decoded - contains unknown character"
+                                        task['status'] = "failed"
+                                        task['error'] = "File Cannot be decoded - contains unknown character"
 
                                 else:
-                                    task[u'status'] = "failed"
-                                    task[u'error'] = 'Invalid Publisher ID: '+error_msg
+                                    task['status'] = "failed"
+                                    task['error'] = 'Invalid Publisher ID: '+error_msg
 
                             tasks.append(json.dumps(task))
                         except Exception as e:
                             log.error(e)
                             if not task:
-                                task[u'task_id'] = str(uuid.uuid4())
-                                task[u'status'] = "failed"
-                                task[u'error'] = "unknown error for the row - please check data"
-                                task[u'title'] = "NA"
+                                task['task_id'] = str(uuid.uuid4())
+                                task['status'] = "failed"
+                                task['error'] = "unknown error for the row - please check data"
+                                task['title'] = "NA"
                             tasks.append(json.dumps(task))
                             continue
 
@@ -391,7 +391,7 @@ class CSVController(p.toolkit.BaseController):
         except p.toolkit.ObjectNotFound:
             p.toolkit.abort(404, 'Organization not found')
 
-        f = StringIO.StringIO()
+        f = io.StringIO()
 
         output = ''
         try:
@@ -449,7 +449,7 @@ def load_config(ckan_ini_filepath):
                                              conf.local_conf)
 
     ## give routes enough information to run url_for
-    parsed = urlparse.urlparse(conf.get('ckan.site_url', 'http://0.0.0.0'))
+    parsed = urllib.parse.urlparse(conf.get('ckan.site_url', 'http://0.0.0.0'))
     request_config = routes.request_config()
     request_config.host = parsed.netloc + parsed.path
     request_config.protocol = parsed.scheme
@@ -575,7 +575,7 @@ def read_csv_file(ckan_ini_filepath, csv_file, user):
 
 
     fields_from_csv = []
-    for key in data[0].iterkeys():
+    for key in data[0].keys():
         fields_from_csv.append(key)
 
     #missing_columns = [f for f in fieldnames if f not in fields_from_csv and f not in OPTIONAL_COLUMNS]
@@ -611,11 +611,11 @@ def read_csv_file(ckan_ini_filepath, csv_file, user):
 
                 try:
                     package_dict['data_updated'] = field_validator.date_time_parser()
-                except Exception, e:
+                except Exception as e:
                     msg = str("Not in acceptable format - format should be YYYY-MM-DD HH:MM:SS or YYYY-MM-DD or format csv column to date/time")
                     raise ValueError(msg)
 
-            except UnicodeDecodeError, e:
+            except UnicodeDecodeError as e:
                 msg = 'Encoding error, could not decode dataset title or description: {0}, {1}'.format(
                         row['title'], row['description'])
                 log.error('Error in row %i: %s' % (i+1, msg))
@@ -627,29 +627,29 @@ def read_csv_file(ckan_ini_filepath, csv_file, user):
             if status:
                 ach.run(package_id=package_dict.get('name'))
             del errors[i]
-        except p.toolkit.ValidationError, e:
+        except p.toolkit.ValidationError as e:
             iati_keys = dict([(f[2], f[0]) for f in CSV_MAPPING])
-            for key, msgs in e.error_dict.iteritems():
+            for key, msgs in e.error_dict.items():
                 iati_key = iati_keys.get(key, key)
                 if iati_key == "name_or_id":
                     iati_key = 'registry-file-id'
                 log.error('Error in row %i: %s: %s' % (
                     i+1, iati_key, str(msgs)))
                 errors[i][iati_key] = FieldValidator.parse_error_if_object(msgs)
-        except p.toolkit.NotAuthorized, e:
+        except p.toolkit.NotAuthorized as e:
             msg = 'Not authorized to publish to this organization: %s' % row['registry-publisher-id']
             log.error('Error in row %i: %s' % (i+1, msg))
             errors[i]['registry-publisher-id'] = [msg]
-        except p.toolkit.ObjectNotFound, e:
+        except p.toolkit.ObjectNotFound as e:
             msg = 'Publisher not found: %s' % row['registry-publisher-id']
             log.error('Error in row %i: %s' % (i+1, msg))
             errors[i]['registry-publisher-id'] = [msg]
-        except ValueError, e:
+        except ValueError as e:
             log.error('Error in row %i: %s' % (i + 1, str(e)))
             errors[i]['last-updated-datetime'] = [str(e)]
 
-    warnings = sorted(warnings.iteritems())
-    errors = sorted(errors.iteritems())
+    warnings = sorted(warnings.items())
+    errors = sorted(errors.items())
 
     counts['warnings'] = warnings
     counts['errors'] = errors

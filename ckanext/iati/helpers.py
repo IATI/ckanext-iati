@@ -1,4 +1,4 @@
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import os
 from xml.etree import ElementTree
 import datetime
@@ -25,7 +25,7 @@ log = logging.getLogger(__name__)
     
 
 def get_countries():
-    countries = (("", u"(No country assigned)"),)
+    countries = (("", "(No country assigned)"),)
     get_countries_path = lambda: os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                               'countries.xml')
     root = ElementTree.parse(get_countries_path()).getroot()
@@ -114,7 +114,7 @@ def get_publisher_obj_extra_fields(group_dict):
     }
 
     for ex in group_dict.get("extras", []):
-        if ex.get("key", None) in formatter_map.keys():
+        if ex.get("key", None) in list(formatter_map.keys()):
             extras[ex["key"]] = formatter_map[ex["key"]](ex.get("value", ""))
     return extras
 
@@ -129,7 +129,7 @@ def get_publisher_obj_extra_fields_pub_ids(group_dict):
     }
 
     for ex in group_dict.get("extras", []):
-        if ex.get("key", None) in formatter_map.keys():
+        if ex.get("key", None) in list(formatter_map.keys()):
             extras[ex["key"]] = formatter_map[ex["key"]](ex.get("value", ""))
     dict_extras = extras_to_dict(group_dict)
     extras['publisher_iati_id'] = dict_extras['publisher_iati_id']
@@ -232,7 +232,7 @@ def format_file_size(size):
 
 def urlencode(string):
     # Jinja 2.7 has this filter directly available
-    return urllib.quote(string)
+    return urllib.parse.quote(string)
 
 def extras_to_dict(pkg):
     extras_dict = {}
@@ -274,7 +274,7 @@ def get_global_facet_items_dict(facet, limit=10, exclude_active=False, search_fa
     for facet_item in search_facets.get(facet)['items']:
         if not len(facet_item['name'].strip()):
             continue
-        if not (facet, facet_item['name']) in p.toolkit.request.params.items():
+        if not (facet, facet_item['name']) in list(p.toolkit.request.params.items()):
             facets.append(dict(active=False, **facet_item))
         elif not exclude_active:
             facets.append(dict(active=True, **facet_item))
@@ -290,7 +290,7 @@ def get_global_search_facets():
 
     query = p.toolkit.get_action('package_search')({}, {
         'q': '*:*',
-        'facet.field': p.toolkit.c.facet_titles.keys()
+        'facet.field': list(p.toolkit.c.facet_titles.keys())
     })
     return query['search_facets']
 
@@ -531,7 +531,7 @@ def publisher_first_published_date_validator(data_dict):
 
         if str(first_pub_date).strip() not in invalid_dates:
             data_dict['publisher_first_publish_date'] = first_pub_date
-    except Exception, e:
+    except Exception as e:
         print(e)
         log.warning("Cannot get the first published date - {}", str(e))
 
@@ -558,7 +558,7 @@ def first_published_date_patch(org_id):
             p.toolkit.get_action('organization_patch')({}, data_dict=data_dict)
         except NotAuthorized:
             pass
-    except Exception, e:
+    except Exception as e:
         log.warning("Cannot be patched - {}", str(e))
 
 

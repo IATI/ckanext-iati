@@ -59,7 +59,7 @@ class UpdateFirstPublishedDate:
                     resource_created_date = package['resources'][0]['created']
                     dates.append(resource_created_date)
             except Exception as e:
-                print("Error occured while searching for package or resources: {}".format(str(e)))
+                print(("Error occured while searching for package or resources: {}".format(str(e))))
                 continue
 
         if len(dates) == 0:
@@ -82,7 +82,7 @@ class UpdateFirstPublishedDate:
             self.iati.call_action(patch_organization, data_dict)
             print("Patched date successfully....")
         except Exception as e:
-            print("Error occured while patching date: {}".format(str(e)))
+            print(("Error occured while patching date: {}".format(str(e))))
             pass
 
     def update_organization(self):
@@ -95,30 +95,30 @@ class UpdateFirstPublishedDate:
         org_list = self._get_organization_list()
 
         for org in org_list:
-            print("Checking for organization: {}".format(str(org)))
+            print(("Checking for organization: {}".format(str(org))))
             try:
                 _org_data = self._organization_show(org)
 
                 # Checks for publisher_first_publish_date key and empty value
                 if not _org_data.get('publisher_first_publish_date', ''):
-                    print("Published date is empty: {}".format(str(org)))
+                    print(("Published date is empty: {}".format(str(org))))
                     pub_dt = self._get_date(_org_data['name'])
-                    print("Published date: {}".format(str(pub_dt)))
+                    print(("Published date: {}".format(str(pub_dt))))
                     if pub_dt:
                         data_dict = dict()
                         data_dict['id'] = _org_data['id']
                         data_dict['publisher_first_publish_date'] = str(pub_dt)
-                        print("Patching date: {}".format(str(pub_dt)))
+                        print(("Patching date: {}".format(str(pub_dt))))
                         self._patch_organization(data_dict)
                     else:
-                        print("Empty publisher date - not published: {}".format(str(org)))
+                        print(("Empty publisher date - not published: {}".format(str(org))))
 
             except errors.NotFound:
-                print("Organization Not found: {}".format(str(org)))
+                print(("Organization Not found: {}".format(str(org))))
                 pass
 
             except Exception as e:
-                print("Unhandled error occurred: {}".format(str(e)))
+                print(("Unhandled error occurred: {}".format(str(e))))
                 pass
 
 

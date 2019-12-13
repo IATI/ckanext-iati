@@ -2,7 +2,7 @@ from ckanext.iati import helpers as h
 from ckan.common import config
 import ckan.plugins as p
 import csv
-import StringIO
+import io
 from collections import OrderedDict
 import json
 from xlwt import Workbook
@@ -71,7 +71,7 @@ class PublishersListDownload:
         return clean_data
 
     def csv(self):
-        f = StringIO.StringIO()
+        f = io.StringIO()
         writer = csv.writer(f)
         writer.writerow(list(self._headers))
         _org_data = PublishersListDownload._get_publisher_data()
@@ -85,13 +85,13 @@ class PublishersListDownload:
         return output
 
     def json(self):
-        f = StringIO.StringIO()
+        f = io.StringIO()
         json_data = []
 
         _org_data = PublishersListDownload._get_publisher_data()
         for org in _org_data:
             if org['state'] == 'active' and org['package_count'] > 0:
-                json_data.append(OrderedDict(zip(self._headers, self._prepare(org))))
+                json_data.append(OrderedDict(list(zip(self._headers, self._prepare(org)))))
 
         json.dump(json_data, f)
         output = f.getvalue()
@@ -100,7 +100,7 @@ class PublishersListDownload:
         return output
 
     def xml(self):
-        f = StringIO.StringIO()
+        f = io.StringIO()
 
         fields = list(self._headers)
         fields.pop(1)
@@ -137,7 +137,7 @@ class PublishersListDownload:
         return output
 
     def xls(self):
-        f = StringIO.StringIO()
+        f = io.StringIO()
         wb = Workbook(encoding='utf-8')
         sheet1 = wb.add_sheet('IATI Publishers List')
         _org_data = PublishersListDownload._get_publisher_data()

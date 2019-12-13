@@ -1,7 +1,7 @@
-import httplib
+import http.client
 import requests
 import json
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import json
 from ckanext.archiver import tasks
 import logging
@@ -36,25 +36,25 @@ def link_checker(context, data):
     try:
         res = requests.head(url, timeout=url_timeout, verify=False)
         headers = res.headers
-    except httplib.InvalidURL, ve:
+    except http.client.InvalidURL as ve:
         log.error("Could not make a head request to %r, error is: %s."
                   " Package is: %r. This sometimes happens when using an old version of requests on a URL"
                   " which issues a 301 redirect. Version=%s", url, ve, data.get('package'), requests.__version__)
         raise LinkHeadRequestError(_("Invalid URL or Redirect Link"))
-    except ValueError, ve:
+    except ValueError as ve:
         log.error("Could not make a head request to %r, error is: %s. Package is: %r.", url, ve, data.get('package'))
         raise tasks.LinkHeadRequestError(_("Could not make HEAD request"))
-    except requests.exceptions.ConnectionError, e:
+    except requests.exceptions.ConnectionError as e:
         raise tasks.LinkHeadRequestError(_('Connection error: %s') % e)
-    except requests.exceptions.HTTPError, e:
+    except requests.exceptions.HTTPError as e:
         raise tasks.LinkHeadRequestError(_('Invalid HTTP response: %s') % e)
-    except requests.exceptions.Timeout, e:
+    except requests.exceptions.Timeout as e:
         raise tasks.LinkHeadRequestError(_('Connection timed out after %ss') % url_timeout)
-    except requests.exceptions.TooManyRedirects, e:
+    except requests.exceptions.TooManyRedirects as e:
         raise tasks.LinkHeadRequestError(_('Too many redirects'))
-    except requests.exceptions.RequestException, e:
+    except requests.exceptions.RequestException as e:
         raise tasks.LinkHeadRequestError(_('Error during request: %s') % e)
-    except Exception, e:
+    except Exception as e:
         raise tasks.LinkHeadRequestError(_('Error with the request: %s') % e)
     else:
         if res.status_code == 405:

@@ -37,14 +37,14 @@ class Archiver(CkanCommand):
         Parse command line arguments and call appropriate method.
         '''
         if not self.args or self.args[0] in ['--help', '-h', 'help']:
-            print Archiver.__doc__
+            print(Archiver.__doc__)
             return
 
         cmd = self.args[0]
         self._load_config()
 
         if cmd == 'update':
-            package_id = unicode(self.args[1]) if len(self.args) > 1 else None
+            package_id = str(self.args[1]) if len(self.args) > 1 else None
             publisher_id = self.options.publisher
             result = run_archiver(package_id, publisher_id)
             if not result:
@@ -68,7 +68,7 @@ class PurgeCmd(CkanCommand):
         self._load_config()
 
         if not self.args:
-            print(self.usage)
+            print((self.usage))
         elif self.args[0] == 'purge':
             self.iati_purge()
 
@@ -82,7 +82,7 @@ class PurgeCmd(CkanCommand):
 
         for i, pkg in enumerate(deleted_packages, start=1):
 
-            print('Purging {0}/{1}: {2}'.format(i, pkg_len, pkg.id))
+            print(('Purging {0}/{1}: {2}'.format(i, pkg_len, pkg.id)))
             members = model.Session.query(model.Member) \
                            .filter(model.Member.table_id == pkg.id) \
                            .filter(model.Member.table_name == 'package')
@@ -110,7 +110,7 @@ class UpdatePublisherDate(CkanCommand):
     def command(self):
 
         if not self.args or self.args[0] in ['--help', '-h', 'help']:
-            print Archiver.__doc__
+            print(Archiver.__doc__)
             return
 
         cmd = self.args[0]

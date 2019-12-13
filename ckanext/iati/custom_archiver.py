@@ -79,7 +79,7 @@ def run(package_id=None, publisher_id=None, pub_id=None):
         package_ids = [package_id]
     elif publisher_id:
         try:
-            print 'checking publisher: '+ publisher_id
+            print('checking publisher: '+ publisher_id)
             org = toolkit.get_action('organization_show')(context,
                                                           {'id': publisher_id,
                                                            'include_datasets': True})
@@ -124,7 +124,7 @@ def run(package_id=None, publisher_id=None, pub_id=None):
         updated_package = False
         try:
             updated_package, issue_type, issue_message = archive_package(package_id, context, consecutive_errors)
-            print "========= checking package ========" +package_id
+            print("========= checking package ========" +package_id)
             result['publisher_id'] = pub_id
             result['package_id'] = package_id
             result['issue_type'] = issue_type
@@ -132,7 +132,7 @@ def run(package_id=None, publisher_id=None, pub_id=None):
 
             results.append(result)
 
-        except Exception, e:
+        except Exception as e:
             consecutive_errors += 1
             log.error('Error downloading resource for dataset {0}: '
                       '{1}'.format(package_id, str(e)))
@@ -190,7 +190,7 @@ def archive_package(package_id, context, consecutive_errors=0):
         old_hash = resource.get('hash')
         try:
             result = download(context, resource, data_formats=DATA_FORMATS)
-        except tasks.LinkCheckerError, e:
+        except tasks.LinkCheckerError as e:
             if 'URL unobtainable: HTTP' in str(e):
                 #TODO: What does this do?
                 message = str(e)[:str(e).find(' on')]
@@ -198,7 +198,7 @@ def archive_package(package_id, context, consecutive_errors=0):
                 message = str(e)
             return save_package_issue(context, package, extras_dict,
                                       'url-error', message)
-        except tasks.DownloadError, e:
+        except tasks.DownloadError as e:
             if 'exceeds maximum allowed value' in str(e):
                 message = 'File too big, not downloading'
             else:
@@ -241,7 +241,7 @@ def archive_package(package_id, context, consecutive_errors=0):
 
         try:
             tree = etree.fromstring(xml, parser=etree.XMLParser(huge_tree=True))
-        except etree.XMLSyntaxError, e:
+        except etree.XMLSyntaxError as e:
             return save_package_issue(context, package, extras_dict,
                                       'xml-error', 'Could not parse XML file:'
                                       ' {0}'.format(str(e)[:200]))
@@ -304,7 +304,7 @@ def archive_package(package_id, context, consecutive_errors=0):
                 if check_date < datetime.datetime.now():
                     last_updated_date = check_date
                     break
-            except ValueError, e:
+            except ValueError as e:
                 log.error('Wrong date format for data_updated for dataset {0}:'
                           ' {1}'.format(package['name'], str(e)))
 
@@ -317,15 +317,15 @@ def archive_package(package_id, context, consecutive_errors=0):
             new_extras['data_updated'] = None
 
 
-        for key, value in new_extras.iteritems():
+        for key, value in new_extras.items():
             if (value and (not key in extras_dict or
-                           unicode(value) != unicode(extras_dict[key]))):
+                           str(value) != str(extras_dict[key]))):
                 update = True
-                old_value = (unicode(extras_dict[key]) if
+                old_value = (str(extras_dict[key]) if
                              key in extras_dict else '""')
                 log.info('Updated extra {0} for dataset {1}: {2} -> '
                          '{3}'.format(key, package['name'], old_value, value))
-                extras_dict[unicode(key)] = unicode(value)
+                extras_dict[str(key)] = str(value)
 
 
         # At this point, any previous issues should be resolved,
@@ -357,9 +357,9 @@ def save_package_issue(context, data_dict, extras_dict, issue_type,
                                       issue_message))
         return None, issue_type, issue_message
     else:
-        extras_dict[u'issue_type'] = unicode(issue_type)
-        extras_dict[u'issue_message'] = unicode(issue_message)
-        extras_dict[u'issue_date'] = (unicode(
+        extras_dict['issue_type'] = str(issue_type)
+        extras_dict['issue_message'] = str(issue_message)
+        extras_dict['issue_date'] = (str(
                                       datetime.datetime.now().isoformat()))
         data_dict['extras'] = extras_to_list(extras_dict)
 
@@ -421,7 +421,7 @@ def _save_resource(resource, response, max_file_size, chunk_size=1024*16):
 
     os.close(fd)
 
-    content_hash = unicode(resource_hash.hexdigest())
+    content_hash = str(resource_hash.hexdigest())
     return length, content_hash, tmp_resource_file_path
 
 
@@ -453,7 +453,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
         try:
             res = requests.get(resource['url'], timeout=url_timeout,
                                headers=request_headers, verify=False)
-        except Exception, e:
+        except Exception as e:
             request_headers['User-Agent'] = 'Mozilla/5.0'
             res = requests.get(resource['url'], timeout=url_timeout,
                                headers=request_headers, verify=False)
@@ -462,11 +462,11 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
 
     try:
         headers = json.loads(tasks.link_checker(link_context, link_data))
-    except tasks.LinkHeadMethodNotSupported, e:
+    except tasks.LinkHeadMethodNotSupported as e:
         res = _download_resource(resource_url=resource['url'],
                                  timeout=url_timeout)
         headers = res.headers
-    except tasks.LinkCheckerError, e:
+    except tasks.LinkCheckerError as e:
         if any(x in str(e).lower() for x in ('internal server error', '403',
                                              )):
             # If the HEAD method is not supported or if a 500
@@ -528,9 +528,9 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
 
 
     # check if resource size changed
-    if unicode(length) != resource.get('size'):
+    if str(length) != resource.get('size'):
         resource_changed = True
-        resource['size'] = unicode(length)
+        resource['size'] = str(length)
 
 
     # check that resource did not exceed maximum size when being saved
@@ -556,7 +556,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
 
     resource_hash = hashlib.sha1()
     resource_hash.update(content)
-    resource_hash = unicode(resource_hash.hexdigest())
+    resource_hash = str(resource_hash.hexdigest())
 
 
     if resource.get('hash') != resource_hash:

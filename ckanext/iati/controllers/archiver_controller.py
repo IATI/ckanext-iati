@@ -113,14 +113,14 @@ class ArchiverRunStatus(BaseController):
 
             job = jobs.enqueue(arch.run, [pkg_id, None, publisher_id])
 
-            task[u'task_id'] = job.id
-            task[u'name'] = pkg_id
-            task[u'status'] = 'Queued'
+            task['task_id'] = job.id
+            task['name'] = pkg_id
+            task['status'] = 'Queued'
             if publisher_id:
-                task[u'title'] = org['packages'][index]['title']
+                task['title'] = org['packages'][index]['title']
             else:
                 pkg = toolkit.get_action('package_show')(context, {'id': pkg_id})
-                task[u'title'] = pkg['title']
+                task['title'] = pkg['title']
             tasks.append(json.dumps(task))
         pkg_stat['status'] = "success"
         pkg_stat['message'] = "All jobs are initiated successfully"

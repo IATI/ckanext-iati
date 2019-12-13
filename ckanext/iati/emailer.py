@@ -17,7 +17,7 @@ def send_email(content, subject, to, from_=FROM):
 
     msg = MIMEText(content,'plain','UTF-8')
 
-    if isinstance(to, basestring):
+    if isinstance(to, str):
         to = [to]
 
     msg['Subject'] = subject

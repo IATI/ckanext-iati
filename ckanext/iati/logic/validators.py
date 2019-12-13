@@ -1,4 +1,4 @@
-from urlparse import urlparse, urlunparse
+from urllib.parse import urlparse, urlunparse
 from dateutil.parser import parse as date_parse
 from datetime import datetime
 from email_validator import validate_email
@@ -122,7 +122,7 @@ def db_date(value, context):
 
     try:
         value = date_parse(value)
-    except ValueError, e:
+    except ValueError as e:
         raise Invalid(str(e))
 
     return value

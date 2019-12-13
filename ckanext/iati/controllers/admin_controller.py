@@ -27,9 +27,9 @@ class PurgeController(AdminController):
         deleted_packages = list(model.Session.query(
             model.Package).filter_by(state=model.State.DELETED))
         msgs = []
-        if (u'purge-packages' in request.params) or (
-                u'purge-revisions' in request.params):
-            if u'purge-packages' in request.params:
+        if ('purge-packages' in request.params) or (
+                'purge-revisions' in request.params):
+            if 'purge-packages' in request.params:
                 revs_to_purge = []
 
                 pkg_len = len(deleted_packages)
@@ -63,12 +63,12 @@ class PurgeController(AdminController):
                     # gets moved down to the next revision
                     model.repo.purge_revision(revision, leave_record=False)
                 except Exception as inst:
-                    msg = _(u'Problem purging revision %s: %s') % (id, inst)
+                    msg = _('Problem purging revision %s: %s') % (id, inst)
                     msgs.append(msg)
-            h.flash_success(_(u'Purge complete'))
+            h.flash_success(_('Purge complete'))
         else:
-            msgs.append(_(u'Action not implemented.'))
+            msgs.append(_('Action not implemented.'))
 
         for msg in msgs:
             h.flash_error(msg)
-        return h.redirect_to(u'admin.trash')
+        return h.redirect_to('admin.trash')
