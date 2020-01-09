@@ -1,7 +1,7 @@
 import logging
 from ckan.common import c
 # Bad imports: this should be in the toolkit
-
+import json
 from routes.mapper import SubMapper     # Maybe not this one
 from ckan.lib.plugins import DefaultOrganizationForm
 
@@ -80,7 +80,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
 
         org_controller = 'ckanext.iati.controllers.publisher:PublisherController'
         with SubMapper(map, controller=org_controller) as m:
-            m.connect('publishers_index', '/publisher', action='index')
+            m.connect('publishers_index', '/publisher', action='publisher_index')
             m.connect('/publisher/list',  action='list')
             m.connect('/publisher/new',  action='new')
             m.connect('/publisher/{action}/{id}',
@@ -481,6 +481,13 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         for name, func in fields:
             if data_dict.get('extras_{0}'.format(name)):
                 data_dict[name] = func(data_dict['extras_{0}'.format(name)])
+
+        try:
+            _organization_title = json.loads(data_dict['data_dict'])['organization']['title']
+            data_dict[u'extras_org_title'] = _organization_title
+        except Exception as e:
+            log.error(e)
+            pass
         return data_dict
 
     ## IConfigurer

@@ -127,12 +127,12 @@ def get_publisher_obj_extra_fields_pub_ids(group_dict):
         'publisher_organization_type': get_organization_type_title,
         'publisher_country': get_country_title,
     }
-
-    for ex in group_dict.get("extras", []):
-        if ex.get("key", None) in formatter_map.keys():
-            extras[ex["key"]] = formatter_map[ex["key"]](ex.get("value", ""))
+    for ex in group_dict:
+        if ex in formatter_map.keys():
+            extras[ex] = formatter_map[ex](group_dict.get(ex, ""))
     dict_extras = extras_to_dict(group_dict)
-    extras['publisher_iati_id'] = dict_extras['publisher_iati_id']
+
+    extras['publisher_iati_id'] = group_dict['publisher_iati_id']
     return extras
 
 def is_route_active(menu_item):
