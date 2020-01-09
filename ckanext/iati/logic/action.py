@@ -712,7 +712,7 @@ def _custom_group_or_org_list(context, data_dict, is_org=True):
         if errors:
             raise ValidationError(errors)
     sort = data_dict.get('sort') or 'title'
-    q = data_dict.get('q')
+    q = data_dict.get('q').strip()
 
     all_fields = asbool(data_dict.get('all_fields', None))
 
@@ -756,7 +756,7 @@ def _custom_group_or_org_list(context, data_dict, is_org=True):
         query = model.Session.query(model.Group.id,
                                     model.Group.name).join(model.GroupExtra)
 
-    query = query.filter(model.Group.state == 'active')
+    query = query.filter(_and_(model.Group.state == 'active', model.GroupExtra.key == 'publisher_iati_id'))
 
     if groups:
         query = query.filter(model.Group.name.in_(groups))
@@ -765,7 +765,6 @@ def _custom_group_or_org_list(context, data_dict, is_org=True):
         query = query.filter(_or_(
             model.Group.name.ilike(q),
             model.Group.title.ilike(q),
-            model.Group.description.ilike(q),
             model.GroupExtra.value.ilike(q),
         ))
 
