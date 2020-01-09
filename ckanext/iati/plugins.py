@@ -80,7 +80,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
 
         org_controller = 'ckanext.iati.controllers.publisher:PublisherController'
         with SubMapper(map, controller=org_controller) as m:
-            m.connect('publishers_index', '/publisher', action='index')
+            m.connect('publishers_index', '/publisher', action='publisher_index')
             m.connect('/publisher/list',  action='list')
             m.connect('/publisher/new',  action='new')
             m.connect('/publisher/{action}/{id}',
