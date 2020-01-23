@@ -1,12 +1,11 @@
-from ckanext.iati import helpers as h
-from ckan.common import config
-import ckan.plugins as p
 import csv
 import StringIO
 from collections import OrderedDict
 import json
 from xlwt import Workbook
-
+from ckanext.iati import helpers as h
+from ckan.common import config
+import ckan.plugins as p
 
 class FormatError(Exception):
     pass
@@ -22,6 +21,10 @@ class PublishersListDownload:
         self._datasets_link = self._site_url + "/publisher/{}"
         self._mapping = ('display_name', 'extras_publisher_iati_id', 'extras_publisher_organization_type',
                          'extras_publisher_country', 'package_count')
+        self._fun_mapping = {
+                              'extras_publisher_organization_type':h.get_organization_type_title,
+                              'extras_publisher_country':h.get_country_title
+                            }
 
     def _get_xml_value(self, val):
         val = val.replace('&', "&amp;")
@@ -57,6 +60,11 @@ class PublishersListDownload:
                 for _extra in data['extras']:
                     if _extra['key'] == field.replace("extras_", ''):
                         val = _extra['value']
+                        if field in self._fun_mapping:
+                           try:
+                               val = self._fun_mapping.get(field)(val)
+                           except KeyError:
+                               pass
                         break
                 clean_data.append(val.encode('utf-8'))
             elif field == 'package_count':
