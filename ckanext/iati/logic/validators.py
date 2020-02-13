@@ -237,3 +237,41 @@ def first_publisher_date_validator(key, data, errors, context):
             datetime.strptime(given_date, "%Y-%m-%dT%H:%M:%S.%f").isoformat()
         except ValueError:
             errors[key].append("Incorrect date format. Pleas enter date in format YYYY-MM-DD")
+
+
+def validate_date(key, data_dict):
+    """
+    Validate the date format
+    :param key: from_dt or to_dt
+    :param data_dict: dict
+    :param errors: dict
+    :return: raises error
+    """
+    if not data_dict.get(key):
+        raise ValueError
+    date_parse(data_dict.get(key))
+
+
+def check_date_period(data_dict, errors, limit=732):
+    """
+    Check the dates from and two dates. Max Allowed period is only for 24 months period.
+    :param data_dict: dict
+    :param errors: dict
+    :param limit: no of days (6 months nearly 182 days)
+    :return: errors
+    """
+
+    from_dt = date_parse(data_dict.get('from_dt'))
+    to_dt = date_parse(data_dict.get('to_dt'))
+    if from_dt >= to_dt:
+        errors['from_dt'] = ["From date greater than to date"]
+        return errors
+
+    _period = (from_dt - to_dt).days
+
+    if _period > limit:
+        errors['from_dt'] = ["Exceeded the limit"]
+        errors['to_dt'] = ["Exceeded the limit"]
+        return errors
+
+    return errors
