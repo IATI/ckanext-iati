@@ -1,0 +1,8 @@
+{% ckan_extends %}
+
+{% block content_primary_nav %}
+   {{ super() }}
+   {% if h.check_access('sysadmin') %}
+       {{ h.build_nav_icon('iati_reports', _('Reports'), icon='clock-o') }}
+   {% endif %}
+{% endblock %}
