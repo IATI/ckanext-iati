@@ -143,6 +143,8 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         map.connect('dataset_trash', '/ckan-admin/trash',
                     controller='ckanext.iati.controllers.admin_controller:PurgeController', action='trash',
                     conditions=dict(method=['POST']))
+        map.connect('iati_reports', '/ckan-admin/reports',
+                    controller='ckanext.iati.controllers.admin_controller:PurgeController', action='reports')
 
         #custom redirects
         redirects = {

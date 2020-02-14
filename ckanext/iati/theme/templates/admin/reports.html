@@ -1,0 +1,30 @@
+{% extends "admin/base.html" %}
+
+{% import 'macros/form.html' as form %}
+
+{% block primary_content_inner %}
+    <div class="container">
+        <div class="row">
+
+        {% block report_header %}
+            <h1>
+              Report for IATI active publisher accounts
+            </h1>
+        {% endblock %}
+
+        {% block report_form %}
+            <form id="pub-report" class="dataset-form" method="post" action="{{ action }}" data-module="basic-form">
+                {{ form.input('from_dt', label=_('From Date'), type='date', value=data_dict.from_dt, error=errors.from_dt,
+                    classes=[], attrs={'class': 'form-control'}, is_required=true) }}
+
+                {{ form.input('to_dt', label=_('To Date'), type='date', value=data_dict.to_dt, error=errors.to_dt,
+                    classes=[], attrs={'class': 'form-control'}, is_required=true) }}
+
+                <button class="btn btn-primary" type="submit" name="run">{{ _("Generate Report") }}</button>
+
+            </form>
+        {% endblock %}
+
+        </div>
+    </div>
+{% endblock %}
