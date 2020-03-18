@@ -455,12 +455,12 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         return data_dict
 
     def before_search(self, data_dict):
-        if not data_dict.get('sort'):
+        if not data_dict.get('sort', ''):
             data_dict['sort'] = 'title_string asc'
 
-        if 'owner_org' in str(data_dict.get('q')):
+        if 'owner_org' in data_dict.get('q', ''):
             data_dict['fq'] += ' organization:"%s"' % c.group_dict.get('name')
-            q = str(data_dict['q'])
+            q = data_dict['q']
             import re
             o = ' owner_org:"%s"'%c.group_dict.get('id')
             q = re.sub(o,'',q)
