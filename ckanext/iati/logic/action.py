@@ -739,9 +739,9 @@ def user_list(context, data_dict):
     Functionality: User must be able to reset password through email id or username
     Wrap the core user list by considering the option for user email
     """
-    val = data_dict['id']
+    val = data_dict.get('id', '')
     # Check if the given id is email else call core user list.
-    if hlp.email_validator(val):
+    if val and hlp.email_validator(val):
         user = []
         users = hlp.get_user_list_by_email(val)
         # Multiple users with same email id
