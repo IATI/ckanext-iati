@@ -12,7 +12,9 @@ import ckan.authz as authz
 from ckan.lib.base import c
 import ckan.logic as logic
 import ckan.plugins as p
+
 log = logging.getLogger('iati_archiver')
+ValidationError = logic.ValidationError
 
 
 class ArchiverRunStatus(BaseController):
@@ -137,4 +139,31 @@ class ArchiverRunStatus(BaseController):
             return render('user/archiver_result.html', extra_vars=pkg_stat)
         else:
             return render('user/archiver_result.html', extra_vars=pkg_stat)
+
+    @staticmethod
+    def run_archiver_after_package_create_update(package_id):
+        """
+        Run archiver after package update or package create.
+
+        Note: There is no access control here. Be careful on where this is called from. This is the fix for
+        Issue: https://github.com/IATI/ckanext-iati/issues/270
+
+        :param package_id: str
+        :return: None
+        """
+
+        if not package_id:
+            log.error("No package id available. Cannot run the archiver.")
+            return None
+
+        job = jobs.enqueue(arch.run, [package_id, None, None])
+        log.info("Triggered background job for package: {}".format(package_id))
+        log.info("Job id: {}".format(job.id))
+
+        return None
+
+
+
+
+
 
