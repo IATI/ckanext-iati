@@ -4,6 +4,7 @@ from ckan.common import c
 import json
 from routes.mapper import SubMapper     # Maybe not this one
 from ckan.lib.plugins import DefaultOrganizationForm
+from ckanext.iati.controllers.archiver_controller import ArchiverRunStatus
 
 import ckan.plugins as p
 
@@ -453,6 +454,26 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
                     if license.title:
                         data_dict['license_title']= license.title
         return data_dict
+
+    def after_create(self, context, pkg_dict):
+        """
+        Call the archiver controller after create
+        :return: None
+        """
+        log.info("Running archiver as background job as package create")
+        log.info(pkg_dict.get('id', ''))
+        ArchiverRunStatus.run_archiver_after_package_create_update(pkg_dict.get("id", None))
+        return pkg_dict
+
+    def after_update(self, context, pkg_dict):
+        """
+        Call the archiver controller run after update
+        :return: None
+        """
+        log.info("Running archiver as background job as package update")
+        log.info(pkg_dict.get('id', ''))
+        ArchiverRunStatus.run_archiver_after_package_create_update(pkg_dict.get("id", None))
+        return pkg_dict
 
     def before_search(self, data_dict):
         if not data_dict.get('sort', ''):
