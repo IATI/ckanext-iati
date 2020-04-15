@@ -20,6 +20,7 @@ import ckan.logic as logic
 from ckan.common import c
 from ckanext.dcat.processors import RDFSerializer
 from collections import OrderedDict
+from email_validator import validate_email as _validate_email
 import logging
 log = logging.getLogger(__name__)
     
@@ -483,32 +484,23 @@ def structured_data_markup(dataset_id, profiles=None, _format='jsonld'):
 
 def email_validator(email):
     ''' Validates the given email '''
-    val = email.split('@')
-    if len(val) == 2:
+    try:
+        _validate_email(email) 
         return True
-    else:
+    except Exception as e:
         return False
 
-
-def get_username(value):
-    '''
-     Returns a username if the given value is email id else returns the same value -
-    '''
-    user = []
-    if '@' in value:
-        if email_validator(value):
-            potential_users = User.by_email(value)
-            if len(potential_users) == 1:
-                user = potential_users[0].__dict__
-                return [user]
-            elif len(potential_users) == 0:
-                return user
-            else:
-                return potential_users
-        else:
-            return user
-    else:
-        return user
+def get_user_list_by_email(value):
+    """
+    Get user id/name given email. Validate email beforehand.
+    """
+    users = []
+    try:
+        potential_users = User.by_email(value)
+        return potential_users
+    except Exception as e:
+        log.error(e)
+        return users
 
 
 def publisher_first_published_date_validator(data_dict):

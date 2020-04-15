@@ -596,96 +596,6 @@ def resource_delete(context, data_dict):
     '''
     return {'msg': 'Each dataset must contain a single resource. Did you mean to use package_delete?'}
 
-
-def user_list(context, data_dict):
-    '''Return a list of the site's user accounts.
-
-    :param q: restrict the users returned to those whose names contain a string
-      (optional)
-    :type q: string
-    :param order_by: which field to sort the list by (optional, default:
-      ``'name'``). Can be any user field or ``edits`` (i.e. number_of_edits).
-    :type order_by: string
-    :param all_fields: return full user dictionaries instead of just names.
-      (optional, default: ``True``)
-    :type all_fields: bool
-
-    :rtype: list of user dictionaries. User properties include:
-      ``number_of_edits`` which counts the revisions by the user and
-      ``number_created_packages`` which excludes datasets which are private
-      or draft state.
-
-    '''
-
-    if 'id' in data_dict.keys():
-        if '@' in data_dict['id']:
-            return hlp.get_username(data_dict['id'])
-
-    model = context['model']
-
-    _check_access('user_list', context, data_dict)
-
-    q = data_dict.get('q', '')
-    order_by = data_dict.get('order_by', 'name')
-    all_fields = asbool(data_dict.get('all_fields', True))
-
-    if all_fields:
-        query = model.Session.query(
-            model.User,
-            model.User.name.label('name'),
-            model.User.fullname.label('fullname'),
-            model.User.about.label('about'),
-            model.User.about.label('email'),
-            model.User.created.label('created'),
-            _select(
-                [_func.count(model.Revision.id)],
-                model.Revision.author == model.User.name
-            ).label('number_of_edits'),
-            _select([_func.count(model.Package.id)],
-                    _and_(
-                        model.Package.creator_user_id == model.User.id,
-                        model.Package.state == 'active',
-                        model.Package.private == False,
-                    )).label('number_created_packages')
-        )
-    else:
-        query = model.Session.query(model.User.name)
-
-    if q:
-        query = model.User.search(q, query, user_name=context.get('user'))
-
-    if order_by == 'edits':
-        query = query.order_by(_desc(
-            _select([_func.count(model.Revision.id)],
-                    model.Revision.author == model.User.name)))
-    else:
-        query = query.order_by(
-            _case([(
-                _or_(model.User.fullname == None,
-                     model.User.fullname == ''),
-                model.User.name)],
-                else_=model.User.fullname))
-
-    # Filter deleted users
-    query = query.filter(model.User.state != model.State.DELETED)
-
-    ## hack for pagination
-    if context.get('return_query'):
-        return query
-
-    users_list = []
-
-    if all_fields:
-        for user in query.all():
-            result_dict = model_dictize.user_dictize(user[0], context)
-            users_list.append(result_dict)
-    else:
-        for user in query.all():
-            users_list.append(user[0])
-
-    return users_list
-
-
 def _custom_group_or_org_list(context, data_dict, is_org=True):
     """
      Note: Do not use this for any API actions. Made default is_org=True hence not suitable for groups.
@@ -822,4 +732,44 @@ def custom_group_list(context, data_dict):
     data_dict['type'] = 'organization'
     return _custom_group_or_org_list(context, data_dict)
 
+
+@p.toolkit.side_effect_free
+def user_list(context, data_dict):
+    """
+    Functionality: User must be able to reset password through email id or username
+    Wrap the core user list by considering the option for user email
+    """
+    val = data_dict.get('id', '')
+    # Check if the given id is email else call core user list.
+    if val and hlp.email_validator(val):
+        user = []
+        users = hlp.get_user_list_by_email(val)
+        # Multiple users with same email id
+        # In this case we cannot reset because we dont know what user is is.
+        if len(users) == 1:
+            user = [users[0].__dict__]
+        return user
+
+    return get_core.user_list(context, data_dict)
+
+
+@p.toolkit.side_effect_free
+def user_create(context, data_dict):
+    """
+    Avoid already existing user to create a new user.
+    Check if the email id already exists if so raise errors
+    """
+    _email = data_dict.get('email', '')
+    # User form accepts errors in terms of dict with error list
+    errors = dict()
+    errors['email'] = []
+    if hlp.email_validator(_email):
+        _users = hlp.get_user_list_by_email(_email)
+        if _users:
+            errors['email'].append("Email already exists.")
+            raise ValidationError(errors)
+    else:
+        errors['email'].append("Not a valid email.")
+        raise ValidationError(errors)
+    return create_core.user_create(context, data_dict)
 
