@@ -541,7 +541,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'organizations_available_with_extra_fields',
             'structured_data_markup',
             'email_validator',
-            'get_username',
+            'get_user_list_by_email',
             'first_published_date_patch',
             'publisher_first_published_date_validator',
             'organization_form_read_only',
@@ -565,8 +565,9 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'organization_list_publisher_page',
             'organization_list_pending',
             'user_show',
-            'resource_delete',
             'user_list',
+            'user_create',
+            'resource_delete',
             'organization_patch'
         )
         return _get_module_functions(iati_actions, function_names)
