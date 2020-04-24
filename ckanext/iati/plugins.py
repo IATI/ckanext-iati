@@ -651,6 +651,7 @@ class IatiTheme(p.SingletonPlugin):
 
         return facets_dict
 
+
 class IatiCsvImporter(p.SingletonPlugin):
 
     p.implements(p.IConfigurer)
@@ -659,9 +660,11 @@ class IatiCsvImporter(p.SingletonPlugin):
     # IRoutes
     def before_map(self, map):
         csv_controller = 'ckanext.iati.controllers.spreadsheet:CSVController'
+        rec_download_controller = "ckanext.iati.controllers.download_records_pub:PublisherDownloadRecords"
 
-        map.connect('/csv/download', controller=csv_controller, action='download')
-        map.connect('/csv/download/{publisher}', controller=csv_controller, action='download')
+        map.connect('/csv/download', controller=rec_download_controller, action='publisher_download_index')
+        map.connect('/csv/download/{publisher}', controller=rec_download_controller, action='download')
+
         map.connect('/csv/upload', controller=csv_controller, action='upload',
                     conditions=dict(method=['GET']))
         map.connect('/csv/upload', controller=csv_controller, action='upload',

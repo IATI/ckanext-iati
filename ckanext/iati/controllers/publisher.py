@@ -10,7 +10,10 @@ from webhelpers.html import HTML, literal, tags, tools
 
 import logging
 log = logging.getLogger(__file__)
-log.setLevel(logging.DEBUG)
+
+NotFound = logic.NotFound
+NotAuthorized = logic.NotAuthorized
+ValidationError = logic.ValidationError
 
 
 class PublisherController(OrganizationController):

@@ -34,11 +34,8 @@ CSV_MAPPING = [
         ('contact-email', 'package', 'author_email'),
         ('state', 'package', 'state'),
         ('source-url', 'resources', 'url'),
-        #('format', 'resources', 'format'),
         ('file-type','package', 'filetype'),
         ('recipient-country','package', 'country'),
-        #('last-updated-datetime','package', 'data_updated'),
-        #('activity-count','package', 'activity_count'),
         ('default-language','package', 'language'),
         ('secondary-publisher', 'package', 'secondary_publisher'),
         ]
@@ -173,23 +170,16 @@ def _fix_unicode(text, min_confidence=0.5):
 
 class CSVController(p.toolkit.BaseController):
 
-    def download(self, publisher=None):
+    def download(self, publisher):
 
         context = {'model': model, 'user': c.user or c.author}
 
-        if publisher and publisher not in ['all','template']:
+        if publisher and publisher not in ['all', 'template']:
             try:
                 org = p.toolkit.get_action('organization_show')(context, {'id': publisher})
+                output = self.write_csv_file(publisher)
             except p.toolkit.ObjectNotFound:
                 p.toolkit.abort(404, 'Publisher not found')
-
-        if publisher:
-            # Return CSV for provided publisher
-            output = self.write_csv_file(publisher)
-        else:
-            # Show list of all available publishers
-            orgs = p.toolkit.get_action('organization_list')(context, {'all_fields': True})
-            return p.toolkit.render('csv/index.html', extra_vars={'orgs': orgs})
 
         file_name = publisher if publisher else 'iati-registry-records'
         p.toolkit.response.headers['Content-type'] = 'text/csv'
@@ -366,7 +356,6 @@ class CSVController(p.toolkit.BaseController):
             result['result']['errors'] = "Something went wrong, please try again or contact support quoting the error \"Background job was not created\""
 
         return json.dumps(result)
-
 
     def write_csv_file(self, publisher):
         context = {'model': model, 'user': c.user or c.author}
