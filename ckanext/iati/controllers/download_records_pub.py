@@ -101,11 +101,13 @@ class PublisherDownloadRecords(CSVController):
             try:
                 org = p.toolkit.get_action('organization_show')(context, {'id': publisher})
                 output = self.write_csv_file(publisher)
-                file_name = publisher if publisher else 'iati-registry-records'
-                p.toolkit.response.headers['Content-type'] = 'text/csv'
-                p.toolkit.response.headers['Content-disposition'] = 'attachment;filename=%s.csv' % str(file_name)
-                return output
             except p.toolkit.ObjectNotFound:
                 p.toolkit.abort(404, 'Publisher not found')
         else:
-            p.toolkit.abort(404, 'Publisher not allowed')
+            output = self.write_csv_file(publisher)
+
+        file_name = publisher if publisher else 'iati-registry-records'
+        p.toolkit.response.headers['Content-type'] = 'text/csv'
+        p.toolkit.response.headers['Content-disposition'] = 'attachment;filename=%s.csv' % str(file_name)
+
+        return output
