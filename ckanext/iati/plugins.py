@@ -2,12 +2,11 @@ import logging
 from ckan.common import c
 # Bad imports: this should be in the toolkit
 import json
+import os
 from routes.mapper import SubMapper     # Maybe not this one
 from ckan.lib.plugins import DefaultOrganizationForm
 from ckanext.iati.controllers.archiver_controller import ArchiverRunStatus
-
 import ckan.plugins as p
-
 from ckanext.iati.logic.validators import (db_date,
                                            iati_publisher_state_validator,
                                            iati_owner_org_validator,
@@ -29,6 +28,11 @@ from ckanext.iati.logic.converters import strip
 import ckanext.iati.helpers as iati_helpers
 
 log = logging.getLogger(__name__)
+
+# To generate all the redirects from redirects.json file
+_current_dir = os.path.dirname(os.path.realpath(__file__))
+_file_name = "redirects.json"
+redirects_file_path = "{}/redirects/{}".format(_current_dir, _file_name)
 
 
 class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
@@ -52,18 +56,32 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
 
         map.redirect('/publishers', '/publisher')
         map.redirect('/publishers/{url:.*}', '/publisher/{url}')
+        map.redirect('/dataset_search','/dataset')
 
         # Custom redirects for publisher renames
         # Add a new line for each redirect, in the form
         #
         #   ('old_name', 'new_name',),
-        #
+        # redirects.json file is located in redirects dir
+        # Use commad paster --plugin=ckanext-iati iati-first-publisher-date update_redirects
+        # To get all the latest renames
+
         renames = [
             ('amrefuk', 'amrefha',),
             ('ausaid', 'ausgov',),
             ('mrdf', 'allwecan',),
-            ('unesco-ihe', 'ihedelft'),
+            ('unesco-ihe', 'ihedelft')
         ]
+	
+        if os.path.isfile(redirects_file_path):
+            with open(redirects_file_path, 'r') as rd:
+                redirect_contents = json.load(rd)
+                rd.close()
+        
+            for _new_pub_id in redirect_contents:
+                _old_ids = redirect_contents.get(_new_pub_id)
+                for _old_id in _old_ids:
+                    renames.append((_old_id, _new_pub_id))
 
         for rename in renames:
             # Publisher pages
@@ -73,7 +91,6 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
                      _redirect_code='301 Moved Permanently')
 
             # Dataset pages
-            map.redirect('/dataset_search','/dataset')
             map.redirect('/dataset/' + rename[0] + '-{code:.*}', '/dataset/' + rename[1] + '-{code:.*}',
                      _redirect_code='301 Moved Permanently')
             map.redirect('/dataset/{url:.*}/' + rename[0] + '-{code:.*}', '/dataset/{url}/' + rename[1] + '-{code:.*}',
