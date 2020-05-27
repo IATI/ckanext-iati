@@ -1,10 +1,9 @@
 import sys
 import logging
-from sqlalchemy import create_engine
 from ckan.lib.cli import CkanCommand
 from ckanext.iati.custom_archiver import run as run_archiver
-from ckanext.iati import publisher_date as pub_date
 from ckan.common import config
+from ckanext.iati import model as iati_model
 import json
 import os
 
@@ -121,46 +120,32 @@ class UpdatePublisherDate(CkanCommand):
 
         if cmd == 'update_first_publisher_date':
             pub_date.run()
+
+
+class RedirectsCommand(CkanCommand):
+    """
+        Ti initalise the db and also to fetch redirects from the database.
+    """
+    summary = __doc__.split('\n')[0]
+    usage = __doc__
+    min_args = 0
+    max_args = 2
+
+    def command(self):
+
+        if not self.args or self.args[0] in ['--help', '-h', 'help']:
+            print Archiver.__doc__
+            return
+
+        cmd = self.args[0]
+        self._load_config()
+
+        if cmd == 'initdb':
+            iati_model.init_tables()
         elif cmd == 'update_redirects':
-             """
-             Extract all change in publisher ids i.e.old and new publisher mapping.
-             """
-             _current_dir = os.path.dirname(os.path.realpath(__file__))
-             _file_name = "redirects.json"
-             _redirect_dir = "redirects"
-             _file_path = "{}/{}/{}".format(_current_dir, _redirect_dir, _file_name)
-             _db_conn = create_engine(config.get('sqlalchemy.url')).connect()
-             _query = ''' 
-			SELECT DISTINCT public.group.id, public.group.name AS current_name, revision.name AS old_name 
-			FROM 
-			public.group, (
-					SELECT id, name, revision_timestamp, row_number() 
-					OVER(PARTITION BY id ORDER BY revision_timestamp DESC) 
-					FROM group_revision
-			) AS revision 
-			WHERE
-			public.group.id=revision.id AND 
-			public.group.name != revision.name 
-			ORDER BY 
-			public.group.name;
-		      '''
-             print(_query)
-             res = _db_conn.execute(_query)
-             if res:
-                 _mapping = dict()
-                 for _row in res:
-                     _new_id = _row[1] # Current publisher id
-                     _old_id = _row[2] # Old puiblisher id
-                     if _new_id in _mapping:
-                         _mapping[_new_id].append(_old_id)
-                     else:
-                         _mapping[_new_id] = [_old_id]
-                 with open(_file_path, 'wb') as f:
-                     json.dump(_mapping, f, ensure_ascii=False)
-                     f.close()
-                 print("New Mapping doc: {}".format(_file_path))
-	     else:
-                 print("Query resulted in zero rows")
-             # Write the mapping to redirects folder json file
+            """
+            Extract all change in publisher ids i.e.old and new publisher mapping.
+            """
+            iati_model.IATIRedirects.update_redirects()
         else:
             log.error('Command {0} not recognized'.format(cmd))

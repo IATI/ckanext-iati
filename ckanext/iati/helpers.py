@@ -4,6 +4,7 @@ from xml.etree import ElementTree
 import datetime
 import json
 from markupsafe import Markup, escape
+from sqlalchemy import create_engine
 # Bad import: should be in toolkit
 from pylons import config
 from webhelpers.html import literal
@@ -551,7 +552,7 @@ def first_published_date_patch(org_id):
         except NotAuthorized:
             pass
     except Exception, e:
-        log.warning("Cannot be patched - {}", str(e))
+        log.warning("Cannot be patched - {}", e)
 
 
 def organization_form_read_only(data):
@@ -612,3 +613,4 @@ def _pending_organization_list_for_user():
         log.error("Unexpected error while getting pending organization for the user.")
         log.error("User id: {}".format(user_obj.id))
         log.error(e)
+

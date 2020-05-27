@@ -1,0 +1,64 @@
+{% extends "admin/base.html" %}
+
+{% import 'macros/form.html' as form %}
+
+{% block primary_content_inner %}
+    <div class="container">
+        <div class="row">
+
+        {% block report_header %}
+            <h1>
+              IATI Redirects Enabled
+            </h1>
+            <h4>
+                Note:
+            </h4>
+            <h5>
+                <i>You can update the list by clicking the below button.
+                    However, redirects will not work unless IATI Registry is restarted.
+                    Please inform support team to restart ckan.</i>
+            </h5>
+
+        {% endblock %}
+
+        {% block redirect_form %}
+             <form id="update-redirects" class="dataset-form"
+                   method="post" action="{{ action }}" data-module="basic-form">
+                 <button class="btn btn-primary" type="submit" name="run">{{ _("Update Redirects") }}</button>
+             </form>
+            <h5>
+                <b>Last Updated on:</b> {{ last_updated }}
+            </h5>
+        {% endblock %}
+
+        {% block redirects_list %}
+            <div class="row">
+            <br>
+                <table class="table table-striped table-hover table-bordered table-condensed">
+                  <thead>
+                    <tr>
+                      <th scope="col">Sl No</th>
+                      <th scope="col">New Publisher Id (redirect id)</th>
+                      <th scope="col">Old Publisher Ids</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for new_pub in redirect_contents %}
+                    {% set old_ids = redirect_contents[new_pub] %}
+                    <tr>
+                        <th scope="row">{{loop.index}}</th>
+                        <td><a href="/publisher/{{new_pub}}" target="_blank">{{ new_pub }}</a></td>
+                        <td>
+                        {% for old_id in old_ids %}
+                            <li><a href="/publisher/{{old_id}}" target="_blank">{{ old_id }}</a></li>
+                        {% endfor %}
+                        </td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+        {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

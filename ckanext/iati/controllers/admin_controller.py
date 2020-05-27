@@ -2,11 +2,15 @@ from ckan.controllers.admin import AdminController
 import ckan.lib.base as base
 import ckan.plugins as p
 import ckan.model as model
+from ckanext.iati.model import IATIRedirects
 import ckan.logic as logic
 import ckan.lib.helpers as h
 from ckanext.iati.logic import validators
 import csv
 import StringIO
+import os
+import json
+from datetime import datetime
 import logging
 log = logging.getLogger(__file__)
 log.setLevel(logging.DEBUG)
@@ -191,3 +195,48 @@ class PurgeController(AdminController):
                     h.flash_error(_("Form validation error. Please check the given dates"))
 
         return base.render('admin/reports.html', extra_vars=vars)
+
+    def iati_redirects(self):
+        """
+        This will map the old and new publisher redirects. For IATI registry
+        :return:
+        """
+
+        context = {'model': model,
+                   'user': c.user, 'auth_user_obj': c.userobj}
+        try:
+            logic.check_access('sysadmin', context, {})
+        except logic.NotAuthorized:
+            base.abort(403, _('Need to be system administrator to administer'))
+
+        if request.method == "POST":
+            _params = request.params
+            if "run" in _params:
+                try:
+                    IATIRedirects.update_redirects()
+                    h.flash_success("Updated redirects successfully. "
+                                    "Please contact support team to restart IATI registry.")
+                except Exception as e:
+                    log.error(e)
+                    h.flash_error("Something wrong while extracting publisher mapping. Contact support team")
+                    pass
+                h.redirect_to(
+                    controller="ckanext.iati.controllers.admin_controller:PurgeController",
+                    action='iati_redirects'
+                )
+            else:
+                h.flash_error("This should not occur.")
+
+        try:
+            redirect_contents, last_updated = IATIRedirects.get_redirects_to_view()
+        except Exception as e:
+            log.error(e)
+            last_updated = "Not Available"
+            redirect_contents = dict()
+
+        vars = {
+            "redirect_contents": redirect_contents,
+            "last_updated": last_updated
+        }
+
+        return base.render('admin/redirects.html', extra_vars=vars)

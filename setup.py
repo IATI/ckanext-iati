@@ -40,6 +40,7 @@ setup(name='ckanext-iati',
       iati-archiver=ckanext.iati.commands:Archiver
       iati-purge=ckanext.iati.commands:PurgeCmd
       iati-first-publisher-date=ckanext.iati.commands:UpdatePublisherDate
+      iati-redirects=ckanext.iati.commands:RedirectsCommand
       """,
       #[ckan.celery_task]
       #tasks = ckanext.iati.celery_import:task_imports

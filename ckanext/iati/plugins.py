@@ -26,13 +26,9 @@ from ckanext.iati.logic.validators import (db_date,
                                           )
 from ckanext.iati.logic.converters import strip
 import ckanext.iati.helpers as iati_helpers
+from ckanext.iati.model import IATIRedirects
 
 log = logging.getLogger(__name__)
-
-# To generate all the redirects from redirects.json file
-_current_dir = os.path.dirname(os.path.realpath(__file__))
-_file_name = "redirects.json"
-redirects_file_path = "{}/redirects/{}".format(_current_dir, _file_name)
 
 
 class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
@@ -72,29 +68,24 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             ('mrdf', 'allwecan',),
             ('unesco-ihe', 'ihedelft')
         ]
-	
-        if os.path.isfile(redirects_file_path):
-            with open(redirects_file_path, 'r') as rd:
-                redirect_contents = json.load(rd)
-                rd.close()
+
+        _redirects = IATIRedirects.get_redirects()
         
-            for _new_pub_id in redirect_contents:
-                _old_ids = redirect_contents.get(_new_pub_id)
-                for _old_id in _old_ids:
-                    renames.append((_old_id, _new_pub_id))
+        for row in _redirects:
+            renames.append((row[2], row[1]))
 
         for rename in renames:
             # Publisher pages
             map.redirect('/publisher/' + rename[0], '/publisher/' + rename[1],
-                     _redirect_code='301 Moved Permanently')
+                         _redirect_code='301 Moved Permanently')
             map.redirect('/publisher/{url:.*}/' + rename[0] , '/publisher/{url}/' + rename[1],
-                     _redirect_code='301 Moved Permanently')
+                         _redirect_code='301 Moved Permanently')
 
             # Dataset pages
             map.redirect('/dataset/' + rename[0] + '-{code:.*}', '/dataset/' + rename[1] + '-{code:.*}',
-                     _redirect_code='301 Moved Permanently')
+                         _redirect_code='301 Moved Permanently')
             map.redirect('/dataset/{url:.*}/' + rename[0] + '-{code:.*}', '/dataset/{url}/' + rename[1] + '-{code:.*}',
-                     _redirect_code='301 Moved Permanently')
+                         _redirect_code='301 Moved Permanently')
 
         org_controller = 'ckanext.iati.controllers.publisher:PublisherController'
         with SubMapper(map, controller=org_controller) as m:
@@ -163,6 +154,8 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
                     conditions=dict(method=['POST']))
         map.connect('iati_reports', '/ckan-admin/reports',
                     controller='ckanext.iati.controllers.admin_controller:PurgeController', action='reports')
+        map.connect('iati_redirects', '/ckan-admin/redirects',
+                    controller='ckanext.iati.controllers.admin_controller:PurgeController', action='iati_redirects')
 
         #custom redirects
         redirects = {
