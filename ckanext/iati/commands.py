@@ -112,7 +112,7 @@ class UpdatePublisherDate(CkanCommand):
     def command(self):
 
         if not self.args or self.args[0] in ['--help', '-h', 'help']:
-            print Archiver.__doc__
+            print UpdatePublisherDate.__doc__
             return
 
         cmd = self.args[0]
@@ -134,7 +134,7 @@ class RedirectsCommand(CkanCommand):
     def command(self):
 
         if not self.args or self.args[0] in ['--help', '-h', 'help']:
-            print Archiver.__doc__
+            print RedirectsCommand.__doc__
             return
 
         cmd = self.args[0]
