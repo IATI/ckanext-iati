@@ -1,9 +1,11 @@
 import sys
 import logging
 from ckan.lib.cli import CkanCommand
-
 from ckanext.iati.custom_archiver import run as run_archiver
-from ckanext.iati import publisher_date as pub_date
+from ckan.common import config
+from ckanext.iati import model as iati_model
+import json
+import os
 
 log = logging.getLogger('iati_archiver')
 
@@ -110,7 +112,7 @@ class UpdatePublisherDate(CkanCommand):
     def command(self):
 
         if not self.args or self.args[0] in ['--help', '-h', 'help']:
-            print Archiver.__doc__
+            print UpdatePublisherDate.__doc__
             return
 
         cmd = self.args[0]
@@ -118,5 +120,32 @@ class UpdatePublisherDate(CkanCommand):
 
         if cmd == 'update_first_publisher_date':
             pub_date.run()
+
+
+class RedirectsCommand(CkanCommand):
+    """
+        Ti initalise the db and also to fetch redirects from the database.
+    """
+    summary = __doc__.split('\n')[0]
+    usage = __doc__
+    min_args = 0
+    max_args = 2
+
+    def command(self):
+
+        if not self.args or self.args[0] in ['--help', '-h', 'help']:
+            print RedirectsCommand.__doc__
+            return
+
+        cmd = self.args[0]
+        self._load_config()
+
+        if cmd == 'initdb':
+            iati_model.init_tables()
+        elif cmd == 'update_redirects':
+            """
+            Extract all change in publisher ids i.e.old and new publisher mapping.
+            """
+            iati_model.IATIRedirects.update_redirects()
         else:
             log.error('Command {0} not recognized'.format(cmd))
