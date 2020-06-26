@@ -7,8 +7,8 @@ from sqlalchemy import and_
 from ckan.logic import get_action
 from ckan import authz as new_authz
 from ckan.lib.navl.dictization_functions import unflatten, Invalid
-
 from ckanext.iati.lists import FILE_TYPES, COUNTRIES
+from ckanext.iati import model as iati_redirects
 
 def iati_one_resource(key, data, errors, context):
 
@@ -275,3 +275,23 @@ def check_date_period(data_dict, errors, limit=732):
         return errors
 
     return errors
+
+
+def validate_new_publisher_id_against_old(key, data, errors, context):
+    """
+    Validate if the given publisher id is one of the old publisher id. If so, raise an error.
+    All the old publisher id will be available in iati_redirects table,, which should be update by
+    sysadmin regularly through UI.
+
+    :param key: str publisher_iati_id
+    :param data: dict
+    :param errors: dict (error dict)
+    :return: None (Raises error if the id exists)
+    """
+    session = context['session']
+    _iati_piublisher_id = data.get(key, '').strip()
+    if _iati_piublisher_id:
+        publisher_id_exists = session.query(iati_redirects.IATIRedirects).filter(
+            iati_redirects.IATIRedirects.old_name == _iati_piublisher_id).first()
+        if publisher_id_exists:
+            errors[key].append("Publisher Id is already exists. Please try with another id.")
