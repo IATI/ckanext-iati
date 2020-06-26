@@ -4,6 +4,7 @@ import requests
 import json
 import urllib
 import json
+from ckan.common import _
 from ckanext.archiver import tasks
 import logging
 

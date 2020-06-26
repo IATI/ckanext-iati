@@ -7,23 +7,25 @@ from routes.mapper import SubMapper     # Maybe not this one
 from ckan.lib.plugins import DefaultOrganizationForm
 from ckanext.iati.controllers.archiver_controller import ArchiverRunStatus
 import ckan.plugins as p
-from ckanext.iati.logic.validators import (db_date,
-                                           iati_publisher_state_validator,
-                                           iati_owner_org_validator,
-                                           iati_dataset_name,
-                                           iati_resource_count,
-                                           iati_resource_url,
-                                           iati_one_resource,
-                                           email_validator,
-                                           file_type_validator,
-                                           iati_org_identifier_validator,
-                                           remove_leading_or_trailing_spaces,
-                                           licence_validator,
-                                           iati_resource_url_mandatory,
-                                           country_code,
-                                           change_publisher_id_or_org_id,
-                                           first_publisher_date_validator
-                                          )
+from ckanext.iati.logic.validators import (
+    db_date,
+    iati_publisher_state_validator,
+    iati_owner_org_validator,
+    iati_dataset_name,
+    iati_resource_count,
+    iati_resource_url,
+    iati_one_resource,
+    email_validator,
+    file_type_validator,
+    iati_org_identifier_validator,
+    remove_leading_or_trailing_spaces,
+    licence_validator,
+    iati_resource_url_mandatory,
+    country_code,
+    change_publisher_id_or_org_id,
+    first_publisher_date_validator,
+    validate_new_publisher_id_against_old
+)
 from ckanext.iati.logic.converters import strip
 import ckanext.iati.helpers as iati_helpers
 from ckanext.iati.model import IATIRedirects
@@ -229,7 +231,8 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         schema.update({
             'state': [iati_publisher_state_validator],
             'title': [_not_empty, remove_leading_or_trailing_spaces],
-            'name': [_not_empty, _unicode_safe, _name_validator, _group_name_validator, change_publisher_id_or_org_id],
+            'name': [_not_empty, _unicode_safe, _name_validator, _group_name_validator, change_publisher_id_or_org_id,
+                     validate_new_publisher_id_against_old],
             'license_id': [_convert_to_extras, licence_validator],
             'publisher_source_type': default_validators,
             'publisher_iati_id': [_not_empty, remove_leading_or_trailing_spaces, iati_org_identifier_validator,
