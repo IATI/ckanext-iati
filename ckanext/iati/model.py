@@ -70,13 +70,14 @@ class IATIRedirects(Base):
                   SELECT DISTINCT public.group.id, public.group.name AS current_name, revision.name AS old_name 
                   FROM 
                   public.group, (
-                          SELECT id, name, revision_timestamp, row_number() 
+                          SELECT id, name, revision_timestamp, state, row_number() 
                           OVER(PARTITION BY id ORDER BY revision_timestamp DESC) 
                           FROM group_revision
                   ) AS revision 
                   WHERE
                   public.group.id=revision.id AND 
-                  public.group.name != revision.name 
+                  public.group.name != revision.name AND
+                  public.group.state = 'active'
                   ORDER BY 
                   public.group.name;
                   '''
