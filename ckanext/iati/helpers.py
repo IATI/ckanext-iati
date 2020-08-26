@@ -614,3 +614,18 @@ def _pending_organization_list_for_user():
         log.error("User id: {}".format(user_obj.id))
         log.error(e)
 
+
+def parse_error_object_to_list(error_object):
+    """
+    This is to parse if the error message is dictionary object - this scenario occurs from URL validator
+    """
+    error_list = []
+
+    for element in error_object:
+        if type(element) is dict:
+            for key in element:
+                error_list.append(str(element[key]))
+        else:
+            error_list.append(str(element))
+
+    return error_list

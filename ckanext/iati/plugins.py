@@ -699,7 +699,7 @@ class IatiCsvImporter(p.SingletonPlugin):
         map.connect('/csv/download', controller=rec_download_controller, action='publisher_download_index')
         map.connect('/csv/download/{publisher}', controller=rec_download_controller, action='download')
 
-        map.connect('/csv/upload', controller=csv_controller, action='upload',
+        map.connect('csv_upload', '/csv/upload', controller=csv_controller, action='upload',
                     conditions=dict(method=['GET']))
         map.connect('/csv/upload', controller=csv_controller, action='upload',
                     conditions=dict(method=['POST']))
