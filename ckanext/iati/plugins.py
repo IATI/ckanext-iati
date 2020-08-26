@@ -473,9 +473,10 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         Call the archiver controller after create
         :return: None
         """
-        log.info("Running archiver as background job as package create")
-        log.info(pkg_dict.get('id', ''))
-        ArchiverRunStatus.run_archiver_after_package_create_update(pkg_dict.get("id", None))
+        if not context.get('is_archiver', False):
+            log.info("Running archiver as background job as package create")
+            log.info(pkg_dict.get('id', ''))
+            ArchiverRunStatus.run_archiver_after_package_create_update(pkg_dict.get("id", None))
         return pkg_dict
 
     def after_update(self, context, pkg_dict):
@@ -483,9 +484,13 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         Call the archiver controller run after update
         :return: None
         """
-        log.info("Running archiver as background job as package update")
-        log.info(pkg_dict.get('id', ''))
-        ArchiverRunStatus.run_archiver_after_package_create_update(pkg_dict.get("id", None))
+        if not context.get('is_archiver', False):
+            log.info("Running archiver as background job as package update")
+            log.info(context)
+            log.info(pkg_dict.get('id', ''))
+            ArchiverRunStatus.run_archiver_after_package_create_update(pkg_dict.get("id", None))
+        else:
+            log.info('Ignoring archiver run since update is done by archiver')
         return pkg_dict
 
     def before_search(self, data_dict):
