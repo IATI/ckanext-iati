@@ -615,7 +615,6 @@ def _pending_organization_list_for_user():
         log.error("User id: {}".format(user_obj.id))
         log.error(e)
 
-
 def get_archiver_status():
     """
     Fetches IATI-archiver last run timestamp. Timestamp is extracted from log file
