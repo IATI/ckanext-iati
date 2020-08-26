@@ -633,3 +633,18 @@ def get_archiver_status():
             return "Something wrong while parsing time. Please contact support team."
     else:
         return "Log file not available. Please contact support team"
+
+def parse_error_object_to_list(error_object):
+    """
+    This is to parse if the error message is dictionary object - this scenario occurs from URL validator
+    """
+    error_list = []
+
+    for element in error_object:
+        if type(element) is dict:
+            for key in element:
+                error_list.append(str(element[key]))
+        else:
+            error_list.append(str(element))
+
+    return error_list
