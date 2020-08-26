@@ -1,5 +1,6 @@
 import urllib
 import os
+import time
 from xml.etree import ElementTree
 import datetime
 import json
@@ -614,3 +615,21 @@ def _pending_organization_list_for_user():
         log.error("User id: {}".format(user_obj.id))
         log.error(e)
 
+
+def get_archiver_status():
+    """
+    Fetches IATI-archiver last run timestamp. Timestamp is extracted from log file
+    :return:
+    """
+    _archiver_log_filename = 'iati_archiver_2_out.log'
+    _path = '/tmp'
+    _full_path = os.path.join(_path, _archiver_log_filename)
+
+    if os.path.isfile(_full_path):
+        try:
+            return str(time.ctime(os.path.getmtime(_full_path)))
+        except Exception as e:
+            log.error(e)
+            return "Something wrong while parsing time. Please contact support team."
+    else:
+        return "Log file not available. Please contact support team"
