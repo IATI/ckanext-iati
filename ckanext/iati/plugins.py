@@ -584,7 +584,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'first_published_date_patch',
             'publisher_first_published_date_validator',
             'organization_form_read_only',
-            'get_publisher_list_download_formats'
+            'get_publisher_list_download_formats',
+            'get_archiver_status'
         )
         return _get_module_functions(iati_helpers, function_names)
 

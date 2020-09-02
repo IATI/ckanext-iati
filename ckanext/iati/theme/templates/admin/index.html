@@ -1,0 +1,29 @@
+{% ckan_extends %}
+
+{% block secondary_content %}
+    <div class="module module-narrow module-shallow">
+
+        <h2 class="module-heading">
+          <i class="fa fa-info-circle"></i>
+          {{ _('IATI Archiver Status') }}
+        </h2>
+        <div class="module-content">
+            <p>IATI Archiver is scheduled to run every day at 23:00:00 hrs</p>
+            <h5>{{ _('Last Run Timestamp:') }}</h5>
+            <p class="text-danger"><i>{{ _(h.get_archiver_status()) }}</i></p>
+        </div>
+
+        <h2 class="module-heading">
+          <i class="fa fa-info-circle"></i>
+          {{ _('Administer CKAN') }}
+        </h2>
+        <div class="module-content">
+
+          {% set docs_url = "http://docs.ckan.org/en/{0}/sysadmin-guide.html".format(g.ckan_doc_version) %}
+          {% trans %}
+            <p>As a sysadmin user you have full control over this CKAN instance. Proceed with care!</p>
+            <p>For guidance on using sysadmin features, see the CKAN  <a href="{{ docs_url }}" target="_blank">sysadmin guide</a></p>
+          {% endtrans %}
+        </div>
+  </div>
+{% endblock %}
