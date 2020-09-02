@@ -486,7 +486,6 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         """
         if not context.get('is_archiver', False):
             log.info("Running archiver as background job as package update")
-            log.info(context)
             log.info(pkg_dict.get('id', ''))
             ArchiverRunStatus.run_archiver_after_package_create_update(pkg_dict.get("id", None))
         else:
