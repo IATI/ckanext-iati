@@ -73,13 +73,15 @@ class CSVController(p.toolkit.BaseController):
         :return:
         """
         log.info("Validating the uploaded csv files")
-        vars = dict()
 
         if not hasattr(csv_file, 'filename'):
-            vars['Stat'] = "No CSV file provided. Please upload a CSV file."
-            vars['file_name'] = ""
-            log.error("No CSV file provided. Please upload a CSV file.")
-            return p.toolkit.render('csv/result.html', extra_vars=vars)
+            raise ValidationError("No CSV file provided. Please upload a CSV file.")
+
+        # Verify csv file extension
+        if os.path.splitext(csv_file.filename)[-1].lower() != '.csv':
+            raise ValidationError(
+                "Uploaded file is not a csv file. Please upload a csv file"
+            )
 
         # Validate csv columns
         # Validate Mandatory fields.
@@ -98,17 +100,16 @@ class CSVController(p.toolkit.BaseController):
         if not columns:
             buffer.close()
             raise ValidationError("Mandatory fields are missing. "
-                                  "Download csv upload template (verify mandatory columns) and "
+                                  "Download the template (verify mandatory columns) and "
                                   "upload the file accordingly.")
 
         for _col in self.CSV_MAPPING:
             is_optional = _col[0] in self.OPTIONAL_COLUMNS
             in_columns = _col[0] in columns
-
             if not is_optional and not in_columns:
                 buffer.close()
                 raise ValidationError("Mandatory fields are missing. "
-                                      "Download csv upload template (verify mandatory columns) and "
+                                      "Download the template (verify mandatory columns) and "
                                       "upload the file accordingly.")
 
         # Validate no of rows
@@ -279,7 +280,7 @@ class CSVController(p.toolkit.BaseController):
                 for i, x in enumerate(row):
                     row_dict[columns[i].encode('utf-8')] = x.encode('utf-8')
 
-                task[u'title'] = row_dict.get('title', 'No Title')
+                task[u'title'] = "No Title" if not row_dict.get('title', '') else row_dict.get('title')
                 task[u'task_id'] = str(uuid.uuid4())
                 job = jobs.enqueue(read_csv_file,
                                    [json.dumps([row_dict], ensure_ascii=False).encode('utf-8'), c.user])
