@@ -1,7 +1,7 @@
 import sys
 import logging
 from ckan.lib.cli import CkanCommand
-from ckanext.iati.custom_archiver import run as run_archiver
+from ckanext.iati.archiver import run as run_archiver
 from ckan.common import config
 from ckanext.iati import model as iati_model
 import json

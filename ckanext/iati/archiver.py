@@ -11,24 +11,25 @@ import json
 import cgitb
 import warnings
 import logging
-import ckan.lib.helpers as h
+import tempfile
 
 from pylons import config
-import tempfile
+
 
 from ckan import model
 import ckan.plugins.toolkit as toolkit
 from ckanext.iati.helpers import extras_to_dict, extras_to_list
 from ckanext.iati.lists import IATI_STANDARD_VERSIONS
+from ckanext.archiver import tasks
+from ckanext.iati.linkchecker_patch import link_checker as checker
 
+tasks.link_checker = checker
 
 log = logging.getLogger('iati_archiver')
 # Max content-length of archived files, larger files will be ignored
 MAX_CONTENT_LENGTH = 50000000
 URL_TIMEOUT = 120
 DATA_FORMATS = ['xml', 'iati-xml', 'application/xml', 'text/xml', 'text/html', 'application/octet-stream']
-
-
 
 
 def text_traceback():
@@ -39,10 +40,7 @@ def text_traceback():
         ).strip()
     return res
 
-
-
-
-def run(package_id=None, publisher_id=None):
+def run(package_id=None, publisher_id=None, pub_id=None):
 
 
     # TODO: use this when it gets to default ckan
@@ -55,7 +53,11 @@ def run(package_id=None, publisher_id=None):
         'user': config.get('iati.admin_user.name'),
         'apikey': config.get('iati.admin_user.api_key'),
         'api_version': 3,
+        'is_archiver': True
     }
+
+    results = []
+
     if not context['site_url']:
         raise Exception('You have to set the "ckan.site_url" property in the '
                         'config file')
@@ -82,24 +84,29 @@ def run(package_id=None, publisher_id=None):
             org = toolkit.get_action('organization_show')(context,
                                                           {'id': publisher_id,
                                                            'include_datasets': True})
-            package_ids = [p['name'] for p in org['packages']]
-            publisher_update = True
-            if len(package_ids) == 0:
-                log.error("No datasets available for a given publisher id {}".format(publisher_id))
-                #h.flash_error("No datasets available for a given publisher")
-                #h.redirect_to(controller='organization', action='read', id=publisher_id)
         except toolkit.ObjectNotFound:
+            res = {}
             log.error('Could not find Publisher: {0}'.format(publisher_id))
-            #h.flash_error('Could not find Publisher: {0} to run an archiver'.format(publisher_id))
-            #h.redirect_to('/')
+            res['publisher_id'] = pub_id
+            res['issue_type'] = "unknown publisher"
+            res['issue_message'] = 'Could not find Publisher: {0}'.format(publisher_id)
+            results.append(res)
+            return results
 
+        package_ids = [p['name'] for p in org['packages']]
+        publisher_update = True
     else:
         try:
             package_ids = toolkit.get_action('package_list')(context, {})
-            if len(package_ids) == 0:
-                raise toolkit.ObjectNotFound
         except toolkit.ObjectNotFound:
-            log.error('Could not find packages')
+            res = {}
+            log.error('Could not find package: {0}'.format(package_id))
+            res['publisher_id'] = pub_id
+            res['issue_type'] = "unknown package"
+            res['issue_message'] = 'Could not find package: {0}'.format(package_id)
+            results.append(res)
+            return results
+
 
 
     t1 = datetime.datetime.now()
@@ -114,32 +121,51 @@ def run(package_id=None, publisher_id=None):
 
 
     for package_id in package_ids:
+        result = {}
         updated_package = False
         try:
-            updated_package = archive_package(package_id, context,
-                                              consecutive_errors)
+            updated_package, issue_type, issue_message = archive_package(package_id, context, consecutive_errors)
+            print "========= checking package ========" +package_id
+            result['publisher_id'] = pub_id
+            result['package_id'] = package_id
+            result['issue_type'] = issue_type
+            result['issue_message'] = issue_message
+
+            results.append(result)
+
         except Exception, e:
             consecutive_errors += 1
             log.error('Error downloading resource for dataset {0}: '
                       '{1}'.format(package_id, str(e)))
             log.error(text_traceback())
+            result['publisher_id'] = pub_id
+            result['package_id'] = package_id
+            result['issue_message'] = 'Error downloading resource for dataset {0}: {1}'.format(package_id, str(e))
+            result['issue_type'] = 'Download Error'
+
+
             if consecutive_errors > 15:
                 log.error('Too many errors...')
+                result['publisher_id'] = pub_id
+                result['package_id'] = package_id
+                result['issue_message'] = 'Too many errors'
+                result['issue_type'] = 'Too many errors'
                 if publisher_update:
                     log.error ('Aborting... The publisher can not be reached.')
-                    return False
+                    result['publisher_id'] = pub_id
+                    result['package_id'] = package_id
+                    result['issue_message'] = 'The publisher can not be reached.'
+                    result['issue_type'] = 'publisher unreachable'
+                    return result
+                else:
+                    continue
             else:
-                continue
-        else:
-            consecutive_errors = 0
-        if updated_package:
-            updated += 1
+                consecutive_errors = 0
+            if updated_package:
+                updated += 1
+            results.append(result)
 
-
-    t2 = datetime.datetime.now()
-    log.info('IATI Archiver: Done. Updated {0} packages. Total time: '
-             '{1}'.format(int(updated), str(t2 - t1)))
-    return True
+    return results
 
 
 
@@ -215,11 +241,12 @@ def archive_package(package_id, context, consecutive_errors=0):
 
 
         try:
-            tree = etree.fromstring(xml)
+            tree = etree.fromstring(xml, parser=etree.XMLParser(huge_tree=True))
         except etree.XMLSyntaxError, e:
             return save_package_issue(context, package, extras_dict,
                                       'xml-error', 'Could not parse XML file:'
                                       ' {0}'.format(str(e)[:200]))
+
 
         filetype = 'unchecked'
         if tree.tag == 'iati-activities':
@@ -235,16 +262,15 @@ def archive_package(package_id, context, consecutive_errors=0):
         if not is_activity_package and filetype != 'organisation':
             return save_package_issue(context, package, extras_dict,
                                       'metadata error', 'Check the filetype metadata field')
-
-
+  
         new_extras = {}
         # IATI standard version (iati_version extra)
         xpath = '/iati-activities/@version | /iati-organisations/@version'
 
 
         version = tree.xpath(xpath)
-	log.info(version)
-	log.info(version[0])
+        log.info(version)
+        log.info(version[0])
 
 
         allowed_versions = IATI_STANDARD_VERSIONS
@@ -314,10 +340,10 @@ def archive_package(package_id, context, consecutive_errors=0):
 
         if update:
             package['extras'] = extras_to_list(extras_dict)
-            return update_package(context, package)
+            return update_package(context, package), None, None
 
 
-    return None
+    return None, None, None
 
 
 
@@ -330,7 +356,7 @@ def save_package_issue(context, data_dict, extras_dict, issue_type,
         log.info('Dataset {0} still has the same issue ({1} - {2}), '
                  'skipping...'.format(data_dict['name'], issue_type,
                                       issue_message))
-        return None
+        return None, issue_type, issue_message
     else:
         extras_dict[u'issue_type'] = unicode(issue_type)
         extras_dict[u'issue_message'] = unicode(issue_message)
@@ -343,7 +369,7 @@ def save_package_issue(context, data_dict, extras_dict, issue_type,
                   '{2}'.format(data_dict['name'], issue_type, issue_message))
 
 
-        return update_package(context, data_dict)
+        return update_package(context, data_dict), issue_type, issue_message
 
 
 
@@ -353,6 +379,7 @@ def update_package(context, data_dict, message=None):
     message = (message or 'Daily archiver: update dataset '
                '{0}'.format(data_dict['name']))
     context['message'] = message
+    context['is_archiver'] = True
 
 
     for extra in data_dict['extras']:
@@ -390,7 +417,7 @@ def _save_resource(resource, response, max_file_size, chunk_size=1024*16):
             if length >= max_file_size:
                 fp.close()
                 os.remove(tmp_resource_file_path)
-                raise ChooseNotToDownload(
+                raise tasks.ChooseNotToDownload(
                     _("Content-length %s exceeds maximum allowed value %s") %
                     (length, max_file_size))
 
@@ -404,13 +431,8 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
              max_content_length=MAX_CONTENT_LENGTH,
              data_formats=DATA_FORMATS):
 
-
-    from ckanext.archiver import tasks
-
-
     res = None
     resource_changed = False
-
 
     link_context = "{}"
     link_data = json.dumps({
@@ -424,10 +446,19 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
 
     def _download_resource(resource_url, timeout):
         request_headers = {}
+        log.info('User agent: {0}'.format(user_agent_string))
         if user_agent_string is not None:
             request_headers['User-Agent'] = user_agent_string
-        res = requests.get(resource['url'], timeout=url_timeout,
-                           headers=request_headers, verify=False)
+        # Part of 403 url error - if user agent is missing or
+        # some sites do not accept IATI (CKAN) as user agent.
+        # hence setting default user agent to Mozilla/5.0.
+        try:
+            res = requests.get(resource['url'], timeout=url_timeout,
+                               headers=request_headers, verify=False)
+        except Exception, e:
+            request_headers['User-Agent'] = 'Mozilla/5.0'
+            res = requests.get(resource['url'], timeout=url_timeout,
+                               headers=request_headers, verify=False)
         return res
 
 
@@ -438,7 +469,8 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
                                  timeout=url_timeout)
         headers = res.headers
     except tasks.LinkCheckerError, e:
-        if any(x in str(e).lower() for x in ('internal server error', )):
+        if any(x in str(e).lower() for x in ('internal server error', '403',
+                                             )):
             # If the HEAD method is not supported or if a 500
             # error is returned we'll handle the download manually
             res = _download_resource(resource_url=resource['url'],
@@ -494,6 +526,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
         res = requests.get(resource['url'], timeout=url_timeout,
                            headers=request_headers, verify=False)
     length, hash, saved_file = _save_resource(resource, res, max_content_length)
+    #length = res.headers.get('Content-Length', 0)
 
 
     # check if resource size changed

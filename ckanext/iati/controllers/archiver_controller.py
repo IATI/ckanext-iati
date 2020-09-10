@@ -1,6 +1,6 @@
 from ckan.lib.base import render, BaseController
 import ckan.lib.jobs as jobs
-from .. import custom_archiver as arch
+from .. import archiver as arch
 import sys
 import json
 import ckan.plugins.toolkit as toolkit

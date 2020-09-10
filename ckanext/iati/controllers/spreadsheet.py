@@ -17,7 +17,7 @@ from ckanext.iati.helpers import extras_to_dict
 import ckan.lib.jobs as jobs
 from dateutil.parser import parse as date_parse
 import time
-from ckanext.iati import custom_archiver as ach
+from ckanext.iati import archiver as ach
 from ckanext.iati.controllers.publisher_list_download import PublishersListDownload
 
 log = logging.getLogger(__name__)
