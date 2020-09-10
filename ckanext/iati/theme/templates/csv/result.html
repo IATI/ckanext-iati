@@ -169,9 +169,9 @@
                              $("#status_" + this.ajaxI).html("<h4>" + statusbutton(task.status) + "</h4>");
                              if (task.status !== "finished" && task.status !== "failed") {
                                  if (task.status === "started") {
-                                     setTimeout(PollState, 3000, counter)
+                                     setTimeout(PollState, 2000, counter)
                                  } else {
-                                     setTimeout(PollState, 10000, counter)
+                                     setTimeout(PollState, 5000, counter)
                                  }
                              } else {
                                  counter++;

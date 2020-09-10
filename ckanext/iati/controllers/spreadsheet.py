@@ -373,18 +373,22 @@ def _create_or_update_package(package_dict, user):
         'model': model,
         'session': model.Session,
         'user': user,
+        'disable_archiver': True,
         'api_version': '3'
     }
     status = dict()
     # Check if package exists
     try:
+	# Try package update
         existing_package_dict = p.toolkit.get_action('package_show')(context, {'id': package_dict['name']})
+        context.pop('__auth_audit', None) # Get rid of auth audit context from package show
         log.info('Package with name "%s" exists and will be updated' % package_dict['name'])
         package_dict.update({'id': existing_package_dict['id']})
         package_dict['state'] = 'active'
         context['message'] = 'CSV import: update dataset %s' % package_dict['name']
-        updated_package = p.toolkit.get_action('package_update')(context, package_dict)
-        status['updated'] = updated_package['name']
+        
+	_updated_package = p.toolkit.get_action('package_update')(context, package_dict)
+        status['updated'] = _updated_package['name']
         # This indicates package update is successful
         log.debug('Package with name "%s" updated' % package_dict['name'])
     except p.toolkit.ObjectNotFound:
@@ -393,7 +397,9 @@ def _create_or_update_package(package_dict, user):
         package_dict.pop('id', None)
         context['message'] = 'CSV import: create dataset %s' % package_dict['name']
         package_dict['organization_id'] = package_dict['owner_org']
-        _created_package = p.toolkit.get_action('package_create')(context, package_dict)
+        context.pop('__auth_audit', None) # Get rid of auth audit context from package show
+        
+	_created_package = p.toolkit.get_action('package_create')(context, package_dict)
         log.debug('Package with name "%s" created' % package_dict['name'])
         status['created'] = _created_package['name']
 

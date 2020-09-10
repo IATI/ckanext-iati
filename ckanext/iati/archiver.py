@@ -53,7 +53,7 @@ def run(package_id=None, publisher_id=None, pub_id=None):
         'user': config.get('iati.admin_user.name'),
         'apikey': config.get('iati.admin_user.api_key'),
         'api_version': 3,
-        'is_archiver': True
+        'disable_archiver': True
     }
 
     results = []
@@ -379,7 +379,7 @@ def update_package(context, data_dict, message=None):
     message = (message or 'Daily archiver: update dataset '
                '{0}'.format(data_dict['name']))
     context['message'] = message
-    context['is_archiver'] = True
+    context['disable_archiver'] = True
 
 
     for extra in data_dict['extras']:
