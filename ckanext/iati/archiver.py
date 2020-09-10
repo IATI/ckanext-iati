@@ -260,7 +260,7 @@ def archive_package(package_id, context, consecutive_errors=0):
         if is_activity_package:
             # Number of activities (activity_count extra)
             new_extras['activity_count'] = int(tree.xpath(
-                                               'count(//iati-activity)'))
+                                               'count(/iati-activities/iati-activity)'))
 
 
         # Last updated date (data_updated extra)
