@@ -100,7 +100,7 @@ class CSVController(p.toolkit.BaseController):
         if not columns:
             buffer.close()
             raise ValidationError("Mandatory fields are missing. "
-                                  "Download the template (verify mandatory columns) and "
+                                  "Download csv upload template (verify mandatory columns) and "
                                   "upload the file accordingly.")
 
         for _col in self.CSV_MAPPING:
@@ -109,7 +109,7 @@ class CSVController(p.toolkit.BaseController):
             if not is_optional and not in_columns:
                 buffer.close()
                 raise ValidationError("Mandatory fields are missing. "
-                                      "Download the template (verify mandatory columns) and "
+                                      "Download csv upload template (verify mandatory columns) and "
                                       "upload the file accordingly.")
 
         # Validate no of rows
