@@ -27,7 +27,8 @@ tasks.link_checker = checker
 
 log = logging.getLogger('iati_archiver')
 # Max content-length of archived files, larger files will be ignored
-MAX_CONTENT_LENGTH = 50000000
+MAX_CONTENT_LENGTH = int(config.get('ckanext-archiver.max_content_length',
+                                    50000000))
 URL_TIMEOUT = 120
 DATA_FORMATS = ['xml', 'iati-xml', 'application/xml', 'text/xml', 'text/html', 'application/octet-stream']
 
