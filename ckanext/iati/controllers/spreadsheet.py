@@ -8,6 +8,7 @@ from ckanext.iati.helpers import extras_to_dict, parse_error_object_to_list
 import ckan.lib.jobs as jobs
 from dateutil.parser import parse as date_parse
 from ckanext.iati.controllers.publisher_list_download import PublishersListDownload
+from ckan.common import config
 import logging
 import time
 import csv
@@ -47,7 +48,7 @@ class CSVController(p.toolkit.BaseController):
 
     OPTIONAL_COLUMNS = ['state', 'description', 'default-language', 'secondary-publisher']
 
-    MAX_ROWS = 51
+    MAX_ROWS = int(config.get('ckanext.iati.max_rows_csv_upload', 101))
 
     def _validate_users(self):
         """
