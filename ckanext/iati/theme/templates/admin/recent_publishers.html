@@ -1,0 +1,49 @@
+{% extends "admin/base.html" %}
+
+
+{% block primary_content_inner %}
+    {% block organizations_search_form %}
+       {% set facets = {
+            'fields': c.fields_grouped,
+            'search': c.search_facets,
+            'titles': c.facet_titles,
+            'translated_fields': c.translated_fields,
+            'remove_field': c.remove_field }
+          %}
+        {% snippet 'snippets/search_form.html', type='organization',
+        not_disp_query=True, site_search_label=_('Search for Publishers'),
+        query=c.q,
+        sorting_selected=c.sort_by_selected,
+        count=c.page.item_count, facets=facets,
+        placeholder=_('Search publishers...'),
+        show_empty=request.params,
+        sorting=[(_('Date Descending'), 'publisher_first_publish_date desc'),
+                (_('Date Ascending'), 'publisher_first_publish_date asc')] %}
+
+    {% endblock %}
+
+    {% block organizations_list %}
+    {% if c.page.items or request.params %}
+      {{ h.snippet('organization/snippets/organization_list_ids.html', organizations=c.page.items, is_admin_page=True) }}
+    {% else %}
+      <p class="empty">
+        {{ _('There are currently no organizations for this site') }}.
+        {% if h.check_access('organization_create') %}
+          {% link_for _('How about creating one?'), controller='organization', action='new' %}
+        {% endif %}
+      </p>
+    {% endif %}
+    {% endblock %}
+
+
+    {% block page_pagination %}
+        {% if c.page.items or request.params %}
+            {{ h.publishers_pagination(c.q) }}
+        {% endif %}
+    {% endblock %}
+
+    {% block scripts %}
+      {{ super() }}
+      {% resource 'ckanext-iati/table_sorter' %}
+    {% endblock %}
+{% endblock %}

@@ -35,7 +35,6 @@ site_url = config.get('ckan.site_url', 'http://iatiregistry.org')
 
 _validate = ckan.lib.navl.dictization_functions.validate
 _table_dictize = ckan.lib.dictization.table_dictize
-_check_access = logic.check_access
 NotFound = logic.NotFound
 ValidationError = logic.ValidationError
 _get_or_bust = logic.get_or_bust
@@ -143,7 +142,7 @@ def group_list(context, data_dict):
     p.toolkit.check_access('group_list', context, data_dict)
     data_dict['groups'] = data_dict.pop('organizations', [])
     data_dict['type'] = 'organization'
-    return get_core._group_or_org_list(context, data_dict, is_org=True)
+    return _group_or_org_list_optimized(context, data_dict, is_org=True)
 
 @p.toolkit.side_effect_free
 def group_show(context, data_dict):
@@ -504,12 +503,13 @@ def _approval_needed(context, data_dict, is_org=False):
     return group_list
 
 def organization_list_publisher_page(context, data_dict):
-    #_check_access('organization_list_publisher_page', context, data_dict)
+    p.toolkit.check_access('organization_list', context, data_dict)
     data_dict['groups'] = data_dict.pop('organizations', [])
     data_dict['type'] = 'organization'
     return _group_or_org_list_optimized(context, data_dict, is_org=True)
 
 def organization_list_pending(context, data_dict):
+    p.toolkit.check_access('organization_list', context, data_dict)
     data_dict['groups'] = data_dict.pop('organizations', [])
     data_dict['type'] = 'organization'
     return _approval_needed(context, data_dict, is_org=True)
@@ -538,7 +538,7 @@ def user_show(context, data_dict):
     else:
         raise NotFound
 
-    _check_access('user_show', context, data_dict)
+    p.toolkit.check_access('user_show', context, data_dict)
 
     # include private and draft datasets?
     requester = context.get('user')
@@ -650,7 +650,7 @@ def _custom_group_or_org_list(context, data_dict, is_org=True):
 
     sort_info = _unpick_search(sort,
                                allowed_fields=['name', 'packages',
-                                               'package_count', 'title'],
+                                               'package_count', 'title', 'publisher_first_publish_date'],
                                total=1)
 
     if sort_info and sort_info[0][0] == 'package_count':
@@ -690,6 +690,14 @@ def _custom_group_or_org_list(context, data_dict, is_org=True):
         elif sort_field == 'name':
             sort_model_field = model.Group.name
         elif sort_field == 'title':
+            sort_model_field = model.Group.title
+        elif sort_field == "publisher_first_publish_date":
+            sort_model_field = model.GroupExtra.value
+            query = query.subquery()
+            query = model.Session.query(model.Group.id, model.Group.name).join(
+                query, query.c.id == model.Group.id).join(model.GroupExtra).filter(
+                model.GroupExtra.key == 'publisher_first_publish_date')
+        else:
             sort_model_field = model.Group.title
 
         if sort_direction == 'asc':

@@ -5,5 +5,6 @@
    {% if h.check_access('sysadmin') %}
        {{ h.build_nav_icon('iati_reports', _('Reports'), icon='clock-o') }}
        {{ h.build_nav_icon('iati_redirects', _('Redirects'), icon='gavel') }}
+       {{ h.build_nav_icon('recent_publishers', _('Recent Publishers'), icon='building') }}
    {% endif %}
 {% endblock %}

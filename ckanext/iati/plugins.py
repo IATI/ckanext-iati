@@ -158,6 +158,8 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
                     controller='ckanext.iati.controllers.admin_controller:PurgeController', action='reports')
         map.connect('iati_redirects', '/ckan-admin/redirects',
                     controller='ckanext.iati.controllers.admin_controller:PurgeController', action='iati_redirects')
+        map.connect('recent_publishers', '/ckan-admin/recent_publishers',
+                    controller='ckanext.iati.controllers.publisher:RecentPublishers', action='index')
 
         #custom redirects
         redirects = {

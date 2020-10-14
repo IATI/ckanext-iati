@@ -23,6 +23,7 @@ from ckan.common import c
 from ckanext.dcat.processors import RDFSerializer
 from collections import OrderedDict
 from email_validator import validate_email as _validate_email
+from dateutil.parser import parse as dt_parse
 import logging
 log = logging.getLogger(__name__)
     
@@ -113,7 +114,7 @@ def get_publisher_obj_extra_fields(group_dict):
 
     formatter_map = {
         'publisher_organization_type': get_organization_type_title,
-        'publisher_country': get_country_title,
+        'publisher_country': get_country_title
     }
 
     for ex in group_dict.get("extras", []):
@@ -129,11 +130,11 @@ def get_publisher_obj_extra_fields_pub_ids(group_dict):
     formatter_map = {
         'publisher_organization_type': get_organization_type_title,
         'publisher_country': get_country_title,
+        'publisher_first_publish_date': render_first_published_date_parse
     }
     for ex in group_dict:
         if ex in formatter_map.keys():
             extras[ex] = formatter_map[ex](group_dict.get(ex, ""))
-    dict_extras = extras_to_dict(group_dict)
 
     extras['publisher_iati_id'] = group_dict['publisher_iati_id']
     return extras
@@ -378,7 +379,6 @@ def get_first_published_date(organization):
 
         return publisher_first_publish_date
 
-
 def render_first_published_date(value, date_format='%d %B %Y'):
 
     try:
@@ -391,6 +391,17 @@ def render_first_published_date(value, date_format='%d %B %Y'):
     except ValueError:
         return 'Date is not valid'
 
+def render_first_published_date_parse(value, date_format='%d %B %Y', default_value='NA/Incorrect format'):
+
+    if not value:
+        return default_value
+
+    try:
+        value = dt_parse(value)
+        return value.strftime(date_format)
+    except Exception as e:
+        log.error(e)
+        return default_value
 
 def dataset_follower_count(context, data_dict):
     return  p.toolkit.get_action('dataset_follower_count')({}, data_dict=data_dict)
