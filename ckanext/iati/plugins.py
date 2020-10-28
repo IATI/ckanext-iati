@@ -473,10 +473,12 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         Call the archiver controller after create
         :return: None
         """
-        if not context.get('is_archiver', False):
+        if not context.get('disable_archiver', False):
             log.info("Running archiver as background job as package create")
             log.info(pkg_dict.get('id', ''))
             ArchiverRunStatus.run_archiver_after_package_create_update(pkg_dict.get("id", None))
+        else:
+            log.info('Ignoring archiver run since archiver is disabled in context')
         return pkg_dict
 
     def after_update(self, context, pkg_dict):
@@ -484,13 +486,12 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         Call the archiver controller run after update
         :return: None
         """
-        if not context.get('is_archiver', False):
+        if not context.get('disable_archiver', False):
             log.info("Running archiver as background job as package update")
-            log.info(context)
             log.info(pkg_dict.get('id', ''))
             ArchiverRunStatus.run_archiver_after_package_create_update(pkg_dict.get("id", None))
         else:
-            log.info('Ignoring archiver run since update is done by archiver')
+            log.info('Ignoring archiver run since archiver is disabled in context')
         return pkg_dict
 
     def before_search(self, data_dict):
@@ -705,7 +706,7 @@ class IatiCsvImporter(p.SingletonPlugin):
         map.connect('/csv/download', controller=rec_download_controller, action='publisher_download_index')
         map.connect('/csv/download/{publisher}', controller=rec_download_controller, action='download')
 
-        map.connect('/csv/upload', controller=csv_controller, action='upload',
+        map.connect('csv_upload', '/csv/upload', controller=csv_controller, action='upload',
                     conditions=dict(method=['GET']))
         map.connect('/csv/upload', controller=csv_controller, action='upload',
                     conditions=dict(method=['POST']))
