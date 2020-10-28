@@ -4,7 +4,7 @@ import ckan.lib.helpers as h
 import ckan.logic as logic
 import ckan.model as model
 import ckan.plugins as p
-from ckanext.iati.logic import action as iati_action
+from ckanext.iati.logic import internal_action as iati_action
 import logging
 
 log = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ class PublisherDownloadRecords(CSVController):
                    'with_private': False}
 
         q = c.q = request.params.get('q', '')
-        sort_by = c.sort_by_selected = request.params.get('sort')
+        sort_by = c.sort_by_selected = request.params.get('sort', 'name')
         try:
             _check_access('site_read', context)
             _check_access('group_list', context)

@@ -49,10 +49,7 @@
     {% endfor %}
   </div>
   </div>
-  {#{ c.page.items }#}
   {{ h.snippet('organization/snippets/organization_list_ids.html', organizations=c.page.items) }}
-
-  {#% snippet "organization/snippets/organization_list_ids.html", organizations=h.organization_list_publisher_page() %#}
 {% else %}
   <p class="empty">
     {{ _('There are currently no organizations for this site') }}.

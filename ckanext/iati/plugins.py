@@ -91,7 +91,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
 
         org_controller = 'ckanext.iati.controllers.publisher:PublisherController'
         with SubMapper(map, controller=org_controller) as m:
-            m.connect('publishers_index', '/publisher', action='publisher_index')
+            m.connect('publishers_index', '/publisher', action='index')
             m.connect('/publisher/list',  action='list')
             m.connect('/publisher/new',  action='new')
             m.connect('/publisher/{action}/{id}',
@@ -158,6 +158,11 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
                     controller='ckanext.iati.controllers.admin_controller:PurgeController', action='reports')
         map.connect('iati_redirects', '/ckan-admin/redirects',
                     controller='ckanext.iati.controllers.admin_controller:PurgeController', action='iati_redirects')
+        map.connect('recent_publishers', '/ckan-admin/recent_publishers',
+                    controller='ckanext.iati.controllers.publisher:RecentPublishers', action='index')
+
+        map.connect('recent_publishers_download', '/ckan-admin/recent_publishers/download',
+                    controller='ckanext.iati.controllers.publisher:RecentPublishers', action='download')
 
         #custom redirects
         redirects = {
@@ -571,7 +576,6 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'organization_list',
             'get_first_published_date',
             'render_first_published_date',
-            'organization_list_publisher_page',
             'organization_list_pending',
             'get_publisher_obj_extra_fields',
             'get_publisher_obj_extra_fields_pub_ids',
@@ -603,7 +607,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'issues_report_csv',
             'group_list',
             'group_show',
-            'organization_list_publisher_page',
+            'organization_list',
             'organization_list_pending',
             'user_show',
             'user_list',
