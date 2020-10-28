@@ -134,24 +134,32 @@ def organization_patch(context, data_dict):
 
 @p.toolkit.side_effect_free
 def group_list(context, data_dict):
-    '''
-        Warning: This API request is deprecated. Please use the equivalent one
+    """
+    Warning: This API request is deprecated. Please use the equivalent one
         on version 3 of the API:
         http://iatiregistry.org/api/action/organization_list
-    '''
+    :param context:
+    :param data_dict:
+    :return:
+    """
     p.toolkit.check_access('group_list', context, data_dict)
     data_dict['groups'] = data_dict.pop('organizations', [])
-    data_dict['type'] = 'organization'
-    return _group_or_org_list_optimized(context, data_dict, is_org=True)
+    data_dict.setdefault('type', 'organization')
+    return p.toolkit.get_action('organization_list')(context, data_dict)
+
 
 @p.toolkit.side_effect_free
 def group_show(context, data_dict):
-    '''
-        Warning: This API request is deprecated. Please use the equivalent one
+    """
+    Warning: This API request is deprecated. Please use the equivalent one
         on version 3 of the API:
         http://iatiregistry.org/api/action/organization_show
-    '''
-    return get_core.organization_show(context, data_dict)
+    :param context:
+    :param data_dict:
+    :return:
+    """
+    return p.toolkit.get_action('organization_show')(context, data_dict)
+
 
 def _remove_extras_from_data_dict(data_dict):
     # Remove these extras, as they are always inherited from the publishers
@@ -327,41 +335,45 @@ def _send_activation_notification_email(context, organization_dict):
             emailer.send_email(content, subject, user.email)
             log.debug('[email] Publisher activated notification email sent to user {0}'.format(user.name))
 
-def _unpick_search(sort, allowed_fields=None, total=None):
-    ''' This is a helper function that takes a sort string
-    eg 'name asc, last_modified desc' and returns a list of
-    split field order eg [('name', 'asc'), ('last_modified', 'desc')]
-    allowed_fields can limit which field names are ok.
-    total controls how many sorts can be specifed '''
-    sorts = []
-    split_sort = sort.split(',')
-    for part in split_sort:
-        split_part = part.strip().split()
-        field = split_part[0]
-        if len(split_part) > 1:
-            order = split_part[1].lower()
-        else:
-            order = 'asc'
-        if allowed_fields:
-            if field not in allowed_fields:
-                raise ValidationError('Cannot sort by field `%s`' % field)
-        if order not in ['asc', 'desc']:
-            raise ValidationError('Invalid sort direction `%s`' % order)
-        sorts.append((field, order))
-    if total and len(sorts) > total:
-        raise ValidationError(
-            'Too many sort criteria provided only %s allowed' % total)
-    return sorts
 
-def _group_or_org_list_optimized(context, data_dict, is_org=False):
+def _custom_group_or_org_list(context, data_dict, is_org=True, bypass_limit_internal=False):
+    """
+     Custom oprg search by publisher_iati_id and sort by publisher_first_published
+    """
     model = context['model']
     api = context.get('api_version')
     groups = data_dict.get('groups')
     group_type = data_dict.get('type', 'group')
-    ref_group_by = 'id' if api == 3 else 'name'
+    ref_group_by = 'id' if api == 2 else 'name'
+    pagination_dict = {}
+    limit = data_dict.get('limit')
+    if limit:
+        pagination_dict['limit'] = data_dict['limit']
+    offset = data_dict.get('offset')
+    if offset:
+        pagination_dict['offset'] = data_dict['offset']
+    if pagination_dict:
+        pagination_dict, errors = _validate(
+            data_dict, logic.schema.default_pagination_schema(), context)
+        if errors:
+            raise ValidationError(errors)
+    sort = data_dict.get('sort') or 'title'
+    q = data_dict.get('q', '').strip()
 
-    sort = data_dict.get('sort', 'name')
-    q = data_dict.get('q')
+    all_fields = asbool(data_dict.get('all_fields', None))
+
+    if all_fields:
+        # all_fields is really computationally expensive, so need a tight limit
+        max_limit = config.get(
+            'ckan.group_and_organization_list_all_fields_max', 50)
+    else:
+        max_limit = config.get('ckan.group_and_organization_list_max', 1000)
+
+    if bypass_limit_internal and limit:
+        max_limit = limit
+
+    if limit is None or limit > max_limit:
+        limit = max_limit
 
     # order_by deprecated in ckan 1.8
     # if it is supplied and sort isn't use order_by and raise a warning
@@ -370,26 +382,32 @@ def _group_or_org_list_optimized(context, data_dict, is_org=False):
         log.warn('`order_by` deprecated please use `sort`')
         if not data_dict.get('sort'):
             sort = order_by
+
     # if the sort is packages and no sort direction is supplied we want to do a
     # reverse sort to maintain compatibility.
     if sort.strip() in ('packages', 'package_count'):
         sort = 'package_count desc'
 
-    sort_info = _unpick_search(sort,
+    sort_info = get_core._unpick_search(sort,
                                allowed_fields=['name', 'packages',
-                                               'package_count', 'title'],
+                                               'package_count', 'title', 'publisher_first_publish_date'],
                                total=1)
 
-    all_fields = data_dict.get('all_fields', None)
-    include_extras = all_fields and \
-                     asbool(data_dict.get('include_extras', False))
+    if sort_info and sort_info[0][0] == 'package_count':
+        query = model.Session.query(model.Group.id,
+                                    model.Group.name,
+                                    sqlalchemy.func.count(model.Group.id)).join(model.GroupExtra)
 
-    query = model.Session.query(model.Group)
-    if include_extras:
-        # this does an eager load of the extras, avoiding an sql query every
-        # time group_list_dictize accesses a group's extra.
-        query = query.options(sqlalchemy.orm.joinedload(model.Group._extras))
-    query = query.filter(model.Group.state == 'active')
+        query = query.filter(model.Member.group_id == model.Group.id) \
+            .filter(model.Member.table_id == model.Package.id) \
+            .filter(model.Member.table_name == 'package') \
+            .filter(model.Package.state == 'active')
+    else:
+        query = model.Session.query(model.Group.id,
+                                    model.Group.name).join(model.GroupExtra)
+
+    query = query.filter(_and_(model.Group.state == 'active', model.GroupExtra.key == 'publisher_iati_id'))
+
     if groups:
         query = query.filter(model.Group.name.in_(groups))
     if q:
@@ -397,33 +415,56 @@ def _group_or_org_list_optimized(context, data_dict, is_org=False):
         query = query.filter(_or_(
             model.Group.name.ilike(q),
             model.Group.title.ilike(q),
-            model.Group.description.ilike(q),
+            model.GroupExtra.value.ilike(q),
         ))
 
     query = query.filter(model.Group.is_organization == is_org)
-    if not is_org:
-        query = query.filter(model.Group.type == group_type)
+    query = query.filter(model.Group.type == group_type)
 
-    groups = query.all()
+    if sort_info:
+        sort_field = sort_info[0][0]
+        sort_direction = sort_info[0][1]
+        if sort_field == 'package_count':
+            query = query.group_by(model.Group.id, model.Group.name)
+            sort_model_field = sqlalchemy.func.count(model.Group.id)
+        elif sort_field == 'name':
+            sort_model_field = model.Group.name
+        elif sort_field == 'title':
+            sort_model_field = model.Group.title
+        elif sort_field == "publisher_first_publish_date":
+            sort_model_field = model.GroupExtra.value
+            query = query.subquery()
+            query = model.Session.query(model.Group.id, model.Group.name).join(
+                query, query.c.id == model.Group.id).join(model.GroupExtra).filter(
+                model.GroupExtra.key == 'publisher_first_publish_date')
+        else:
+            sort_model_field = model.Group.title
+
+        if sort_direction == 'asc':
+            query = query.order_by(sqlalchemy.asc(sort_model_field))
+        else:
+            query = query.order_by(sqlalchemy.desc(sort_model_field))
+
+    if limit:
+        query = query.limit(limit)
+    if offset:
+        query = query.offset(offset)
+
+    groups = query.distinct().all()
+
     if all_fields:
-        include_tags = asbool(data_dict.get('include_tags', False))
-    else:
-        include_tags = False
-    # even if we are not going to return all_fields, we need to dictize all the
-    # groups so that we can sort by any field.
-    group_list = model_dictize.group_list_dictize(
-        groups, context,
-        sort_key=lambda x: x[sort_info[0][0]],
-        reverse=sort_info[0][1] == 'desc',
-        with_package_counts=all_fields or
-        sort_info[0][0] in ('packages', 'package_count'),
-        include_groups=asbool(data_dict.get('include_groups', False)),
-        include_tags=include_tags,
-        include_extras=include_extras,
-        )
+        action = 'organization_show' if is_org else 'group_show'
+        group_list = []
+        for group in groups:
+            data_dict['id'] = group.id
+            for key in ('include_extras', 'include_tags', 'include_users',
+                        'include_groups', 'include_followers'):
+                if key not in data_dict:
+                    data_dict[key] = False
 
-    if not all_fields:
-        group_list = [group[ref_group_by] for group in group_list]
+            group_list.append(logic.get_action(action)(context, data_dict))
+    else:
+        group_list = [getattr(group, ref_group_by) for group in groups]
 
     return group_list
 
@@ -450,7 +491,7 @@ def _approval_needed(context, data_dict, is_org=False):
     if sort.strip() in ('packages', 'package_count'):
         sort = 'package_count desc'
 
-    sort_info = _unpick_search(sort,
+    sort_info = get_core._unpick_search(sort,
                                allowed_fields=['name', 'packages',
                                                'package_count', 'title'],
                                total=1)
@@ -502,12 +543,16 @@ def _approval_needed(context, data_dict, is_org=False):
 
     return group_list
 
-def organization_list_publisher_page(context, data_dict):
+
+@p.toolkit.side_effect_free
+def organization_list(context, data_dict):
     p.toolkit.check_access('organization_list', context, data_dict)
     data_dict['groups'] = data_dict.pop('organizations', [])
-    data_dict['type'] = 'organization'
-    return _group_or_org_list_optimized(context, data_dict, is_org=True)
+    data_dict.setdefault('type', 'organization')
+    return _custom_group_or_org_list(context, data_dict, is_org=True)
 
+
+@p.toolkit.side_effect_free
 def organization_list_pending(context, data_dict):
     p.toolkit.check_access('organization_list', context, data_dict)
     data_dict['groups'] = data_dict.pop('organizations', [])
@@ -595,150 +640,6 @@ def resource_delete(context, data_dict):
     '''Each dataset must have a single resource.
     '''
     return {'msg': 'Each dataset must contain a single resource. Did you mean to use package_delete?'}
-
-def _custom_group_or_org_list(context, data_dict, is_org=True):
-    """
-     Note: Do not use this for any API actions. Made default is_org=True hence not suitable for groups.
-
-     - This function is customised for organization search for /publisher page.
-     - Made organization searchable by name, title, and extra values.
-     - Combined with group_extra table.
-    """
-    model = context['model']
-    api = context.get('api_version')
-    groups = data_dict.get('groups')
-    group_type = data_dict.get('type', 'group')
-    ref_group_by = 'id' if api == 2 else 'name'
-    pagination_dict = {}
-    limit = data_dict.get('limit')
-    if limit:
-        pagination_dict['limit'] = data_dict['limit']
-    offset = data_dict.get('offset')
-    if offset:
-        pagination_dict['offset'] = data_dict['offset']
-    if pagination_dict:
-        pagination_dict, errors = _validate(
-            data_dict, logic.schema.default_pagination_schema(), context)
-        if errors:
-            raise ValidationError(errors)
-    sort = data_dict.get('sort') or 'title'
-    q = data_dict.get('q').strip()
-
-    all_fields = asbool(data_dict.get('all_fields', None))
-
-    if all_fields:
-        # all_fields is really computationally expensive, so need a tight limit
-        max_limit = config.get(
-            'ckan.group_and_organization_list_all_fields_max', 25)
-    else:
-        max_limit = config.get('ckan.group_and_organization_list_max', 1000)
-    if limit is None or limit > max_limit:
-        limit = max_limit
-
-    # order_by deprecated in ckan 1.8
-    # if it is supplied and sort isn't use order_by and raise a warning
-    order_by = data_dict.get('order_by', '')
-    if order_by:
-        log.warn('`order_by` deprecated please use `sort`')
-        if not data_dict.get('sort'):
-            sort = order_by
-
-    # if the sort is packages and no sort direction is supplied we want to do a
-    # reverse sort to maintain compatibility.
-    if sort.strip() in ('packages', 'package_count'):
-        sort = 'package_count desc'
-
-    sort_info = _unpick_search(sort,
-                               allowed_fields=['name', 'packages',
-                                               'package_count', 'title', 'publisher_first_publish_date'],
-                               total=1)
-
-    if sort_info and sort_info[0][0] == 'package_count':
-        query = model.Session.query(model.Group.id,
-                                    model.Group.name,
-                                    sqlalchemy.func.count(model.Group.id)).join(model.GroupExtra)
-
-        query = query.filter(model.Member.group_id == model.Group.id) \
-                     .filter(model.Member.table_id == model.Package.id) \
-                     .filter(model.Member.table_name == 'package') \
-                     .filter(model.Package.state == 'active')
-    else:
-        query = model.Session.query(model.Group.id,
-                                    model.Group.name).join(model.GroupExtra)
-
-    query = query.filter(_and_(model.Group.state == 'active', model.GroupExtra.key == 'publisher_iati_id'))
-
-    if groups:
-        query = query.filter(model.Group.name.in_(groups))
-    if q:
-        q = u'%{0}%'.format(q)
-        query = query.filter(_or_(
-            model.Group.name.ilike(q),
-            model.Group.title.ilike(q),
-            model.GroupExtra.value.ilike(q),
-        ))
-
-    query = query.filter(model.Group.is_organization == is_org)
-    query = query.filter(model.Group.type == group_type)
-
-    if sort_info:
-        sort_field = sort_info[0][0]
-        sort_direction = sort_info[0][1]
-        if sort_field == 'package_count':
-            query = query.group_by(model.Group.id, model.Group.name)
-            sort_model_field = sqlalchemy.func.count(model.Group.id)
-        elif sort_field == 'name':
-            sort_model_field = model.Group.name
-        elif sort_field == 'title':
-            sort_model_field = model.Group.title
-        elif sort_field == "publisher_first_publish_date":
-            sort_model_field = model.GroupExtra.value
-            query = query.subquery()
-            query = model.Session.query(model.Group.id, model.Group.name).join(
-                query, query.c.id == model.Group.id).join(model.GroupExtra).filter(
-                model.GroupExtra.key == 'publisher_first_publish_date')
-        else:
-            sort_model_field = model.Group.title
-
-        if sort_direction == 'asc':
-            query = query.order_by(sqlalchemy.asc(sort_model_field))
-        else:
-            query = query.order_by(sqlalchemy.desc(sort_model_field))
-
-    if limit:
-        query = query.limit(limit)
-    if offset:
-        query = query.offset(offset)
-    
-    groups = query.distinct().all()
-
-    if all_fields:
-        action = 'organization_show' if is_org else 'group_show'
-        group_list = []
-        for group in groups:
-            data_dict['id'] = group.id
-            for key in ('include_extras', 'include_tags', 'include_users',
-                        'include_groups', 'include_followers'):
-                if key not in data_dict:
-                    data_dict[key] = False
-
-            group_list.append(logic.get_action(action)(context, data_dict))
-    else:
-        group_list = [getattr(group, ref_group_by) for group in groups]
-
-    return group_list
-
-
-def custom_group_list(context, data_dict):
-    """
-     Note: Do not use this for API
-     This is custom group list to make publisher search available for ORG ID.
-     Since organization search is not using solr index instead it is using query like operator in group list api
-    """
-    p.toolkit.check_access('group_list', context, data_dict)
-    data_dict['groups'] = data_dict.pop('organizations', [])
-    data_dict['type'] = 'organization'
-    return _custom_group_or_org_list(context, data_dict)
 
 
 @p.toolkit.side_effect_free

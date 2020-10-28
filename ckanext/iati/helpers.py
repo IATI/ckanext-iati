@@ -304,20 +304,16 @@ def normalize_publisher_name(name):
         return name[4:] + ', The'
     return name
 
-def organization_list():
-    return p.toolkit.get_action('organization_list')({}, {'all_fields': True,
-                                                          'sort': 'title asc'})
-
-
-def organization_list_publisher_page():
-    return p.toolkit.get_action('organization_list_publisher_page')({}, {
-        'all_fields': True, 'sort': 'title asc', 'include_extras': True})
-
+def organization_list(include_extras=False):
+    data_dict = {'all_fields': True, 'sort': 'title asc'}
+    if include_extras:
+        data_dict['include_extras'] = include_extras
+    return p.toolkit.get_action('organization_list')({}, data_dict)
 
 def organization_list_pending():
-
+    context = {'user': c.user, "model": model}
     if authz.is_sysadmin(c.user):
-        return p.toolkit.get_action('organization_list_pending')({}, {
+        return p.toolkit.get_action('organization_list_pending')(context, {
             'all_fields': True, 'sort': 'title asc', 'include_extras': True})
     else:
         return _pending_organization_list_for_user()

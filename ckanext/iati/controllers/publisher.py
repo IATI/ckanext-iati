@@ -7,6 +7,7 @@ import ckan.plugins as p
 from ckanext.iati.logic import action as iati_action
 from ckan.controllers.organization import OrganizationController
 from webhelpers.html import HTML, literal, tags, tools
+from ckanext.iati.controllers.publisher_list_download import PublishersListDownload
 
 import logging
 log = logging.getLogger(__file__)
@@ -20,78 +21,6 @@ class PublisherController(OrganizationController):
 
     def _guess_group_type(self, expecting_name=False):
         return 'organization'
-
-    def publisher_index(self):
-        """
-        Modified version of organization index.
-        - Only fo type organization.
-        - Included pagination
-        - Wide range of search functionality i.e. search by name, title, publisher_iati_id, licence_id
-        - Searchable by all the organization extra fields.
-        """
-        group_type = self._guess_group_type()
-
-        page = h.get_page_number(request.params) or 1
-        items_per_page = 21
-
-        context = {'model': model, 'session': model.Session,
-                   'user': c.user, 'for_view': True,
-                   'with_private': False}
-
-        q = c.q = request.params.get('q', '')
-        sort_by = c.sort_by_selected = request.params.get('sort')
-        try:
-            self._check_access('site_read', context)
-            self._check_access('group_list', context)
-        except NotAuthorized:
-            abort(403, _('Not authorized to see this page'))
-
-        # pass user info to context as needed to view private datasets of
-        # orgs correctly
-        if c.userobj:
-            context['user_id'] = c.userobj.id
-            context['user_is_admin'] = c.userobj.sysadmin
-
-        try:
-            data_dict_global_results = {
-                'all_fields': False,
-                'q': q,
-                'sort': sort_by,
-                'type': group_type or 'group',
-            }
-            global_results = self._action('group_list')(
-                context, data_dict_global_results)
-        except ValidationError as e:
-            if e.error_dict and e.error_dict.get('message'):
-                msg = e.error_dict['message']
-            else:
-                msg = str(e)
-            h.flash_error(msg)
-            c.page = h.Page([], 0)
-            return render(self._index_template(group_type),
-                          extra_vars={'group_type': group_type})
-
-        data_dict_page_results = {
-            'all_fields': True,
-            'q': q,
-            'sort': sort_by,
-            'type': group_type or 'group',
-            'limit': items_per_page,
-            'offset': items_per_page * (page - 1),
-            'include_extras': True
-        }
-        page_results = iati_action.custom_group_list(context, data_dict_page_results)
-
-        c.page = h.Page(
-            collection=global_results,
-            page=page,
-            url=h.pager_url,
-            items_per_page=items_per_page,
-        )
-
-        c.page.items = page_results
-        return render(self._index_template(group_type),
-                      extra_vars={'group_type': group_type})
 
     def members_read(self, id):
         context = {'model': model, 'session': model.Session,
@@ -160,11 +89,8 @@ class RecentPublishers(PublisherController):
     """
     def index(self):
         """
-        Modified version of organization index.
-        - Only fo type organization.
-        - Included pagination
-        - Wide range of search functionality i.e. search by name, title, publisher_iati_id, licence_id
-        - Searchable by all the organization extra fields.
+        - Make default sort by publisher_first_publish_date
+        - Increase page items to 50
         """
         context = {'model': model,
                    'user': c.user, 'auth_user_obj': c.userobj}
@@ -185,8 +111,8 @@ class RecentPublishers(PublisherController):
         q = c.q = request.params.get('q', '')
         sort_by = c.sort_by_selected = request.params.get('sort', 'publisher_first_publish_date desc')
         try:
-            self._check_access('site_read', context)
-            self._check_access('group_list', context)
+            if not h.check_access('sysadmin'):
+                raise NotAuthorized
         except NotAuthorized:
             abort(403, _('Not authorized to see this page'))
 
@@ -224,7 +150,7 @@ class RecentPublishers(PublisherController):
             'offset': items_per_page * (page - 1),
             'include_extras': True
         }
-        page_results = iati_action.custom_group_list(context, data_dict_page_results)
+        page_results = self._action('group_list')(context, data_dict_page_results)
 
         c.page = h.Page(
             collection=global_results,
@@ -234,6 +160,23 @@ class RecentPublishers(PublisherController):
         )
 
         c.page.items = page_results
-        return render('admin/recent_publishers.html',
+        return render('user/dashboard_recent_publishers.html',
                       extra_vars={'group_type': group_type})
+
+    def download(self):
+        """
+        Download recent publisher list. Only csv download is allowed
+        :return:
+        """
+        try:
+            if not h.check_access('sysadmin'):
+                raise NotAuthorized
+        except NotAuthorized:
+            abort(403, _('Not authorized to download file'))
+
+        pub_list = PublishersListDownload('csv', request_recent_publisher=True)
+
+        return pub_list.download()
+
+
 

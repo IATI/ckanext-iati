@@ -1,4 +1,5 @@
-{% extends "admin/base.html" %}
+{% extends "user/dashboard.html" %}
+{% set user_dict = c.user_dict %}
 
 
 {% block primary_content_inner %}
@@ -24,6 +25,16 @@
 
     {% block organizations_list %}
     {% if c.page.items or request.params %}
+        <h3>IATI Recent Publishers List</h3>
+      {% set download_list = h.get_publisher_list_download_formats() %}
+      <div class="btn-group publisher-list-download">
+      <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">Download List
+       <i class="fa fa-caret-down"></i></button>
+      <div class="dropdown-menu">
+          <li><a class="dropdown-item" href="{{ h.url_for('recent_publishers_download') }}">{{ _('CSV') }}</a></li>
+      </div>
+      </div>
       {{ h.snippet('organization/snippets/organization_list_ids.html', organizations=c.page.items, is_admin_page=True) }}
     {% else %}
       <p class="empty">

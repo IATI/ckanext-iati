@@ -7,6 +7,9 @@
       {{ h.build_nav_icon('dashboard.datasets', _('My Datasets')) }}
       {{ h.build_nav_icon('user_dashboard_my_organizations', _('My Publishers')) }}
       {{ h.build_nav('user_dashboard_pending_organizations', _('Pending')) }}
+      {% if h.check_access('sysadmin') %}
+        {{ h.build_nav_icon('recent_publishers', _('Recent Publishers'), icon='building') }}
+      {% endif %}
     </ul>
   </header>
 {% endblock %}
