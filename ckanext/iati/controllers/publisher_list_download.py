@@ -190,11 +190,12 @@ class PublishersListDownload:
         for org in _org_data:
             if org.Group.state == 'active' and int(org.package_count) > 0:
                 _dt = self._prepare(org)
+		_dt[4] = str(int(_dt[4])) # Package count to string
                 _iati_identifier = _dt.pop(1)
                 xml.append('<iati-identifier id="{}">'.format(_iati_identifier))
                 for _index, _field in enumerate(fields):
                     field = self._get_xml_name(_field)
-                    if field == "datasets-link":
+                    if field == "Datasets Link":
                         xml.append('<iati-publisher-page xmlns:xlink="http://www.w3.org/1999/xlink">')
                         xml.append('    <iati-publisher-page xlink:type="simple" '
                                    'xlink:href="{}">{}</iati-publisher-page>'.format(_dt[_index],
