@@ -1,6 +1,6 @@
 {% ckan_extends %}
 
-{% set package_url = h.url_for(controller='package', action='read', id=package.name) %}
+{% set package_url = h.url_for(package.type ~ '.read', id=package.name) %}
 
 {% block package_item %}
 

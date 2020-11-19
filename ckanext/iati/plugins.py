@@ -29,6 +29,10 @@ from ckanext.iati.logic.validators import (
 from ckanext.iati.logic.converters import strip
 import ckanext.iati.helpers as iati_helpers
 from ckanext.iati.model import IATIRedirects
+from ckanext.iati.views.publisher import publisher_blueprint
+from ckanext.iati.views.reports import issues
+from ckanext.iati.views.dashboard import custom_dashboard
+from ckanext.iati.views.admin import admin_tabs
 
 log = logging.getLogger(__name__)
 
@@ -38,9 +42,9 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
     p.implements(p.IRoutes, inherit=True)
     p.implements(p.IGroupForm, inherit=True)
     p.implements(p.IConfigurer)
+    p.implements(p.IBlueprint)
 
     ## IRoutes
-
     def before_map(self, map):
 
         map.redirect('/group/{url:.*}', '/publisher/{url}',
@@ -89,39 +93,6 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             map.redirect('/dataset/{url:.*}/' + rename[0] + '-{code:.*}', '/dataset/{url}/' + rename[1] + '-{code:.*}',
                          _redirect_code='301 Moved Permanently')
 
-        org_controller = 'ckanext.iati.controllers.publisher:PublisherController'
-        with SubMapper(map, controller=org_controller) as m:
-            m.connect('publishers_index', '/publisher', action='index')
-            m.connect('/publisher/list',  action='list')
-            m.connect('/publisher/new',  action='new')
-            m.connect('/publisher/{action}/{id}',
-                      requirements=dict(action='|'.join([
-                          'delete',
-                          'admins',
-                          'member_new',
-                          'member_delete',
-                          'history'
-                          'followers',
-                          'follow',
-                          'unfollow',
-                      ])))
-            m.connect('publisher_activity', '/publisher/activity/{id}',
-                      action='activity', ckan_icon='time')
-
-            m.connect('publisher_read', '/publisher/{id}', action='read')
-            m.connect('publisher_about', '/publisher/about/{id}',
-                      action='about', ckan_icon='info-sign')
-            m.connect('publisher_read', '/publisher/{id}', action='read',
-                      ckan_icon='sitemap')
-            m.connect('publisher_edit', '/publisher/edit/{id}',
-                      action='edit', ckan_icon='edit')
-            m.connect('publisher_members', '/publisher/edit_members/{id}',
-                      action='members', ckan_icon='group')
-            m.connect('publisher_bulk_process',
-                      '/publisher/bulk_process/{id}',
-                      action='bulk_process', ckan_icon='sitemap')
-
-
         map.redirect('/api/{ver:1|2|3}/rest/publisher',
                      '/api/{ver}/rest/group')
         map.redirect('/api/rest/publisher', '/api/rest/group')
@@ -130,15 +101,9 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         map.redirect('/api/rest/publisher/{url:.*}',
                      '/api/rest/group/{url:.*}')
 
-        map.connect('publisher_members_read', '/publisher/members/{id}',
-            controller='ckanext.iati.controllers.publisher:PublisherController',
-            action='members_read', ckan_icon='group')
-        map.connect('user_dashboard_pending_organizations', '/dashboard/pending',
-            controller='ckanext.iati.controllers.publisher:PublisherController',
-            action='dashboard_pending_organizations', ckan_icon='building')
-        map.connect('user_dashboard_my_organizations', '/dashboard/mypublishers',
-                    controller='ckanext.iati.controllers.publisher:PublisherController',
-                    action='dashboard_my_organizations')
+        #map.connect('publisher_members_read', '/publisher/members/{id}',
+                    #controller='ckanext.iati.controllers.publisher:PublisherController',
+                    #action='members_read', ckan_icon='group')
         map.connect('publisher_archiver', '/publisher/archiver/{id}',
                     controller='ckanext.iati.controllers.publisher:PublisherController', action='archiver_page')
         map.connect('archiver_controller_run', '/publisher/archiver/run/{publisher_id}',
@@ -151,20 +116,8 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         map.connect('archiver_controller_run', '/dataset/archiver/run/{package_id}',
                     controller='ckanext.iati.controllers.archiver_controller:ArchiverRunStatus',
                     action='archiver_controller_run')
-        map.connect('dataset_trash', '/ckan-admin/trash',
-                    controller='ckanext.iati.controllers.admin_controller:PurgeController', action='trash',
-                    conditions=dict(method=['POST']))
-        map.connect('iati_reports', '/ckan-admin/reports',
-                    controller='ckanext.iati.controllers.admin_controller:PurgeController', action='reports')
-        map.connect('iati_redirects', '/ckan-admin/redirects',
-                    controller='ckanext.iati.controllers.admin_controller:PurgeController', action='iati_redirects')
-        map.connect('recent_publishers', '/ckan-admin/recent_publishers',
-                    controller='ckanext.iati.controllers.publisher:RecentPublishers', action='index')
 
-        map.connect('recent_publishers_download', '/ckan-admin/recent_publishers/download',
-                    controller='ckanext.iati.controllers.publisher:RecentPublishers', action='download')
-
-        #custom redirects
+        # custom redirects
         redirects = {
             '/using-iati-data': 'http://iatistandard.org/en/using-data/',
             '/registry-dashboard': 'http://iatistandard.org/en/guidance/publishing-data/data-quality-/how-to-improve-you-data-quality-with-the-iati-dashboard/',
@@ -321,6 +274,11 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
     def update_config(self, config):
         p.toolkit.add_template_directory(config, 'theme/templates')
 
+    # IBlueprint
+    def get_blueprint(self):
+        # blueprint for this extension
+        return [publisher_blueprint, custom_dashboard, issues, admin_tabs]
+
 
 class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
@@ -335,10 +293,6 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     ## IRoutes
     def before_map(self, map):
 
-        reports_controller = 'ckanext.iati.controllers.reports:ReportsController'
-        map.connect('user_dashboard_datasets_custom', '/dashboard/datasets', controller=reports_controller, action='dashboard_datasets', ckan_icon='sitemap')
-        map.connect('/report/issues', controller=reports_controller, action='issues_report')
-        map.connect('/report/download_issues_report', controller=reports_controller, action='download_issues_report')
         # Redirects needed after updating the datasets name for some of the publishers
         map.redirect('/dataset/wb-{code}','/dataset/worldbank-{code}',_redirect_code='301 Moved Permanently')
         map.redirect('/dataset/minbuza_activities','/dataset/minbuza_nl-activities',_redirect_code='301 Moved Permanently')
@@ -627,6 +581,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'issues_report_csv'
         )
         return _get_module_functions(iati_auth, function_names)
+
 
 def _get_module_functions(module, function_names):
     functions = {}

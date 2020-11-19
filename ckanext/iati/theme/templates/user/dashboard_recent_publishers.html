@@ -1,6 +1,4 @@
 {% extends "user/dashboard.html" %}
-{% set user_dict = c.user_dict %}
-
 
 {% block primary_content_inner %}
     {% block organizations_search_form %}
@@ -49,7 +47,7 @@
 
     {% block page_pagination %}
         {% if c.page.items or request.params %}
-            {{ h.publishers_pagination(c.q) }}
+            {{ c.page.pager(q=q or '', sort=c.sort_by_selected or '') }}
         {% endif %}
     {% endblock %}
 

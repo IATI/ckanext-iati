@@ -3,12 +3,12 @@
 {% block page_header %}
   <header class="module-content page-header hug">
     <ul class="nav nav-tabs">
-      {{ h.build_nav_icon('dashboard.index', _('News feed')) }}
-      {{ h.build_nav_icon('dashboard.datasets', _('My Datasets')) }}
-      {{ h.build_nav_icon('user_dashboard_my_organizations', _('My Publishers')) }}
-      {{ h.build_nav('user_dashboard_pending_organizations', _('Pending')) }}
+      {{ h.build_nav_icon('dashboard.index', _('News feed'), icon='list') }}
+      {{ h.build_nav_icon('custom_dashboard.datasets', _('My Datasets'), icon='sitemap') }}
+      {{ h.build_nav_icon('custom_dashboard.my_organizations', _('My Publishers'), icon='building-o') }}
+      {{ h.build_nav_icon('custom_dashboard.my_pending_organizations', _('Pending'), icon='building') }}
       {% if h.check_access('sysadmin') %}
-        {{ h.build_nav_icon('recent_publishers', _('Recent Publishers'), icon='building') }}
+        {{ h.build_nav_icon('custom_dashboard.recent_publishers', _('Recent Publishers'), icon='clock-o') }}
       {% endif %}
     </ul>
   </header>

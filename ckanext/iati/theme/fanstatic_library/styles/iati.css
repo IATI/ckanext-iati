@@ -10233,7 +10233,7 @@ iframe {
 [role=main] {
   min-height: 350px;
 }
-[role=main] .primary {
+.primary {
   width: 688px;
   float: left;
 }
@@ -10246,7 +10246,7 @@ iframe {
   width: 188px;
   font-size: 12px;
 }
-[role=main] .secondary {
+.secondary {
   width: 222px;
   margin-left: 0;
   float: right;

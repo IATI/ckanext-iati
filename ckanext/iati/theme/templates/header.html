@@ -43,7 +43,7 @@
           {% block header_nav_account %}
             {% if c.userobj %}
               <ul id="account-nav" class="authed avatar" data-module="me" data-me="{{ c.userobj.id }}">
-                {% if c.userobj.sysadmin %}
+                {% if h.check_access('sysadmin') %}
                   <li>
                     <a href="{{ h.url_for(controller='admin', action='index') }}" title="{{ _('Sysadmin settings') }}">
                       Sysadmin
@@ -75,7 +75,7 @@
           {% endblock %}
           {% block header_nav_secondary %}
             <ul id="secondary-nav">
-              {% set is_superadmin = c.userobj.sysadmin %}
+              {% set is_superadmin = h.check_access('sysadmin') %}
               {% set can_package_create = h.check_access('package_create') %}
               {% set can_organization_create = h.check_access('organization_create') %}
               {% set empty = ('', '') %}
@@ -91,13 +91,13 @@
                 ('/report/issues', _('Issues report')),
               ] %}
               {% set publisher_dropdown = [
-                ('organization_new', _('Create a new publisher')) if can_organization_create else empty
+                ('organization.new', _('Create a new publisher')) if can_organization_create else empty
               ] %}
 
               {% set nav = [
                 ('home.index', _('Home'), home_dropdown),
                 ('search', _('Data'), data_dropdown),
-                ('publishers_index', _('Publishers'), publisher_dropdown),
+                ('publisher.index', _('Publishers'), publisher_dropdown),
               ] %}
               {% for route, label, check_dropdown in nav %}
                 {% set dropdown = h.check_nav_dropdown(check_dropdown) %}

@@ -2,7 +2,7 @@ from ckan import model
 import ckan.lib.helpers as h
 import ckan.logic as logic
 import ckan.authz as authz
-from ckan.lib.base import c, _
+from ckan.common import _, c
 import ckan.plugins as p
 from ckanext.iati.helpers import extras_to_dict, parse_error_object_to_list
 import ckan.lib.jobs as jobs

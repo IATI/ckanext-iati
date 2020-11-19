@@ -7,6 +7,11 @@
 
 <div class="container">
     <h2 align="center" class="page_heading">IATI Issues Report</h2>
+    <div class="row m-3">
+        <div align="left" class="col-md-4 center-block  publisher-list-download">
+        <a href="{{ h.url_for('issues.download_issues_report') }}" class="btn btn-secondary center-block" id="export_to_csv">Export to csv</a>
+        </div>
+    </div>
     <div class="col-md-3">
     <div class="table-responsive">
 <table class="table table-striped table-bordered table-sm" cellspacing="0" width="100%" id="issues_report_table">
@@ -39,23 +44,13 @@
   </tbody>
 </table>
     </div>
-
-<div class="row">
-
-        <div class="col-md-4 center-block" style="width: 100%; text-align: center;">
-        <a href="{{ h.url_for(controller='ckanext.iati.controllers.reports:ReportsController', action='download_issues_report') }}" class="btn btn-secondary center-block" id="export_to_csv">Export to csv</a>
-        </div>
-
-</div>
 </div>
     </div>
 
 {% else %}
 
 <div class="container">
-
     <p><strong>You are not authorized to see the report. Please login with appropriate credentials.</strong></p>
-
 </div>
 
 {% endif %}

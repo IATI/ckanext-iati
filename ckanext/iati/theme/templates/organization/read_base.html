@@ -1,13 +1,13 @@
 {% ckan_extends %}
 
 {% block primary_content %}
-    {% if c.group_dict.state == 'approval_needed' %}
+    {% if group_dict.state == 'approval_needed' %}
     <div class="alert alert-warning m-top">
     This publisher is pending administrator approval. Until it is approved, it is hidden from
     the list of publishers and it cannot publish activity records.
     </div>
   {% endif %}
-  {% if c.group_dict.state == 'deleted' %}
+  {% if group_dict.state == 'deleted' %}
     <div class="alert alert-danger m-top">
     This publisher has been deleted.
     </div>
@@ -21,10 +21,10 @@
 {% endblock %}
 
 {% block content_primary_nav %}
-  {{ h.build_nav_icon('publisher_read', _('Datasets'), id=c.group_dict.name) }}
-  {{ h.build_nav_icon('publisher_activity', _('Activity Stream'), id=c.group_dict.name) }}
-  {{ h.build_nav_icon('publisher_about', _('About'), id=c.group_dict.name) }}
-  {{ h.build_nav_icon('publisher_archiver', _('Archiver'), id=c.group_dict.name) }}
+  {{ h.build_nav_icon('publisher.read', _('Datasets'), id=c.group_dict.name) }}
+  {{ h.build_nav_icon('publisher.activity', _('Activity Stream'), id=c.group_dict.name) }}
+  {{ h.build_nav_icon('publisher.about', _('About'), id=c.group_dict.name) }}
+  {#{ h.build_nav_icon('publisher.archiver', _('Archiver'), id=c.group_dict.name) }#}
 
 {% endblock %}
 

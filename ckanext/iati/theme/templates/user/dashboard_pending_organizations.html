@@ -1,11 +1,9 @@
 {% extends "user/dashboard.html" %}
-{% set user_dict = c.user_dict %}
 
 {% block dashboard_activity_stream_context %}{% endblock %}
 
 {% block primary_content_inner %}
   <h2 class="hide-heading">{{ _('My Organizations') }}</h2>
-  {% set pending_organizations = h.organization_list_pending() %}
   {% if pending_organizations %}
     <div class="wide">
       {% snippet "organization/snippets/organization_list_dashboard.html", pending=pending_organizations %}
