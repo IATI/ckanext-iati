@@ -13,7 +13,7 @@
     <p class="empty">
       {{ _('You are not a member of any organizations.') }}
       {% if h.check_access('organization_create') %}
-        {% link_for _('Create one now?'), controller='organization', action='new' %}
+        {% link_for _('Create one now?'), named_route='publisher.new' %}
       {% endif %}
     </p>
   {% endif %}

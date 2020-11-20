@@ -45,7 +45,7 @@
               <ul id="account-nav" class="authed avatar" data-module="me" data-me="{{ c.userobj.id }}">
                 {% if h.check_access('sysadmin') %}
                   <li>
-                    <a href="{{ h.url_for(controller='admin', action='index') }}" title="{{ _('Sysadmin settings') }}">
+                    <a href="{{ h.url_for('admin.index') }}" title="{{ _('Sysadmin settings') }}">
                       Sysadmin
                     </a>
                   </li>
@@ -56,7 +56,7 @@
                   </a>
                 </li>
                 <li>
-                  <a href="{{ h.url_for(controller='user', action='read', id=c.userobj.name) }}" title="My account">
+                  <a href="{{ h.url_for('user.read', id=c.userobj.name) }}" title="My account">
                     My Account
                   </a>
                 </li>
@@ -68,8 +68,8 @@
               </ul>
             {% else %}
               <ul id="account-nav" class="not-authed">
-                <li>{% link_for _('Log in'), controller='user', action='login' %}</li>
-                <li>{% link_for _('Register'), controller='user', action='register', class_='sub' %}</li>
+                <li>{% link_for _('Log in'), named_route='user.login' %}</li>
+                <li>{% link_for _('Register'), named_route='user.register', class_='sub' %}</li>
               </ul>
             {% endif %}
           {% endblock %}

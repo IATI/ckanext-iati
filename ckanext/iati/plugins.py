@@ -416,7 +416,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
     def after_create(self, context, pkg_dict):
         """
-        Call the archiver controller after create
+        Call the archiver view after create
         :return: None
         """
         if not context.get('disable_archiver', False):
@@ -429,7 +429,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
     def after_update(self, context, pkg_dict):
         """
-        Call the archiver controller run after update
+        Call the archiver view run after update
         :return: None
         """
         if not context.get('disable_archiver', False):

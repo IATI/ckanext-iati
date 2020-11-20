@@ -40,7 +40,7 @@
 <section class="module">
 <div class="module-content">
   <small>
-    {% set api_link = h.link_to(_('API'), h.url_for(controller='api', action='get_api', ver=3)) %}
+    {% set api_link = h.link_to(_('API'), h.url_for('api.get_api', ver=3)) %}
     {% set api_doc_link = h.link_to(_('API Docs'), 'http://docs.ckan.org/en/latest/api/index.html') %}
     {% trans %}
       You can also access this registry using the {{ api_link }} (see {{ api_doc_link}}).

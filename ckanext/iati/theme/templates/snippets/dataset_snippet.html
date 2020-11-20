@@ -2,7 +2,7 @@
   <div class="module context-info">
     <div class="module-content">
         {% if pkg.organization and pkg.organization.image_url %}
-          {% with organization=pkg.organization, url=h.url_for(controller='organization', action='read', id=pkg.organization.name) %}
+          {% with organization=pkg.organization, url=h.url_for('publisher.read', id=pkg.organization.name) %}
           <div class="image">
             <a href="{{ url }}">
               <img src="{{ organization.image_url }}" alt="{{ organization.name }}" />
@@ -18,7 +18,7 @@
           <dd><a href="mailto:{{ pkg.author_email }}">{{ pkg.author_email }}</a></dd>
         </dl>
         {% if pkg.organization %}
-          {% with organization=pkg.organization, truncate=truncate or 0, url=h.url_for(controller='organization', action='read', id=pkg.organization.name) %}
+          {% with organization=pkg.organization, truncate=truncate or 0, url=h.url_for('publisher.read', id=pkg.organization.name) %}
             <dl class="wide">
               <dt>Publisher</dt>
               <dd><a href="{{ url }}">{{ organization.title or organization.name }}</a></dd>

@@ -4,7 +4,7 @@
 
 {% block page_primary_action %}
   {% if h.check_access('organization_create') %}
-    {% link_for _('Add Organization'), controller='organization', action='new', class_="btn btn-primary", icon="plus-square" %}
+    {% link_for _('Add Organization'), named_route='publisher.new', class_="btn btn-primary", icon="plus-square" %}
   {% endif %}
 {% endblock %}
 
@@ -20,7 +20,7 @@
     <p class="empty">
       {{ _('You are not a member of any organizations.') }}
       {% if h.check_access('organization_create') %}
-        {% link_for _('Create one now?'), controller='organization', action='new' %}
+        {% link_for _('Create one now?'), named_route='publisher.new' %}
       {% endif %}
     </p>
   {% endif %}

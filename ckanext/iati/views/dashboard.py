@@ -8,6 +8,7 @@ from ckan import logic
 import ckan.model as model
 from ckan.views import group as core_group_view
 from ckanext.iati import helpers as iati_h
+from ckanext.iati.logic.csv_action import PublishersListDownload
 import logging
 
 log = logging.getLogger(__name__)
@@ -130,7 +131,7 @@ def recent_publishers():
     return render('user/dashboard_recent_publishers.html', extra_vars)
 
 
-def recent_publishers_download(self):
+def recent_publishers_download():
     """
     Download recent publisher list. Only csv download is allowed
     :return:
