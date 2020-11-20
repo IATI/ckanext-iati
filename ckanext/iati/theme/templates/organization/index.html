@@ -15,7 +15,7 @@
 
 {% block breadcrumb_content %}
     {% if is_publisher_download_index %}
-        <li class="active">{% link_for _(' Download Publishers'), named_route='spreadsheet.index' %}</li>
+        <li class="active">{% link_for _(' Download Publishers'), named_route='spreadsheet.index', icon='download' %}</li>
     {% else %}
         <li class="active">{% link_for _('Publishers'), named_route='publisher.index' %}</li>
     {% endif %}
@@ -23,7 +23,7 @@
 
 {% block page_primary_action %}
   {% if h.check_access('organization_create') and not is_publisher_download_index %}
-    {% link_for _('Add Publisher'), named_route='publisher.new', class_='btn btn-primary', icon='plus-sign-alt' %}
+    {% link_for _('Add Publisher'), named_route='publisher.new', class_='btn btn-primary', icon='plus-square' %}
   {% endif %}
 {% endblock %}
 
@@ -70,7 +70,7 @@
           {% set download_list = h.get_publisher_list_download_formats() %}
           <div class="btn-group publisher-list-download">
           <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
-                  aria-haspopup="true" aria-expanded="false">Download List
+                  aria-haspopup="true" aria-expanded="false"><i class="fa fa-download"></i> Download List
            <i class="fa fa-caret-down"></i></button>
           <div class="dropdown-menu">
             {% for _format in download_list %}

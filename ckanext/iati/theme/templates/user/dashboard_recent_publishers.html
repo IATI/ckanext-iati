@@ -27,7 +27,7 @@
       {% set download_list = h.get_publisher_list_download_formats() %}
       <div class="btn-group publisher-list-download">
       <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false">Download List
+              aria-haspopup="true" aria-expanded="false"><i class="fa fa-download"></i> Download List
        <i class="fa fa-caret-down"></i></button>
       <div class="dropdown-menu">
           <li><a class="dropdown-item" href="{{ h.url_for('custom_dashboard.recent_publishers_download') }}">{{ _('CSV') }}</a></li>

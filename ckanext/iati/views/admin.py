@@ -12,7 +12,7 @@ import ckan.lib.helpers as h
 from ckan.common import c, _, request, config
 from ckanext.iati.logic import validators
 from ckanext.iati.model import IATIRedirects
-from ckanext.iati.controllers.publisher_list_download import PublishersListDownload
+from ckanext.iati.logic.csv_action import PublishersListDownload
 import logging
 
 log = logging.getLogger(__file__)
