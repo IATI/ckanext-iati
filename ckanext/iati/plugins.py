@@ -5,7 +5,7 @@ import json
 import os
 from routes.mapper import SubMapper     # Maybe not this one
 from ckan.lib.plugins import DefaultOrganizationForm
-from ckanext.iati.controllers.archiver_controller import ArchiverRunStatus
+from ckanext.iati.views.archiver import ArchiverViewRun
 import ckan.plugins as p
 from ckanext.iati.logic.validators import (
     db_date,
@@ -33,6 +33,9 @@ from ckanext.iati.views.publisher import publisher_blueprint
 from ckanext.iati.views.reports import issues
 from ckanext.iati.views.dashboard import custom_dashboard
 from ckanext.iati.views.admin import admin_tabs
+from ckanext.iati.views.help import help
+from ckanext.iati.views.spreadsheet import spreadsheet
+from ckanext.iati.views.archiver import archiver as archiver_blueprint
 
 log = logging.getLogger(__name__)
 
@@ -100,22 +103,6 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
                      '/api/{ver}/rest/group/{url:.*}')
         map.redirect('/api/rest/publisher/{url:.*}',
                      '/api/rest/group/{url:.*}')
-
-        #map.connect('publisher_members_read', '/publisher/members/{id}',
-                    #controller='ckanext.iati.controllers.publisher:PublisherController',
-                    #action='members_read', ckan_icon='group')
-        map.connect('publisher_archiver', '/publisher/archiver/{id}',
-                    controller='ckanext.iati.controllers.publisher:PublisherController', action='archiver_page')
-        map.connect('archiver_controller_run', '/publisher/archiver/run/{publisher_id}',
-                    controller='ckanext.iati.controllers.archiver_controller:ArchiverRunStatus', action='archiver_controller_run')
-        map.connect('archiver_status', '/archiver/status/{task_id}',
-                    controller='ckanext.iati.controllers.archiver_controller:ArchiverRunStatus',
-                    action='check_status')
-        map.connect('dataset_archiver', '/dataset/archiver/{id}',
-                    controller='ckanext.iati.controllers.publisher:PublisherController', action='dataset_archiver_page')
-        map.connect('archiver_controller_run', '/dataset/archiver/run/{package_id}',
-                    controller='ckanext.iati.controllers.archiver_controller:ArchiverRunStatus',
-                    action='archiver_controller_run')
 
         # custom redirects
         redirects = {
@@ -277,7 +264,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
     # IBlueprint
     def get_blueprint(self):
         # blueprint for this extension
-        return [publisher_blueprint, custom_dashboard, issues, admin_tabs]
+        return [publisher_blueprint, custom_dashboard, issues, admin_tabs, help, spreadsheet, archiver_blueprint]
 
 
 class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
@@ -435,7 +422,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         if not context.get('disable_archiver', False):
             log.info("Running archiver as background job as package create")
             log.info(pkg_dict.get('id', ''))
-            ArchiverRunStatus.run_archiver_after_package_create_update(pkg_dict.get("id", None))
+            ArchiverViewRun.run_archiver_after_package_create_update(pkg_dict.get("id", None))
         else:
             log.info('Ignoring archiver run since archiver is disabled in context')
         return pkg_dict
@@ -448,7 +435,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         if not context.get('disable_archiver', False):
             log.info("Running archiver as background job as package update")
             log.info(pkg_dict.get('id', ''))
-            ArchiverRunStatus.run_archiver_after_package_create_update(pkg_dict.get("id", None))
+            ArchiverViewRun.run_archiver_after_package_create_update(pkg_dict.get("id", None))
         else:
             log.info('Ignoring archiver run since archiver is disabled in context')
         return pkg_dict
@@ -601,14 +588,7 @@ class IatiTheme(p.SingletonPlugin):
 
     # IRoutes
     def before_map(self, map):
-        static_controller = 'ckanext.iati.controllers.static:StaticController'
-
-        with SubMapper(map, controller=static_controller) as m:
-            map.redirect('/about-2', '/about',
-                     _redirect_code='301 Moved Permanently')
-            m.connect('help_csv-import', '/help_csv-import', action='help_csv')
-            m.connect('help_delete', '/help_delete', action='help_delete')
-
+        map.redirect('/about-2', '/about', _redirect_code='301 Moved Permanently')
         return map
 
     # IConfigurer
@@ -637,7 +617,6 @@ class IatiTheme(p.SingletonPlugin):
         return facets_dict
 
     def organization_facets(self, facets_dict, organization_type, package_type):
-
         ''' Update the facets_dict and return it. '''
 
         # We will actually remove all the core facets and add our own
@@ -651,34 +630,3 @@ class IatiTheme(p.SingletonPlugin):
 
         return facets_dict
 
-
-class IatiCsvImporter(p.SingletonPlugin):
-
-    p.implements(p.IConfigurer)
-    p.implements(p.IRoutes)
-
-    # IRoutes
-    def before_map(self, map):
-        csv_controller = 'ckanext.iati.controllers.spreadsheet:CSVController'
-        rec_download_controller = "ckanext.iati.controllers.download_records_pub:PublisherDownloadRecords"
-
-        map.connect('/csv/download', controller=rec_download_controller, action='publisher_download_index')
-        map.connect('/csv/download/{publisher}', controller=rec_download_controller, action='download')
-
-        map.connect('csv_upload', '/csv/upload', controller=csv_controller, action='upload',
-                    conditions=dict(method=['GET']))
-        map.connect('/csv/upload', controller=csv_controller, action='upload',
-                    conditions=dict(method=['POST']))
-        map.connect('/csv/check_status/{task_id}', controller=csv_controller, action='check_status')
-
-        map.connect("/publisher/download_list/{download_format}", controller=csv_controller,
-                    action="publisher_list_download")
-
-        return map
-
-    def after_map(self, map):
-        return map
-
-    # IConfigurer
-    def update_config(self, config):
-        p.toolkit.add_template_directory(config, 'theme/templates')

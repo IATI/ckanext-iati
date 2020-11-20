@@ -5,13 +5,13 @@
     {% set dataset = pkg.title or pkg.name %}
     {% if pkg.organization %}
       {% set organization = pkg.organization.title or pkg.organization.name %}
-      <li>{% link_for _('Publishers'), controller='organization', action='index' %}</li>
-      <li>{% link_for organization|truncate(30), controller='organization', action='read', id=pkg.organization.name %}</li>
+      <li>{% link_for _('Publishers'), named_route='publisher.index' %}</li>
+      <li>{% link_for organization|truncate(30), named_route='publisher.read', id=pkg.organization.name %}</li>
     {% else %}
       <li><a href="/dataset">Datasets</a></li>
     {% endif %}
 
-    <li{{ self.breadcrumb_content_selected() }}>{% link_for dataset|truncate(30), controller='package', action='read', id=pkg.name %}</li>
+    <li{{ self.breadcrumb_content_selected() }}>{% link_for dataset|truncate(30), named_route=pkg.type+'.read', id=pkg.name %}</li>
   {% else %}
       <li><a href="/dataset">Datasets</a></li>
     <li class="active"><a href="">{{ _('Create Dataset') }}</a></li>

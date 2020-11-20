@@ -1,5 +1,27 @@
 {% extends "page.html" %}
 
+{% block breadcrumb_content %}
+    {% if not from_publisher %}
+      {% if pkg %}
+        {% set dataset = pkg.title or pkg.name %}
+        {% if pkg.organization %}
+          {% set organization = pkg.organization.title or pkg.organization.name %}
+          <li>{% link_for _('Publishers'), named_route='publisher.index' %}</li>
+          <li>{% link_for organization|truncate(30), named_route='publisher.read', id=pkg.organization.name %}</li>
+        {% else %}
+          <li><a href="/dataset">Datasets</a></li>
+        {% endif %}
+
+        <li class="active">{% link_for dataset|truncate(30), named_route=pkg.type+'.read', id=pkg.name %}</li>
+      {% else %}
+          <li><a href="/dataset">Datasets</a></li>
+      {% endif %}
+    {% else %}
+        <li>{% link_for _('Publishers'), named_route='publisher.index' %}</li>
+        <li class="active">{% link_for _(group_dict.title|truncate(35)), named_route='publisher.read', id=group_dict.name %}</li>
+    {% endif %}
+{% endblock %}
+
 {% block primary %}
               <div class="primary col-sm-9 col-xs-12">
                 {#
@@ -24,24 +46,26 @@
                         {% endif %}
                         <ul class="nav nav-tabs">
 
-{% block content_primary_nav %}
+                            {% block content_primary_nav %}
 
-   {% if from_publisher %}
+                               {% if from_publisher %}
 
-      {{ h.build_nav_icon('publisher_read', _('Datasets'), id=id) }}
-      {{ h.build_nav_icon('publisher_activity', _('Activity Stream'), id=id) }}
-      {{ h.build_nav_icon('publisher_about', _('About'), id=id) }}
-      {{ h.build_nav_icon('publisher_archiver', _('Archiver'), id=id) }}
-   {% else %}
-    {{ h.build_nav_icon('dataset_read', _('Dataset'), id=id) }}
-    {{ h.build_nav_icon('dataset_activity', _('Activity Stream'), id=id) }}
-    {% set history_link = h.nav_link(_('History'), controller='package', action='history', id=id, icon='code-fork') %}
-    {{ h.build_nav_icon('dataset_archiver', _('Archiver'), id=id) }}
-     {% set active_check = history_link|replace("active", "")|length %}
-  <li{% if history_link|length != active_check %} class="active"{% endif %}>{{ history_link }}</li>
-    {% endif %}
+                                  {{ h.build_nav_icon('publisher.read', _('Datasets'), id=group_dict.name, icon='sitemap') }}
+                                  {{ h.build_nav_icon('publisher.activity', _('Activity Stream'), id=group_dict.name, offset=0, icon='clock-o') }}
+                                  {{ h.build_nav_icon('publisher.about', _('About'), id=group_dict.name, icon='info-circle') }}
+                                  {% if h.check_access('sysadmin') %}
+                                    {{ h.build_nav_icon('archiver.archiver_controller', _('Archiver'), view_type='publisher', id=group_dict.name, icon='wrench') }}
+                                  {% endif %}
+                               {% else %}
 
-{% endblock %}
+                                  {{ h.build_nav_icon(pkg.type ~ '.read', _('Dataset'), id=pkg.id if is_activity_archive else pkg.name, icon='sitemap') }}
+                                  {{ h.build_nav_icon(pkg.type ~ '.activity', _('Activity Stream'), id=pkg.id if is_activity_archive else pkg.name, icon='clock-o') }}
+                                  {% if h.check_access('sysadmin') %}
+                                    {{ h.build_nav_icon('archiver.archiver_controller', _('Archiver'), view_type='dataset', id=pkg.id, icon='wrench') }}
+                                  {% endif %}
+                                {% endif %}
+
+                            {% endblock %}
                         </ul>
                       </header>
                     {% endblock %}
@@ -100,8 +124,6 @@ var PollState = function(task_id) {
               type: "GET",
           }).done(function(task) {
               task = JSON.parse(task);
-              //console.log(task_id)
-              console.log(task)
 
              if (task.status !== "finished" && task.status !== "failed") {
                   if (task.status =="started"){
@@ -179,7 +201,7 @@ for (i=0; i < tasks.length; i++){
 var task = JSON.parse(tasks[i]);
 console.log(task);
 var cnt = (i+1).toString();
-$('#issues_report_table').find('tbody').append('<tr><td>'+cnt+'</td><td><a href ='+"/package/"+task.name+'>'+task.title+'</a></td><td><span class="label label-info disabled" data-placement="right" title="queued" id='+task.task_id+'>'+task.status+'</span></td><td id='+"issue_mssg"+task.task_id+'></td></tr>');
+$('#issues_report_table').find('tbody').append('<tr><td>'+cnt+'</td><td><a href ='+"/dataset/"+task.name+'>'+task.title+'</a></td><td><span class="label label-info disabled" data-placement="right" title="queued" id='+task.task_id+'>'+task.status+'</span></td><td id='+"issue_mssg"+task.task_id+'></td></tr>');
 }
 
 

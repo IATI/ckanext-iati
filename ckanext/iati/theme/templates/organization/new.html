@@ -2,7 +2,7 @@
 
 {% block subtitle %}{{ _('Create a Publisher') }}{% endblock %}
 
-{% block breadcrumb_link %}{{ h.nav_link(_('Create a Publisher'), controller='organization', action='edit', id=c.organization.name) }}{% endblock %}
+{% block breadcrumb_link %}{{ h.nav_link(_('Create a Publisher'), named_route='publisher.new') }}{% endblock %}
 
 {% block page_heading %}{{ _('Create a Publisher') }}{% endblock %}
 

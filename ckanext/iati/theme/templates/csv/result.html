@@ -13,7 +13,7 @@
   <div>
       <p>Your CSV upload <strong>{{file_name}}</strong> has been unsuccessful. <strong>{{ Stat }}</strong>.</p>
 
-    <p><a href="/csv/upload">Upload another file</a></p>
+    <p><a href="{{ h.url_for('spreadsheet.csv_upload_datasets') }}">Upload another file</a></p>
   </div>
 
   </article>
@@ -26,7 +26,7 @@
   <div>
     <p>Your CSV upload <strong>{{file_name}}</strong> has been started. Check the table below for progress monitoring.</p>
 
-    <p><a href="/csv/upload">Upload another file</a></p>
+    <p><a href="{{ h.url_for('spreadsheet.csv_upload_datasets') }}">Upload another file</a></p>
   </div>
 
 
@@ -77,7 +77,7 @@
 
       function datasetLink(id,summary,warning,error) {
            if (id !== '#'){
-                link = "<a target=\"_blank\" href=\"/dataset/" + id + "/\">" + summary + "</a>";
+                link = "<a target=\"_blank\" href=\"/dataset/" + id + "\">" + summary + "</a>";
             }
             else {
                  link = summary;

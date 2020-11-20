@@ -28,8 +28,7 @@ Example:
         <td><a href="/publisher/{{ organization.name }}">{{ h.normalize_publisher_name(organization.title) }}</a></td>
         <td>{{ extra_fields.publisher_iati_id }}</td>
         <td>{{ organization.package_count }}</td>
-        <td><a href="{{ h.url_for(controller='ckanext.iati.controllers.download_records_pub:PublisherDownloadRecords',
-        action='download', publisher=organization['name']) }}">Download</a></td>
+        <td><a href="{{ h.url_for('spreadsheet.download_publisher_records', id=organization['name']) }}">Download</a></td>
       </tr>
     {% endif %}
   {% endfor %}

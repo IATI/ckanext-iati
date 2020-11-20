@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, make_response
 from ckan.lib.base import request, response, render, abort
 from ckan.common import _, c, g
 from ckan.views.user import _extra_template_variables
@@ -55,11 +55,12 @@ def download_issues_report():
         with open(result['file'], 'r') as f:
             content = f.read()
 
+        response = make_response(content)
         response.headers['Content-Type'] = 'application/csv'
         response.headers['Content-Length'] = len(content)
         response.headers['Content-Disposition'] = 'attachment; filename="iati.issues.csv"'
 
-        return content
+        return response
     except logic.NotAuthorized:
         abort(401, 'Not authorized to see this report')
 

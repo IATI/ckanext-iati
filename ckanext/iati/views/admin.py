@@ -47,7 +47,7 @@ def _active_publisher_data(from_dt, to_dt):
     :return:
     """
     query = _query.format(from_dt, to_dt)
-    print(query)
+    log.info(query)
     conn = model.Session.connection()
     rows = conn.execute(query)
     active_publishers = [{key: value for (key, value) in row.items()} for row in rows]

@@ -1,4 +1,25 @@
 {% extends "page.html" %}
+{% set dataset_type = pkg.type %}
+
+
+{% block breadcrumb_content %}
+  {% if pkg %}
+    {% set dataset = pkg.title or pkg.name %}
+    {% if pkg.organization %}
+      {% set organization = pkg.organization.title or pkg.organization.name %}
+      <li>{% link_for _('Publishers'), named_route='publisher.index' %}</li>
+      <li>{% link_for organization|truncate(30), named_route='publisher.read', id=pkg.organization.name %}</li>
+    {% else %}
+      <li><a href="/dataset">Datasets</a></li>
+    {% endif %}
+
+    <li class="active">{% link_for dataset|truncate(30), named_route=pkg.type+'.read', id=pkg.name %}</li>
+  {% else %}
+      <li><a href="/dataset">Datasets</a></li>
+  {% endif %}
+{% endblock %}
+
+
 
 {% block primary %}
               <div class="primary col-sm-9 col-xs-12">
@@ -24,36 +45,23 @@
                         {% endif %}
                         <ul class="nav nav-tabs">
 
-{% block content_primary_nav %}
-   {% if not package_id %}
-      {{ h.build_nav_icon('publisher_read', _('Datasets'), id=c.group_dict.name) }}
-      {{ h.build_nav_icon('publisher_activity', _('Activity Stream'), id=c.group_dict.name) }}
-      {{ h.build_nav_icon('publisher_about', _('About'), id=c.group_dict.name) }}
-      {{ h.build_nav_icon('publisher_archiver', _('Archiver'), id=c.group_dict.name) }}
-   {% else %}
-       {{ h.build_nav_icon('dataset_read', _('Dataset'), id=id) }}
-  {{ h.build_nav_icon('dataset_activity', _('Activity Stream'), id=id) }}
-  {% set history_link = h.nav_link(_('History'), controller='package', action='history', id=id, icon='code-fork') %}
-{{ h.build_nav_icon('dataset_archiver', _('Archiver'), id=id) }}
-  {% set active_check = history_link|replace("active", "")|length %}
-  <li>{% if history_link|length != active_check %} class="active"> {% endif %}{{ history_link }}</li>
+                            {% block content_primary_nav %}
 
-    {% endif %}
-{% endblock %}
+                              {{ h.build_nav_icon(dataset_type ~ '.read', _('Dataset'), id=pkg.id if is_activity_archive else pkg.name, icon='sitemap') }}
+                              {{ h.build_nav_icon(dataset_type ~ '.activity', _('Activity Stream'), id=pkg.id if is_activity_archive else pkg.name, icon='clock-o') }}
+                              {% if h.check_access('sysadmin') %}
+                                {{ h.build_nav_icon('archiver.archiver_controller', _('Archiver'), view_type='dataset', id=pkg.id, icon='wrench') }}
+                              {% endif %}
+                            {% endblock %}
                         </ul>
                       </header>
                     {% endblock %}
-                    {% if not package_id %}
-                    <div class="module-content">
-                        <p>"This is to validate all the data sets belongs to the publisher <strong>{{ c.group_dict.name }}</strong>. Please note this may take several minutes to run depending on the number of datasets."</p>
-                    <a href="/publisher/archiver/run/{{ c.group_dict.name }}" class="btn btn-secondary center-block" id="export_to_csv">Run Archiver</a>
-                    </div>
-                      {% else %}
                       <div class="module-content">
-                        <p>"This is to validate the data set <strong>{{ id }}</strong>. Please note this may take several minutes to run.."</p>
-                    <a href="/dataset/archiver/run/{{ id }}" class="btn btn-secondary center-block" id="export_to_csv">Run Archiver</a>
+                        <p>"This is to validate the data set <strong>{{ _(pkg.title) }}</strong>. Please note this may take several minutes to run.."</p>
+                        <form method="post">
+                          <button type='submit' class="btn btn-secondary center-block" id="export_to_csv">Run Archiver</button>
+                        </form>
                     </div>
-                      {% endif %}
                   </article>
                 {% endblock %}
               </div>
@@ -67,7 +75,7 @@
                         </h2>
                         <ul class="nav nav-simple">
                           <li class="nav-item">
-                            {% set api_url = h.url_for(controller='api', logic_function='package_show', action='action', id=c.pkg.name, ver=3) %}
+                            {% set api_url = h.url_for('api.action', logic_function='package_show', id=pkg.name, ver=3) %}
                             <a href="{{ g.api_url ~ api_url }}">JSON</a>
                           </li>
                           {% if g.rdf_packages %}

@@ -3,7 +3,9 @@
 
 {% block search_input %}
     <div class="search-input control-group search-giant">
-      <label for="field-giant-search">{% block header_site_search_label %}{{ site_search_label }}{% endblock %}</label>
+        {% if site_search_label %}
+            <label for="field-giant-search">{% block header_site_search_label %}{{ site_search_label }}{% endblock %}</label>
+        {% endif %}
       <input id="field-giant-search" type="text" class="search" name="q" value="{{ query }}" autocomplete="off" placeholder="{{ placeholder }}">
       {% block search_input_button %}
         <button style="margin:auto;" type="submit" value="search">

@@ -581,7 +581,7 @@ def organization_form_read_only(data):
 def get_publisher_list_download_formats():
 
     formats = ('CSV', 'XLS', 'XML', 'JSON')
-    _link = "/publisher/download_list/{}"
+    _link = "/publisher/download/{}"
     downloads = OrderedDict()
 
     for _format in formats:

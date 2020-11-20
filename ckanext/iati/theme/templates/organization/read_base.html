@@ -16,16 +16,17 @@
 {% endblock %}
 
 {% block breadcrumb_content %}
-  <li>{% link_for _('Publishers'), controller='organization', action='index' %}</li>
-  <li class="active">{% link_for c.group_dict.display_name|truncate(35), controller='organization', action='read', id=c.group_dict.name %}</li>
+  <li>{% link_for _('Publishers'), named_route='publisher.index' %}</li>
+  <li class="active">{% link_for _(group_dict.title|truncate(35)), named_route='publisher.read', id=c.group_dict.name %}</li>
 {% endblock %}
 
 {% block content_primary_nav %}
-  {{ h.build_nav_icon('publisher.read', _('Datasets'), id=c.group_dict.name) }}
-  {{ h.build_nav_icon('publisher.activity', _('Activity Stream'), id=c.group_dict.name) }}
-  {{ h.build_nav_icon('publisher.about', _('About'), id=c.group_dict.name) }}
-  {#{ h.build_nav_icon('publisher.archiver', _('Archiver'), id=c.group_dict.name) }#}
-
+  {{ h.build_nav_icon('publisher.read', _('Datasets'), id=c.group_dict.name, icon='sitemap') }}
+  {{ h.build_nav_icon('publisher.activity', _('Activity Stream'), id=c.group_dict.name, offset=0, icon='clock-o') }}
+  {{ h.build_nav_icon('publisher.about', _('About'), id=c.group_dict.name, icon='info-circle') }}
+  {% if h.check_access('sysadmin') %}
+    {{ h.build_nav_icon('archiver.archiver_controller', _('Archiver'), view_type='publisher', id=c.group_dict.name, icon='wrench') }}
+  {% endif %}
 {% endblock %}
 
 {% block secondary_content %}

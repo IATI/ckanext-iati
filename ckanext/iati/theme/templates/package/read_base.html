@@ -19,12 +19,11 @@
 {% endblock %}
 
 {% block content_primary_nav %}
-  {{ h.build_nav_icon('dataset_read', _('Dataset'), id=pkg.name) }}
-  {{ h.build_nav_icon('dataset_activity', _('Activity Stream'), id=pkg.name) }}
-  {% set history_link = h.nav_link(_('History'), named_route='package.history', id=pkg.name, icon='code-fork') %}
-{{ h.build_nav_icon('dataset_archiver', _('Archiver'), id=pkg.name) }}
-  {% set active_check = history_link|replace("active", "")|length %}
-  <li{% if history_link|length != active_check %} class="active" {% endif %}>{{ history_link }}</li>
+  {{ h.build_nav_icon(dataset_type ~ '.read', _('Dataset'), id=pkg.id if is_activity_archive else pkg.name, icon='sitemap') }}
+  {{ h.build_nav_icon(dataset_type ~ '.activity', _('Activity Stream'), id=pkg.id if is_activity_archive else pkg.name, icon='clock-o') }}
+  {% if h.check_access('sysadmin') %}
+    {{ h.build_nav_icon('archiver.archiver_controller', _('Archiver'), view_type='dataset', id=pkg.name, icon='wrench') }}
+  {% endif %}
 {% endblock %}
 
 {% block package_info %}

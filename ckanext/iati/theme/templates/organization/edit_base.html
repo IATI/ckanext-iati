@@ -10,12 +10,12 @@
 
 {% block content_action %}
   {% if organization and h.check_access('organization_update', {'id': organization.id}) %}
-    {% link_for _('View publisher'), named_route='publisher.read', id=organization.name, class_='btn', icon='eye-open' %}
+    {% link_for _('View Publisher'), named_route='publisher.read', id=organization.name, class_='btn btn-default', icon='eye'%}
   {% endif %}
 {% endblock %}
 
 {% block content_primary_nav %}
-  {{ h.build_nav_icon('publisher.edit', _('Edit'), id=c.group_dict.name) }}
-  {{ h.build_nav_icon('publisher.bulk_process', _('Datasets'), id=c.group_dict.name) }}
-  {{ h.build_nav_icon('publisher.members', _('Members'), id=c.group_dict.name) }}
+  {{ h.build_nav_icon('publisher.edit', _('Edit'), id=c.group_dict.name, icon='pencil-square-o') }}
+  {{ h.build_nav_icon('publisher.bulk_process', _('Datasets'), id=c.group_dict.name, icon='sitemap') }}
+  {{ h.build_nav_icon('publisher.members', _('Members'), id=c.group_dict.name, icon='users') }}
 {% endblock %}
