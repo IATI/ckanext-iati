@@ -23,7 +23,7 @@ NotAuthorized = logic.NotAuthorized
 ValidationError = logic.ValidationError
 
 
-def _background_job_wrapper(row_dict, user):
+def records_upload_process(row_dict, user):
     """
 
     :param row_dict:
@@ -239,7 +239,7 @@ def csv_upload_datasets():
 
             task[u'title'] = u"No Title" if not row_dict.get(u'title', '') else row_dict.get(u'title')
             task[u'task_id'] = str(uuid.uuid4())
-            job = jobs.enqueue(_background_job_wrapper,
+            job = jobs.enqueue(records_upload_process,
                                [json.dumps([row_dict], ensure_ascii=False).encode('utf-8'), c.user])
             task[u'task_id'] = str(job.id)
             tasks.append(json.dumps(task))

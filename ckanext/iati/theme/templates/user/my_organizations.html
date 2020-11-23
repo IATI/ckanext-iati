@@ -2,12 +2,18 @@
 
 {% block dashboard_activity_stream_context %}{% endblock %}
 
+{% block page_primary_action %}
+  {% if h.check_access('organization_create') %}
+    {% link_for _('Add Publisher'), named_route='publisher.new', class_="btn btn-primary", icon="plus-square" %}
+  {% endif %}
+{% endblock %}
+
 {% block primary_content_inner %}
 
   <h2 class="hide-heading">{{ _('My Organizations') }}</h2>
   {% if organizations %}
     <div class="wide">
-      {% snippet "organization/snippets/organization_list.html", organizations=organizations %}
+      {% snippet "organization/snippets/organization_list.html", organizations=c.page %}
     </div>
   {% else %}
     <p class="empty">
@@ -17,4 +23,5 @@
       {% endif %}
     </p>
   {% endif %}
+  {{ c.page.pager() }}
 {% endblock %}

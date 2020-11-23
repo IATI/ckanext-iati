@@ -34,11 +34,9 @@ setup(name='ckanext-iati',
       iati_publishers = ckanext.iati.plugins:IatiPublishers
       iati_datasets = ckanext.iati.plugins:IatiDatasets
       iati_theme = ckanext.iati.plugins:IatiTheme
-      iati_csv = ckanext.iati.plugins:IatiCsvImporter
 
       [paste.paster_command]
       iati-archiver=ckanext.iati.commands:Archiver
-      iati-purge=ckanext.iati.commands:PurgeCmd
       iati-first-publisher-date=ckanext.iati.commands:UpdatePublisherDate
       iati-redirects=ckanext.iati.commands:RedirectsCommand
       """,

@@ -6,7 +6,7 @@
   <h2 class="hide-heading">{{ _('My Organizations') }}</h2>
   {% if pending_organizations %}
     <div class="wide">
-      {% snippet "organization/snippets/organization_list_dashboard.html", pending=pending_organizations %}
+      {% snippet "organization/snippets/organization_list_dashboard.html", pending=c.page %}
     </div>
   {% else %}
     <p class="empty">
@@ -16,4 +16,5 @@
       {% endif %}
     </p>
   {% endif %}
+  {{ c.page.pager() }}
 {% endblock %}

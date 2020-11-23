@@ -52,6 +52,51 @@ class ArchiverViewRun(MethodView):
 
         return None
 
+    @staticmethod
+    def status(task_id=None):
+
+        result = {}
+
+        if task_id and task_id != 'undefined':
+
+            try:
+                job = jobs.job_from_id(id=task_id)
+                result.update({'status': job.get_status()})
+
+                if job.result:
+                    result['result'] = {}
+
+                    try:
+
+                        result['result'].update(job.result[0])
+                        result['result']['task_id'] = task_id
+
+                    except Exception as e:
+
+                        result.update({'status': "failed"})
+                        result['result'] = {}
+                        result['result']['issue_type'] = "unknown error"
+                        result['result']['issue_message'] = "Something went wrong, please try again or contact support."
+                        result['result']['task_id'] = task_id
+
+            except Exception as e:
+                result.update({'status': "failed"})
+                result['result'] = {}
+                result['result']['issue_type'] = "unknown error"
+                result['result'][
+                    'issue_message'] = "Something went wrong, please try again or contact support quoting the error \"Background job was not created\""
+                result['result']['task_id'] = task_id
+
+        else:
+            result.update({'status': 'failed'})
+            result['result'] = {}
+            result['result']['issue_type'] = "unknown error"
+            result['result'][
+                'issue_message'] = "Something went wrong, please try again or contact support quoting the error \"Background job was not created\""
+            result['result']['task_id'] = task_id
+
+        return json.dumps(result)
+
     def get(self, view_type, id):
         """
         Archiver view for publisher and dataset
@@ -79,7 +124,7 @@ class ArchiverViewRun(MethodView):
             except (NotFound, NotAuthorized):
                 abort(404, _(u'Group not found'))
         elif view_type == "status":
-            return archiver_run_status(id)
+            return self.status(id)
         else:
             extra_vars[u'id'] = id
             try:
@@ -161,6 +206,7 @@ class ArchiverViewRun(MethodView):
                 task[u'title'] = pkg['title']
                 pkg_stat['pkg'] = pkg
             tasks.append(json.dumps(task))
+
         pkg_stat['status'] = "success"
         pkg_stat['message'] = "All jobs are initiated successfully"
         pkg_stat['tasks'] = tasks
@@ -173,49 +219,6 @@ class ArchiverViewRun(MethodView):
             pkg_stat['from_publisher'] = True
 
         return render('user/archiver_result.html', extra_vars=pkg_stat)
-
-
-def archiver_run_status(task_id=None):
-
-    result = {}
-
-    if task_id and task_id != 'undefined':
-
-        try:
-            job = jobs.job_from_id(id=task_id)
-            result.update({'status': job.get_status()})
-
-            if job.result:
-                result['result'] = {}
-
-                try:
-
-                    result['result'].update(job.result[0])
-                    result['result']['task_id'] = task_id
-
-                except Exception as e:
-
-                    result.update({'status': "failed"})
-                    result['result'] = {}
-                    result['result']['issue_type'] = "unknown error"
-                    result['result']['issue_message'] = "Something went wrong, please try again or contact support."
-                    result['result']['task_id'] = task_id
-
-        except Exception as e:
-            result.update({'status': "failed"})
-            result['result'] = {}
-            result['result']['issue_type'] = "unknown error"
-            result['result']['issue_message'] = "Something went wrong, please try again or contact support quoting the error \"Background job was not created\""
-            result['result']['task_id'] = task_id
-
-    else:
-        result.update({'status': 'failed'})
-        result['result'] = {}
-        result['result']['issue_type'] = "unknown error"
-        result['result']['issue_message'] = "Something went wrong, please try again or contact support quoting the error \"Background job was not created\""
-        result['result']['task_id'] = task_id
-
-    return json.dumps(result)
 
 
 archiver.add_url_rule(

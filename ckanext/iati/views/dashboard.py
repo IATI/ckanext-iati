@@ -61,7 +61,6 @@ def recent_publishers():
         abort(403, _('Need to be system administrator to administer'))
 
     extra_vars = {}
-    core_group_view.set_org(is_organization)
     page = h.get_page_number(request.params) or 1
     items_per_page = 10
 
@@ -149,6 +148,10 @@ def recent_publishers_download():
 
 
 def my_pending_organizations():
+    """
+    Publishers with pending for approval
+    :return:
+    """
     log.debug('dashboard pending orgainzations')
     # Anonymous user should not be allowed to visit the link
     context = {u'model': model, u'for_view': True, u'user': g.user, u'auth_user_obj': g.userobj}
@@ -158,6 +161,15 @@ def my_pending_organizations():
             raise NotAuthorized
         pending_organizations = iati_h.organization_list_pending()
         extra_vars = _extra_template_variables(context, data_dict)
+        page = h.get_page_number(request.params) or 1
+        c.page = h.Page(
+            collection=pending_organizations,
+            page=page,
+            url=h.pager_url,
+            item_count=len(pending_organizations),
+            items_per_page=20,
+        )
+        extra_vars["page"] = c.page
         extra_vars['pending_organizations'] = pending_organizations
         return render('user/dashboard_pending_organizations.html', extra_vars)
     except NotAuthorized:
@@ -173,6 +185,15 @@ def my_organizations():
             raise NotAuthorized
         organizations = iati_h.organizations_available_with_extra_fields()
         extra_vars = _extra_template_variables(context, data_dict)
+        page = h.get_page_number(request.params) or 1
+        c.page = h.Page(
+            collection=organizations,
+            page=page,
+            url=h.pager_url,
+            item_count=len(organizations),
+            items_per_page=20,
+        )
+        extra_vars["page"] = c.page
         extra_vars['organizations'] = organizations
         return render('user/my_organizations.html', extra_vars)
     except NotAuthorized:

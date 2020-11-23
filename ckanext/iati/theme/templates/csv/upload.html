@@ -2,6 +2,10 @@
 
 {% block title %}CSV Import - {{ super() }}{% endblock %}
 
+{% block breadcrumb_content %}
+  <li class="active">{% link_for _('Import Datasets'), named_route='spreadsheet.csv_upload_datasets' %}</li>
+{% endblock %}
+
 {% block primary_content %}
 
 <h2 class="page_heading">CSV Import</h2>

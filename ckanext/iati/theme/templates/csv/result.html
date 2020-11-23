@@ -1,7 +1,10 @@
 {% extends "page.html" %}
 {% block title %}CSV Import Results - {{ super() }}{% endblock %}
 
-
+{% block breadcrumb_content %}
+  <li>{% link_for _('Import Datasets'), named_route='spreadsheet.csv_upload_datasets' %}</li>
+    <li class="active">{{ _('Import Results') }}</li>
+{% endblock %}
 
 {% block primary_content %}
 
@@ -191,7 +194,7 @@
             }
       };
       var i;
-      var all = "<table class=\"table\"> <thead> <tr> <th>Title</th> <th>Status</th>  <th>Summary</th> </tr></thead><tbody>";
+      var all = "<table class=\"table table-hover table-bordered table-striped table-sorted table-condensed w-auto table-fit\"> <thead> <tr> <th>Title</th> <th>Status</th>  <th>Summary</th> </tr></thead><tbody>";
       var tasks = {{ tasks | safe }};
           for (i=0; i< tasks.length; i++){
            var t = JSON.parse(tasks[i]);
