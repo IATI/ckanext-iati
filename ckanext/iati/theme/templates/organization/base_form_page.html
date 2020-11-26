@@ -1,0 +1,6 @@
+{% ckan_extends %}
+
+{% block breadcrumb_content %}
+  <li>{{ h.nav_link(_('Publishers'), named_route=group_type+'.index') }}</li>
+  <li class="active">{% block breadcrumb_link %}{{ h.nav_link(_('Add an Organization'), named_route=group_type+'.new') }}{% endblock %}</li>
+{% endblock %}

@@ -33,7 +33,7 @@ from ckanext.iati.views.publisher import publisher_blueprint
 from ckanext.iati.views.reports import issues
 from ckanext.iati.views.dashboard import custom_dashboard
 from ckanext.iati.views.admin import admin_tabs
-from ckanext.iati.views.help import help
+from ckanext.iati.views.helper_pages import helper_pages
 from ckanext.iati.views.spreadsheet import spreadsheet
 from ckanext.iati.views.archiver import archiver as archiver_blueprint
 
@@ -125,7 +125,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
 
     def group_types(self):
         return ['organization']
-
+   
     def form_to_db_schema_options(self, options):
         ''' This allows us to select different schemas for different
         purpose eg via the web interface or via the api or creation vs
@@ -264,7 +264,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
     # IBlueprint
     def get_blueprint(self):
         # blueprint for this extension
-        return [publisher_blueprint, custom_dashboard, issues, admin_tabs, help, spreadsheet, archiver_blueprint]
+        return [publisher_blueprint, custom_dashboard, issues, admin_tabs, helper_pages, spreadsheet, archiver_blueprint]
 
 
 class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):

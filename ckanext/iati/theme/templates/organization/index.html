@@ -15,7 +15,7 @@
 
 {% block breadcrumb_content %}
     {% if is_publisher_download_index %}
-        <li class="active">{% link_for _(' Download Publishers'), named_route='spreadsheet.index', icon='download' %}</li>
+        <li class="active">{% link_for _(' Download Records'), named_route='spreadsheet.index'%}</li>
     {% else %}
         <li class="active">{% link_for _('Publishers'), named_route='publisher.index' %}</li>
     {% endif %}
