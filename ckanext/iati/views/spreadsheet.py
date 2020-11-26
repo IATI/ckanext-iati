@@ -220,7 +220,7 @@ def csv_upload_datasets():
             _data = self._validate_csv_files(csv_file)
         except ValidationError as e:
             h.flash_error(_(e.error_dict['message']))
-            return h.redirect_to('csv_upload')
+            return h.redirect_to('spreadsheet.csv_upload_datasets')
 
         vars['file_name'] = csv_file.filename
         data = io.BytesIO(_data)
