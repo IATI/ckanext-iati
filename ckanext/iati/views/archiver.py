@@ -157,7 +157,7 @@ class ArchiverViewRun(MethodView):
             u'apikey': config.get('iati.admin_user.api_key'),
             u'api_version': 3,
         }
-        import ckan.plugins as p
+
         if not c.user:
             p.toolkit.abort(403, 'Permission denied, only system administrators can run the archiver.')
 
@@ -174,15 +174,20 @@ class ArchiverViewRun(MethodView):
             package_ids = [package_id]
         elif publisher_id:
             try:
-                org = p.toolkit.get_action('organization_show')(context, {'id': publisher_id, 'include_datasets': True})
+                org = p.toolkit.get_action('organization_show')(
+                    context, {'id': publisher_id, 'include_datasets': False})
                 pkg_stat['group_dict'] = org
             except p.toolkit.ObjectNotFound:
-
                 pkg_stat['status'] = "Error"
                 pkg_stat['message'] = 'Could not find Publisher: {0}'.format(publisher_id)
                 return pkg_stat
 
-            package_ids = [p['name'] for p in org['packages']]
+            # Assuming max packages for publishers is 1000
+            package_ids = p.toolkit.get_action('package_search')(
+                context,
+                {"fq": "organization:{}".format(org["name"]), 'rows': 1000}
+            )["results"]
+            
         else:
             try:
                 package_ids = p.toolkit.get_action('package_list')(context, {})
@@ -191,7 +196,11 @@ class ArchiverViewRun(MethodView):
                 pkg_stat['message'] = 'Could not find Publisher: {0}'.format(publisher_id)
                 return pkg_stat
 
-        for index, pkg_id in enumerate(package_ids):
+        for index, _pkg in enumerate(package_ids):
+            if isinstance(_pkg, dict):
+                pkg_id = _pkg['name']
+            else:
+                pkg_id = _pkg
             task = OrderedDict()
 
             job = jobs.enqueue(arch.run, [pkg_id, None, publisher_id])
@@ -200,7 +209,7 @@ class ArchiverViewRun(MethodView):
             task[u'name'] = pkg_id
             task[u'status'] = 'Queued'
             if publisher_id:
-                task[u'title'] = org['packages'][index]['title']
+                task[u'title'] = _pkg[u'title']
             else:
                 pkg = p.toolkit.get_action('package_show')(context, {'id': pkg_id})
                 task[u'title'] = pkg['title']
@@ -213,7 +222,7 @@ class ArchiverViewRun(MethodView):
         if publisher_id:
             pkg_stat['id'] = publisher_id
         else:
-            pkg_stat['id'] = pkg_id
+            pkg_stat['id'] = id
 
         if publisher_id:
             pkg_stat['from_publisher'] = True
