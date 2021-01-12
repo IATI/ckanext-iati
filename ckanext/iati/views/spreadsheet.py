@@ -8,6 +8,7 @@ import ckan.plugins as p
 import ckan.lib.helpers as h
 from ckan.views import group as core_group_view
 from ckanext.iati.logic.csv_action import PublisherRecordsUpload, PublisherRecordsDownload
+from ckanext.iati import helpers as iati_h
 from collections import OrderedDict
 import json
 import io
@@ -145,7 +146,7 @@ def records_upload_process(row_dict, user):
                         iati_key = 'registry-file-id'
                     log.error('Error in row %i: %s: %s' % (
                         i + 1, iati_key, str(msgs)))
-                    errors[i][iati_key] = parse_error_object_to_list(msgs)
+                    errors[i][iati_key] = iati_h.parse_error_object_to_list(msgs)
             except p.toolkit.NotAuthorized, e:
                 msg = 'Not authorized to publish to this organization: %s' % row['registry-publisher-id']
                 log.error('Error in row %i: %s' % (i + 1, msg))
