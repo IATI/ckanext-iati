@@ -99,6 +99,7 @@ def run(package_id=None, publisher_id=None, pub_id=None):
     else:
         try:
             package_ids = toolkit.get_action('package_list')(context, {})
+            print "=================== TOTAL PACKAGES FOUND: {} =========================".format(str(len(package_ids)))
         except toolkit.ObjectNotFound:
             res = {}
             log.error('Could not find package: {0}'.format(package_id))
@@ -121,12 +122,12 @@ def run(package_id=None, publisher_id=None, pub_id=None):
     consecutive_errors = 0
 
 
-    for package_id in package_ids:
+    for cnt, package_id in enumerate(package_ids, 1):
         result = {}
         updated_package = False
         try:
+            print "========= checking package ========" + package_id + ": " + str(cnt)
             updated_package, issue_type, issue_message = archive_package(package_id, context, consecutive_errors)
-            print "========= checking package ========" +package_id
             result['publisher_id'] = pub_id
             result['package_id'] = package_id
             result['issue_type'] = issue_type
@@ -392,6 +393,7 @@ def update_package(context, data_dict, message=None):
 
     updated_package = toolkit.get_action('package_update')(context, data_dict)
     log.debug('Package {0} updated with new extras'.format(data_dict['name']))
+    print "================== Package Updated: {} ===============".format(data_dict['name'])
 
 
     return updated_package
@@ -455,7 +457,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
         # hence setting default user agent to Mozilla/5.0.
         try:
             res = requests.get(resource['url'], timeout=url_timeout,
-                               headers=request_headers, verify=False)
+                               headers=request_headers, verify=True)
         except Exception, e:
             request_headers['User-Agent'] = 'Mozilla/5.0'
             res = requests.get(resource['url'], timeout=url_timeout,

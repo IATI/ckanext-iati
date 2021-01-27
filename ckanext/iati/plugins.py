@@ -395,7 +395,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     ## IPackageController
     def after_show(self, context, data_dict):
         if data_dict.get('owner_org'):
-            org = p.toolkit.get_action('organization_show')({}, {'id': data_dict['owner_org']})
+            org = p.toolkit.get_action('organization_show')(context, {'id': data_dict['owner_org']})
             if org:
                 new_extras = []
                 for key in ('publisher_source_type', 'publisher_organization_type', 'publisher_country',
