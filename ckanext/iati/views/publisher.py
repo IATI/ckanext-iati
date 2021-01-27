@@ -6,7 +6,16 @@ import ckan.model as model
 import ckan.logic as logic
 from ckan.common import c, g, _, request, config
 from ckan.lib.base import render
+import ckan.lib.base as base
+import ckan.lib.navl.dictization_functions as dict_fns
 from ckanext.iati.logic.csv_action import PublishersListDownload
+
+NotFound = logic.NotFound
+NotAuthorized = logic.NotAuthorized
+ValidationError = logic.ValidationError
+tuplize_dict = logic.tuplize_dict
+clean_dict = logic.clean_dict
+parse_params = logic.parse_params
 
 publisher_blueprint = Blueprint(u'publisher', __name__,
                                 url_prefix=u'/publisher',
@@ -53,6 +62,52 @@ def publisher_list_download(output_format, group_type, is_organization):
     return response
 
 
+class MembersGroupViewPatch(publisher.MembersGroupView):
+    """
+    This is the patch to solve the core ckan bug where action user_invite error is not captured.
+    """
+
+    def post(self, group_type, is_organization, id=None):
+        publisher.set_org(is_organization)
+        context = self._prepare(id)
+        data_dict = clean_dict(
+            dict_fns.unflatten(tuplize_dict(parse_params(request.form))))
+        data_dict['id'] = id
+
+        email = data_dict.get(u'email')
+
+        if email:
+            user_data_dict = {
+                u'email': email,
+                u'group_id': data_dict['id'],
+                u'role': data_dict['role']
+            }
+            del data_dict['email']
+            try:
+                user_dict = publisher._action(u'user_invite')(context, user_data_dict)
+                data_dict['username'] = user_dict['name']
+            except NotFound:
+                base.abort(404, _(u'Group not found'))
+            except ValidationError as e:
+                h.flash_error(e.error_summary)
+                return h.redirect_to(u'{}.member_new'.format(group_type), id=id)
+
+        try:
+            group_dict = publisher._action(u'group_member_create')(context, data_dict)
+        except NotAuthorized:
+            base.abort(403, _(u'Unauthorized to add member to group %s') % u'')
+        except NotFound:
+            base.abort(404, _(u'Group not found'))
+        except ValidationError as e:
+            h.flash_error(e.error_summary)
+            return h.redirect_to(u'{}.member_new'.format(group_type), id=id)
+
+        # TODO: Remove
+        g.group_dict = group_dict
+
+        return h.redirect_to(u'{}.members'.format(group_type), id=id)
+
+
 def register_group_plugin_rules(blueprint):
     actions = [
         u'member_delete', u'history', u'followers', u'follow',
@@ -73,7 +128,7 @@ def register_group_plugin_rules(blueprint):
         u'/edit_members/<id>', methods=[u'GET', u'POST'], view_func=publisher.members)
     blueprint.add_url_rule(
         u'/member_new/<id>',
-        view_func=publisher.MembersGroupView.as_view(str(u'member_new')))
+        view_func=MembersGroupViewPatch.as_view(str(u'member_new')))
     blueprint.add_url_rule(
         u'/bulk_process/<id>',
         view_func=publisher.BulkProcessView.as_view(str(u'bulk_process')))
