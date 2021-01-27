@@ -1,4 +1,4 @@
-from flask import Blueprint, make_response
+from flask import Blueprint
 from ckan.views import group as publisher
 import ckan.plugins as p
 import ckan.lib.helpers as h
@@ -55,11 +55,7 @@ def members_read(id, group_type, is_organization):
 def publisher_list_download(output_format, group_type, is_organization):
     publisher_downloader = PublishersListDownload(output_format)
     output = publisher_downloader.download()
-    response = make_response(output)
-    file_name = 'iati-publishers'
-    response.headers['Content-type'] = 'text/csv'
-    response.headers['Content-disposition'] = 'attachment;filename=%s.csv' % str(file_name)
-    return response
+    return output
 
 
 class MembersGroupViewPatch(publisher.MembersGroupView):
