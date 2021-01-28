@@ -26,7 +26,7 @@ from ckanext.iati.logic.validators import (
     first_publisher_date_validator,
     validate_new_publisher_id_against_old
 )
-from ckanext.iati.logic.converters import strip
+from ckanext.iati.logic.converters import strip, convert_date_string_to_iso_format
 import ckanext.iati.helpers as iati_helpers
 from ckanext.iati.model import IATIRedirects
 from ckanext.iati.views.publisher import publisher_blueprint
@@ -203,8 +203,8 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'publisher_data_quality': default_validators,
             'publisher_organization_type': default_validators,
             'publisher_implementation_schedule': default_validators,
-            'publisher_first_publish_date': [_ignore_missing, _convert_to_extras, unicode,
-                                             first_publisher_date_validator]
+            'publisher_first_publish_date': [_ignore_missing, convert_date_string_to_iso_format, _convert_to_extras,
+                                             unicode, first_publisher_date_validator]
         })
 
         return schema
