@@ -550,7 +550,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'group_show',
             'organization_list',
             'organization_list_pending',
-            'user_show',
+            #'user_show',
             'user_list',
             'user_create',
             'resource_delete',
