@@ -51,15 +51,16 @@ _text = sqlalchemy.text
 
 def package_create(context, data_dict):
 
-    # Part of first publisher date patch
-    if 'owner_org' in data_dict.keys():
-        hlp.first_published_date_patch(data_dict.get('owner_org'))
     # The only thing we do here is remove some extras that are always
     # inherited from the dataset publisher, to avoid duplicating them
-
     _remove_extras_from_data_dict(data_dict)
+    created_package = create_core.package_create(context, data_dict)
 
-    return create_core.package_create(context, data_dict)
+    # Part of first publisher date patch - after package create patch the organization
+    if 'owner_org' in data_dict.keys():
+        hlp.first_published_date_patch(created_package.get('owner_org'))
+
+    return created_package
 
 
 def package_update(context, data_dict):
