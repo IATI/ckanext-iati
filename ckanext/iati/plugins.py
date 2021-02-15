@@ -63,39 +63,6 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         map.redirect('/publishers/{url:.*}', '/publisher/{url}')
         map.redirect('/dataset_search','/dataset')
 
-        # Custom redirects for publisher renames
-        # Add a new line for each redirect, in the form
-        #
-        #   ('old_name', 'new_name',),
-        # redirects.json file is located in redirects dir
-        # Use commad paster --plugin=ckanext-iati iati-first-publisher-date update_redirects
-        # To get all the latest renames
-
-        renames = [
-            ('amrefuk', 'amrefha',),
-            ('ausaid', 'ausgov',),
-            ('mrdf', 'allwecan',),
-            ('unesco-ihe', 'ihedelft')
-        ]
-
-        _redirects = IATIRedirects.get_redirects()
-        
-        for row in _redirects:
-            renames.append((row[2], row[1]))
-
-        for rename in renames:
-            # Publisher pages
-            map.redirect('/publisher/' + rename[0], '/publisher/' + rename[1],
-                         _redirect_code='301 Moved Permanently')
-            map.redirect('/publisher/{url:.*}/' + rename[0] , '/publisher/{url}/' + rename[1],
-                         _redirect_code='301 Moved Permanently')
-
-            # Dataset pages
-            map.redirect('/dataset/' + rename[0] + '-{code:.*}', '/dataset/' + rename[1] + '-{code:.*}',
-                         _redirect_code='301 Moved Permanently')
-            map.redirect('/dataset/{url:.*}/' + rename[0] + '-{code:.*}', '/dataset/{url}/' + rename[1] + '-{code:.*}',
-                         _redirect_code='301 Moved Permanently')
-
         map.redirect('/api/{ver:1|2|3}/rest/publisher',
                      '/api/{ver}/rest/group')
         map.redirect('/api/rest/publisher', '/api/rest/group')
