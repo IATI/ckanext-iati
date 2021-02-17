@@ -6,14 +6,13 @@ import datetime
 import json
 from markupsafe import Markup, escape
 from sqlalchemy import create_engine
-# Bad import: should be in toolkit
-from pylons import config
 from webhelpers.html import literal
 import ckan.authz as authz
 import ckan.model as model # get_licenses should be in core
 from ckan.model import User
 import ckan.lib.dictization.model_dictize as model_dictize
 import ckan.plugins as p
+from ckan.plugins.toolkit import config
 import ckan.lib.helpers as helpers
 import ckan.lib.formatters as formatters
 from ckan.logic import check_access, NotAuthorized

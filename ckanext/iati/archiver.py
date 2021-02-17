@@ -13,7 +13,7 @@ import warnings
 import logging
 import tempfile
 
-from pylons import config
+from ckan.plugins.toolkit import config
 
 
 from ckan import model

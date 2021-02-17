@@ -4,7 +4,7 @@ import csv
 import tempfile
 from urlparse import urljoin
 import inspect
-from pylons import config
+from ckan.plugins.toolkit import config
 import sqlalchemy
 import sys
 from ckan import logic
