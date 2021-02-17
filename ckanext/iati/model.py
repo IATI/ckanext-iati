@@ -7,6 +7,8 @@ from sqlalchemy import Column, DateTime, UnicodeText
 from sqlalchemy import create_engine
 from sqlalchemy import func
 from ckan.plugins.toolkit import config
+import csv
+import os
 import logging
 
 log = logging.getLogger(__name__)
@@ -30,6 +32,39 @@ class IATIRedirects(Base):
     current_name = Column(UnicodeText, nullable=True, index=True)
     updated = Column(DateTime(timezone=True), server_default=func.now(), index=False)
 
+    @staticmethod
+    def save_redirect_in_filestore_directory(data):
+        """
+        Saves the redirects data as cs in filestore where all the resources are stored
+        i.e. in path /var/lib/ckan/
+        :param data:
+        :return:
+        """
+        _redirects_dir = os.path.join(config.get('ckan.storage_path', ''), "redirects")
+        try:
+            if not os.path.isdir(_redirects_dir):
+                os.mkdir(_redirects_dir)
+        except Exception as e:
+            log.error(e)
+            log.error("Error when creating a new directory in redirects path")
+            return None
+
+        columns = ('publisher_id', 'current_name', 'old_name')
+
+        try:
+            with open(os.path.join(_redirects_dir, 'redirects.csv'), 'w') as redirects_file:
+                writer = csv.writer(redirects_file, delimiter=',')
+                writer.writerow(columns)
+                for row in data:
+                    writer.writerow(row)
+
+            log.info("CSV file generated in {}".format(_redirects_dir))
+        except Exception as e:
+            log.error(e)
+            log.error("Failed to write data to csv..")
+            return None
+        return None
+
     @classmethod
     def update_redirects(cls):
         """
@@ -39,6 +74,7 @@ class IATIRedirects(Base):
         log.info("Updating redirects")
         model.Session.query(cls).delete()
         _data = cls._extract_redirects()
+
         for row in _data:
             redirect = cls()
             redirect.group_id = row[0]
@@ -56,6 +92,7 @@ class IATIRedirects(Base):
             model.Session.close()
             log.error(e)
             raise ValueError("Something wrong while inserting values to db table")
+        cls.save_redirect_in_filestore_directory(_data)
 
     @staticmethod
     def _extract_redirects():

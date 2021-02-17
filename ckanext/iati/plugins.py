@@ -495,7 +495,6 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'email_validator',
             'get_user_list_by_email',
             'first_published_date_patch',
-            'publisher_first_published_date_validator',
             'organization_form_read_only',
             'get_publisher_list_download_formats',
             'get_archiver_status'

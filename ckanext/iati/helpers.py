@@ -15,7 +15,7 @@ import ckan.plugins as p
 from ckan.plugins.toolkit import config
 import ckan.lib.helpers as helpers
 import ckan.lib.formatters as formatters
-from ckan.logic import check_access, NotAuthorized
+from ckan.logic import check_access, NotAuthorized, ValidationError
 import ckanext.iati.lists as lists
 import ckan.logic as logic
 from ckan.common import c
@@ -23,6 +23,7 @@ from ckanext.dcat.processors import RDFSerializer
 from collections import OrderedDict
 from email_validator import validate_email as _validate_email
 from dateutil.parser import parse as dt_parse
+import uuid
 import logging
 log = logging.getLogger(__name__)
     
@@ -317,67 +318,67 @@ def organization_list_pending():
     else:
         return _pending_organization_list_for_user()
 
+def is_string_uuid(val):
+    """
+    Checks if the given string is a valid UUID
+    :param val: str
+    :return: boolean
+    """
+    if val and isinstance(val, string):
+        try:
+            uuid.UUID(val)
+            return True
+        except ValueError:
+            pass
+
+    return False
+
 
 def get_first_published_date(organization):
-    if 'publisher_contact_email' not in organization or not organization['publisher_contact_email']:
-        organization.update({'publisher_contact_email': 'Email not found'})
-    try:
-        publisher_first_publish_date = organization['publisher_first_publish_date']
-        if publisher_first_publish_date == '':
-            raise KeyError
-        else:
-            return publisher_first_publish_date
-    except KeyError:
-        date_not_found_error = 'Date not found'
+    """
+    Get first publisher date from an organization. Check if the date is invalid, get the date
+    :param organization:
+    :return:
+    """
+    _invalid_dates = ('No data published', 'Date not found', 'Date is not valid')
 
-        # Setup for search, since package_search action returns the first
-        # 1000 rows by default.
-        dates = []
-        if organization.get("id", ):
-            fq = 'owner_org:{}'.format(organization["id"])
+    try:
+        # Check if publisher date already exists. return the existing date - do not modify
+        org_pub_date = organization.get('publisher_first_publish_date', '')
+        if org_pub_date and org_pub_date.strip() and (org_pub_date  not in _invalid_dates):
+            return org_pub_date
+
+        org_id = organization.get('id', '')
+
+        if is_string_uuid(org_id):
+            fq = 'owner_org:{}'.format(organization['id'])
         else:
             fq = 'organization:{}'.format(organization['name'])
 
-        data_dict = {
-            'fq': fq,
-            'rows': 1000
-        }
+        pkg_search_results = p.toolkit.get_action('package_search')(
+            {}, data_dict={'fq': fq, 'rows': 1000}).get('results', [])
 
-        package_search_results = p.toolkit.get_action('package_search')(
-            {}, data_dict=data_dict)['results']
+        if pkg_search_results:
+            return ''
 
-        if len(package_search_results) == 0:
-            return 'No data published'
+        first_date = ''
+        for pkg in pkg_search_results:
+            # For IATI one package can have only one resource
+            resc_date = pkg.get('metadata_created', '') or pkg.get('metadata_modified', '')
+            if resc_date:
+                try:
+                    if not first_date:
+                        first_date = resc_date
+                    else:
+                        if dt_parse(value) < dt_parse(first_date):
+                            first_date = value
+                except Exception as e:
+                    log.error(e)
+        return first_date
 
-        for package in package_search_results:
-            try:
-                resource_created_date = package['resources'][0]['created']
-            except:
-                continue
-
-            dates.append(resource_created_date)
-
-        if len(dates) == 0:
-            return date_not_found_error
-
-        publisher_first_publish_date = sorted(dates)[0]
-
-        if not publisher_first_publish_date:
-            return date_not_found_error
-
-        data_dict = {
-            'id': organization['id'],
-            'publisher_first_publish_date':
-                publisher_first_publish_date
-        }
-
-        '''try:
-            check_access('organization_patch', {})
-            p.toolkit.get_action('organization_patch')({}, data_dict=data_dict)
-        except NotAuthorized:
-            pass'''
-
-        return publisher_first_publish_date
+    except Exception as e:
+        log.error(e)
+        return ''
 
 def render_first_published_date(value, date_format='%d %B %Y'):
 
@@ -422,11 +423,6 @@ def check_publisher_contact_email(organization):
             'publisher_contact_email': 'please@update.email'
         }
 
-        '''try:
-            check_access('organization_patch', {})
-            p.toolkit.get_action('organization_patch')({}, data_dict=data_dict)
-        except NotAuthorized:
-            pass'''
 
         return data_dict['publisher_contact_email']
     else:
@@ -516,55 +512,40 @@ def get_user_list_by_email(value):
         return users
 
 
-def publisher_first_published_date_validator(data_dict):
-    """  This is the patch if first published date is empty take first resource date.
-     which was done previously during read phase and it is inconsistent.
-     This can be done through helper function 'first_published_date_patch'. But,
-     Looks like organization_patch dosen't work while updating the organization and avoid multiple organization_show,
-      """
-    try:
-        invalid_dates = ['No data published', 'Date not found', 'Date is not valid', '']
-        first_pub_date = data_dict.get('publisher_first_publish_date', '')
-        if not first_pub_date or (first_pub_date in invalid_dates) or (first_pub_date is None):
-            first_pub_date = get_first_published_date(data_dict)
-        else:
-            try:
-                datetime.datetime.strptime(first_pub_date, "%Y-%m-%dT%H:%M:%S.%f")
-            except ValueError:
-                _date = datetime.datetime.strptime(first_pub_date, "%Y-%m-%d")
-                first_pub_date = _date.strftime("%Y-%m-%dT%H:%M:%S.%f")
-
-        if str(first_pub_date).strip() not in invalid_dates:
-            data_dict['publisher_first_publish_date'] = first_pub_date
-    except Exception, e:
-        print(e)
-        log.warning("Cannot get the first published date - {}", str(e))
-
-    return data_dict
-
-
 def first_published_date_patch(org_id):
-    """ This is the patch for publisher first published date - this patches the organization when
+    """
+    This is the patch for publisher first published date - this patches the organization when
     new public package is created. Alos updates date to db if it is empty while updating the package
     e.g private to public or if the date is empty when resource,
-    this will be throwing error for editors who do not have writes to update organization. This error can be ignored"""
-    try:
-        organization = p.toolkit.get_action('organization_show')({}, {'id': org_id})
+    this will be throwing error for editors who do not have writes to update organization. This error can be ignored
+    """
+    patch_dict = dict()
+    _context = {
+        "user": config.get('iati.admin_user.name'),
+        "model": model
+    }
 
-        organization = publisher_first_published_date_validator(organization)
+    organization = p.toolkit.get_action('organization_show')({}, {'id': org_id})
 
-        data_dict = {
-            'id': organization['id'],
-            'publisher_first_publish_date': organization['publisher_first_publish_date']
-        }
+    if 'publisher_contact_email' not in organization or not organization.get('publisher_contact_email', ''):
+        # We need to patch the organization with email.
+        # Other wise first publisher date patch fails
+        patch_dict['publisher_contact_email'] = ['Email not found']
 
+    org_first_published_date = organization.get('publisher_first_publish_date', '')
+    calculated_date = get_first_published_date(organization)
+
+    if calculated_date != org_first_published_date:
+        patch_dict['publisher_first_publish_date'] = calculated_date
+
+    if patch_dict:
+        patch_dict['id'] = organization['id']
         try:
-            check_access('organization_patch', {})
-            p.toolkit.get_action('organization_patch')({}, data_dict=data_dict)
-        except NotAuthorized:
-            pass
-    except Exception, e:
-        log.warning("Cannot be patched - {}", e)
+            p.toolkit.get_action('organization_patch')(_context, data_dict=patch_dict)
+        except (ValidationError, NotAuthorized) as e:
+            log.error(e)
+        except Exception as e:
+            log.info(e)
 
 
 def organization_form_read_only(data):
