@@ -324,7 +324,7 @@ def is_string_uuid(val):
     :param val: str
     :return: boolean
     """
-    if val and isinstance(val, string):
+    if val and isinstance(val, str):
         try:
             uuid.UUID(val)
             return True
@@ -342,43 +342,40 @@ def get_first_published_date(organization):
     """
     _invalid_dates = ('No data published', 'Date not found', 'Date is not valid')
 
-    try:
-        # Check if publisher date already exists. return the existing date - do not modify
-        org_pub_date = organization.get('publisher_first_publish_date', '')
-        if org_pub_date and org_pub_date.strip() and (org_pub_date  not in _invalid_dates):
-            return org_pub_date
+    # Check if publisher date already exists. return the existing date - do not modify
+    org_pub_date = organization.get('publisher_first_publish_date', '')
+    if org_pub_date and org_pub_date.strip() and (org_pub_date  not in _invalid_dates):
+        return org_pub_date
 
-        org_id = organization.get('id', '')
+    org_id = organization.get('id', '')
 
-        if is_string_uuid(org_id):
-            fq = 'owner_org:{}'.format(organization['id'])
-        else:
-            fq = 'organization:{}'.format(organization['name'])
+    if is_string_uuid(org_id):
+        fq = 'owner_org:{}'.format(organization['id'])
+    else:
+        fq = 'organization:{}'.format(organization['name'])
 
-        pkg_search_results = p.toolkit.get_action('package_search')(
-            {}, data_dict={'fq': fq, 'rows': 1000}).get('results', [])
+    pkg_search_results = p.toolkit.get_action('package_search')(
+        {}, data_dict={'fq': fq, 'rows': 1000}).get('results', [])
 
-        if pkg_search_results:
-            return ''
-
-        first_date = ''
-        for pkg in pkg_search_results:
-            # For IATI one package can have only one resource
-            resc_date = pkg.get('metadata_created', '') or pkg.get('metadata_modified', '')
-            if resc_date:
-                try:
-                    if not first_date:
-                        first_date = resc_date
-                    else:
-                        if dt_parse(value) < dt_parse(first_date):
-                            first_date = value
-                except Exception as e:
-                    log.error(e)
-        return first_date
-
-    except Exception as e:
-        log.error(e)
+    if not pkg_search_results:
         return ''
+
+    first_date = ''
+    for pkg in pkg_search_results:
+        # For IATI one package can have only one resource
+        resc_date = pkg.get('metadata_created', '') or pkg.get('metadata_modified', '')
+        if resc_date:
+            try:
+                if not first_date:
+                    first_date = resc_date
+                else:
+                    if dt_parse(value) < dt_parse(first_date):
+                        first_date = value
+            except ValueError as e:
+                log.info("First published date parse error")
+                log.error(e)
+    return first_date
+
 
 def render_first_published_date(value, date_format='%d %B %Y'):
 
@@ -391,6 +388,7 @@ def render_first_published_date(value, date_format='%d %B %Y'):
         return datetime.datetime.strptime(value, current_date_format).strftime(date_format)
     except ValueError:
         return 'Date is not valid'
+
 
 def render_first_published_date_parse(value, date_format='%d %B %Y', default_value='NA/Incorrect format'):
 
@@ -519,6 +517,9 @@ def first_published_date_patch(org_id):
     e.g private to public or if the date is empty when resource,
     this will be throwing error for editors who do not have writes to update organization. This error can be ignored
     """
+    if not config.get('iati.admin_user.name', ''):
+        raise ValidationError("iati.admin_user.name config is not set")
+
     patch_dict = dict()
     _context = {
         "user": config.get('iati.admin_user.name'),
@@ -545,6 +546,7 @@ def first_published_date_patch(org_id):
         except (ValidationError, NotAuthorized) as e:
             log.error(e)
         except Exception as e:
+            log.error("First publisher date patch error id: {}".format(org_id))
             log.info(e)
 
 

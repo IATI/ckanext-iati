@@ -65,14 +65,15 @@ def package_create(context, data_dict):
 
 def package_update(context, data_dict):
     
-    # Part of first publisher date patch
-    if 'owner_org' in data_dict.keys():
-        hlp.first_published_date_patch(data_dict.get('owner_org'))
     # The only thing we do here is remove some extras that are always
     # inherited from the dataset publisher, to avoid duplicating them
     _remove_extras_from_data_dict(data_dict)
+    updated_package = update_core.package_update(context, data_dict)
+    # Part of first publisher date patch
+    if 'owner_org' in data_dict:
+        hlp.first_published_date_patch(updated_package.get('owner_org'))    
 
-    return update_core.package_update(context, data_dict)
+    return updated_package
 
 def package_patch(context, data_dict):
 
@@ -111,9 +112,6 @@ def organization_update(context, data_dict):
             {'id': data_dict.get('id') or data_dict.get('name')})
     old_state = old_org_dict.get('state')
 
-    # Patch for publisher first published date
-    data_dict = hlp.publisher_first_published_date_validator(data_dict)
-
     new_org_dict = update_core.organization_update(context, data_dict)
     new_state = new_org_dict.get('state')
 
@@ -123,14 +121,6 @@ def organization_update(context, data_dict):
         h.flash_success('Publisher activated, a notification email has been sent to its administrators.')
 
     return new_org_dict
-
-
-def organization_patch(context, data_dict):
-
-    if "publisher_first_publish_date" in data_dict:
-        data_dict = hlp.publisher_first_published_date_validator(data_dict)
-
-    return patch_core.organization_patch(context, data_dict)
 
 
 @p.toolkit.side_effect_free

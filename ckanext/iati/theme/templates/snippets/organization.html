@@ -52,14 +52,14 @@ Example:
         {% set contact_email = h.check_publisher_contact_email(organization) %}
       {% endif %}
 
-      {% set first_published_date = h.get_first_published_date(organization) %}
-      {% if first_published_date != 'Date not found' and first_published_date != 'No data published' %}
-        {% set date_format = '%d %B %Y' %}
-        {% set rendered_first_published_date = h.render_first_published_date(first_published_date, date_format) %}
-        <div>
-          <p>First published date:<br /> {{ rendered_first_published_date }}</p>
-        </div>
+      {% set first_published_date = organization.publisher_first_publish_date %}
+      {% if first_published_date %}
+          {% set date_format = '%d %B %Y' %}
+          {% set first_published_date = h.render_first_published_date(first_published_date, date_format) %}
       {% endif %}
+       <div>
+         <p>First published date:<br /> {{ first_published_date }}</p>
+       </div>
 
       {% if organization.publisher_url %}
       <div>
