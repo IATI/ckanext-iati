@@ -183,7 +183,7 @@ def iati_org_identifier_validator(key, data, errors, context):
     # if the ID exists and it doesn't belong to the org submitting the form
     # or the API request, block it
     if publisher_id_exists and ( publisher_id_exists.state != "deleted") and (publisher_id_exists.id != group_id):
-        errors[key].append('IATI identifier already exists in the database.')
+        errors[key].append('IATI identifier already exists. Please verify if your organisation already has a publisher account.')
 
 
 def remove_leading_or_trailing_spaces(value,context):
