@@ -5,6 +5,7 @@ import json
 import urllib
 import json
 from ckan.common import _
+from ckan.plugins import toolkit
 from ckanext.archiver import tasks
 import logging
 
@@ -30,14 +31,14 @@ def link_checker(context, data):
     url_timeout = data.get('url_timeout', 30)
 
     error_message = ''
-    headers = {'User-Agent': USER_AGENT}
+    req_headers = {'User-Agent': toolkit.config.get('ckanext.archiver.user_agent_string', 'Mozilla/5.0')}
 
     url = tasks.tidy_url(data['url'])
-
+    resp_headers = dict()
     # Send a head request
     try:
-        res = requests.head(url, timeout=url_timeout, verify=False)
-        headers = res.headers
+        with requests.get(url, headers=req_headers, timeout=url_timeout, verify=False, stream=True) as res:
+            resp_headers = res.headers
     except httplib.InvalidURL, ve:
         log.error("Could not make a head request to %r, error is: %s."
                   " Package is: %r. This sometimes happens when using an old version of requests on a URL"
@@ -67,4 +68,5 @@ def link_checker(context, data):
             error_message = _('Server returned HTTP error status: %s %s') % \
                 (res.status_code, res.reason)
             raise tasks.LinkHeadRequestError(error_message)
-    return json.dumps(dict(headers))
+        
+    return json.dumps(dict(resp_headers))

@@ -12,10 +12,7 @@ import cgitb
 import warnings
 import logging
 import tempfile
-
 from ckan.plugins.toolkit import config
-
-
 from ckan import model
 import ckan.plugins.toolkit as toolkit
 from ckanext.iati.helpers import extras_to_dict, extras_to_list
@@ -25,7 +22,7 @@ from ckanext.iati.linkchecker_patch import link_checker as checker
 
 tasks.link_checker = checker
 
-log = logging.getLogger('iati_archiver')
+log = logging.getLogger(__name__)
 # Max content-length of archived files, larger files will be ignored
 MAX_CONTENT_LENGTH = int(config.get('ckanext-archiver.max_content_length',
                                     50000000))
@@ -75,7 +72,6 @@ def run(package_id=None, publisher_id=None, pub_id=None):
         package_ids = [package_id]
     elif publisher_id:
         try:
-            print 'checking publisher: '+ publisher_id
             org = toolkit.get_action('organization_show')(context,
                                                           {'id': publisher_id,
                                                            'include_datasets': True})
@@ -379,25 +375,21 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
         'url': resource['url'],
         'url_timeout': url_timeout
     })
-    user_agent_string = config.get('ckanext.archiver.user_agent_string', None)
+    user_agent_string = config.get('ckanext.archiver.user_agent_string', 'Mozilla/5.0')
 
     def _download_resource(resource_url, timeout):
-        request_headers = {}
-        log.info('User agent: {0}'.format(user_agent_string))
-        if user_agent_string is not None:
-            request_headers['User-Agent'] = user_agent_string
+        _request_headers = {'User-Agent': user_agent_string}
         # Part of 403 url error - if user agent is missing or
         # some sites do not accept IATI (CKAN) as user agent.
         # hence setting default user agent to Mozilla/5.0.
         try:
-            res = requests.get(resource['url'], timeout=url_timeout,
-                               headers=request_headers, verify=True)
+            response = requests.get(resource['url'], timeout=url_timeout,
+                                    headers=_request_headers, verify=True)
         except Exception, e:
             request_headers['User-Agent'] = 'Mozilla/5.0'
-            res = requests.get(resource['url'], timeout=url_timeout,
-                               headers=request_headers, verify=False)
-        return res
-
+            response = requests.get(resource['url'], timeout=url_timeout,
+                                    headers=_request_headers, verify=False)
+        return response
 
     try:
         headers = json.loads(tasks.link_checker(link_context, link_data))
