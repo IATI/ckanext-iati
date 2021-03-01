@@ -20,6 +20,11 @@ from ckanext.iati.lists import IATI_STANDARD_VERSIONS
 from ckanext.archiver import tasks
 from ckanext.iati.linkchecker_patch import link_checker as checker
 
+# Disable warning
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+
 tasks.link_checker = checker
 
 log = logging.getLogger(__name__)
@@ -72,9 +77,7 @@ def run(package_id=None, publisher_id=None, pub_id=None):
         package_ids = [package_id]
     elif publisher_id:
         try:
-            org = toolkit.get_action('organization_show')(context,
-                                                          {'id': publisher_id,
-                                                           'include_datasets': True})
+            toolkit.get_action('organization_show')(context, {'id': publisher_id, 'include_datasets': False})
         except toolkit.ObjectNotFound:
             res = {}
             log.error('Could not find Publisher: {0}'.format(publisher_id))
@@ -84,11 +87,18 @@ def run(package_id=None, publisher_id=None, pub_id=None):
             results.append(res)
             return results
 
-        package_ids = [p['name'] for p in org['packages']]
+        package_search = toolkit.get('package_search')(
+            context, {
+                "fq": 'owner_org:{}'.format(organization['id']),
+                "rows": 1000  # unlikely 1 single organization crossing 1000 dataset
+            })
+        package_ids = [p['id'] for p in package_search]
         publisher_update = True
     else:
         try:
-            package_ids = toolkit.get_action('package_list')(context, {})
+            #TODO: we need to write an iterator with limit and offset to get package by package
+            # as no of packages grow
+            package_ids = toolkit.get_action('package_list')(context, {"limit": 1000000})
         except toolkit.ObjectNotFound:
             res = {}
             log.error('Could not find package: {0}'.format(package_id))
@@ -100,23 +110,22 @@ def run(package_id=None, publisher_id=None, pub_id=None):
 
     t1 = datetime.datetime.now()
     log.info('IATI Archiver: starting {0}'.format(str(t1)))
-    log.info('Number of datasets to archive: {0}'.format(len(package_ids)))
+    log.info('Number of datasets to archive: {0}'.format(str(len(package_ids))))
 
     updated = 0
     consecutive_errors = 0
-
+    total_packages_cnt = len(package_ids)
     for cnt, package_id in enumerate(package_ids, 1):
         result = {}
         updated_package = False
+        log.info("Processing package: {} : Count {}/{}".format(package_id, str(cnt), str(total_packages_cnt)))
         try:
             updated_package, issue_type, issue_message = archive_package(package_id, context, consecutive_errors)
             result['publisher_id'] = pub_id
             result['package_id'] = package_id
             result['issue_type'] = issue_type
             result['issue_message'] = issue_message
-
             results.append(result)
-
         except Exception, e:
             consecutive_errors += 1
             log.error('Error downloading resource for dataset {0}: '
@@ -273,11 +282,10 @@ def archive_package(package_id, context, consecutive_errors=0):
             new_extras['data_updated'] = None
 
         for key, value in new_extras.iteritems():
-            if (value and (not key in extras_dict or
-                           unicode(value) != unicode(extras_dict[key]))):
+            if value and (key not in extras_dict or unicode(value) != unicode(extras_dict.get(key, ''))):
+                log.info("Identified update")
                 update = True
-                old_value = (unicode(extras_dict[key]) if
-                             key in extras_dict else '""')
+                old_value = (unicode(extras_dict[key]) if key in extras_dict else '')
                 log.info('Updated extra {0} for dataset {1}: {2} -> '
                          '{3}'.format(key, package['name'], old_value, value))
                 extras_dict[unicode(key)] = unicode(value)
@@ -290,10 +298,11 @@ def archive_package(package_id, context, consecutive_errors=0):
                 if key in extras_dict:
                     extras_dict[key] = None
 
+        log.info("Is package: {} is update? - {}".format(package.get('name', ''), str(update)))
         if update:
             package['extras'] = extras_to_list(extras_dict)
             return update_package(context, package), None, None
-
+    log.info("************** Done **********")
     return None, None, None
 
 
@@ -319,6 +328,7 @@ def save_package_issue(context, data_dict, extras_dict, issue_type,
 
 
 def update_package(context, data_dict, message=None):
+    log.info("Updating package: {}".format(data_dict.get('name', '')))
     context['id'] = data_dict['id']
     message = (message or 'Daily archiver: update dataset '
                '{0}'.format(data_dict['name']))
@@ -329,7 +339,7 @@ def update_package(context, data_dict, message=None):
 
     data_dict['extras'] = []
     updated_package = toolkit.get_action('package_update')(context, data_dict)
-    log.debug('Package {0} updated with new extras'.format(data_dict['name']))
+    log.info('Package {0} updated with new extras'.format(data_dict['name']))
     return updated_package
 
 
