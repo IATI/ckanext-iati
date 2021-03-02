@@ -353,6 +353,8 @@ def _save_resource(resource, response, max_file_size, chunk_size=1024*16):
     length = 0
 
     fd, tmp_resource_file_path = tempfile.mkstemp()
+    log.info("Max file size given")
+    log.info(max_file_size)
 
     with open(tmp_resource_file_path, 'wb') as fp:
         for chunk in response.iter_content(chunk_size=chunk_size,
