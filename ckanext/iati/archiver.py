@@ -12,7 +12,7 @@ import cgitb
 import warnings
 import logging
 import tempfile
-from ckan.plugins.toolkit import config
+from ckan.plugins.toolkit import config, _
 from ckan import model
 import ckan.plugins.toolkit as toolkit
 from ckanext.iati.helpers import extras_to_dict, extras_to_list
