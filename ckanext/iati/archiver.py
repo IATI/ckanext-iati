@@ -15,6 +15,7 @@ import tempfile
 from ckan.plugins.toolkit import config, _
 from ckan import model
 import ckan.plugins.toolkit as toolkit
+import ckan.logic as logic
 from ckanext.iati.helpers import extras_to_dict, extras_to_list
 from ckanext.iati.lists import IATI_STANDARD_VERSIONS
 from ckanext.archiver import tasks
@@ -31,7 +32,7 @@ log = logging.getLogger(__name__)
 # Max content-length of archived files, larger files will be ignored
 MAX_CONTENT_LENGTH = int(config.get('ckanext-archiver.max_content_length',
                                     60000000))
-URL_TIMEOUT = 120
+URL_TIMEOUT = 30
 DATA_FORMATS = ['xml', 'iati-xml', 'application/xml', 'text/xml', 'text/html', 'application/octet-stream']
 
 
@@ -111,9 +112,8 @@ def run(package_id=None, publisher_id=None, pub_id=None):
     t1 = datetime.datetime.now()
     log.info('IATI Archiver: starting {0}'.format(str(t1)))
     log.info('Number of datasets to archive: {0}'.format(str(len(package_ids))))
-
-    updated = 0
     consecutive_errors = 0
+    updated = 0
     total_packages_cnt = len(package_ids)
     for cnt, package_id in enumerate(package_ids, 1):
         result = {}
@@ -126,8 +126,13 @@ def run(package_id=None, publisher_id=None, pub_id=None):
             result['issue_type'] = issue_type
             result['issue_message'] = issue_message
             results.append(result)
+        except logic.ValidationError as e:
+            msg = e.error_dict.get('message', '') or e.error_summary.get('Message', '')
+            result['publisher_id'] = pub_id
+            result['package_id'] = package_id
+            result['issue_message'] = msg
+            result['issue_type'] = 'Validation Error'
         except Exception, e:
-            consecutive_errors += 1
             log.error('Error downloading resource for dataset {0}: '
                       '{1}'.format(package_id, str(e)))
             log.error(text_traceback())
@@ -136,26 +141,9 @@ def run(package_id=None, publisher_id=None, pub_id=None):
             result['issue_message'] = 'Error downloading resource for dataset {0}: {1}'.format(package_id, str(e))
             result['issue_type'] = 'Download Error'
 
-            if consecutive_errors > 15:
-                log.error('Too many errors...')
-                result['publisher_id'] = pub_id
-                result['package_id'] = package_id
-                result['issue_message'] = 'Too many errors'
-                result['issue_type'] = 'Too many errors'
-                if publisher_update:
-                    log.error ('Aborting... The publisher can not be reached.')
-                    result['publisher_id'] = pub_id
-                    result['package_id'] = package_id
-                    result['issue_message'] = 'The publisher can not be reached.'
-                    result['issue_type'] = 'publisher unreachable'
-                    return result
-                else:
-                    continue
-            else:
-                consecutive_errors = 0
-            if updated_package:
-                updated += 1
-            results.append(result)
+        if updated_package:
+            updated += 1
+        results.append(result)
 
     return results
 
@@ -435,16 +423,13 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
 
     # make sure resource content-length does not exceed our maximum
     if cl and int(cl) >= max_content_length:
-        if resource_changed:
-            tasks._update_resource(context, resource, log)
-        # record fact that resource is too large to archive
+        # CKAN 2.9 doesnt support pylons config. Hence removing _update_resource
         raise tasks.DownloadError("Content-length {0} exceeds maximum allowed"
                                   "value {1}".format(cl, max_content_length))
 
     # check that resource is a data file
     if not (resource_format in data_formats or ct.lower().strip('"') in data_formats):
-        if resource_changed:
-            tasks._update_resource(context, resource, log)
+        # CKAN 2.9 doesnt support pylons config. Hence removing _update_resource
         raise tasks.DownloadError("Of content type {0}, not "
                                   "downloading".format(ct))
 
@@ -472,8 +457,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
     #
     # TODO: remove partially archived file in this case
     if length >= max_content_length:
-        if resource_changed:
-            tasks._update_resource(context, resource, log)
+        # CKAN 2.9 doesnt support pylons config. Hence removing _update_resource
         # record fact that resource is too large to archive
         raise tasks.DownloadError("Content-length after streaming reached "
                                   "maximum allowed value of "
