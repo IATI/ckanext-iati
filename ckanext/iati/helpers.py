@@ -369,8 +369,8 @@ def get_first_published_date(organization):
                 if not first_date:
                     first_date = resc_date
                 else:
-                    if dt_parse(value) < dt_parse(first_date):
-                        first_date = value
+                    if dt_parse(resc_date) < dt_parse(first_date):
+                        first_date = resc_date
             except ValueError as e:
                 log.info("First published date parse error")
                 log.error(e)
