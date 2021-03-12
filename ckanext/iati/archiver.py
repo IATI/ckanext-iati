@@ -32,7 +32,7 @@ log = logging.getLogger(__name__)
 # Max content-length of archived files, larger files will be ignored
 MAX_CONTENT_LENGTH = int(config.get('ckanext-archiver.max_content_length',
                                     60000000))
-URL_TIMEOUT = 30
+URL_TIMEOUT = 100
 DATA_FORMATS = ['xml', 'iati-xml', 'application/xml', 'text/xml', 'text/html', 'application/octet-stream']
 
 
