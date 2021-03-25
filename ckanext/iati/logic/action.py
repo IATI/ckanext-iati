@@ -8,7 +8,6 @@ from ckan.plugins.toolkit import config
 import sqlalchemy
 import sys
 from ckan import logic
-
 import ckan.authz as authz
 import ckan.plugins as p
 import ckan.lib.helpers as h
@@ -120,6 +119,36 @@ def organization_update(context, data_dict):
         _send_activation_notification_email(context, new_org_dict)
         h.flash_success('Publisher activated, a notification email has been sent to its administrators.')
 
+    # Change package name if there is change in publisher id
+    _fq = 'owner_org:{}'.format(new_org_dict['id'])
+    _org_packages = get_core.package_search(context, {
+        'fq': _fq,
+        'rows': 10000
+    })
+
+    old_org_name = old_org_dict.get('name', '')
+    new_org_name = new_org_dict.get('name', '')
+    max_allowed_updates = 100
+    # Only sysadmin is allowed to change the publisher id (no need of any check here)
+    if (old_org_name != new_org_name) and (
+            _org_packages.get('count', max_allowed_updates+1) <= max_allowed_updates):
+        log.info("Organization name changed - updating package name")
+        for pkg in _org_packages.get('results', []):
+            try:
+                # Replace only 1st occurrence
+                new_package_name = pkg.get('name', '').replace(old_org_name, new_org_name, 1)
+                if pkg.get('name', '') != new_package_name:
+                    context["disable_archiver"] = True
+                    _res = package_patch(context, {
+                        'id': pkg['id'],
+                        'name': pkg.get('name', '').replace(old_org_name, new_org_name, 1)
+                    })
+            except logic.ValidationError as e:
+                log.error(e)
+            except Exception as e:
+                log.error("Org name has been changed but package update failed for some reason")
+                log.error(e)
+
     return new_org_dict
 
 
@@ -161,28 +190,6 @@ def _remove_extras_from_data_dict(data_dict):
                         'publisher_iati_id',
                        )
     data_dict['extras'] = [e for e in data_dict.get('extras', []) if e.get('key') and e['key'] not in extras_to_remove]
-
-
-@p.toolkit.side_effect_free
-def package_show_rest(context, data_dict):
-
-    #  Add some extras to the dataset from its publisher.
-
-    #  The ideal place to do this should be the after_show hook on the
-    #  iati_datasets plugin but package_show_rest does not call it in core.
-
-    package_dict = get_core.package_show_rest(context, data_dict)
-
-    group = context['package'].groups[0] if len(context['package'].groups) else None
-    if group:
-        new_extras = []
-        for key in ('publisher_source_type', 'publisher_organization_type', 'publisher_country',
-                    'publisher_iati_id',):
-            new_extras.append({'key': key, 'value': group.get(key, '')})
-
-        package_dict['extras'].update(new_extras)
-
-    return package_dict
 
 
 def issues_write_to_csv(field_names, issues):
