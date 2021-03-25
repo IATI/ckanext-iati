@@ -375,7 +375,8 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
         'url': resource['url'],
         'url_timeout': url_timeout
     })
-    user_agent_string = config.get('ckanext.archiver.user_agent_string', 'Mozilla/5.0')
+    user_agent_string = config.get('ckanext.archiver.user_agent_string',
+                                   'curl/7.35.0')
 
     def _download_resource(resource_url, timeout):
         _request_headers = {'User-Agent': user_agent_string}
@@ -386,7 +387,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
             response = requests.get(resource['url'], timeout=url_timeout,
                                     headers=_request_headers, verify=True)
         except Exception, e:
-            request_headers['User-Agent'] = 'Mozilla/5.0'
+            request_headers['User-Agent'] = 'curl/7.35.0'
             response = requests.get(resource['url'], timeout=url_timeout,
                                     headers=_request_headers, verify=False)
         return response

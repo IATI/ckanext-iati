@@ -31,7 +31,10 @@ def link_checker(context, data):
     url_timeout = data.get('url_timeout', 30)
 
     error_message = ''
-    req_headers = {'User-Agent': toolkit.config.get('ckanext.archiver.user_agent_string', 'Mozilla/5.0')}
+    req_headers = {'User-Agent': toolkit.config.get(
+        'ckanext.archiver.user_agent_string',
+        'curl/7.35.0'
+    )}
 
     url = tasks.tidy_url(data['url'])
     resp_headers = dict()
