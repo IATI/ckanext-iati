@@ -16,7 +16,7 @@ import json
 from xlwt import Workbook
 import io
 import datetime as dt
-import os
+import os, codecs
 import logging
 log = logging.getLogger(__name__)
 
@@ -431,8 +431,10 @@ class PublisherRecordsUpload(PublisherRecordsDownload):
 
         # Validate csv columns
         # Validate Mandatory fields.
-
+        bom_length = len(codecs.BOM_UTF8)
         data = csv_file.read()
+        if data.startswith(codecs.BOM_UTF8):
+            data = data[bom_length:]
 
         if not data:
             raise ValidationError("CSV file is empty")
