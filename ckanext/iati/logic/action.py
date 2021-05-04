@@ -17,10 +17,11 @@ import ckan.logic.action.get as get_core
 import ckan.logic.action.create as create_core
 import ckan.logic.action.update as update_core
 import ckan.logic.action.patch as patch_core
-
+from ckan.lib import jobs
 import ckanext.iati.emailer as emailer
 import ckanext.iati.helpers as hlp
 from sqlalchemy import and_
+from ckanext.iati.logic import publisher_tasks
 
 from paste.deploy.converters import asbool
 from ckan.common import _
@@ -119,36 +120,18 @@ def organization_update(context, data_dict):
         _send_activation_notification_email(context, new_org_dict)
         h.flash_success('Publisher activated, a notification email has been sent to its administrators.')
 
-    # Change package name if there is change in publisher id
-    _fq = 'owner_org:{}'.format(new_org_dict['id'])
-    _org_packages = get_core.package_search(context, {
-        'fq': _fq,
-        'rows': 10000
-    })
-
     old_org_name = old_org_dict.get('name', '')
     new_org_name = new_org_dict.get('name', '')
-    max_allowed_updates = 100
-    # Only sysadmin is allowed to change the publisher id (no need of any check here)
-    if (old_org_name != new_org_name) and (
-            _org_packages.get('count', max_allowed_updates+1) <= max_allowed_updates):
-        log.info("Organization name changed - updating package name")
-        for pkg in _org_packages.get('results', []):
-            try:
-                # Replace only 1st occurrence
-                new_package_name = pkg.get('name', '').replace(old_org_name, new_org_name, 1)
-                if pkg.get('name', '') != new_package_name:
-                    context["disable_archiver"] = True
-                    _res = package_patch(context, {
-                        'id': pkg['id'],
-                        'name': pkg.get('name', '').replace(old_org_name, new_org_name, 1)
-                    })
-            except logic.ValidationError as e:
-                log.error(e)
-            except Exception as e:
-                log.error("Org name has been changed but package update failed for some reason")
-                log.error(e)
 
+    # Only sysadmin is allowed to change the publisher id (no need of any check here)
+    if old_org_name != new_org_name:
+        log.info("Organization name changed - updating package name in background job")
+        job = jobs.enqueue(
+            publisher_tasks.update_organization_dataset_names,
+            [old_org_name, new_org_name, new_org_dict.get('id', '')]
+        )
+        log.info("Job id: {}".format(job.id))
+        h.flash_success('Please reload the page after sometime to reflect publisher id name change')
     return new_org_dict
 
 
