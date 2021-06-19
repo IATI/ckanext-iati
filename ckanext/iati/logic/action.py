@@ -131,7 +131,7 @@ def organization_update(context, data_dict):
             [old_org_name, new_org_name, new_org_dict.get('id', '')]
         )
         log.info("Job id: {}".format(job.id))
-        h.flash_success('Please reload the page after sometime to reflect publisher id name change')
+        h.flash_success('Please reload the page after sometime to reflect change in publisher id for all datasets.')
     return new_org_dict
 
 
