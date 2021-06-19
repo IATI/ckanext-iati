@@ -36,6 +36,25 @@ URL_TIMEOUT = 100
 DATA_FORMATS = ['xml', 'iati-xml', 'application/xml', 'text/xml', 'text/html', 'application/octet-stream']
 
 
+def parse_error_message(e):
+    """
+    This is used to parse the error message
+    :param e:
+    :return:
+    """
+    message_list = []
+    _attributes = ('error_summary', 'message')
+    for attr in _attributes:
+        if hasattr(e, attr) and getattr(e, attr):
+            error_value = getattr(e, attr)
+            if isinstance(error_value, dict):
+                for k in error_value:
+                    message_list.append(error_value[k])
+            elif error_value:
+                message_list.append(error_value)
+    return ' '.join(message_list)
+
+
 def text_traceback():
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -127,11 +146,13 @@ def run(package_id=None, publisher_id=None, pub_id=None):
             result['issue_message'] = issue_message
             results.append(result)
         except logic.ValidationError as e:
-            msg = e.error_dict.get('message', '') or e.error_summary.get('Message', '')
+            msg = parse_error_message(e)
+            log.error(msg)
             result['publisher_id'] = pub_id
             result['package_id'] = package_id
             result['issue_message'] = msg
             result['issue_type'] = 'Validation Error'
+            save_package_core_validation_issue(package_id, msg)
         except Exception, e:
             log.error('Error downloading resource for dataset {0}: '
                       '{1}'.format(package_id, str(e)))
@@ -313,6 +334,30 @@ def save_package_issue(context, data_dict, extras_dict, issue_type,
                   '{2}'.format(data_dict['name'], issue_type, issue_message))
 
         return update_package(context, data_dict), issue_type, issue_message
+
+
+def save_package_core_validation_issue(pkg_id, issue_message):
+    """
+    Archiver fails to update the package if the package already have some validation error
+    :param pkg_id: str
+    :param issue_message: str
+    :return: None
+    """
+    log.info("Saving core validation issue")
+    log.info(issue_message)
+    issue_type = 'archiver-failed'
+    issue_date = str(datetime.datetime.utcnow())
+    issue_message = "Archiver failed to update package due to existing validation error. " + issue_message
+    try:
+        package = model.Package.get(pkg_id)
+        package.extras['issue_type'] = issue_type
+        package.extras['issue_date'] = issue_date
+        package.extras['issue_message'] = issue_message
+        model.Session.commit()
+    except Exception as e:
+        log.error("Error while saving the core issue in save_package_core_validation_issue")
+        log.error(e)
+    return None
 
 
 def update_package(context, data_dict, message=None):
