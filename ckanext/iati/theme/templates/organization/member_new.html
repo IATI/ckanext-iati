@@ -1,7 +1,12 @@
-{% ckan_extends %}
+{% extends "organization/edit_base.html" %}
+
+{% import 'macros/form.html' as form %}
+
+{% set user = g.user_dict %}
+
 
 {% block primary_content_inner %}
-  {% link_for _('Back to all members'), named_route='publisher.edit_members', id=organization.name, class_='btn btn-default pull-right', icon='arrow-left' %}
+  {% link_for _('Back to all members'), named_route='publisher.members', id=organization.name, class_='btn btn-default pull-right', icon='arrow-left' %}
   <h1 class="page-heading">
     {% block page_heading %}{{ _('Edit Member') if user else _('Add Member') }}{% endblock %}
   </h1>

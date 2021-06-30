@@ -101,7 +101,7 @@ class MembersGroupViewPatch(publisher.MembersGroupView):
         # TODO: Remove
         g.group_dict = group_dict
 
-        return h.redirect_to(u'{}.members'.format(group_type), id=id)
+        return h.redirect_to(u'publisher.members', id=id)
 
 
 def register_group_plugin_rules(blueprint):
