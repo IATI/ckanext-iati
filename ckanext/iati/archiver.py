@@ -19,7 +19,9 @@ import ckan.logic as logic
 from ckanext.iati.helpers import extras_to_dict, extras_to_list
 from ckanext.iati.lists import IATI_STANDARD_VERSIONS
 from ckanext.archiver import tasks
+from ckanext.iati.logic import validators as iati_validators
 from ckanext.iati.linkchecker_patch import link_checker as checker
+from ckan.lib.navl.dictization_functions import Invalid
 
 # Disable warning
 import urllib3
@@ -371,9 +373,26 @@ def update_package(context, data_dict, message=None):
         data_dict[extra['key']] = extra['value']
 
     data_dict['extras'] = []
+    data_dict = patch_invalid_country_code(context, data_dict)
     updated_package = toolkit.get_action('package_update')(context, data_dict)
     log.info('Package {0} updated with new extras'.format(data_dict['name']))
     return updated_package
+
+
+def patch_invalid_country_code(context, data_dict):
+    """
+    This to patch the invalid country codes to ''
+    :param context: dict
+    :param data_dict: dict
+    :return: dict
+    """
+    country = data_dict.get('country', '')
+    if country:
+        try:
+            iati_validators.country_code(country, context)
+        except Invalid as e:
+            data_dict['country'] = ''
+    return data_dict
 
 
 def _save_resource(resource, response, max_file_size, chunk_size=1024*16):
