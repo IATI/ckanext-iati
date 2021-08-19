@@ -104,20 +104,14 @@ class IATIRedirects(Base):
         """
         _db_conn = create_engine(config.get('sqlalchemy.url')).connect()
         _query = ''' 
-                  SELECT DISTINCT public.group.id, public.group.name AS current_name, revision.name AS old_name 
-                  FROM 
-                  public.group, (
-                          SELECT id, name, revision_timestamp, state, row_number() 
-                          OVER(PARTITION BY id ORDER BY revision_timestamp DESC) 
-                          FROM group_revision
-                  ) AS revision 
-                  WHERE
-                  public.group.id=revision.id AND 
-                  public.group.name != revision.name AND
-                  public.group.state = 'active'
-                  ORDER BY 
-                  public.group.name;
-                  '''
+        SELECT DISTINCT public.group.id, public.group.name as current_name, 
+        CAST(CAST(activity.data AS json)  ->> 'group' AS json) ->> 'name' AS old_name
+        FROM public.group, activity
+        WHERE
+        public.group.id = activity.object_id AND
+        activity.activity_type = 'changed organization' AND
+        public.group.name != CAST(CAST(activity.data AS json)  ->> 'group' AS json) ->> 'name';
+        '''
         log.info(_query)
         res = _db_conn.execute(_query)
 
