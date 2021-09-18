@@ -317,7 +317,7 @@ def _send_activation_notification_email(context, organization_dict):
             log.debug('[email] Publisher activated notification email sent to user {0}'.format(user.name))
 
 
-def _custom_group_or_org_list(context, data_dict, is_org=True, bypass_limit_internal=False):
+def _custom_group_or_org_list(context, data_dict, is_org=True):
     """
      Custom oprg search by publisher_iati_id and sort by publisher_first_published
     """
@@ -327,7 +327,7 @@ def _custom_group_or_org_list(context, data_dict, is_org=True, bypass_limit_inte
     group_type = data_dict.get('type', 'group')
     ref_group_by = 'id' if api == 2 else 'name'
     pagination_dict = {}
-    limit = data_dict.get('limit')
+    limit = data_dict.get('limit', None)
     if limit:
         pagination_dict['limit'] = data_dict['limit']
     offset = data_dict.get('offset')
@@ -345,15 +345,12 @@ def _custom_group_or_org_list(context, data_dict, is_org=True, bypass_limit_inte
 
     if all_fields:
         # all_fields is really computationally expensive, so need a tight limit
-        max_limit = config.get(
-            'ckan.group_and_organization_list_all_fields_max', 50)
+        max_limit = int(config.get(
+            'ckan.group_and_organization_list_all_fields_max', 50))
     else:
-        max_limit = config.get('ckan.group_and_organization_list_max', 1000)
-
-    if bypass_limit_internal and limit:
-        max_limit = limit
-
-    if limit is None or limit > max_limit:
+        max_limit = int(config.get('ckan.group_and_organization_list_max', 1000))
+    
+    if limit and int(limit) > max_limit:
         limit = max_limit
 
     # order_by deprecated in ckan 1.8
@@ -427,9 +424,9 @@ def _custom_group_or_org_list(context, data_dict, is_org=True, bypass_limit_inte
             query = query.order_by(sqlalchemy.desc(sort_model_field))
 
     if limit:
-        query = query.limit(limit)
+        query = query.limit(int(limit))
     if offset:
-        query = query.offset(offset)
+        query = query.offset(int(offset))
 
     groups = query.distinct().all()
 
