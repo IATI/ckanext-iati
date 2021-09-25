@@ -114,7 +114,7 @@ class MembersGroupViewPatch(publisher.MembersGroupView):
 
 class PublisherCreateWithUserView(publisher.CreateGroupView):
 
-    def _get_context(self):
+    def _prepare(self):
         context = {
             u'model': model,
             u'session': model.Session
@@ -136,10 +136,12 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
             
         data, errors = dict_fns.validate(_data, _schema, context)
         session.rollback()
+
         if errors:
             if is_password_mismatch:
                 errors['password'] = [u'Password and confirm password are not same']
             return errors
+
         return
 
     def _validate_publisher_data(self, data_dict, context):
@@ -163,11 +165,14 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
     def _create_user(self, data_dict, context):
         data = copy.deepcopy(data_dict)
         data['name'] = data['user_name']
+        data['password'] = data['password1']
         return logic.get_action(u'user_create')(context, data)
 
     def _create_publisher(self, data_dict, context, user_dict):
         data_dict['users'] = [{u'name': user_dict['name'], u'capacity': u'admin'}]
-        return logic.get_action(u'group_create')(context, data_dict)
+        context['user'] = user_dict['name']
+        context['auth_user_obj'] = model.User.get(user_dict['id'])
+        return logic.get_action(u'organization_create')(context, data_dict)
 
     def post(self, group_type, is_organization):
 
@@ -176,7 +181,7 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
             return base.render(u'user/logout_first.html', {})
 
         is_organization = True
-        context = self._get_context()
+        context = self._prepare()
         try:
             data_dict = clean_dict(
                 dict_fns.unflatten(tuplize_dict(parse_params(request.form))))
@@ -223,7 +228,7 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
             return base.render(u'user/logout_first.html', {})
 
         publisher.set_org(is_organization)
-        context = self._get_context()
+        context = self._prepare()
         is_organization = True # Overwrite
         data = data or dict()
         errors = errors or {}
