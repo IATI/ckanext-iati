@@ -29,13 +29,14 @@ from ckanext.iati.logic.validators import (
 from ckanext.iati.logic.converters import strip, convert_date_string_to_iso_format
 import ckanext.iati.helpers as iati_helpers
 from ckanext.iati.model import IATIRedirects
-from ckanext.iati.views.publisher import publisher_blueprint
+from ckanext.iati.views.publisher import publisher_blueprint, publisher_with_user_blueprint
 from ckanext.iati.views.reports import issues
 from ckanext.iati.views.dashboard import custom_dashboard
 from ckanext.iati.views.admin import admin_tabs
 from ckanext.iati.views.helper_pages import helper_pages
 from ckanext.iati.views.spreadsheet import spreadsheet
 from ckanext.iati.views.archiver import archiver as archiver_blueprint
+from ckanext.iati.views.registration import registration_blueprint
 
 log = logging.getLogger(__name__)
 
@@ -231,7 +232,15 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
     # IBlueprint
     def get_blueprint(self):
         # blueprint for this extension
-        return [publisher_blueprint, custom_dashboard, issues, admin_tabs, helper_pages, spreadsheet, archiver_blueprint]
+        return [
+            publisher_blueprint,
+            custom_dashboard, issues,
+            admin_tabs, helper_pages,
+            spreadsheet,
+            archiver_blueprint,
+            publisher_with_user_blueprint,
+            registration_blueprint
+        ]
 
 
 class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):

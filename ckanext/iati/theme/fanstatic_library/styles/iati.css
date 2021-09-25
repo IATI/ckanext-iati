@@ -11460,4 +11460,15 @@ table.dataTable thead .sorting_desc_disabled:before {
 
 .select2-container {
   width: 100% !important;
+  margin: 10px;
+}
+
+.register .card {
+  border: 1px solid #e3e3e3;
+  padding: 10px;
+  margin: 10px;
+}
+
+#organization-edit-form .fieldset-4 .control-required {
+  display: none;
 }

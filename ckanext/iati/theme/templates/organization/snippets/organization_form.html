@@ -9,6 +9,10 @@
 
 {% block basic_fields %}
 
+  {% if is_user_create %}
+    {{ user_form | safe }}
+  {% endif %}
+
   <fieldset class="fieldset-1">
      <legend>{{ _('Publisher Information') }}</legend>
     {% set attrs = h.organization_form_read_only(c.group_dict) %}

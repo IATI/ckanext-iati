@@ -69,7 +69,7 @@
             {% else %}
               <ul id="account-nav" class="not-authed">
                 <li>{% link_for _('Log in'), named_route='user.login' %}</li>
-                <li>{% link_for _('Register'), named_route='user.register', class_='sub' %}</li>
+                <li>{% link_for _('Register'), named_route='registration.register', class_='sub' %}</li>
               </ul>
             {% endif %}
           {% endblock %}

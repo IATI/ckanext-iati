@@ -1,14 +1,17 @@
 from flask import Blueprint
-from ckan.views import group as publisher
+from ckan.views import group as publisher, user as user_view
 import ckan.plugins as p
+import ckan.lib.plugins as lib_plugins
 import ckan.lib.helpers as h
 import ckan.model as model
 import ckan.logic as logic
 from ckan.common import c, g, _, request, config
 from ckan.lib.base import render
 import ckan.lib.base as base
+import ckan.logic.schema as schema
 import ckan.lib.navl.dictization_functions as dict_fns
 from ckanext.iati.logic.csv_action import PublishersListDownload
+import copy
 
 NotFound = logic.NotFound
 NotAuthorized = logic.NotAuthorized
@@ -21,6 +24,11 @@ publisher_blueprint = Blueprint(u'publisher', __name__,
                                 url_prefix=u'/publisher',
                                 url_defaults={u'group_type': u'organization',
                                               u'is_organization': True})
+
+publisher_with_user_blueprint = Blueprint(u'publisher_with_user', __name__,
+                                          url_prefix=u'/register_publisher',
+                                          url_defaults={u'group_type': u'organization',
+                                                        u'is_organization': True})
 
 
 def members_read(id, group_type, is_organization):
@@ -104,6 +112,145 @@ class MembersGroupViewPatch(publisher.MembersGroupView):
         return h.redirect_to(u'publisher.members', id=id)
 
 
+class PublisherCreateWithUserView(publisher.CreateGroupView):
+
+    def _get_context(self):
+        context = {
+            u'model': model,
+            u'session': model.Session
+        }
+        return context
+
+    def _validate_user_data(self, data_dict, context):
+
+        is_password_mismatch = False
+        _schema = schema.default_user_schema()
+        session = context['session']
+        _data = copy.deepcopy(data_dict)
+        _data['name'] = data_dict['user_name']
+
+        if _data['password1'] == _data['password2']:
+            _data['password'] = _data['password1']
+        else:
+            is_password_mismatch = True
+            
+        data, errors = dict_fns.validate(_data, _schema, context)
+        session.rollback()
+        if errors:
+            if is_password_mismatch:
+                errors['password'] = [u'Password and confirm password are not same']
+            return errors
+        return
+
+    def _validate_publisher_data(self, data_dict, context):
+
+        session = context['session']
+        group_plugin = lib_plugins.lookup_group_plugin('organization')
+        try:
+            _schema = group_plugin.form_to_db_schema_options({
+                'type': 'create', 'api': 'api_version' in context,
+                'context': context})
+        except AttributeError:
+            _schema = group_plugin.form_to_db_schema()
+
+        data, errors = lib_plugins.plugin_validate(group_plugin, context, data_dict, _schema, 'organization_create')
+
+        session.rollback()
+        if errors:
+            return errors
+        return
+
+    def _create_user(self, data_dict, context):
+        data = copy.deepcopy(data_dict)
+        data['name'] = data['user_name']
+        return logic.get_action(u'user_create')(context, data)
+
+    def _create_publisher(self, data_dict, context, user_dict):
+        data_dict['users'] = [{u'name': user_dict['name'], u'capacity': u'admin'}]
+        return logic.get_action(u'group_create')(context, data_dict)
+
+    def post(self, group_type, is_organization):
+
+        if g.user:
+            # #1799 Don't offer the publisher registration form if already logged in
+            return base.render(u'user/logout_first.html', {})
+
+        is_organization = True
+        context = self._get_context()
+        try:
+            data_dict = clean_dict(
+                dict_fns.unflatten(tuplize_dict(parse_params(request.form))))
+            data_dict.update(clean_dict(
+                dict_fns.unflatten(tuplize_dict(parse_params(request.files)))
+            ))
+        except dict_fns.DataError:
+            base.abort(400, _(u'Integrity Error'))
+
+        context['message'] = data_dict.get(u'log_message', u'')
+        data_dict['type'] = u'organization'
+
+        user_errors = self._validate_user_data(data_dict, context) or dict()
+        errors = self._validate_publisher_data(data_dict, context) or dict()
+
+        try:
+            if 'name' in user_errors:
+                user_errors['user_name'] = user_errors.pop('name')
+
+            errors.update(user_errors)
+
+            if errors:
+                raise ValidationError(errors)
+
+            user_dict = self._create_user(data_dict, context)
+            publisher_dict = self._create_publisher(data_dict, context, user_dict)
+        except ValidationError as e:
+            errors = e.error_dict
+            error_summary = e.error_summary
+            return self.get(group_type, is_organization,
+                            data_dict, errors, error_summary)
+        except NotAuthorized as e:
+            base.abort(404, _(u'Not authorized to create group or publisher'))
+
+        h.flash_error("Publisher registered and it is pending for approval. Please wait until you "
+                      "receive a approval email. Until then you can use IATI portal with "
+                      "the username and password you just created")
+        return h.redirect_to(u'user.login')
+
+    def get(self, group_type, is_organization, data=None, errors=None, error_summary=None):
+
+        if g.user:
+            # #1799 Don't offer the publisher registration form if already logged in
+            return base.render(u'user/logout_first.html', {})
+
+        publisher.set_org(is_organization)
+        context = self._get_context()
+        is_organization = True # Overwrite
+        data = data or dict()
+        errors = errors or {}
+        error_summary = error_summary or {}
+        extra_vars = {
+            u'data': data,
+            u'errors': errors,
+            u'error_summary': error_summary,
+            u'action': u'new',
+            u'is_user_create': True,
+            u'group_type': group_type,
+        }
+        user_form = base.render(u'user/new_user_and_publisher_form.html', extra_vars)
+        extra_vars["user_form"] = user_form
+        publisher._setup_template_variables(
+            context, data, group_type=group_type)
+        form = base.render(publisher._get_group_template(u'group_form', group_type), extra_vars)
+
+        # TODO: Remove
+        # ckan 2.9: Adding variables that were removed from c object for
+        # compatibility with templates in existing extensions
+        g.form = form
+        g.user_form = user_form
+        extra_vars["form"] = form
+        return base.render(publisher._get_group_template(u'new_template', group_type), extra_vars)
+
+
 def register_group_plugin_rules(blueprint):
     actions = [
         u'member_delete', u'history', u'followers', u'follow',
@@ -132,6 +279,7 @@ def register_group_plugin_rules(blueprint):
         u'/delete/<id>',
         methods=[u'GET', u'POST'],
         view_func=publisher.DeleteGroupView.as_view(str(u'delete')))
+
     for action in actions:
         blueprint.add_url_rule(
             u'/{0}/<id>'.format(action),
@@ -143,3 +291,6 @@ def register_group_plugin_rules(blueprint):
 
 
 register_group_plugin_rules(publisher_blueprint)
+
+publisher_with_user_blueprint.add_url_rule(u'/', methods=["GET", "POST"],
+                                           view_func=PublisherCreateWithUserView.as_view('register_publisher'))
