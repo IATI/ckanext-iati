@@ -6,7 +6,7 @@
   {% set extras_dict = data %}
 {% endif %}
 
-<fieldset>
+<fieldset class="fieldset-1">
 
   <legend>Basic Information</legend>
 
@@ -52,7 +52,7 @@
 
 </fieldset>
 
-<fieldset>
+<fieldset class="fieldset-2">
   <legend>Publisher</legend>
 
   {% if data.group_id %}
@@ -111,7 +111,7 @@
 
 </fieldset>
 
-<fieldset>
+<fieldset class="fieldset-3">
   <legend>Details</legend>
 
   {% snippet 'snippets/country_list.html', data=extras_dict, errors=errors, field_name='country' %}
@@ -130,7 +130,7 @@
 
 </fieldset>
 
-<fieldset>
+<fieldset class="fieldset-4">
   <legend>Data File</legend>
   {% set resources = {} %}
   {% if data.get('resources')[0] is defined %}
@@ -151,7 +151,7 @@
 
 </fieldset>
 
-<fieldset>
+<fieldset class="fieldset-5">
   <legend>Verification and Analysis</legend>
 
   {{ form.input('iati_version', id='field-iati-version', label=_('IATI Standard Version'), value=extras_dict.get('iati_version'), error=errors.iati_version, classes=['control-full']) }}

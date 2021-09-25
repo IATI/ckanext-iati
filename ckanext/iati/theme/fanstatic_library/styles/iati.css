@@ -107,10 +107,23 @@ figure {
   margin: 0;
 }
 fieldset {
-  border: 1px solid #c0c0c0;
-  margin: 0 2px;
-  padding: 0.35em 0.625em 0.75em;
+  border: 1px solid #e3e3e3;
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #ecf3f5;
+  border-left: 5px solid #e3e3e3;
 }
+
+fieldset h2 {
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.fieldset-2, .fieldset-4, .fieldset-6 {
+  background-color: #F5F5F5;
+}
+
+
 legend {
   border: 0;
   padding: 0;
@@ -766,21 +779,15 @@ table th[class*="col-"] {
     border-bottom: 0;
   }
 }
-fieldset {
-  padding: 0;
-  margin: 0;
-  border: 0;
-}
+
 legend {
   display: block;
-  width: 100%;
   padding: 0;
   margin-bottom: 20px;
   font-size: 21px;
   line-height: inherit;
   color: #333333;
   border: 0;
-  border-bottom: 1px solid #e5e5e5;
 }
 label {
   display: inline-block;
@@ -868,6 +875,7 @@ textarea.form-control {
 }
 .form-group {
   margin-bottom: 15px;
+  max-width: 100%;
 }
 .radio,
 .checkbox {
@@ -11429,4 +11437,27 @@ table.dataTable thead .sorting_desc_disabled:before {
 
 .publisher-list-download{
   margin-bottom: 20px;
+}
+
+.register {
+  display: flex;
+}
+
+.register .card {
+  padding: 10px;
+  margin: 10px;
+  border: 1px solid;
+}
+
+.required, .control-required-message {
+  color: red;
+  margin-right: 5px;
+}
+
+#organization-edit-form .error-explanation {
+  display: none;
+}
+
+.select2-container {
+  width: 100% !important;
 }
