@@ -121,7 +121,7 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
         }
         return context
 
-    def _validate_user_data(self, data_dict, context):
+    def _validate_user_registration(self, data_dict, context):
 
         is_password_mismatch = False
         _schema = schema.default_user_schema()
@@ -142,9 +142,9 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
                 errors['password'] = [u'Password and confirm password are not same']
             return errors
 
-        return
+        return dict()
 
-    def _validate_publisher_data(self, data_dict, context):
+    def _validate_publisher_registration(self, data_dict, context):
 
         session = context['session']
         group_plugin = lib_plugins.lookup_group_plugin('organization')
@@ -160,7 +160,8 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
         session.rollback()
         if errors:
             return errors
-        return
+
+        return dict()
 
     def _create_user(self, data_dict, context):
         data = copy.deepcopy(data_dict)
@@ -194,15 +195,14 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
         context['message'] = data_dict.get(u'log_message', u'')
         data_dict['type'] = u'organization'
 
-        user_errors = self._validate_user_data(data_dict, context) or dict()
-        errors = self._validate_publisher_data(data_dict, context) or dict()
+        user_errors = self._validate_user_registration(data_dict, context)
+        errors = self._validate_publisher_registration(data_dict, context)
+
+        if 'name' in user_errors:
+            user_errors['user_name'] = user_errors.pop('name')
+        errors.update(user_errors)
 
         try:
-            if 'name' in user_errors:
-                user_errors['user_name'] = user_errors.pop('name')
-
-            errors.update(user_errors)
-
             if errors:
                 raise ValidationError(errors)
 
@@ -247,9 +247,6 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
             context, data, group_type=group_type)
         form = base.render(publisher._get_group_template(u'group_form', group_type), extra_vars)
 
-        # TODO: Remove
-        # ckan 2.9: Adding variables that were removed from c object for
-        # compatibility with templates in existing extensions
         g.form = form
         g.user_form = user_form
         extra_vars["form"] = form
