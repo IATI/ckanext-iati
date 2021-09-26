@@ -52,25 +52,20 @@ Dear {user_name},
 
 Congratulations, the publisher that you created on the IATI Registry ({group_title}) has been approved.
 
- {group_link}
+Well done for taking the first step to join over 1300 others in becoming an IATI publisher!
+{group_link}
 
-Please ensure that the details published for this record are correct and informative, as the IATI community rely on this information.
+Your next step is to start creating your IATI files. Guidance for this can be found on the IATI website under step 2:
+https://iatistandard.org/en/guidance/publishing-data/publishing-files/publishing-checklist/
 
-You can also start adding data to the Registry in the form of packages that link to IATI data.
+Should you have any queries or support needs, then please email the IATI Helpdesk at:support@iatistandard.org
 
-Individual files can be added via: {site_url}/dataset/new
-Multiple files can be added via a CSV upload function: {site_url}/csv/upload
-An API is also available for more technical access: {site_url}/registry-api
-
-Should you have any queries or support need, then please consult the IATI Community: http://discuss.iatistandard.org/t/welcome-to-iati-discuss or email the support team at: support@iatistandard.org
-
-
-Best regards,
-
-The International Aid Transparency (IATI) Team
+You can also join the conversation with other new publishers in the "Newbies Corner" on IATI Connect:
+https://iaticonnect.org/newbies-corner/stream
 
 
-About this email: this email was sent to {user_email} as it has been associated with the IATI Registry publisher {group_title}.  If you think this was mistaken, please contact support@iatistandard.org
+Kind regards,
+IATI Technical Team
 
 '''
 
