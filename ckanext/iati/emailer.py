@@ -13,9 +13,9 @@ SMTP_SERVER = config.get('smtp.server', 'localhost')
 #SMTP_USER = config.get('smtp.user', 'username')
 #SMTP_PASSWORD = config.get('smtp.password', 'password')
 
-def send_email(content, subject, to, from_=FROM):
+def send_email(content, subject, to, from_=FROM, content_type="plain"):
 
-    msg = MIMEText(content,'plain','UTF-8')
+    msg = MIMEText(content, content_type, 'UTF-8')
 
     if isinstance(to, basestring):
         to = [to]
@@ -48,24 +48,22 @@ Best regards,
 '''
 
 publisher_activation_body_template = '''
-Dear {user_name},
+Dear {user_name},<br><br>
 
-Congratulations, the publisher that you created on the IATI Registry ({group_title}) has been approved.
+Congratulations, the publisher that you created on the IATI Registry ({group_title}) has been approved.<br><br>
 
-Well done for taking the first step to join over 1300 others in becoming an IATI publisher!
-{group_link}
+Well done for taking the first step to join over 1300 others in becoming an IATI publisher!<br>
+<a href="{group_link}">{group_title}</a><br><br>
 
-Your next step is to start creating your IATI files. Guidance for this can be found on the IATI website under step 2:
-https://iatistandard.org/en/guidance/publishing-data/publishing-files/publishing-checklist/
+Your next step is to start creating your IATI files. Guidance for this can be found on the IATI website under step 2: <a href="https://iatistandard.org/en/guidance/publishing-data/publishing-files/publishing-checklist/">Publishing Checklist</a><br><br>
 
-Should you have any queries or support needs, then please email the IATI Helpdesk at:support@iatistandard.org
+Should you have any queries or support needs, then please email the IATI Helpdesk at: <a href="mailto:support@iatistandard.org">support@iatistandard.org</a><br><br>
 
-You can also join the conversation with other new publishers in the "Newbies Corner" on IATI Connect:
-https://iaticonnect.org/newbies-corner/stream
+You can also join the conversation with other new publishers in the "Newbies Corner" on <a href="https://iaticonnect.org/newbies-corner/stream">IATI Connect</a>.<br><br>
 
 
-Kind regards,
-IATI Technical Team
+Kind regards,<br>
+IATI Technical Team<br>
 
 '''
 
