@@ -27,7 +27,7 @@
     <p class="help-block">The organisation identifier used in the IATI XML files to identify the reporting organisation. For more information please go to <a href="http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-create-your-iati-organisation-identifier/">How to create your IATI organisation identifier</a>.</p>
 
     {{ select('license_id', label=_('License <span class="required">*</span>'), data=data, autocomplete=true, error=errors.license_id) }}
-    <p class="help-block">License under which your data is being published. IATI is an open data standard, thus requires you to make your data available under an open licence so it can be freely used. One of the most frequently used license is Creative Commons Attribution. For more information on IATI's licensing guidelines go to <a href="https://iatistandard.org/en/guidance/standard-overview/preparing-your-organisation-data-publication/how-to-license-your-data/">How to license your data</a>.</p>
+    <p class="help-block">License under which your data is being published. IATI is an open data standard, thus requires you to make your data available under an open licence so it can be freely used. One of the most frequently used licenses is Creative Commons Attribution. For more information on IATI's licensing guidelines go to <a href="https://iatistandard.org/en/guidance/standard-overview/preparing-your-organisation-data-publication/how-to-license-your-data/">How to license your data</a>.</p>
 
     {{ select('publisher_source_type', label=_('Source'), data=data) }}
     <p class="help-block">Primary - publishers authorised to report their own (or associated organisations') data. Secondary - publishers reporting the activities of other organisations.</p>
