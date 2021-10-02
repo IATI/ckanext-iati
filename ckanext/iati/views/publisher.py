@@ -9,6 +9,7 @@ from ckan.common import c, g, _, request, config
 from ckan.lib.base import render
 import ckan.lib.base as base
 import ckan.logic.schema as schema
+import ckan.lib.uploader as uploader
 import ckan.lib.navl.dictization_functions as dict_fns
 from ckanext.iati.logic.csv_action import PublishersListDownload
 import copy
@@ -114,27 +115,40 @@ class MembersGroupViewPatch(publisher.MembersGroupView):
 
 class PublisherCreateWithUserView(publisher.CreateGroupView):
 
-    def _prepare(self):
+    @staticmethod
+    def get_context():
         context = {
             u'model': model,
             u'session': model.Session
         }
         return context
 
-    def _validate_user_registration(self, data_dict, context):
+    @staticmethod
+    def resolve_form_field_name_conflict(data, items_to_replace_dict):
+        for key in items_to_replace_dict:
+            if key in data:
+                data[items_to_replace_dict[key]] = data.pop(key)
+        return data
+
+    @staticmethod
+    def validate_user_create(data_dict, context):
 
         is_password_mismatch = False
         _schema = schema.default_user_schema()
         session = context['session']
-        _data = copy.deepcopy(data_dict)
-        _data['name'] = data_dict['user_name']
+        data = data_dict.copy()
+        data = PublisherCreateWithUserView.resolve_form_field_name_conflict(data, {
+            "user_name": "name",
+            "user_image_url": "image_url",
+            "user_image_upload": "image_upload"
+        })
 
-        if _data['password1'] == _data['password2']:
-            _data['password'] = _data['password1']
+        if data['password1'] == data['password2']:
+            data['password'] = data['password1']
         else:
             is_password_mismatch = True
-            
-        data, errors = dict_fns.validate(_data, _schema, context)
+
+        data, errors = dict_fns.validate(data, _schema, context)
         session.rollback()
 
         if errors:
@@ -144,7 +158,8 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
 
         return dict()
 
-    def _validate_publisher_registration(self, data_dict, context):
+    @staticmethod
+    def validate_publisher_create(data_dict, context):
 
         session = context['session']
         group_plugin = lib_plugins.lookup_group_plugin('organization')
@@ -163,13 +178,19 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
 
         return dict()
 
-    def _create_user(self, data_dict, context):
-        data = copy.deepcopy(data_dict)
-        data['name'] = data['user_name']
+    @staticmethod
+    def create_user(data_dict, context):
+        data = data_dict.copy()
+        data = PublisherCreateWithUserView.resolve_form_field_name_conflict(data, {
+            "user_name": "name",
+            "user_image_url": "image_url",
+            "user_image_upload": "image_upload"
+        })
         data['password'] = data['password1']
         return logic.get_action(u'user_create')(context, data)
 
-    def _create_publisher(self, data_dict, context, user_dict):
+    @staticmethod
+    def create_publisher(data_dict, context, user_dict):
         data_dict['users'] = [{u'name': user_dict['name'], u'capacity': u'admin'}]
         context['user'] = user_dict['name']
         context['auth_user_obj'] = model.User.get(user_dict['id'])
@@ -182,7 +203,7 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
             return base.render(u'user/logout_first.html', {})
 
         is_organization = True
-        context = self._prepare()
+        context = self.get_context()
         try:
             data_dict = clean_dict(
                 dict_fns.unflatten(tuplize_dict(parse_params(request.form))))
@@ -195,20 +216,26 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
         context['message'] = data_dict.get(u'log_message', u'')
         data_dict['type'] = u'organization'
 
-        user_errors = self._validate_user_registration(data_dict, context)
-        errors = self._validate_publisher_registration(data_dict, context)
-
-        if 'name' in user_errors:
-            user_errors['user_name'] = user_errors.pop('name')
+        # Check for any errors in the data - we need to mimic this as transaction
+        user_errors = PublisherCreateWithUserView.validate_user_create(data_dict, context)
+        errors = PublisherCreateWithUserView.validate_publisher_create(data_dict, context)
+        user_errors = PublisherCreateWithUserView.resolve_form_field_name_conflict(user_errors, {
+            "name": "user_name",
+            "image_url": "user_image_url",
+            "image_upload": "user_image_upload"
+        })
         errors.update(user_errors)
 
+        # Check for any errors else create user and th8en publisher in one go
         try:
             if errors:
                 raise ValidationError(errors)
 
-            user_dict = self._create_user(data_dict, context)
-            publisher_dict = self._create_publisher(data_dict, context, user_dict)
+            user_dict = PublisherCreateWithUserView.create_user(data_dict, context)
+            publisher_dict = PublisherCreateWithUserView.create_publisher(data_dict, context, user_dict)
         except ValidationError as e:
+            data_dict.pop('user_image_upload', '')
+            data_dict.pop('user_image_url', '')
             errors = e.error_dict
             error_summary = e.error_summary
             return self.get(group_type, is_organization,
@@ -228,8 +255,7 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
             return base.render(u'user/logout_first.html', {})
 
         publisher.set_org(is_organization)
-        context = self._prepare()
-        is_organization = True # Overwrite
+        context = self.get_context()
         data = data or dict()
         errors = errors or {}
         error_summary = error_summary or {}
