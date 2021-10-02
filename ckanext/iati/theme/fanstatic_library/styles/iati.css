@@ -11472,3 +11472,13 @@ table.dataTable thead .sorting_desc_disabled:before {
 #organization-edit-form .fieldset-4 .control-required {
   display: none;
 }
+
+.user-image-upload input{
+  width: 100%!important;
+}
+
+.user-image-upload a{
+  margin-top: 10px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}

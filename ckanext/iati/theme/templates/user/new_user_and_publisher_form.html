@@ -3,7 +3,7 @@
 
 {% block form %}
     <fieldset class="fieldset-4">
-        <legend>{{ _('User Information') }}</legend>
+        <legend>{{ _('Admin User Information') }}</legend>
         {% block core_fields %}
           {% block required_core_fields %}
             {{ form.input("user_name", id="field-username", label=_("Username (required) <span class='required'>*</span>"), placeholder=_("username"), value=data.user_name, error=errors.user_name, is_required=True) }}
@@ -14,8 +14,12 @@
           {% endblock %}
 
           {% block optional_core_fields %}
-            {# Do not add upload image form here, because this registration is open #}
-          {% endblock %}
+            <div class="user-image-upload">
+                {% set is_upload = data.image_url and not data.image_url.startswith('http') %}
+                {% set is_url = data.image_url and data.image_url.startswith('http') %}
+                {{ form.image_upload(data, errors, is_upload_enabled=h.uploads_enabled(), is_url=is_url, is_upload=is_upload, upload_label=_('Profile picture'), url_label=_('Profile picture URL')) }}
+            </div>
+            {% endblock %}
         {% endblock %}
 
         {% block extra_fields %}

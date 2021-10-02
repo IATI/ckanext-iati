@@ -24,10 +24,10 @@
     {% block help_register_inner %}
       <h2 class="module-heading">{{ _('Need an Account?') }}</h2>
       <div class="module-content">
-        <p>{% trans %}Then sign right up, it only takes a minute.{% endtrans %}</p>
+        <p>{% trans %}Then sign right up, it only takes a few minutes.{% endtrans %}</p>
         <p class="action">
         {% block help_register_button %}
-          <a class="btn" href="{{ h.url_for('user.register') }}">{{ _('Create an Account') }}</a>
+          <a class="btn" href="{{ h.url_for('registration.register') }}">{{ _('Register') }}</a>
         {% endblock %}
         </p>
       </div>
