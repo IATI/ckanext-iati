@@ -519,6 +519,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             #'user_show',
             'user_list',
             'user_create',
+            'organization_show',
             'resource_delete'
         )
         return _get_module_functions(iati_actions, function_names)

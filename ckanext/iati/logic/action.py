@@ -20,6 +20,7 @@ import ckan.logic.action.patch as patch_core
 from ckan.lib import jobs
 import ckanext.iati.emailer as emailer
 import ckanext.iati.helpers as hlp
+import ckanext.iati.model as iati_model
 from sqlalchemy import and_
 from ckanext.iati.logic import publisher_tasks
 
@@ -162,6 +163,21 @@ def group_show(context, data_dict):
     :return:
     """
     return p.toolkit.get_action('organization_show')(context, data_dict)
+
+
+@p.toolkit.side_effect_free
+def organization_show(context, data_dict):
+    """
+    Add historical publisher ids
+    :param context:
+    :param data_dict:
+    :return:
+    """
+    result = get_core.organization_show(context, data_dict)
+    if data_dict.get('show_historical_publisher_ids', False) and h.check_access('organization_update', data_dict=data_dict):
+        historical_pub_ids = iati_model.IATIRedirects.extract_redirects(publisher_name=result['name'])
+        result['historical_publisher_ids'] = [dict(x) for x in historical_pub_ids]
+    return result
 
 
 def _remove_extras_from_data_dict(data_dict):
@@ -543,7 +559,7 @@ def user_show(context, data_dict):
     Return a user account with max. 1000 datasets rather than
     max 50 as in the core `user_show` function (CKAN 2.6.2).
 
-    See the core `user_show` function for full documenentation.
+    See the core `user_show` function for full documentation.
 
     '''
     log.debug('Overwriting core user_show to increase max. packages in user_dict to 1000')
