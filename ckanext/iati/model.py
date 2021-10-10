@@ -106,7 +106,7 @@ class IATIRedirects(Base):
         if publisher_name:
             _query = ''' 
                     SELECT DISTINCT public.group.id,
-                    CAST(CAST(activity.data AS json)  ->> 'group' AS json) ->> 'name' AS old_name,
+                    CAST(CAST(activity.data AS json)  ->> 'group' AS json) ->> 'name' AS old_publisher_iati_id,
                     CAST(activity.timestamp AS VARCHAR) as activity_recorded_at
                     FROM public.group, activity
                     WHERE
