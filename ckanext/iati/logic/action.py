@@ -174,9 +174,9 @@ def organization_show(context, data_dict):
     :return:
     """
     result = get_core.organization_show(context, data_dict)
-    if asbool(data_dict.get('show_historical_publisher_ids', "false")) and h.check_access('organization_update', data_dict=data_dict):
+    if asbool(data_dict.get('show_historical_publisher_names', "false")) and h.check_access('organization_update', data_dict=data_dict):
         historical_pub_ids = iati_model.IATIRedirects.extract_redirects(publisher_name=result['name'])
-        result['historical_publisher_ids'] = [dict(x) for x in historical_pub_ids]
+        result['historical_publisher_names'] = [dict(x) for x in historical_pub_ids]
     return result
 
 
