@@ -8919,7 +8919,6 @@ fieldset[disabled] .control-custom.disabled .checkbox.btn.active {
   background: #ff0000;
   margin: -3.75px 0 0;
   color: #ffffff;
-  width: 208px;
 }
 .control-medium .error-block {
   width: 318px;
@@ -11481,4 +11480,14 @@ table.dataTable thead .sorting_desc_disabled:before {
   margin-top: 10px;
   margin-right: 5px;
   margin-bottom: 5px;
+}
+
+.form-group-header {
+  margin-bottom: 20px;
+  font-size: 21px;
+  line-height: inherit;
+  color: #333333;
+  background: #e3e3e3;
+  border: 0;
+  padding: 4px;
 }

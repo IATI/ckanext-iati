@@ -197,7 +197,6 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
         return logic.get_action(u'organization_create')(context, data_dict)
 
     def post(self, group_type, is_organization):
-
         if g.user:
             # #1799 Don't offer the publisher registration form if already logged in
             return base.render(u'user/logout_first.html', {})
@@ -249,7 +248,6 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
         return h.redirect_to(u'user.login')
 
     def get(self, group_type, is_organization, data=None, errors=None, error_summary=None):
-
         if g.user:
             # #1799 Don't offer the publisher registration form if already logged in
             return base.render(u'user/logout_first.html', {})
@@ -257,8 +255,6 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
         publisher.set_org(is_organization)
         context = self.get_context()
         data = data or dict()
-        errors = errors or {}
-        error_summary = error_summary or {}
         extra_vars = {
             u'data': data,
             u'errors': errors,

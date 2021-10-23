@@ -43,14 +43,20 @@ def get_countries():
 
     return countries
 
-def get_publisher_source_types():
-    return lists.PUBLISHER_SOURCE_TYPES
+def get_publisher_source_types(add_default_empty=False):
+    options = lists.PUBLISHER_SOURCE_TYPES[:]
+    if add_default_empty:
+        options.insert(0, ("", "Please select"))
+    return options
 
 def get_publisher_frequencies():
     return lists.PUBLISHER_FREQUENCIES
 
-def get_organization_types():
-    return lists.ORGANIZATION_TYPES
+def get_organization_types(add_default_empty=False):
+    options = lists.ORGANIZATION_TYPES[:]
+    if add_default_empty:
+        options.insert(0, ("", "Please select"))
+    return options
 
 def get_country_title(code):
     return _get_list_item_title(lists.COUNTRIES, code)
@@ -150,7 +156,7 @@ def return_select_options(name, data):
     return_selected = False
 
     if name == 'publisher_source_type':
-        options = get_publisher_source_types()
+        options = get_publisher_source_types(add_default_empty=True)
         return_selected = data.get('publisher_source_type')
         for value, label in options:
             return_options.append({ 'text': label, 'value': value })
@@ -166,7 +172,7 @@ def return_select_options(name, data):
             if label:
                 return_options.append({ 'text': label, 'value': value })
     elif name == 'publisher_organization_type':
-        options = get_organization_types()
+        options = get_organization_types(add_default_empty=True)
         return_selected = data.get('publisher_organization_type')
         for value, label in options:
             return_options.append({ 'text': label, 'value': value })

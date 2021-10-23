@@ -24,7 +24,9 @@ from ckanext.iati.logic.validators import (
     country_code,
     change_publisher_id_or_org_id,
     first_publisher_date_validator,
-    validate_new_publisher_id_against_old
+    validate_new_publisher_id_against_old,
+    not_missing,
+    not_empty
 )
 from ckanext.iati.logic.converters import strip, convert_date_string_to_iso_format
 import ckanext.iati.helpers as iati_helpers
@@ -147,7 +149,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'name': [_not_empty, _unicode_safe, _name_validator, _group_name_validator, change_publisher_id_or_org_id,
                      validate_new_publisher_id_against_old],
             'license_id': [_convert_to_extras, licence_validator],
-            'publisher_source_type': default_validators,
+            'publisher_source_type': [_not_empty, _convert_to_extras, unicode],
             'publisher_iati_id': [_not_empty, remove_leading_or_trailing_spaces, iati_org_identifier_validator,
                                   _convert_to_extras, unicode, change_publisher_id_or_org_id],
             'publisher_country': default_validators,
@@ -169,7 +171,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'publisher_refs': default_validators,
             'publisher_constraints': default_validators,
             'publisher_data_quality': default_validators,
-            'publisher_organization_type': default_validators,
+            'publisher_organization_type': [_not_empty, _convert_to_extras, unicode],
             'publisher_implementation_schedule': default_validators,
             'publisher_first_publish_date': [_ignore_missing, convert_date_string_to_iso_format, _convert_to_extras,
                                              unicode, first_publisher_date_validator]
@@ -252,6 +254,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     p.implements(p.ITemplateHelpers)
     p.implements(p.IActions)
     p.implements(p.IAuthFunctions)
+    p.implements(p.IValidators)
 
     ## IRoutes
     def before_map(self, map):
@@ -437,7 +440,6 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             ('publisher_country', iati_helpers.get_country_title),
             ('publisher_source_type', iati_helpers.get_publisher_source_type_title),
             ('filetype', iati_helpers.get_file_type_title),
-            ('publisher_source_type', iati_helpers.get_publisher_source_type_title),
             ('publisher_organization_type', iati_helpers.get_organization_type_title),
             ('issue_type', iati_helpers.get_issue_title)
         )
@@ -543,9 +545,15 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         )
         return _get_module_functions(iati_auth, function_names)
 
+    # Validators
+    def get_validators(self):
+        return {
+            u'not_empty': not_empty,
+            u'not_missing': not_missing,
+            u'email_validator': email_validator
+        }
 
-def _get_module_functions(module, function_names):
-    functions = {}
+
 def _get_module_functions(module, function_names):
     functions = {}
     for f in function_names:

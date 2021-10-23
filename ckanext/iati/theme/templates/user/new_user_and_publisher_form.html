@@ -2,14 +2,14 @@
 
 {% block form %}
     <fieldset class="fieldset-4">
-        <legend>{{ _('Admin User Information') }}</legend>
+        <p class="form-group-header">{{ _('Admin User Information') }}</p>
         {% block core_fields %}
           {% block required_core_fields %}
-            {{ form.input("user_name", id="field-username", label=_("Username (required) <span class='required'>*</span>"), placeholder=_("username"), value=data.user_name, error=errors.user_name, is_required=True) }}
+            {{ form.input("user_name", id="field-username", label=_("Username <span class='required'>*</span>"), placeholder=_("username"), value=data.user_name, error=errors.user_name, is_required=True) }}
             {{ form.input("fullname", id="field-fullname", label=_("Full Name"), placeholder=_("Joe Bloggs"), value=data.fullname, error=errors.fullname) }}
-            {{ form.input("email", id="field-email", label=_("Email (required) <span class='required'>*</span>"), type="email", placeholder=_("joe@example.com"), value=data.email, error=errors.email, is_required=True) }}
-            {{ form.input("password1", id="field-password", label=_("Password (required) <span class='required'>*</span>"), type="password", placeholder="••••••••", value=data.password1, error=errors.password, is_required=True) }}
-            {{ form.input("password2", id="field-confirm-password", label=_("Confirm (required) <span class='required'>*</span>"), type="password", placeholder="••••••••", value=data.password2, error=errors.password, is_required=True) }}
+            {{ form.input("email", id="field-email", label=_("Email <span class='required'>*</span>"), type="text", placeholder=_("joe@example.com"), value=data.email, error=errors.email, is_required=True) }}
+            {{ form.input("password1", id="field-password", label=_("Password <span class='required'>*</span>"), type="password", placeholder="••••••••", value=data.password1, error=errors.password, is_required=True) }}
+            {{ form.input("password2", id="field-confirm-password", label=_("Confirm <span class='required'>*</span>"), type="password", placeholder="••••••••", value=data.password2, error=errors.password, is_required=True) }}
           {% endblock %}
 
           {% block optional_core_fields %}
