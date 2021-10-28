@@ -255,6 +255,8 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
         publisher.set_org(is_organization)
         context = self.get_context()
         data = data or dict()
+        errors = errors or dict()
+        error_summary = error_summary or dict()
         extra_vars = {
             u'data': data,
             u'errors': errors,
