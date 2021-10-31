@@ -35,7 +35,7 @@
     {% snippet 'snippets/country_list.html', data=data, errors=errors, field_name='publisher_country' %}
     <p class="help-block">Choose from the dropdown the country in which the publisher is legally incorporated. Multilateral and regional organisations may choose a region at the bottom of the list.</p>
 
-    {{ form.input('image_url', label=_('Image URL'), id='field-image-url', type='url', placeholder=_('http://example.com/my-image.jpg'), value=data.image_url, error=errors.image_url, classes=['control-full']) }}
+    {{ form.input('image_url', label=_('Publisher Logo URL'), id='field-image-url', type='url', placeholder=_('http://example.com/my-image.jpg'), value=data.image_url, error=errors.image_url, classes=['control-full']) }}
     <p class="help-block">Link to an image to be used as the publisher logo (Optimum size: 200 x 120 px)</p>
 
     {% if c.userobj.sysadmin %}
