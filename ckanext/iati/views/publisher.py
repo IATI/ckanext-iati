@@ -233,8 +233,6 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
             user_dict = PublisherCreateWithUserView.create_user(data_dict, context)
             publisher_dict = PublisherCreateWithUserView.create_publisher(data_dict, context, user_dict)
         except ValidationError as e:
-            data_dict.pop('user_image_upload', '')
-            data_dict.pop('user_image_url', '')
             errors = e.error_dict
             error_summary = e.error_summary
             return self.get(group_type, is_organization,
