@@ -641,3 +641,31 @@ def parse_error_object_to_list(error_object):
             error_list.append(str(element))
 
     return error_list
+
+
+def linked_user(user, maxlength=0, avatar=20):
+    if not isinstance(user, model.User):
+        user_name = helpers.text_type(user)
+        user = model.User.get(user_name)
+        if not user:
+            return user_name
+    if user:
+        name = user.name if model.User.VALID_NAME.match(user.name) else user.id
+        displayname = user.display_name
+
+        if maxlength and len(user.display_name) > maxlength:
+            displayname = displayname[:maxlength] + '...'
+
+        if user.state == 'deleted' and not authz.is_sysadmin(c.user):
+            return helpers.literal(helpers.text_type("Anonymous"))
+
+        return helpers.literal(u'{icon} {link}'.format(
+            icon=helpers.user_image(
+                user.id,
+                size=avatar
+            ),
+            link=helpers.link_to(
+                displayname,
+                helpers.url_for('user.read', id=name)
+            )
+        ))

@@ -25,7 +25,7 @@ from sqlalchemy import and_
 from ckanext.iati.logic import publisher_tasks
 
 from paste.deploy.converters import asbool
-from ckan.common import _
+from ckan.common import _, g
 import ckan
 import cStringIO
 import codecs
@@ -554,81 +554,13 @@ def organization_list_pending(context, data_dict):
     return _approval_needed(context, data_dict, is_org=True)
 
 
+@p.toolkit.side_effect_free
 def user_show(context, data_dict):
-    '''
-    Return a user account with max. 1000 datasets rather than
-    max 50 as in the core `user_show` function (CKAN 2.6.2).
-
-    See the core `user_show` function for full documentation.
-
-    '''
-    log.debug('Overwriting core user_show to increase max. packages in user_dict to 1000')
-    model = context['model']
-
-    id = data_dict.get('id', None)
-    provided_user = data_dict.get('user_obj', None)
-    if id:
-        user_obj = model.User.get(id)
-        context['user_obj'] = user_obj
-        if user_obj is None:
-            raise NotFound
-    elif provided_user:
-        context['user_obj'] = user_obj = provided_user
-    else:
-        raise NotFound
-
-    p.toolkit.check_access('user_show', context, data_dict)
-
-    # include private and draft datasets?
-    requester = context.get('user')
-    sysadmin = False
-    if requester:
-        sysadmin = authz.is_sysadmin(requester)
-        requester_looking_at_own_account = requester == user_obj.name
-        include_private_and_draft_datasets = (
-            sysadmin or requester_looking_at_own_account)
-    else:
-        include_private_and_draft_datasets = False
-    context['count_private_and_draft_datasets'] = \
-        include_private_and_draft_datasets
-
-    include_password_hash = sysadmin and asbool(
-        data_dict.get('include_password_hash', False))
-
-    user_dict = model_dictize.user_dictize(
-        user_obj, context, include_password_hash)
-
-    if context.get('return_minimal'):
-        log.warning('Use of the "return_minimal" in user_show is '
-                    'deprecated.')
-        return user_dict
-
-    if asbool(data_dict.get('include_datasets', False)):
-        user_dict['datasets'] = []
-
-        fq = "+creator_user_id:{0}".format(user_dict['id'])
-
-        search_dict = {'rows': 1000}  # The only change vs. the core function.
-
-        if include_private_and_draft_datasets:
-            search_dict.update({
-                'include_private': True,
-                'include_drafts': True})
-
-        search_dict.update({'fq': fq})
-
-        user_dict['datasets'] = \
-            logic.get_action('package_search')(context=context,
-                                               data_dict=search_dict) \
-            .get('results')
-
-    if asbool(data_dict.get('include_num_followers', False)):
-        user_dict['num_followers'] = logic.get_action('user_follower_count')(
-            {'model': model, 'session': model.Session},
-            {'id': user_dict['id']})
-
+    user_dict = get_core.user_show(context, data_dict)
+    is_sysadmin = authz.is_sysadmin(g.user)
+    if not is_sysadmin and user_dict['state'] == "deleted":
+        raise NotFound(_("User not found"))
     return user_dict
-
 
 def resource_delete(context, data_dict):
     '''Each dataset must have a single resource.

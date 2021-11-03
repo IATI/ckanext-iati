@@ -497,7 +497,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'first_published_date_patch',
             'organization_form_read_only',
             'get_publisher_list_download_formats',
-            'get_archiver_status'
+            'get_archiver_status',
+            'linked_user'
         )
         return _get_module_functions(iati_helpers, function_names)
 
@@ -516,7 +517,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'group_show',
             'organization_list',
             'organization_list_pending',
-            #'user_show',
+            'user_show',
             'user_list',
             'user_create',
             'organization_show',
