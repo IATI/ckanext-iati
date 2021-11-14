@@ -364,21 +364,14 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         if data_dict.get('owner_org'):
             org = p.toolkit.get_action('organization_show')(context, {'id': data_dict['owner_org']})
             if org:
-                new_extras = []
-                for key in ('publisher_source_type', 'publisher_organization_type', 'publisher_country',
-                            'publisher_iati_id',):
-                    new_extras.append({'key': key, 'value': org.get(key, '')})
-
-                data_dict['extras'].extend(new_extras)
-
                 # Inherit license from publisher
                 license = self._get_license_register().get(org.get('license_id'))
                 if license:
                     data_dict['license_id'] = license.id
                     if license.url:
-                        data_dict['license_url']= license.url
+                        data_dict['license_url'] = license.url
                     if license.title:
-                        data_dict['license_title']= license.title
+                        data_dict['license_title'] = license.title
         return data_dict
 
     def after_create(self, context, pkg_dict):
