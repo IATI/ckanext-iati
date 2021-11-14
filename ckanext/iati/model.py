@@ -73,7 +73,7 @@ class IATIRedirects(Base):
         """
         log.info("Updating redirects")
         model.Session.query(cls).delete()
-        _data = cls._extract_redirects()
+        _data = cls.extract_redirects()
 
         for row in _data:
             redirect = cls()
@@ -95,7 +95,7 @@ class IATIRedirects(Base):
         cls.save_redirect_in_filestore_directory(_data)
 
     @staticmethod
-    def _extract_redirects():
+    def extract_redirects(publisher_name=None):
         """
         Extracts the required redirects from the database tables and return the result as tuple
         TODD: Change the below query using sqlalchemy
@@ -103,15 +103,28 @@ class IATIRedirects(Base):
         :return: tuple
         """
         _db_conn = create_engine(config.get('sqlalchemy.url')).connect()
-        _query = ''' 
-        SELECT DISTINCT public.group.id, public.group.name as current_name, 
-        CAST(CAST(activity.data AS json)  ->> 'group' AS json) ->> 'name' AS old_name
-        FROM public.group, activity
-        WHERE
-        public.group.id = activity.object_id AND
-        activity.activity_type = 'changed organization' AND
-        public.group.name != CAST(CAST(activity.data AS json)  ->> 'group' AS json) ->> 'name';
-        '''
+        if publisher_name:
+            _query = ''' 
+                    SELECT DISTINCT public.group.id,
+                    CAST(CAST(activity.data AS json)  ->> 'group' AS json) ->> 'name' AS old_name,
+                    CAST(activity.timestamp AS VARCHAR) as activity_recorded_at
+                    FROM public.group, activity
+                    WHERE
+                    public.group.id = activity.object_id AND
+                    public.group.name = '{publisher_name}' AND
+                    activity.activity_type = 'changed organization' AND
+                    public.group.name != CAST(CAST(activity.data AS json)  ->> 'group' AS json) ->> 'name' LIMIT 20;
+                    '''.format(publisher_name=publisher_name)
+        else:
+            _query = ''' 
+                SELECT DISTINCT public.group.id, public.group.name as current_name, 
+                CAST(CAST(activity.data AS json)  ->> 'group' AS json) ->> 'name' AS old_name
+                FROM public.group, activity
+                WHERE
+                public.group.id = activity.object_id AND
+                activity.activity_type = 'changed organization' AND
+                public.group.name != CAST(CAST(activity.data AS json)  ->> 'group' AS json) ->> 'name';
+            '''
         log.info(_query)
         res = _db_conn.execute(_query)
 
