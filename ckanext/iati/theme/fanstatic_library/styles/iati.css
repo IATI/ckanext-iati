@@ -112,6 +112,7 @@ fieldset {
   padding: 10px;
   background-color: #ecf3f5;
   border-left: 5px solid #e3e3e3;
+  margin-bottom: 30px;
 }
 
 fieldset h2 {
@@ -11490,4 +11491,11 @@ table.dataTable thead .sorting_desc_disabled:before {
   background: #e3e3e3;
   border: 0;
   padding: 4px;
+}
+
+.popover-content {
+  font-family: arial, sans-serif;
+  font-size: 14px;
+  color: #737373;
+  font-weight: lighter;
 }

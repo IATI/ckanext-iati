@@ -675,3 +675,30 @@ def linked_user(user, maxlength=0, avatar=20):
                 helpers.url_for('user.read', id=name)
             )
         ))
+
+
+def get_helper_text_popover_to_form(field_label, helper_text, is_required=False):
+    """
+    E.g. <a class="popover-link" href="javascript:void(0)" title="Description" data-toggle="popover"
+            data-placement="top" data-html="true"  data-content="General description of publisher&#39;s
+            role and activities."><i class="fa fa-question"></i></a>
+
+    :param field_label:
+    :param helper_text:
+    :param is_required:
+    :return:
+    """
+
+    helper_text = helper_text.replace("'", "&#39;")
+    helper_text = helper_text.replace('"', "&#34;")
+
+    link = """
+        {field_label}
+        <a class="popover-link" href="javascript:void(0)" title="{field_label}" data-toggle="popover"
+            data-placement="top" data-html="true"  data-content="{helper_text}"><i class="fa fa-question"></i></a>
+    """.format(field_label=field_label, helper_text=helper_text)
+
+    if is_required:
+        link = link+'<span class="required">*</span>'
+
+    return link
