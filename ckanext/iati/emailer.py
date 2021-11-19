@@ -26,7 +26,6 @@ def send_email(content, subject, to, from_=FROM, content_type="plain"):
 
     try:
         s = smtplib.SMTP(SMTP_SERVER)
- #       s.login(SMTP_USER, SMTP_PASSWORD)
         s.sendmail(from_, to, msg.as_string())
         s.quit()
     except socket_error:
@@ -67,3 +66,28 @@ IATI Technical Team<br>
 '''
 
 
+new_publisher_email_to_publisher_body = '''
+Dear {user_name},<br><br>
+
+Thank you for registering with IATI.<br><br>
+
+A member of the Technical Team will review your account and contact you in 1-3 days with an update.<br><br>
+
+Kind regards,<br>
+IATI Technical Team<br>
+'''
+
+data_published_email_notification_body = '''
+Dear {user_name},<br><br>
+
+Congratulations! Your file(s) have been successfully published to <a href="{publisher_link}">IATI</a>.<br><br>
+
+To view your published data, please check <a href="http://d-portal.org/ctrack.html#view=search">d-portal</a> (allow 24 hours after publishing).<br><br>
+
+You can also do a more detailed search of your published data via the <a href="https://iatidatastore.iatistandard.org/querybuilder/">Datastore</a>.<br><br>
+
+Should you have any queries or support needs, then please email the IATI Helpdesk at: <a href="mailto:support@iatistandard.org">support@iatistandard.org</a>.<br><br>
+
+Kind regards,<br>
+IATI Technical Team<br>
+'''

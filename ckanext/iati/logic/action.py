@@ -50,6 +50,23 @@ _case = sqlalchemy.case
 _text = sqlalchemy.text
 
 
+def send_data_published_notification(context, owner_org, package_title):
+    publisher_link = urljoin(site_url, '/publisher/' + owner_org)
+    try:
+        user = context['auth_user_obj']
+        body = emailer.data_published_email_notification_body.format(
+            user_name=context['user'], publisher_link=publisher_link
+        )
+        subject = "[IATI Registry] Data: {0} is published".format(
+            package_title.encode('utf8')
+        )
+        emailer.send_email(body, subject, user.email, content_type='html')
+    except Exception as e:
+        log.error("Failed to send data published notification")
+        log.error(e)
+    return None
+
+
 def package_create(context, data_dict):
 
     # The only thing we do here is remove some extras that are always
@@ -61,6 +78,11 @@ def package_create(context, data_dict):
     if 'owner_org' in data_dict.keys():
         hlp.first_published_date_patch(created_package.get('owner_org'))
 
+    if created_package.get('state') != "deleted" and not created_package.get("private"):
+        package_title = created_package.get('title') or created_package.get('name')
+        send_data_published_notification(context, created_package.get('owner_org', ''), package_title)
+        # Data is published send an email
+
     return created_package
 
 
@@ -69,12 +91,20 @@ def package_update(context, data_dict):
     # The only thing we do here is remove some extras that are always
     # inherited from the dataset publisher, to avoid duplicating them
     _remove_extras_from_data_dict(data_dict)
+    old_package_dict = get_core.package_show(context, {"id": data_dict.get('id') or data_dict.get('name')})
     updated_package = update_core.package_update(context, data_dict)
     # Part of first publisher date patch
     if 'owner_org' in data_dict:
-        hlp.first_published_date_patch(updated_package.get('owner_org'))    
+        hlp.first_published_date_patch(updated_package.get('owner_org'))
+
+    if old_package_dict.get('private') and not updated_package.get('private') and \
+            updated_package.get('satte') != "deleted":
+        # Data is published send an email
+        package_title = updated_package.get('title') or updated_package.get('name')
+        send_data_published_notification(context, updated_package.get('owner_org', ''), package_title)
 
     return updated_package
+
 
 def package_patch(context, data_dict):
 
@@ -98,7 +128,20 @@ def organization_create(context, data_dict):
         context['__iati_state_pending'] = True
         data_dict['state'] = 'approval_needed'
         notify_sysadmins = True
+
     org_dict = create_core.organization_create(context, data_dict)
+
+    if data_dict.get('state', '') == "approval_needed":  # Send email if created user is not sysadmin
+        try:
+            user = context['auth_user_obj']
+            body = emailer.new_publisher_email_to_publisher_body.format(user_name=context['user'])
+            subject = "[IATI Registry] New Publisher: {0} - Status: {1}".format(
+                data_dict['title'].encode('utf8'), "Pending"
+            )
+            emailer.send_email(body, subject, user.email, content_type='html')
+        except Exception as e:
+            log.error("Failed to send notification email to publisher")
+            log.error(e)
 
     if notify_sysadmins:
         _send_new_publisher_email(context, org_dict)
