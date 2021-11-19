@@ -124,7 +124,7 @@ def db_date(value, context):
 
     try:
         value = date_parse(value)
-    except ValueError, e:
+    except (ValueError, e):
         raise Invalid(str(e))
 
     return value

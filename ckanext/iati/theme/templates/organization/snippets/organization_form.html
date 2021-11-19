@@ -20,7 +20,7 @@
 
     {{ form.input('name', label=_(h.get_helper_text_popover_to_form(
       'Publisher Id', "This will be the <strong>unique identifier</strong> for the publisher. Where possible use a
-      short abbreviation of your organisation's name. For example: 'dfid' or 'worldbank' Must be at least three
+      short abbreviation of your organisation's name. For example: 'dfid' or 'worldbank' Must be at least two
       characters long and lower case. Can include letters, numbers and also - (dash) and _ (underscore).",
       is_required=True)),
     id='field-name', value=data.name, error=errors.name, attrs=attrs) }}
