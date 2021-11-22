@@ -1,0 +1,13 @@
+{% ckan_extends %}
+
+{% block base_fields %}
+<p><i>
+The API tokens are encrypted keys (strings) that identifies a user and can be used by applications to connect to the IATI Registry. Because of security reasons, after an API Token is generated, it needs to be copied right away since it won't be accessible again.
+<br><br>
+If tokens are lost, a new token needs to be generated. There is no limit to how many tokens can be generated for a user.
+<br><br>
+To revoke access to a token, click the red x button next to the relevant token.
+<br><br>
+</i></p>
+    {{ super() }}
+{% endblock base_fields %}
