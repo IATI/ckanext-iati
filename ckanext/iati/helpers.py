@@ -29,7 +29,7 @@ log = logging.getLogger(__name__)
     
 
 def get_countries():
-    countries = (("", u"(No country assigned)"),)
+    countries = (("", u"Please select"),)
     get_countries_path = lambda: os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                               'countries.xml')
     root = ElementTree.parse(get_countries_path()).getroot()

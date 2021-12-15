@@ -9,24 +9,24 @@
 
 {% block basic_fields %}
 
-  <fieldset>
-    <legend>{{ _('Basic fields') }}</legend>
+  <fieldset class="fieldset-1">
+     <legend>{{ _('Publisher Information') }}</legend>
     {% set attrs = h.organization_form_read_only(c.group_dict) %}
 
-    {{ form.input('name', label=_('Publisher Id (required) *'), id='field-name', value=data.name, error=errors.name, attrs=attrs) }}
+    {{ form.input('name', label=_('Publisher Id (required) <span class="required">*</span>'), id='field-name', value=data.name, error=errors.name, attrs=attrs) }}
     <p class="help-block">This will be the <strong>unique identifier</strong> for the publisher. Where possible use a short abbreviation of your organisation's name. For example: "dfid" or "worldbank" Must be at least three characters long and lower case. Can include letters, numbers and also - (dash) and _ (underscore).</p>
 
-    {{ form.input('title', label=_('Publisher Name'), id='field-title', value=data.title, error=errors.title) }}
+    {{ form.input('title', label=_('Publisher Name (required) <span class="required">*</span>'), id='field-title', value=data.title, error=errors.title) }}
     <p class="help-block">The Name of the Organisation publishing the data.</p>
 
-    {{ form.input('publisher_iati_id', label=_('IATI Organisation Identifier (required) *'), id='field-publisher_iati_id', value=data.publisher_iati_id, error=errors.publisher_iati_id, attrs=attrs) }}
+    {{ form.input('publisher_iati_id', label=_('IATI Organisation Identifier (required) <span class="required">*</span>'), id='field-publisher_iati_id', value=data.publisher_iati_id, error=errors.publisher_iati_id, attrs=attrs) }}
     <p class="help-block">The organisation identifier used in the IATI XML files to identify the reporting organisation. For more information please go to <a href="http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-create-your-iati-organisation-identifier/">How to create your IATI organisation identifier</a>.</p>
+
+    {{ select('license_id', label=_('License <span class="required">*</span>'), data=data, autocomplete=true, error=errors.license_id) }}
+    <p class="help-block">Choose from the dropdown the appropriate licence under which your data is being published. For more information on IATI's licensing guidelines go to <a href="http://iatistandard.org/en/guidance/preparing-organisation/organisation-data-publication/how-to-license-you-data/">How to license your data</a>.</p>
 
     {{ select('publisher_source_type', label=_('Source'), data=data) }}
     <p class="help-block">Primary - publishers authorised to report their own (or associated organisations') data. Secondary - publishers reporting the activities of other organisations.</p>
-
-    {{ select('license_id', label=_('License *'), data=data, autocomplete=true, error=errors.license_id) }}
-    <p class="help-block">Choose from the dropdown the appropriate licence under which your data is being published. For more information on IATI's licensing guidelines go to <a href="http://iatistandard.org/en/guidance/preparing-organisation/organisation-data-publication/how-to-license-you-data/">How to license your data</a>.</p>
 
     {{ select('publisher_organization_type', label=_('Type'), data=data) }}
     <p class="help-block">Choose from the dropdown the organisation type that best describes the publisher.</p>
@@ -41,7 +41,28 @@
       {{ select('state', label=_('State'), data=data) }}
       <p class="help-block">Choose from dropdown: Active - publisher record is visibile on the Registry; Pending - approval needed prior to publication; Deleted.</p>
     {% endif %}
-    
+
+    {{ form.textarea('publisher_description', label=_('Description'), id='field-publisher_description', value=data.publisher_description, error=errors.publisher_description) }}
+    <p class="help-block">General description of publisher's role and activities.</p>
+  </fieldset>
+
+  <fieldset class="fieldset-2">
+    <legend>{{ _('Contact Information') }}</legend>
+    {% set attrs = h.organization_form_read_only(c.group_dict) %}
+
+    {{ form.input('publisher_contact_email', attrs={'required': 'true'}, label=_('Contact Email (required) <span class="required">*</span>'), id='field-publisher_contact_email', value=data.publisher_contact_email, error=errors.publisher_contact_email, type='text') }}
+    <p class="help-block">Contact email for publisher. Please note that IATI is an open data standard and the email provided here will be visible to others via the IATI Registry.</p>
+
+    {{ form.input('publisher_url', label=_('Website'), id='field-publisher_url', value=data.publisher_url, error=errors.publisher_url) }}
+    <p class="help-block">Full URL to the publisher website.</p>
+
+    {{ form.textarea('publisher_contact', label=_('Address'), id='field-publisher_contact', value=data.publisher_contact, error=errors.publisher_contact) }}
+    <p class="help-block">Contact address for publisher.</p>
+
+  </fieldset>
+
+  <fieldset class="fieldset-3">
+    <legend>{{ _('Publishing Additional Information') }}</legend>
 
     {% if c.userobj.sysadmin %}
         {% if data.publisher_first_publish_date %}
@@ -54,23 +75,6 @@
         {{ form.input('publisher_first_publish_date', label=_('First published date'), attrs={'pattern': '[0-9]{4}.(0[1-9]|1[012]).(0[1-9]|1[0-9]|2[0-9]|3[01])'}, value=publisher_first_publish_date, placeholder='Example: 2016-10-20', error=errors.publisher_first_publish_date, classes=['control-full']) }}
         <p class="help-block">Acceptable format: 'YYYY-MM-DD'.</p>
     {% endif %}
-
-  </fieldset>
-
-  <fieldset>
-    <legend>{{ _('Details') }}</legend>
-
-    {{ form.input('publisher_url', label=_('Website'), id='field-publisher_url', value=data.publisher_url, error=errors.publisher_url) }}
-    <p class="help-block">Full URL to the publisher website.</p>
-
-    {{ form.textarea('publisher_contact', label=_('Address'), id='field-publisher_contact', value=data.publisher_contact, error=errors.publisher_contact) }}
-    <p class="help-block">Contact address for publisher.</p>
-
-    {{ form.input('publisher_contact_email', attrs={'required': 'true'}, label=_('Contact Email (required) *'), id='field-publisher_contact_email', value=data.publisher_contact_email, error=errors.publisher_contact_email, type='text') }}
-    <p class="help-block">Contact email for publisher. Please note that IATI is an open data standard and the email provided here will be visible to others via the IATI Registry.</p>
-
-    {{ form.textarea('publisher_description', label=_('Description'), id='field-publisher_description', value=data.publisher_description, error=errors.publisher_description) }}
-    <p class="help-block">General description of publisher's role and activities.</p>
 
     {{ form.input('publisher_implementation_schedule', label=_('Implementation Schedule'), id='field-publisher_implementation_schedule', value=data.publisher_implementation_schedule, error=errors.publisher_implementation_schedule) }}
     <p class="help-block">URL of an Implementation Schedule.</p>
@@ -114,7 +118,7 @@
     {{ form.textarea('publisher_ui', label=_('User Interface'), id='field-publisher_ui', value=data.publisher_ui, error=errors.publisher_ui) }}
     <p class="help-block">Will IATI data be accessible for end users through an existing or a new user interface on your website?</p>
 
-    {{ form.input('publisher_ui_url', label=_('User Interface URL'), id='field-publisher_ui_url', value=data.publisher_ui_url, error=errors.publisher_ui_url) }}
+    {{ form.input('publisher_ui_url', label=_('User Interface Website'), id='field-publisher_ui_url', value=data.publisher_ui_url, error=errors.publisher_ui_url) }}
     <p class="help-block">If available, please provide the full URL to the website where your IATI data is accessible.</p>
 
 

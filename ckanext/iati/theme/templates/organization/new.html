@@ -9,3 +9,7 @@
 {% block breadcrumb_content_inner %}
   <li class="active"><a href="#">{{ _('Create a Publisher') }}</a></li>
 {% endblock %}
+
+{% block secondary_content %}
+  {% snippet "organization/snippets/create_helper.html", group_type=group_type %}
+{% endblock %}
