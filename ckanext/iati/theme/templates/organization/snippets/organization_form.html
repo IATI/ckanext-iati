@@ -17,25 +17,26 @@
      <p class="form-group-header">{{ _('Publisher Information') }}</p>
     {% set attrs = h.organization_form_read_only(c.group_dict) %}
 
-
     {{ form.input('name', label=_(h.get_helper_text_popover_to_form(
       'Publisher Id', "This will be the <strong>unique identifier</strong> for the publisher. Where possible use a
       short abbreviation of your organisation's name. For example: 'dfid' or 'worldbank' Must be at least two
       characters long and lower case. Can include letters, numbers and also - (dash) and _ (underscore).",
       is_required=True)),
-    id='field-name', value=data.name, error=errors.name, attrs=attrs) }}
+    id='field-name', value=data.name, error=errors.name,
+    attrs={'required': 'true', 'pattern': '([a-z0-9-_]+){2,}', 'oninvalid': "setCustomValidity('This will be the unique identifier for the publisher. Where possible use a short abbreviation of your organisations name. For example: dfid or worldbank Must be at least two characters long and lower case. Can include letters, numbers and also - (dash) and _ (underscore).')", 'oninput': "setCustomValidity('')"})
+    }}
 
 
     {{ form.input('title', label=_(h.get_helper_text_popover_to_form(
       'Publisher Name', 'The Name of the organisation publishing the data.', is_required=True)),
-    id='field-title', value=data.title, error=errors.title) }}
+    id='field-title', value=data.title, error=errors.title, attrs={'required': 'true'}) }}
 
 
     {{ form.input('publisher_iati_id', label=_(h.get_helper_text_popover_to_form(
       'IATI Organisation Identifier', 'The organisation identifier used in the IATI XML files to
       identify the reporting organisation. For more information please go to
       <a href="http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-create-your-iati-organisation-identifier/">How to create your IATI organisation identifier</a>.', is_required=True)), id='field-publisher_iati_id',
-      value=data.publisher_iati_id, error=errors.publisher_iati_id, attrs=attrs) }}
+      value=data.publisher_iati_id, error=errors.publisher_iati_id, attrs={'required': 'true'}) }}
 
 
     {{ select('publisher_organization_type', label=_(h.get_helper_text_popover_to_form(
@@ -87,11 +88,11 @@
       'Contact Email', 'Contact email for publisher. Please note that IATI is an open data standard and the email provided here will be visible to others via the IATI Registry.',is_required=True)),
       id='field-publisher_contact_email', placeholder=_("e.g. name@example.com"),
       value=data.publisher_contact_email, error=errors.publisher_contact_email,
-      type='text') }}
+      type='email', attrs={'required': 'true'}) }}
 
 
     {{ form.input('publisher_url', label=_(h.get_helper_text_popover_to_form(
-      'Website', 'Full URL to the publisher website.')), placeholder=_("e.g. http://www.mywebsite.com"),
+      'Website', 'Full URL to the publisher website.')), type='url', placeholder=_("e.g. http://www.mywebsite.com"),
       id='field-publisher_url', value=data.publisher_url, error=errors.publisher_url) }}
 
 
@@ -204,7 +205,7 @@
     {{ form.input('publisher_ui_url', label=_(h.get_helper_text_popover_to_form(
       'User Interface Website',
       "If available, please provide the full URL to the website where your IATI data is accessible.")),
-      id='field-publisher_ui_url', placeholder=_("e.g. http://www.myuserinterface.com"),
+      id='field-publisher_ui_url', type="url", placeholder=_("e.g. http://www.myuserinterface.com"),
       value=data.publisher_ui_url, error=errors.publisher_ui_url) }}
 
   </fieldset>
