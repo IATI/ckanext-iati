@@ -11,6 +11,7 @@ from ckanext.iati.lists import FILE_TYPES, COUNTRIES
 from ckanext.iati import model as iati_redirects
 from ckan.lib.navl.dictization_functions import StopOnError, missing
 from ckan.common import _
+import ckan.plugins as p
 
 def iati_one_resource(key, data, errors, context):
 
@@ -312,3 +313,13 @@ def not_empty(key, data, errors, context):
     if not value or value is missing:
         errors[key].append(_('Please fill required field'))
         raise StopOnError
+
+
+def iati_publisher_name_validator(value, context):
+    try:
+        return p.toolkit.get_validator('name_validator')(value, context)
+    except Invalid:
+        raise Invalid("This will be the unique identifier for the publisher. "
+                      "Where possible use a short abbreviation of your organisation's name. "
+                      "For example: 'dfid' or 'worldbank' Must be at least two characters long and lower case. "
+                      "Can include letters, numbers and also - (dash) and _ (underscore).")
