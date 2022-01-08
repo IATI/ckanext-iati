@@ -9,60 +9,106 @@
 
 {% block basic_fields %}
 
+  {% if is_user_create %}
+    {{ user_form | safe }}
+  {% endif %}
+
   <fieldset class="fieldset-1">
-     <legend>{{ _('Publisher Information') }}</legend>
+     <p class="form-group-header">{{ _('Publisher Information') }}</p>
     {% set attrs = h.organization_form_read_only(c.group_dict) %}
 
-    {{ form.input('name', label=_('Publisher Id (required) <span class="required">*</span>'), id='field-name', value=data.name, error=errors.name, attrs=attrs) }}
-    <p class="help-block">This will be the <strong>unique identifier</strong> for the publisher. Where possible use a short abbreviation of your organisation's name. For example: "dfid" or "worldbank" Must be at least three characters long and lower case. Can include letters, numbers and also - (dash) and _ (underscore).</p>
 
-    {{ form.input('title', label=_('Publisher Name (required) <span class="required">*</span>'), id='field-title', value=data.title, error=errors.title) }}
-    <p class="help-block">The Name of the Organisation publishing the data.</p>
+    {{ form.input('name', label=_(h.get_helper_text_popover_to_form(
+      'Publisher Id', "This will be the <strong>unique identifier</strong> for the publisher. Where possible use a
+      short abbreviation of your organisation's name. For example: 'dfid' or 'worldbank' Must be at least two
+      characters long and lower case. Can include letters, numbers and also - (dash) and _ (underscore).",
+      is_required=True)),
+    id='field-name', value=data.name, error=errors.name, attrs=attrs) }}
 
-    {{ form.input('publisher_iati_id', label=_('IATI Organisation Identifier (required) <span class="required">*</span>'), id='field-publisher_iati_id', value=data.publisher_iati_id, error=errors.publisher_iati_id, attrs=attrs) }}
-    <p class="help-block">The organisation identifier used in the IATI XML files to identify the reporting organisation. For more information please go to <a href="http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-create-your-iati-organisation-identifier/">How to create your IATI organisation identifier</a>.</p>
 
-    {{ select('license_id', label=_('License <span class="required">*</span>'), data=data, autocomplete=true, error=errors.license_id) }}
-    <p class="help-block">Choose from the dropdown the appropriate licence under which your data is being published. For more information on IATI's licensing guidelines go to <a href="http://iatistandard.org/en/guidance/preparing-organisation/organisation-data-publication/how-to-license-you-data/">How to license your data</a>.</p>
+    {{ form.input('title', label=_(h.get_helper_text_popover_to_form(
+      'Publisher Name', 'The Name of the organisation publishing the data.', is_required=True)),
+    id='field-title', value=data.title, error=errors.title) }}
 
-    {{ select('publisher_source_type', label=_('Source'), data=data) }}
-    <p class="help-block">Primary - publishers authorised to report their own (or associated organisations') data. Secondary - publishers reporting the activities of other organisations.</p>
 
-    {{ select('publisher_organization_type', label=_('Type'), data=data) }}
-    <p class="help-block">Choose from the dropdown the organisation type that best describes the publisher.</p>
+    {{ form.input('publisher_iati_id', label=_(h.get_helper_text_popover_to_form(
+      'IATI Organisation Identifier', 'The organisation identifier used in the IATI XML files to
+      identify the reporting organisation. For more information please go to
+      <a href="http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-create-your-iati-organisation-identifier/">How to create your IATI organisation identifier</a>.', is_required=True)), id='field-publisher_iati_id',
+      value=data.publisher_iati_id, error=errors.publisher_iati_id, attrs=attrs) }}
 
-    {% snippet 'snippets/country_list.html', data=data, errors=errors, field_name='publisher_country' %}
-    <p class="help-block">Choose from the dropdown the country in which the publisher is legally incorporated. Multilateral and regional organisations may choose a region at the bottom of the list.</p>
 
-    {{ form.input('image_url', label=_('Image URL'), id='field-image-url', type='url', placeholder=_('http://example.com/my-image.jpg'), value=data.image_url, error=errors.image_url, classes=['control-full']) }}
-    <p class="help-block">Link to an image to be used as the publisher logo (Optimum size: 200 x 120 px)</p>
+    {{ select('publisher_organization_type', label=_(h.get_helper_text_popover_to_form(
+      'Publisher Type', 'Choose from the dropdown the organisation type that best describes the publisher.',
+      is_required=True)), data=data, error=errors.publisher_organization_type) }}
+
+
+    {{ select('license_id', label=_(h.get_helper_text_popover_to_form(
+      'Data License', "License under which your data is being published. IATI is an open data standard,
+      thus requires you to make your data available under an open licence so it can be freely used. One of the most
+      frequently used licenses is Creative Commons Attribution. For more information on IATI's licensing guidelines
+      go to <a href='https://iatistandard.org/en/guidance/standard-overview/preparing-your-organisation-data-publication/how-to-license-your-data/'>How to license your data</a>.",
+      is_required=True)), data=data, autocomplete=true, error=errors.license_id) }}
+
+
+    {% snippet 'snippets/country_list.html',
+      data=data, errors=errors, field_name='publisher_country',
+      label=_(h.get_helper_text_popover_to_form("Country", "Choose from the dropdown the country in which the
+      publisher is legally incorporated. Multilateral and regional organisations may choose a
+      region at the bottom of the list."))
+    %}
+
+
+    {{ form.input('image_url', label=_(h.get_helper_text_popover_to_form(
+      'Publisher Logo URL', 'Link to an image to be used as the publisher logo (Optimum size: 200 x 120 px)')),
+      id='field-image-url', type='url',
+      placeholder=_('e.g. http://example.com/my-image.jpg'),
+      value=data.image_url, error=errors.image_url, classes=['control-full']) }}
+
 
     {% if c.userobj.sysadmin %}
-      {{ select('state', label=_('State'), data=data) }}
-      <p class="help-block">Choose from dropdown: Active - publisher record is visibile on the Registry; Pending - approval needed prior to publication; Deleted.</p>
+      {{ select('state', label=_(h.get_helper_text_popover_to_form(
+        'State', 'Choose from dropdown: Active - publisher record is visible on the Registry; Pending - approval needed prior to publication; Deleted.')),
+        data=data) }}
     {% endif %}
 
-    {{ form.textarea('publisher_description', label=_('Description'), id='field-publisher_description', value=data.publisher_description, error=errors.publisher_description) }}
-    <p class="help-block">General description of publisher's role and activities.</p>
+
+    {{ form.textarea('publisher_description', label=_(h.get_helper_text_popover_to_form(
+      'Description', "General description of publisher's role and activities.")),
+      id='field-publisher_description', value=data.publisher_description, error=errors.publisher_description) }}
+
   </fieldset>
 
   <fieldset class="fieldset-2">
-    <legend>{{ _('Contact Information') }}</legend>
+    <p class="form-group-header">{{ _('Contact Information') }}</p>
     {% set attrs = h.organization_form_read_only(c.group_dict) %}
 
-    {{ form.input('publisher_contact_email', attrs={'required': 'true'}, label=_('Contact Email (required) <span class="required">*</span>'), id='field-publisher_contact_email', value=data.publisher_contact_email, error=errors.publisher_contact_email, type='text') }}
-    <p class="help-block">Contact email for publisher. Please note that IATI is an open data standard and the email provided here will be visible to others via the IATI Registry.</p>
+    {{ form.input('publisher_contact_email', label=_(h.get_helper_text_popover_to_form(
+      'Contact Email', 'Contact email for publisher. Please note that IATI is an open data standard and the email provided here will be visible to others via the IATI Registry.',is_required=True)),
+      id='field-publisher_contact_email', placeholder=_("e.g. name@example.com"),
+      value=data.publisher_contact_email, error=errors.publisher_contact_email,
+      type='text') }}
 
-    {{ form.input('publisher_url', label=_('Website'), id='field-publisher_url', value=data.publisher_url, error=errors.publisher_url) }}
-    <p class="help-block">Full URL to the publisher website.</p>
 
-    {{ form.textarea('publisher_contact', label=_('Address'), id='field-publisher_contact', value=data.publisher_contact, error=errors.publisher_contact) }}
-    <p class="help-block">Contact address for publisher.</p>
+    {{ form.input('publisher_url', label=_(h.get_helper_text_popover_to_form(
+      'Website', 'Full URL to the publisher website.')), placeholder=_("e.g. http://www.mywebsite.com"),
+      id='field-publisher_url', value=data.publisher_url, error=errors.publisher_url) }}
+
+
+    {{ form.textarea('publisher_contact', label=_(h.get_helper_text_popover_to_form(
+      'Address', 'Contact address for publisher.')),
+      id='field-publisher_contact', value=data.publisher_contact, error=errors.publisher_contact) }}
+
 
   </fieldset>
 
   <fieldset class="fieldset-3">
-    <legend>{{ _('Publishing Additional Information') }}</legend>
+    <p class="form-group-header">{{ _('Publishing Additional Information') }}</p>
+
+    {{ select('publisher_source_type', label=_(h.get_helper_text_popover_to_form(
+      'Source', "Primary - publishers authorised to report their own (or associated organisations') data. Secondary
+      - publishers reporting the activities of other organisations.", is_required=True)),
+    data=data, error=errors.publisher_source_type) }}
 
     {% if c.userobj.sysadmin %}
         {% if data.publisher_first_publish_date %}
@@ -72,55 +118,94 @@
             {% set publisher_first_publish_date = '' %}
         {% endif %}
 
-        {{ form.input('publisher_first_publish_date', label=_('First published date'), attrs={'pattern': '[0-9]{4}.(0[1-9]|1[012]).(0[1-9]|1[0-9]|2[0-9]|3[01])'}, value=publisher_first_publish_date, placeholder='Example: 2016-10-20', error=errors.publisher_first_publish_date, classes=['control-full']) }}
-        <p class="help-block">Acceptable format: 'YYYY-MM-DD'.</p>
+        {{ form.input('publisher_first_publish_date', label=_(h.get_helper_text_popover_to_form('First published date', "Acceptable format: 'YYYY-MM-DD'.")),
+        attrs={'pattern': '[0-9]{4}.(0[1-9]|1[012]).(0[1-9]|1[0-9]|2[0-9]|3[01])'},
+        value=publisher_first_publish_date, placeholder=_('e.g. 2020-10-20'),
+        error=errors.publisher_first_publish_date, classes=['control-full']) }}
     {% endif %}
 
-    {{ form.input('publisher_implementation_schedule', label=_('Implementation Schedule'), id='field-publisher_implementation_schedule', value=data.publisher_implementation_schedule, error=errors.publisher_implementation_schedule) }}
-    <p class="help-block">URL of an Implementation Schedule.</p>
+    {{ form.input('publisher_implementation_schedule', label=_(h.get_helper_text_popover_to_form(
+      'Implementation Schedule', 'URL of an Implementation Schedule.')),
+    id='field-publisher_implementation_schedule',
+    value=data.publisher_implementation_schedule, error=errors.publisher_implementation_schedule) }}
 
-    {{ form.textarea('publisher_agencies', label=_('Organisations / agencies covered'), id='field-publisher_agencies', value=data.publisher_agencies, error=errors.publisher_agencies) }}
-    <p class="help-block">Which organisations/agencies does your IATI data cover?  (What % of your total development flows does this cover? What is missing?).</p>
 
-    {{ form.textarea('publisher_timeliness', label=_('Timeliness of Data'), id='field-publisher_timeliness', value=data.publisher_timeliness, error=errors.publisher_timeliness) }}
-    <p class="help-block">How soon after data is captured and available internally will data be published?</p>
+    {{ form.textarea('publisher_agencies', label=_(h.get_helper_text_popover_to_form(
+      'Organisations / agencies covered', "Which organisations/agencies does your IATI data cover?
+      (What &#37; of your total development flows does this cover? What is missing?).")),
+    id='field-publisher_agencies', value=data.publisher_agencies, error=errors.publisher_agencies) }}
 
-    {{ select('publisher_frequency_select', label=_('Frequency of publication'), data=data) }}
-    <p class="help-block">How often is IATI data refreshed?</p>
 
-    {{ form.textarea('publisher_frequency', label=_('Frequency of publication (extra comments)'), id='field-publisher_frequency', value=data.publisher_frequency, error=errors.publisher_frequency) }}
-    <p class="help-block"></p>
+    {{ form.textarea('publisher_timeliness', label=_(h.get_helper_text_popover_to_form(
+      'Timeliness of Data', 'How soon after data is captured and available internally will data be published?')),
+    id='field-publisher_timeliness', value=data.publisher_timeliness,
+    error=errors.publisher_timeliness) }}
 
-    {{ form.textarea('publisher_units', label=_('Units of Aid'), id='field-publisher_units', value=data.publisher_units, error=errors.publisher_units) }}
-    <p class="help-block">How is an activity defined e.g. projects and programmes, or some other structure? Do you have multi-tiered project structures e.g. projects and sub-projects or components? At which level/s do you intend to publish details?).</p>
 
-    {{ form.textarea('publisher_segmentation', label=_('Segmentation of Published Data'), id='field-publisher_segmentation', value=data.publisher_segmentation, error=errors.publisher_segmentation) }}
-    <p class="help-block">Is IATI data published in separate files per country or region?</p>
+    {{ select('publisher_frequency_select', label=_(h.get_helper_text_popover_to_form(
+      'Frequency of publication', 'How often is IATI data refreshed? IATI recommends refreshing the data at least quarterly.')),
+    data=data) }}
 
-    {{ form.textarea('publisher_refs', label=_('Data Definitions and References'), id='field-publisher_refs', value=data.publisher_refs, error=errors.publisher_refs) }}
-    <p class="help-block">Links to guides, explanations, codelists on the publisher's own site that clarify their data.</p>
 
-    {{ form.textarea('publisher_field_exclusions', label=_('Field Exclusions'), id='field-publisher_field_exclusions', value=data.publisher_field_exclusions, error=errors.publisher_field_exclusions) }}
-    <p class="help-block">What fields recommended in the standard do you never use - and for what reason.</p>
+    {{ form.textarea('publisher_frequency', label=_('Frequency of publication (extra comments)'),
+    id='field-publisher_frequency', value=data.publisher_frequency, error=errors.publisher_frequency) }}
 
-    {{ form.textarea('publisher_record_exclusions', label=_('Record Exclusions'), id='field-publisher_record_exclusions', value=data.publisher_record_exclusions, error=errors.publisher_record_exclusions) }}
-    <p class="help-block">What are your policies for excluding particular activities, or parts of an activity's data?</p>
 
-    {{ form.textarea('publisher_thresholds', label=_('Thresholds'), id='field-publisher_thresholds', value=data.publisher_thresholds, error=errors.publisher_thresholds) }}
-    <p class="help-block">What are the thresholds below which data or whole activities are not published?</p>
+    {{ form.textarea('publisher_units', label=_(h.get_helper_text_popover_to_form(
+      'Units of Aid', "How is an activity defined e.g. projects and programmes, or some other structure?
+      Do you have multi-tiered project structures e.g. projects and sub-projects or components? At which level/s do
+      you intend to publish details?).")),
+    id='field-publisher_units', value=data.publisher_units, error=errors.publisher_units) }}
 
-    {{ form.textarea('publisher_constraints', label=_('Other Constraints'), id='field-publisher_constraints', value=data.publisher_constraints, error=errors.publisher_constraints) }}
-    <p class="help-block">Other policies or circumstances that restrict your full compliance with the standard.</p>
 
-    {{ form.textarea('publisher_data_quality', label=_('Data Quality'), id='field-publisher_data_quality', value=data.publisher_data_quality, error=errors.publisher_data_quality) }}
-    <p class="help-block">Publisher's comment on the status and accuracyof the data - audited/verified, operational/sub to change, etc</p>
+    {{ form.textarea('publisher_segmentation', label=_(h.get_helper_text_popover_to_form(
+      'Segmentation of Published Data', "Is IATI data published in separate files per country or region?")),
+    id='field-publisher_segmentation', value=data.publisher_segmentation, error=errors.publisher_segmentation) }}
 
-    {{ form.textarea('publisher_ui', label=_('User Interface'), id='field-publisher_ui', value=data.publisher_ui, error=errors.publisher_ui) }}
-    <p class="help-block">Will IATI data be accessible for end users through an existing or a new user interface on your website?</p>
 
-    {{ form.input('publisher_ui_url', label=_('User Interface Website'), id='field-publisher_ui_url', value=data.publisher_ui_url, error=errors.publisher_ui_url) }}
-    <p class="help-block">If available, please provide the full URL to the website where your IATI data is accessible.</p>
+    {{ form.textarea('publisher_refs', label=_(h.get_helper_text_popover_to_form(
+      'Data Definitions and References', "Links to guides, explanations,
+      codelists on the publisher's own site that clarify their data.")),
+    id='field-publisher_refs', value=data.publisher_refs, error=errors.publisher_refs) }}
 
+
+    {{ form.textarea('publisher_field_exclusions', label=_(h.get_helper_text_popover_to_form(
+      'Field Exclusions', "What fields recommended in the standard do you never use - and for what reason.")),
+      id='field-publisher_field_exclusions', value=data.publisher_field_exclusions,
+      error=errors.publisher_field_exclusions) }}
+
+
+    {{ form.textarea('publisher_record_exclusions', label=_(h.get_helper_text_popover_to_form(
+      'Record Exclusions',
+      "What are your policies for excluding particular activities, or parts of an activity's data?")),
+      id='field-publisher_record_exclusions', value=data.publisher_record_exclusions,
+      error=errors.publisher_record_exclusions) }}
+
+
+    {{ form.textarea('publisher_thresholds', label=_(h.get_helper_text_popover_to_form(
+      'Thresholds', "What are the thresholds below which data or whole activities are not published?")),
+      id='field-publisher_thresholds', value=data.publisher_thresholds, error=errors.publisher_thresholds) }}
+
+
+    {{ form.textarea('publisher_constraints', label=_(h.get_helper_text_popover_to_form(
+      'Other Constraints', 'Other policies or circumstances that restrict your full compliance with the standard.')),
+      id='field-publisher_constraints', value=data.publisher_constraints, error=errors.publisher_constraints) }}
+
+    {{ form.textarea('publisher_data_quality', label=_(h.get_helper_text_popover_to_form(
+      'Data Quality', "Publisher's comment on the status and accuracy of the data -
+      audited/verified, operational/sub to change, etc")),
+    id='field-publisher_data_quality', value=data.publisher_data_quality, error=errors.publisher_data_quality) }}
+
+    {{ form.textarea('publisher_ui', label=_(h.get_helper_text_popover_to_form(
+      'User Interface', "Will IATI data be accessible for end users through an existing or a new user interface on your website?")),
+      id='field-publisher_ui', value=data.publisher_ui, error=errors.publisher_ui) }}
+
+
+    {{ form.input('publisher_ui_url', label=_(h.get_helper_text_popover_to_form(
+      'User Interface Website',
+      "If available, please provide the full URL to the website where your IATI data is accessible.")),
+      id='field-publisher_ui_url', placeholder=_("e.g. http://www.myuserinterface.com"),
+      value=data.publisher_ui_url, error=errors.publisher_ui_url) }}
 
   </fieldset>
 
