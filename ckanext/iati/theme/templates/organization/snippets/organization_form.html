@@ -36,7 +36,7 @@
       'IATI Organisation Identifier', 'The organisation identifier used in the IATI XML files to
       identify the reporting organisation. For more information please go to
       <a href="http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-create-your-iati-organisation-identifier/">How to create your IATI organisation identifier</a>.', is_required=True)), id='field-publisher_iati_id',
-      value=data.publisher_iati_id, error=errors.publisher_iati_id, attrs={'required': 'true', 'pattern': '[A-Za-z0-9-]+', 'oninvalid': "setCustomValidity('IATI Organization Identifier can only be letters or numbers or combination of both')", 'oninput': "setCustomValidity('')"}) }}
+      value=data.publisher_iati_id, error=errors.publisher_iati_id, attrs={'required': 'true', 'pattern': '[A-Za-z0-9-]+', 'oninvalid': "setCustomValidity('Invalid character detected. Valid characters include letters, numbers and - (dash).')", 'oninput': "setCustomValidity('')"}) }}
 
 
     {{ select('publisher_organization_type', label=_(h.get_helper_text_popover_to_form(
