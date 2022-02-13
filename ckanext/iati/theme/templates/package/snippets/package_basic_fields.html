@@ -6,9 +6,9 @@
   {% set extras_dict = data %}
 {% endif %}
 
-<fieldset>
+<fieldset class="fieldset-1">
 
-  <legend>Basic Information</legend>
+  <p class="form-group-header">Basic Information</p>
 
   {{ form.input('name', id='field-name', label=_('File Id'), placeholder=_('eg. my-dataset'), value=data.name, error=errors.name) }}
   <p class="help-block"><span class="field-xml">[registry-file-id]</span> A unique identifier for the activity record. It must be prefixed with your Publisher Id and a hyphen. It is recommended that you use "org" for your organisation file and the country or region code for segmented activity datasets. 2+ characters, lowercase, using only 'a-z0-9' and '_' . (eg dfid-ao, wb-org, unops-998).
@@ -52,8 +52,8 @@
 
 </fieldset>
 
-<fieldset>
-  <legend>Publisher</legend>
+<fieldset class="fieldset-2">
+  <p class="form-group-header">Publisher</p>
 
   {% if data.group_id %}
     <input type="hidden" name="groups__0__id" value="{{ data.group_id }}" />
@@ -111,8 +111,8 @@
 
 </fieldset>
 
-<fieldset>
-  <legend>Details</legend>
+<fieldset class="fieldset-3">
+  <p class="form-group-header">Details</p>
 
   {% snippet 'snippets/country_list.html', data=extras_dict, errors=errors, field_name='country' %}
   <p class="help-block"><span class="field-xml">[recipient-country]</span> Recipient country.</p>
@@ -130,8 +130,8 @@
 
 </fieldset>
 
-<fieldset>
-  <legend>Data File</legend>
+<fieldset class="fieldset-4">
+  <p class="form-group-header">Data File</p>
   {% set resources = {} %}
   {% if data.get('resources')[0] is defined %}
     {% set resources = data['resources'][0] %}
@@ -151,8 +151,8 @@
 
 </fieldset>
 
-<fieldset>
-  <legend>Verification and Analysis</legend>
+<fieldset class="fieldset-5">
+  <p class="form-group-header">Verification and Analysis</p>
 
   {{ form.input('iati_version', id='field-iati-version', label=_('IATI Standard Version'), value=extras_dict.get('iati_version'), error=errors.iati_version, classes=['control-full']) }}
   {{ form.input('activity_count', id='field-activity-count', label=_('Num. Activities'), value=extras_dict.get('activity_count'), error=errors.activity_count, classes=['control-full']) }}

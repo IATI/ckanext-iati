@@ -1,0 +1,9 @@
+{% ckan_extends %}
+
+{% block breadcrumb_content %}
+  <li>{{ h.nav_link(_('Registration'), named_route='registration.register') }}</li>
+  <li class="active">{{ h.nav_link(_('New User'), named_route='user.register') }}</li>
+{% endblock %}
+
+{% block help %}
+{% endblock %}

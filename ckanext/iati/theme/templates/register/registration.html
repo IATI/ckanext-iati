@@ -1,0 +1,38 @@
+{% extends "page.html" %}
+
+{% block subtitle %}{{ _('Register') }}{% endblock %}
+
+
+{% block breadcrumb_content %}
+  <li class="active">{{ h.nav_link(_('Registration'), named_route='registration.register') }}</li>
+{% endblock %}
+
+{% block primary %}
+    <div class="container">
+        <div class="row register">
+            <div class="card">
+                <h2>
+                    {{ _('New Publisher') }}
+                </h2>
+                <p>
+                    Register your organisation as an IATI publisher and set
+                    up an admin user account
+                </p>
+                <a class="btn btn-primary" href="{{ h.url_for('publisher_with_user.register_publisher') }}">{{ _('Create Publisher Account') }}</a>
+            </div>
+            <div class="card">
+                <h2>
+                    {{ _('New User') }}
+                </h2>
+                <p>
+                    Register as an additional user to your organisation's
+                    <a href="{{ h.url_for('publisher.index') }}">IATI publisher account</a>
+                </p>
+                <a class="btn btn-primary" href="{{ h.url_for('user.register') }}">{{ _('Create User Account') }}</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block secondary %}
+{% endblock %}

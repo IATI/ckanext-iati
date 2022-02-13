@@ -1,0 +1,50 @@
+{% import "macros/form.html" as form %}
+
+{% block form %}
+    <fieldset class="fieldset-4">
+        <p class="form-group-header">{{ _('Admin User Information') }}</p>
+        {% block core_fields %}
+          {% block required_core_fields %}
+            {{ form.input("user_name", id="field-username", label=_("Username <span class='required'>*</span>"), placeholder=_("username"), value=data.user_name, error=errors.user_name, is_required=True) }}
+            {{ form.input("fullname", id="field-fullname", label=_("Full Name"), placeholder=_("Joe Bloggs"), value=data.fullname, error=errors.fullname) }}
+            {{ form.input("email", id="field-email", label=_("Email <span class='required'>*</span>"), type="text", placeholder=_("joe@example.com"), value=data.email, error=errors.email, is_required=True) }}
+            {{ form.input("password1", id="field-password", label=_("Password <span class='required'>*</span>"), type="password", placeholder="••••••••", value=data.password1, error=errors.password, is_required=True) }}
+            {{ form.input("password2", id="field-confirm-password", label=_("Confirm <span class='required'>*</span>"), type="password", placeholder="••••••••", value=data.password2, error=errors.password, is_required=True) }}
+          {% endblock %}
+
+          {% block optional_core_fields %}
+            <div class="user-image-upload">
+                {% set is_upload = data.user_image_url and not data.user_image_url.startswith('http') %}
+                {% set is_url = data.user_image_url and data.user_image_url.startswith('http') %}
+                {{ form.image_upload(
+                    data,
+                    errors,
+                    field_url='user_image_url',
+                    field_upload='user_image_upload',
+                    field_clear='user_clear_upload',
+                    field_name='user_image_url',
+                    is_upload_enabled=h.uploads_enabled(),
+                    is_url=is_url,
+                    is_upload=is_upload,
+                    upload_label=_('Profile picture'),
+                    url_label=_('Profile picture URL'))
+                }}
+                {% if errors.upload %}
+                    <span class="error-block">{{error_summary.Upload}}</span>
+                {% endif %}
+            </div>
+            {% endblock %}
+        {% endblock %}
+
+        {% block extra_fields %}
+        {% endblock %}
+
+        {% block captcha %}
+          {% if g.recaptcha_publickey %}
+            {% snippet "user/snippets/recaptcha.html", public_key=g.recaptcha_publickey %}
+          {% endif %}
+        {% endblock %}
+
+    </fieldset>
+
+{% endblock %}

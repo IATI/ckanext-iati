@@ -1,11 +1,34 @@
 {% ckan_extends %}
 
-{% block subtitle %}{{ _('Create a Publisher') }}{% endblock %}
+{% block subtitle %}
+  {% if is_user_create %}
+    {{ _('Register a Publisher') }}
+  {% else %}
+    {{ _('Create a Publisher') }}
+  {% endif %}
+{% endblock %}
 
-{% block breadcrumb_link %}{{ h.nav_link(_('Create a Publisher'), named_route='publisher.new') }}{% endblock %}
+{% block breadcrumb_link %}
+  {% if is_user_create %}
+    {{ h.nav_link(_('Register a Publisher'), named_route='registration.register') }}
+  {% else %}
+    {{ h.nav_link(_('Create a Publisher'), named_route='publisher.new') }}
+  {% endif %}
 
-{% block page_heading %}{{ _('Create a Publisher') }}{% endblock %}
+{% endblock %}
+
+{% block page_heading %}
+  {% if is_user_create %}
+    {{ _('Register a Publisher') }}
+  {% else %}
+    {{ _('Create a Publisher') }}
+  {% endif %}
+{% endblock %}
 
 {% block breadcrumb_content_inner %}
   <li class="active"><a href="#">{{ _('Create a Publisher') }}</a></li>
+{% endblock %}
+
+{% block secondary_content %}
+  {% snippet "organization/snippets/create_helper.html", group_type=group_type %}
 {% endblock %}

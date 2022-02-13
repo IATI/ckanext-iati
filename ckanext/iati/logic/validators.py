@@ -9,6 +9,9 @@ from ckan import authz as new_authz
 from ckan.lib.navl.dictization_functions import unflatten, Invalid
 from ckanext.iati.lists import FILE_TYPES, COUNTRIES
 from ckanext.iati import model as iati_redirects
+from ckan.lib.navl.dictization_functions import StopOnError, missing
+from ckan.common import _
+import ckan.plugins as p
 
 def iati_one_resource(key, data, errors, context):
 
@@ -122,7 +125,7 @@ def db_date(value, context):
 
     try:
         value = date_parse(value)
-    except ValueError, e:
+    except (ValueError, e):
         raise Invalid(str(e))
 
     return value
@@ -295,3 +298,28 @@ def validate_new_publisher_id_against_old(key, data, errors, context):
             iati_redirects.IATIRedirects.old_name == _iati_piublisher_id).first()
         if publisher_id_exists:
             errors[key].append("Publisher Id is already exists. Please try with another id.")
+
+
+def not_missing(key, data, errors, context):
+
+    value = data.get(key)
+    if value is missing:
+        errors[key].append(_('Please fill required field'))
+        raise StopOnError
+
+def not_empty(key, data, errors, context):
+
+    value = data.get(key)
+    if not value or value is missing:
+        errors[key].append(_('Please fill required field'))
+        raise StopOnError
+
+
+def iati_publisher_name_validator(value, context):
+    try:
+        return p.toolkit.get_validator('name_validator')(value, context)
+    except Invalid:
+        raise Invalid("This will be the unique identifier for the publisher. "
+                      "Where possible use a short abbreviation of your organisation's name. "
+                      "For example: 'dfid' or 'worldbank' Must be at least two characters long and lower case. "
+                      "Can include letters, numbers and also - (dash) and _ (underscore).")

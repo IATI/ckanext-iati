@@ -13,9 +13,9 @@ SMTP_SERVER = config.get('smtp.server', 'localhost')
 #SMTP_USER = config.get('smtp.user', 'username')
 #SMTP_PASSWORD = config.get('smtp.password', 'password')
 
-def send_email(content, subject, to, from_=FROM):
+def send_email(content, subject, to, from_=FROM, content_type="plain"):
 
-    msg = MIMEText(content,'plain','UTF-8')
+    msg = MIMEText(content, content_type, 'UTF-8')
 
     if isinstance(to, basestring):
         to = [to]
@@ -26,7 +26,6 @@ def send_email(content, subject, to, from_=FROM):
 
     try:
         s = smtplib.SMTP(SMTP_SERVER)
- #       s.login(SMTP_USER, SMTP_PASSWORD)
         s.sendmail(from_, to, msg.as_string())
         s.quit()
     except socket_error:
@@ -48,30 +47,47 @@ Best regards,
 '''
 
 publisher_activation_body_template = '''
-Dear {user_name},
+Dear {user_name},<br><br>
 
-Congratulations, the publisher that you created on the IATI Registry ({group_title}) has been approved.
+Congratulations, the publisher that you created on the IATI Registry has been approved.<br><br>
 
- {group_link}
+Well done for taking the first step to join over 1300 others in becoming an IATI publisher! Your publisher account can be found in the <a href="{group_link}"> IATI Registry</a>.<br><br>
 
-Please ensure that the details published for this record are correct and informative, as the IATI community rely on this information.
+Your next step is to start creating your IATI files. Guidance for this can be found on the IATI website under step 2 on the <a href="https://iatistandard.org/en/guidance/publishing-data/publishing-files/publishing-checklist/">Publishing Checklist</a>.<br><br>
 
-You can also start adding data to the Registry in the form of packages that link to IATI data.
+Should you have any queries or support needs, then please email the IATI Helpdesk at: <a href="mailto:support@iatistandard.org">support@iatistandard.org</a><br><br>
 
-Individual files can be added via: {site_url}/dataset/new
-Multiple files can be added via a CSV upload function: {site_url}/csv/upload
-An API is also available for more technical access: {site_url}/registry-api
-
-Should you have any queries or support need, then please consult the IATI Community: http://discuss.iatistandard.org/t/welcome-to-iati-discuss or email the support team at: support@iatistandard.org
+You can also join the conversation with other new publishers in the "Newbies Corner" on <a href="https://iaticonnect.org/newbies-corner/stream">IATI Connect</a>.<br><br>
 
 
-Best regards,
-
-The International Aid Transparency (IATI) Team
-
-
-About this email: this email was sent to {user_email} as it has been associated with the IATI Registry publisher {group_title}.  If you think this was mistaken, please contact support@iatistandard.org
+Kind regards,<br>
+IATI Technical Team<br>
 
 '''
 
 
+new_publisher_email_to_publisher_body = '''
+Dear {user_name},<br><br>
+
+Thank you for registering with IATI.<br><br>
+
+A member of the Technical Team will review your account and contact you in 1-3 days with an update.<br><br>
+
+Kind regards,<br>
+IATI Technical Team<br>
+'''
+
+data_published_email_notification_body = '''
+Dear {user_name},<br><br>
+
+Congratulations! Your file(s) have been successfully published to <a href="{publisher_link}">IATI</a>.<br><br>
+
+To view your published data, please check <a href="http://d-portal.org/ctrack.html#view=search">d-portal</a> (allow 24 hours after publishing).<br><br>
+
+You can also do a more detailed search of your published data via the <a href="https://iatidatastore.iatistandard.org/querybuilder/">Datastore</a>.<br><br>
+
+Should you have any queries or support needs, then please email the IATI Helpdesk at: <a href="mailto:support@iatistandard.org">support@iatistandard.org</a>.<br><br>
+
+Kind regards,<br>
+IATI Technical Team<br>
+'''

@@ -19,3 +19,24 @@
   {{ h.build_nav_icon('publisher.bulk_process', _('Datasets'), id=c.group_dict.name, icon='sitemap') }}
   {{ h.build_nav_icon('publisher.members', _('Members'), id=c.group_dict.name, icon='users') }}
 {% endblock %}
+
+
+{% block scripts %}
+  {{ super() }}
+<script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function() {
+      var ele = $('.error-block:first');
+      if (ele) {
+          var target = ele.prev("input");
+          try{
+              var fldLength= target.val().length;
+              target.focus();
+              target[0].setSelectionRange(fldLength, fldLength);
+          } catch(e) {
+              //pass
+          }
+      }
+  });
+</script>
+{% resource 'ckanext-iati/popover' %}
+{% endblock -%}
