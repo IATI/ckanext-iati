@@ -52,12 +52,12 @@ def iati_resource_url_mandatory(value, context):
 def iati_owner_org_validator(key, data, errors, context):
 
     value = data.get(key)
-
-    model = context['model']
-    group = model.Group.get(value)
-    if not group.state == 'active':
-        raise Invalid('Publisher must be active to add datasets to it')
-    data[key] = group.id
+    if value:
+        model = context['model']
+        group = model.Group.get(value)
+        if group.state != 'active':
+            raise Invalid('Publisher must be active to add datasets to it')
+        data[key] = group.id
 
 
 def iati_publisher_state_validator(key, data, errors, context):
@@ -80,7 +80,9 @@ def iati_dataset_name(key,data,errors,context):
     value = data[key]
 
     if not unflattened.get('owner_org'):
-        errors[key].append('Publisher name missing. Please select a publisher from the list.')
+        org_key = ("owner_org", )
+        errors[org_key] = errors.get("owner_org", [])
+        errors[org_key].append('Publisher name missing. Please select a publisher from the list.')
         return
 
     org = get_action('organization_show')(context,{'id': unflattened['owner_org']})
