@@ -29,7 +29,7 @@ log = logging.getLogger(__name__)
     
 
 def get_countries():
-    countries = (("", u"(No country assigned)"),)
+    countries = (("", u"Please select"),)
     get_countries_path = lambda: os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                               'countries.xml')
     root = ElementTree.parse(get_countries_path()).getroot()
@@ -43,14 +43,20 @@ def get_countries():
 
     return countries
 
-def get_publisher_source_types():
-    return lists.PUBLISHER_SOURCE_TYPES
+def get_publisher_source_types(add_default_empty=False):
+    options = lists.PUBLISHER_SOURCE_TYPES[:]
+    if add_default_empty:
+        options.insert(0, ("", "Please select"))
+    return options
 
 def get_publisher_frequencies():
     return lists.PUBLISHER_FREQUENCIES
 
-def get_organization_types():
-    return lists.ORGANIZATION_TYPES
+def get_organization_types(add_default_empty=False):
+    options = lists.ORGANIZATION_TYPES[:]
+    if add_default_empty:
+        options.insert(0, ("", "Please select"))
+    return options
 
 def get_country_title(code):
     return _get_list_item_title(lists.COUNTRIES, code)
@@ -150,7 +156,7 @@ def return_select_options(name, data):
     return_selected = False
 
     if name == 'publisher_source_type':
-        options = get_publisher_source_types()
+        options = get_publisher_source_types(add_default_empty=True)
         return_selected = data.get('publisher_source_type')
         for value, label in options:
             return_options.append({ 'text': label, 'value': value })
@@ -166,7 +172,7 @@ def return_select_options(name, data):
             if label:
                 return_options.append({ 'text': label, 'value': value })
     elif name == 'publisher_organization_type':
-        options = get_organization_types()
+        options = get_organization_types(add_default_empty=True)
         return_selected = data.get('publisher_organization_type')
         for value, label in options:
             return_options.append({ 'text': label, 'value': value })
@@ -669,3 +675,30 @@ def linked_user(user, maxlength=0, avatar=20):
                 helpers.url_for('user.read', id=name)
             )
         ))
+
+
+def get_helper_text_popover_to_form(field_label, helper_text, is_required=False):
+    """
+    E.g. <a class="popover-link" href="javascript:void(0)" title="Description" data-toggle="popover"
+            data-placement="top" data-html="true"  data-content="General description of publisher&#39;s
+            role and activities."><i class="fa fa-question"></i></a>
+
+    :param field_label:
+    :param helper_text:
+    :param is_required:
+    :return:
+    """
+
+    helper_text = helper_text.replace("'", "&#39;")
+    helper_text = helper_text.replace('"', "&#34;")
+
+    link = """
+        {field_label}
+        <a class="popover-link" href="javascript:void(0)" title="{field_label}" data-toggle="popover"
+            data-placement="top" data-html="true"  data-content="{helper_text}"><i class="fa fa-question"></i></a>
+    """.format(field_label=field_label, helper_text=helper_text)
+
+    if is_required:
+        link = link+'<span class="required">*</span>'
+
+    return link

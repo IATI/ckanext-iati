@@ -1,6 +1,6 @@
-<div class="control-group">
+<div class="control-group form-group">
   {% set error = errors.country %}
-  <label class="control-label" for="field-{{ field_name }}">{{ _("Country") }}</label>
+  <label class="control-label" for="field-{{ field_name }}">{% if label %} {{label}} {% else %} {{ _("Country") }} {% endif %}</label>
   <div class="controls">
     <select id="field-{{ field_name }}" name="{{ field_name }}" data-module="autocomplete">
       {% for value, label in h.get_countries() %}
