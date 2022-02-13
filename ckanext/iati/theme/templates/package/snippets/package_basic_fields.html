@@ -79,10 +79,11 @@
       <select id="field-organizations" name="owner_org" data-module="autocomplete">
         <option value="" {% if not selected_org and data.id %} selected="selected" {% endif %}>{{ _('Select a publisher...') }}</option>
         {% for organization in organizations_available %}
-          {% set selected_org = (existing_org and existing_org == organization.id) or (not existing_org and not data.id and organization.id == organizations_available[0].id) %}
+          {% set selected_org = existing_org and existing_org == organization.id %}
           <option value="{{ organization.id }}" {% if selected_org %} selected="selected" {% endif %}>{{ organization.title }}</option>
         {% endfor %}
       </select>
+      {% if errors.owner_org %}<span class="error-block">{{ errors.owner_org[0] }}</span>{% endif %}
     </div>
   </div>
   <p class="help-block">Choose your own Publisher Name from the Dropdown. Your Publisher record needs to have been created and authorised by the Registry administrator before you can publish datsets.</p>
