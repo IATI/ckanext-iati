@@ -11,6 +11,7 @@ from ckanext.iati.lists import FILE_TYPES, COUNTRIES
 from ckanext.iati import model as iati_redirects
 from ckan.lib.navl.dictization_functions import StopOnError, missing
 from ckan.common import _
+from ckan.model import PACKAGE_NAME_MAX_LENGTH
 import ckan.plugins as p
 
 def iati_one_resource(key, data, errors, context):
@@ -318,10 +319,23 @@ def not_empty(key, data, errors, context):
 
 
 def iati_publisher_name_validator(value, context):
+    name_match = re.compile(r'[a-z0-9_.\-]*$')
     try:
-        return p.toolkit.get_validator('name_validator')(value, context)
+        if not isinstance(value, str):
+            raise ValueError(_('Names must be strings'))
+        if value in ['new', 'edit', 'search']:
+            raise ValueError(_('That name cannot be used'))
+        if len(value) < 2:
+            raise ValueError(_('Must be at least %s characters long') % 2)
+        if len(value) > PACKAGE_NAME_MAX_LENGTH:
+            raise ValueError(_('Name must be a maximum of %i characters long') % \
+                          PACKAGE_NAME_MAX_LENGTH)
+        if not name_match.match(value):
+            raise Invalid(_('Must be purely lowercase alphanumeric '
+                            '(ascii) characters and these symbols: -_'))
+        return value
     except Invalid:
         raise Invalid("This will be the unique identifier for the publisher. "
                       "Where possible use a short abbreviation of your organisation's name. "
                       "For example: 'dfid' or 'worldbank' Must be at least two characters long and lower case. "
-                      "Can include letters, numbers and also - (dash) and _ (underscore).")
+                      "Can include letters, numbers, . and also - (dash) and _ (underscore).")
