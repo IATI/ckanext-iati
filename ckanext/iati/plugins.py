@@ -312,7 +312,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         _int_validator = p.toolkit.get_validator('int_validator')
 
         schema.update({
-            'filetype': [_ignore_missing,file_type_validator, _convert_to_extras],
+            'filetype': [_ignore_missing, file_type_validator, _convert_to_extras],
             'country': [_ignore_missing, _convert_to_extras, country_code],
             'data_updated': [_ignore_missing, _ignore_empty, db_date, _convert_to_extras],
             'activity_count': [_ignore_missing, _int_validator, _convert_to_extras],
