@@ -27,7 +27,8 @@ from ckanext.iati.logic.validators import (
     validate_new_publisher_id_against_old,
     not_missing,
     not_empty,
-    iati_publisher_name_validator
+    iati_publisher_name_validator,
+    iati_org_identifier_name_validator
 )
 from ckanext.iati.logic.converters import strip, convert_date_string_to_iso_format
 import ckanext.iati.helpers as iati_helpers
@@ -151,7 +152,8 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'license_id': [_convert_to_extras, licence_validator],
             'publisher_source_type': [_not_empty, _convert_to_extras, unicode],
             'publisher_iati_id': [_not_empty, remove_leading_or_trailing_spaces, iati_org_identifier_validator,
-                                  _convert_to_extras, unicode, change_publisher_id_or_org_id],
+                                  _convert_to_extras, unicode, change_publisher_id_or_org_id,
+                                  iati_org_identifier_name_validator],
             'publisher_country': default_validators,
             'publisher_segmentation': default_validators,
             'publisher_ui': default_validators,
