@@ -386,6 +386,10 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
                         data_dict['license_url'] = license.url
                     if license.title:
                         data_dict['license_title'] = license.title
+                data_dict['publisher_source_type'] = org.get('publisher_source_type', '')
+                data_dict['publisher_organization_type'] = org.get('publisher_organization_type', '')
+                data_dict['publisher_iati_id'] = org.get('publisher_iati_id', '')
+                data_dict['publisher_country'] = org.get('publisher_country', '')
         return data_dict
 
     def after_create(self, context, pkg_dict):

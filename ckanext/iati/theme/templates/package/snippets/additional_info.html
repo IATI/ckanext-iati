@@ -3,7 +3,7 @@
 {% set date_format='%Y-%m-%d %H:%M' %}
 
 {% macro package_additional_info_row(label, name, formatter=false, empty='-', full=false, force_value=false) %}
-  {% set data = h.get_pkg_dict_extra(pkg_dict, name, '') %}
+  {% set data = h.get_pkg_dict_extra(pkg_dict, name, '') or pkg_dict[name] %}
   {% set value = formatter(data) if formatter else data %}
   <tr>
     <th scope="row" class="dataset-label">{{ label }}</th>
