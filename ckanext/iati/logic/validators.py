@@ -327,7 +327,7 @@ def iati_publisher_name_validator(value, context):
                       "Can include letters, numbers and also - (dash) and _ (underscore).")
 
 def iati_org_identifier_name_validator(value, context):
-    name_match = re.compile(r'[a-z0-9_.\-]*$')
+    name_match = re.compile(r'[a-zA-Z0-9_.-]*$')
     if not name_match.match(value):
         raise Invalid(_('Invalid character detected. Valid character includes letter, numbers, . and - (dash).'))
     return value
