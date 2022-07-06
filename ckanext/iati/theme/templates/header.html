@@ -122,17 +122,18 @@
         </nav>
       {% endblock %}
     </div>
+    <div id="deprecationMessagePlaceholder"></div>
   </header>
     <script>
         function clearBanner() {
-            const div = document.getElementById('deprecationMessage');
+            const div = document.getElementById('deprecationMessagePlaceholder');
             div.remove();
             sessionStorage.setItem("IsBannerHidden", 'true');
         }
 
         if(!sessionStorage.IsBannerHidden){
-            document.getElementById("deprecationMessage").innerHTML = '' +
-                '<div  class="alert-deprecation">' +
+            document.getElementById("deprecationMessagePlaceholder").innerHTML = '' +
+                '<div id="deprecationMessage"  class="alert-deprecation">' +
                     '<p>The IATI Previewer and the CSV Conversion Tools will be switched off and no longer ' +
                     'available as of 16 December 2022. Please read <a href="https://cdn.iatistandard.org/prod-iati-website/documents/IATI_Previewer_Deprecation_Guide.pdf">' +
                     '<u>guidance</u></a> on alternative options for previewing your IATI data and <a href="https://cdn.iatistandard.org/prod-iati-website/documents/CSV_Conversion_Deprecation_Guide.pdf" ' +
