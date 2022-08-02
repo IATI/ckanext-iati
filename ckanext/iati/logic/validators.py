@@ -37,6 +37,9 @@ def iati_resource_url(value, context):
     if not url.hostname:
         raise Invalid('Invalid URL host name')
 
+    if not url.path.endswith('.xml'):
+        raise Invalid("Incorrect file format. All files should be in XML format that follows the IATI Standard.")
+
     value = urlunparse(url)
 
     return value
