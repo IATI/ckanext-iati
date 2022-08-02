@@ -12,6 +12,7 @@ from ckanext.iati import model as iati_redirects
 from ckan.lib.navl.dictization_functions import StopOnError, missing
 from ckan.common import _
 import ckan.plugins as p
+import ckanext.iati.emailer as emailer
 
 def iati_one_resource(key, data, errors, context):
 
@@ -21,6 +22,16 @@ def iati_one_resource(key, data, errors, context):
 def iati_resource_count(key, data, errors, context):
     if len(key) > 1 and key[1] > 0:
         errors[key].append('Datasets can only have one resource (a single IATI XML file)')
+
+def send_url_invalid_email(context):
+    user = context['auth_user_obj']
+    body = emailer.data_not_xml_email_body.format(
+        user_name=context['user'], publisher_name='publisher_name',
+        publisher_registry_dataset_link='publisher_registry_dataset_link'
+    )
+    subject = "Invalid dataset upload format"
+    emailer.send_email(body, subject, user.email, content_type='html')
+
 
 def iati_resource_url(value, context):
     if not value:
@@ -33,12 +44,14 @@ def iati_resource_url(value, context):
 
     valid_schemes = ('http', 'https', 'ftp')
     if not url.scheme in valid_schemes:
+        send_url_invalid_email(context)
         raise Invalid('Invalid URL scheme')
     if not url.hostname:
+        send_url_invalid_email(context)
         raise Invalid('Invalid URL host name')
-
     if not url.path.endswith('.xml'):
-        raise Invalid("Incorrect file format. All files should be in XML format that follows the IATI Standard.")
+        send_url_invalid_email(context)
+        raise Invalid("Incorrect file format. All files should be in XML format that follows the IATI Standard</a>. See http://iatistandard.org/")
 
     value = urlunparse(url)
 
