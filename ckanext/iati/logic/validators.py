@@ -49,9 +49,12 @@ def iati_resource_url(value, context):
     if not url.hostname:
         send_url_invalid_email(context)
         raise Invalid('Invalid URL host name')
-    if not url.path.endswith('.xml'):
+    print(value)
+    print(url)
+    print(url.netloc)
+    if not url.netloc.endswith('.xml'):
         send_url_invalid_email(context)
-        raise Invalid("Incorrect file format. All files should be in XML format that follows the IATI Standard</a>. See http://iatistandard.org/")
+        raise Invalid("Incorrect file format. All files should be in XML format that follows the IATI Standard. See http://iatistandard.org/")
 
     value = urlunparse(url)
 
@@ -347,3 +350,4 @@ def iati_org_identifier_name_validator(value, context):
     if not name_match.match(value):
         raise Invalid(_('Invalid character detected. Valid character includes letter, numbers, . and - (dash).'))
     return value
+
