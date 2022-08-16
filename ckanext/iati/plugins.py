@@ -414,17 +414,24 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         :return: None
         """
         # package_show should be able to get resource
-        GET_URI = 'https://api.iatistandard.org/validator/report?hash=edafa488ccfc5b16c06b7c42ac1fad58a8b10167'
+        GET_URI = 'https://api.iatistandard.org/validator/report?id=' + pkg_dict['id']
         headers = {"Ocp-Apim-Subscription-Key": os.environ.get('IATI_DEVELOPER_SUBSCRIPTION_KEY')}
         iati_validator_response = requests.get(GET_URI, headers=headers)
-        summary = iati_validator_response.json()['report']['summary']
-
-        if summary['critical'] > 0:
-            pkg_dict['validation_status'] = 'critical'
-        elif summary['error'] > 0:
-            pkg_dict['validation_status'] = 'error'
-        elif summary['warning'] > 0:
-            pkg_dict['validation_status'] = 'warning'
+        try:
+            summary = iati_validator_response.json()['report']['summary']
+            if summary['critical'] > 0:
+                pkg_dict['validation_status'] = 'critical'
+            elif summary['error'] > 0:
+                pkg_dict['validation_status'] = 'error'
+            elif summary['warning'] > 0:
+                pkg_dict['validation_status'] = 'warning'
+            else:
+                pkg_dict['validation_status'] = 'success'
+        except Exception:
+            pkg_dict['validation_status'] = 'Not Found'
+        print('!!!!!!!!!!!!!!!!!!!')
+        print('!!!!!!!!!!!!!!!!!!!')
+        print('!!!!!!!!!!!!!!!!!!!')
         print(pkg_dict)
         if not context.get('disable_archiver', False):
             log.info("Running archiver as background job as package update")
