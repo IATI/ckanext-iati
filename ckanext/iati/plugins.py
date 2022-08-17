@@ -416,8 +416,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         # package_show should be able to get resource
         GET_URI = 'https://api.iatistandard.org/validator/report?id=' + pkg_dict['id']
         headers = {"Ocp-Apim-Subscription-Key": os.environ.get('IATI_DEVELOPER_SUBSCRIPTION_KEY')}
-        iati_validator_response = requests.get(GET_URI, headers=headers)
         try:
+            iati_validator_response = requests.get(GET_URI, headers=headers)
             summary = iati_validator_response.json()['report']['summary']
             if summary['critical'] > 0:
                 pkg_dict['validation_status'] = 'critical'
