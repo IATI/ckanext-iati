@@ -49,10 +49,7 @@ def iati_resource_url(value, context):
     if not url.hostname:
         send_url_invalid_email(context)
         raise Invalid('Invalid URL host name')
-    print(value)
-    print(url)
-    print(url.netloc)
-    if not url.netloc.endswith('.xml'):
+    if not value.endswith('.xml'):
         send_url_invalid_email(context)
         raise Invalid("Incorrect file format. All files should be in XML format that follows the IATI Standard. See http://iatistandard.org/")
 
