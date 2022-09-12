@@ -429,10 +429,6 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
                 pkg_dict['validation_status'] = 'success'
         except Exception:
             pkg_dict['validation_status'] = 'Not Found'
-        print('!!!!!!!!!!!!!!!!!!!')
-        print('!!!!!!!!!!!!!!!!!!!')
-        print('!!!!!!!!!!!!!!!!!!!')
-        print(pkg_dict)
         if not context.get('disable_archiver', False):
             log.info("Running archiver as background job as package update")
             log.info(pkg_dict.get('id', ''))
@@ -440,6 +436,24 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         else:
             log.info('Ignoring archiver run since archiver is disabled in context')
         return pkg_dict
+
+    def before_show(self, data_dict):
+        GET_URI = 'https://api.iatistandard.org/validator/report?id=' + data_dict['id']
+        headers = {"Ocp-Apim-Subscription-Key": os.environ.get('IATI_DEVELOPER_SUBSCRIPTION_KEY')}
+        try:
+            iati_validator_response = requests.get(GET_URI, headers=headers)
+            summary = iati_validator_response.json()['report']['summary']
+            if summary['critical'] > 0:
+                data_dict['validation_status'] = 'critical'
+            elif summary['error'] > 0:
+                data_dict['validation_status'] = 'error'
+            elif summary['warning'] > 0:
+                data_dict['validation_status'] = 'warning'
+            else:
+                data_dict['validation_status'] = 'success'
+        except Exception:
+            data_dict['validation_status'] = 'Not Found'
+        return data_dict
 
     def before_search(self, data_dict):
         if not data_dict.get('sort', ''):
