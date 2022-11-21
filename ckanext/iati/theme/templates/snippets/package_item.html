@@ -50,6 +50,7 @@
         <a href="{{ package_url }}">View Metadata</a>
         &middot;
         {% snippet 'snippets/resource_links.html', resource=resource, package=package %}
+        <span class="">Validation Status: {{ package.validation_status }}</span>
       </p>
     {% endfor %}
   {% endif %}
