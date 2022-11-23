@@ -11520,3 +11520,23 @@ table.dataTable thead .sorting_desc_disabled:before {
   color: #737373;
   font-weight: lighter;
 }
+
+.validerror {
+  color: #dc3545;
+}
+
+.validnot {
+  color: #17a2b8;
+}
+
+.validcritical {
+  color:#dc3545;
+}
+
+.validsuccess {
+  color: #28a745;
+}
+
+.validwarning {
+  color: #ffc107;
+}

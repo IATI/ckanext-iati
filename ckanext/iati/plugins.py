@@ -416,19 +416,12 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         Call the archiver view run after update
         :return: None
         """
-        if not context.get('disable_archiver', False):
-            log.info("Running archiver as background job as package update")
-            log.info(pkg_dict.get('id', ''))
-            ArchiverViewRun.run_archiver_after_package_create_update(pkg_dict.get("id", None))
-        else:
-            log.info('Ignoring archiver run since archiver is disabled in context')
 
         GET_URI = 'https://api.iatistandard.org/validator/report?id=' + pkg_dict['id']
         headers = {"Ocp-Apim-Subscription-Key": os.environ.get('IATI_DEVELOPER_SUBSCRIPTION_KEY')}
         try:
             iati_validator_response = requests.get(GET_URI, headers=headers)
             summary = iati_validator_response.json()['report']['summary']
-            log.info("AU. {}".format(iati_validator_response.json()))
             if summary['critical'] > 0:
                 pkg_dict['validation_status'] = 'Critical'
             elif summary['error'] > 0:
@@ -440,26 +433,14 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         except Exception:
             pkg_dict['validation_status'] = 'Not Found'
 
-        return pkg_dict
+        if not context.get('disable_archiver', False):
+            log.info("Running archiver as background job as package update")
+            log.info(pkg_dict.get('id', ''))
+            ArchiverViewRun.run_archiver_after_package_create_update(pkg_dict.get("id", None))
+        else:
+            log.info('Ignoring archiver run since archiver is disabled in context')
 
-    def after_show(self, context, data_dict):
-        GET_URI = 'https://api.iatistandard.org/validator/report?id=' + data_dict['id']
-        headers = {"Ocp-Apim-Subscription-Key": os.environ.get('IATI_DEVELOPER_SUBSCRIPTION_KEY')}
-        try:
-            iati_validator_response = requests.get(GET_URI, headers=headers)
-            summary = iati_validator_response.json()['report']['summary']
-            log.info("BS. {}".format(summary))
-            if summary['critical'] > 0:
-                data_dict['validation_status'] = 'Critical'
-            elif summary['error'] > 0:
-                data_dict['validation_status'] = 'Error'
-            elif summary['warning'] > 0:
-                data_dict['validation_status'] = 'Warning'
-            else:
-                data_dict['validation_status'] = 'Success'
-        except Exception:
-            data_dict['validation_status'] = 'Not Found'
-        return data_dict
+        return pkg_dict
 
     def before_search(self, data_dict):
         if not data_dict.get('sort', ''):
