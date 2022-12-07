@@ -42,6 +42,7 @@ from ckanext.iati.views.helper_pages import helper_pages
 from ckanext.iati.views.spreadsheet import spreadsheet
 from ckanext.iati.views.archiver import archiver as archiver_blueprint
 from ckanext.iati.views.registration import registration_blueprint
+import ckanext.iati.emailer as emailer
 
 log = logging.getLogger(__name__)
 
@@ -439,6 +440,17 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             data_dict['q'] = q
         return data_dict
 
+    def send_critail_or_error_dataset_email(self, validation_status):
+        user = context['auth_user_obj']
+        print(context)
+        body = emailer.dataset_critical_or_error_email.format(
+            user_name='user', publisher_name='publisher_name',
+            validation_status=validation_status,
+            publisher_registry_dataset_link='publisher_registry_dataset_link',
+            validation_report_url='validation_report_url'
+        )
+        subject = "Dataset validation status is Critical or Error"
+        emailer.send_email(body, subject, user.email, content_type='html')
 
     def _validator(self, pkg_id):
         GET_URI = 'https://api.iatistandard.org/validator/report'
@@ -448,13 +460,16 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
                                                    params={'id':pkg_id},
                                                    headers=headers,
                                                    timeout=TIMEOUT)
-            #log.info(iati_validator_response.json())
+            log.info(iati_validator_response.json())
             summary = iati_validator_response.json()['report']['summary']
+            print("validating...")
             if summary['critical'] > 0:
                 log.info("CRITICAL")
+                self.send_critail_or_error_dataset_email('Critical')
                 return 'Critical'
             elif summary['error'] > 0:
                 log.info("ERRORS")
+                self.send_critail_or_error_dataset_email('Error')
                 return 'Error'
             elif summary['warning'] > 0:
                 return 'Warning'
@@ -462,7 +477,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
                 return 'Success'
 
         except Exception as e:
-            log.error("EXCEPTION in validator: %s", e)
+            log.error("EXCEPTION in validator: %s %s", type(e),e)
 
         return 'Not Found'
 
