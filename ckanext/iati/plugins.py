@@ -3,8 +3,7 @@ from ckan.common import c
 # Bad imports: this should be in the toolkit
 import json
 import os
-import requests
-from routes.mapper import SubMapper  # Maybe not this one
+from routes.mapper import SubMapper     # Maybe not this one
 from ckan.lib.plugins import DefaultOrganizationForm
 from ckanext.iati.views.archiver import ArchiverViewRun
 import ckan.plugins as p
@@ -49,6 +48,7 @@ log = logging.getLogger(__name__)
 TIMEOUT = 5
 
 class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
+
     p.implements(p.IRoutes, inherit=True)
     p.implements(p.IGroupForm, inherit=True)
     p.implements(p.IConfigurer)
@@ -68,7 +68,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
 
         map.redirect('/publishers', '/publisher')
         map.redirect('/publishers/{url:.*}', '/publisher/{url}')
-        map.redirect('/dataset_search', '/dataset')
+        map.redirect('/dataset_search','/dataset')
 
         map.redirect('/api/{ver:1|2|3}/rest/publisher',
                      '/api/{ver}/rest/group')
@@ -99,7 +99,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
 
     def group_types(self):
         return ['organization']
-
+   
     def form_to_db_schema_options(self, options):
         ''' This allows us to select different schemas for different
         purpose eg via the web interface or via the api or creation vs
@@ -225,7 +225,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'groups': [_ignore],
             'tags': [_ignore],
             'approval_status': [_ignore],
-            # TODO: this should be handled in core
+            #TODO: this should be handled in core
             'num_followers': [_not_empty],
             'package_count': [_not_empty],
         })
@@ -251,6 +251,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
 
 
 class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
+
     p.implements(p.IRoutes, inherit=True)
     p.implements(p.IDatasetForm, inherit=True)
     p.implements(p.IPackageController, inherit=True)
@@ -264,20 +265,16 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     def before_map(self, map):
 
         # Redirects needed after updating the datasets name for some of the publishers
-        map.redirect('/dataset/wb-{code}', '/dataset/worldbank-{code}', _redirect_code='301 Moved Permanently')
-        map.redirect('/dataset/minbuza_activities', '/dataset/minbuza_nl-activities',
-                     _redirect_code='301 Moved Permanently')
-        map.redirect('/dataset/minbuza_organisation', '/dataset/minbuza_nl-organisation',
-                     _redirect_code='301 Moved Permanently')
+        map.redirect('/dataset/wb-{code}','/dataset/worldbank-{code}',_redirect_code='301 Moved Permanently')
+        map.redirect('/dataset/minbuza_activities','/dataset/minbuza_nl-activities',_redirect_code='301 Moved Permanently')
+        map.redirect('/dataset/minbuza_organisation','/dataset/minbuza_nl-organisation',_redirect_code='301 Moved Permanently')
 
         # Redirect the old extension feeds to the ones in core
         map.redirect('/feed/registry.atom', '/feeds/dataset.atom', _redirect_code='301 Moved Permanently')
         map.redirect('/feed/publisher/{id}.atom', '/feeds/group/{id}.atom', _redirect_code='301 Moved Permanently')
         map.redirect('/feed/custom.atom', '/feeds/custom.atom', _redirect_code='301 Moved Permanently')
-        map.redirect('/feed/country/{id}.atom', '/feeds/custom.atom?extras_country={id}',
-                     _redirect_code='301 Moved Permanently')
-        map.redirect('/feed/organisation_type/{id}.atom', '/feeds/custom.atom?extras_publisher_organization_type={id}',
-                     _redirect_code='301 Moved Permanently')
+        map.redirect('/feed/country/{id}.atom', '/feeds/custom.atom?extras_country={id}', _redirect_code='301 Moved Permanently')
+        map.redirect('/feed/organisation_type/{id}.atom', '/feeds/custom.atom?extras_publisher_organization_type={id}', _redirect_code='301 Moved Permanently')
 
         # Custom redirects for dataset renames
         # Add a new line for each redirect, in the form
@@ -296,9 +293,9 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         for rename in renames:
             # Dataset pages
             map.redirect('/dataset/' + rename[0], '/dataset/' + rename[1],
-                         _redirect_code='301 Moved Permanently')
+                     _redirect_code='301 Moved Permanently')
             map.redirect('/dataset/{url:.*}/' + rename[0], '/dataset/{url}/' + rename[1],
-                         _redirect_code='301 Moved Permanently')
+                     _redirect_code='301 Moved Permanently')
         return map
 
     ## IDatasetForm
@@ -426,7 +423,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             log.info('Ignoring archiver run since archiver is disabled in context')
 
         return pkg_dict
-
+    
     def before_search(self, data_dict):
         if not data_dict.get('sort', ''):
             data_dict['sort'] = 'title_string asc'
@@ -435,9 +432,9 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             data_dict['fq'] += ' organization:"%s"' % c.group_dict.get('name')
             q = data_dict['q']
             import re
-            o = ' owner_org:"%s"' % c.group_dict.get('id')
-            q = re.sub(o, '', q)
-            data_dict['q'] = q
+            o = ' owner_org:"%s"'%c.group_dict.get('id')
+            q = re.sub(o,'',q)
+            data_dict['q'] = q 
         return data_dict
 
     def send_critail_or_error_dataset_email(self, validation_status):
@@ -622,6 +619,7 @@ def _get_module_functions(module, function_names):
 
 
 class IatiTheme(p.SingletonPlugin):
+
     p.implements(p.IRoutes, inherit=True)
     p.implements(p.IConfigurer)
     p.implements(p.IFacets, inherit=True)

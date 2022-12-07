@@ -18,6 +18,7 @@ import io
 import datetime as dt
 import os, codecs
 import logging
+import six
 log = logging.getLogger(__name__)
 
 _and_ = sqlalchemy.and_
@@ -152,14 +153,14 @@ class PublishersListDownload:
                 if self.request_type_recent_publisher:
                     rows.append(org_data)
                 else:
-                    writer.writerow(org_data)
+                    writer.writerow([s.encode("utf-8") if six.PY2 and isinstance(s, unicode) else s for s in org_data])
 
         # This is expensive but we need sorting for first published
         # date since its hard to get sorted for GroupExtra table
         if self.request_type_recent_publisher:
             rows = sorted(rows, key=lambda entry: entry[4], reverse=True)
             for csv_row in rows:
-                writer.writerow(csv_row)
+                writer.writerow([s.encode("utf-8") if six.PY2 and isinstance(s, unicode) else s for s in csv_row])
 
         output = f.getvalue()
         f.close()
