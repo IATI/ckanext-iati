@@ -41,9 +41,11 @@ from ckanext.iati.views.helper_pages import helper_pages
 from ckanext.iati.views.spreadsheet import spreadsheet
 from ckanext.iati.views.archiver import archiver as archiver_blueprint
 from ckanext.iati.views.registration import registration_blueprint
+import ckanext.iati.emailer as emailer
 
 log = logging.getLogger(__name__)
 
+TIMEOUT = 5
 
 class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
 
@@ -177,6 +179,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'publisher_implementation_schedule': default_validators,
             'publisher_first_publish_date': [_ignore_missing, convert_date_string_to_iso_format, _convert_to_extras,
                                              unicode, first_publisher_date_validator]
+
         })
 
         return schema
@@ -363,6 +366,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'issue_type': [_ignore_missing, _convert_from_extras],
             'issue_message': [_ignore_missing, _convert_from_extras],
             'issue_date': [_ignore_missing, _convert_from_extras],
+            # validation status only in show, as it's a read only field added from before_index
+            'validation_status': [_ignore_missing, _convert_from_extras],
         })
 
         return schema
@@ -416,8 +421,9 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             ArchiverViewRun.run_archiver_after_package_create_update(pkg_dict.get("id", None))
         else:
             log.info('Ignoring archiver run since archiver is disabled in context')
-        return pkg_dict
 
+        return pkg_dict
+    
     def before_search(self, data_dict):
         if not data_dict.get('sort', ''):
             data_dict['sort'] = 'title_string asc'
@@ -431,8 +437,49 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             data_dict['q'] = q 
         return data_dict
 
-    def before_index(self, data_dict):
+    def send_critail_or_error_dataset_email(self, validation_status):
+        user = context['auth_user_obj']
+        print(context)
+        body = emailer.dataset_critical_or_error_email.format(
+            user_name='user', publisher_name='publisher_name',
+            validation_status=validation_status,
+            publisher_registry_dataset_link='publisher_registry_dataset_link',
+            validation_report_url='validation_report_url'
+        )
+        subject = "Dataset validation status is Critical or Error"
+        emailer.send_email(body, subject, user.email, content_type='html')
 
+    def _validator(self, pkg_id):
+        GET_URI = 'https://api.iatistandard.org/validator/report'
+        headers = {"Ocp-Apim-Subscription-Key": os.environ.get('IATI_DEVELOPER_SUBSCRIPTION_KEY')}
+        try:
+            iati_validator_response = requests.get(GET_URI,
+                                                   params={'id':pkg_id},
+                                                   headers=headers,
+                                                   timeout=TIMEOUT)
+            log.info(iati_validator_response.json())
+            summary = iati_validator_response.json()['report']['summary']
+            print("validating...")
+            if summary['critical'] > 0:
+                log.info("CRITICAL")
+                self.send_critail_or_error_dataset_email('Critical')
+                return 'Critical'
+            elif summary['error'] > 0:
+                log.info("ERRORS")
+                self.send_critail_or_error_dataset_email('Error')
+                return 'Error'
+            elif summary['warning'] > 0:
+                return 'Warning'
+            else:
+                return 'Success'
+
+        except Exception as e:
+            log.error("EXCEPTION in validator: %s %s", type(e),e)
+
+        return 'Not Found'
+
+
+    def before_index(self, data_dict):
         # Add nicely formatted values for faceting
         fields = (
             ('country', iati_helpers.get_country_title),
@@ -453,6 +500,13 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         except Exception as e:
             log.error(e)
             pass
+
+        validation_status = self._validator(data_dict['id'])
+        data_dict['extras_validation_status'] = validation_status
+        validated_data_dict = json.loads(data_dict['validated_data_dict'])
+        validated_data_dict['extras'].append({'key':'validation_status', 'value':validation_status})
+        data_dict['validated_data_dict'] = json.dumps(validated_data_dict)
+
         return data_dict
 
     ## IConfigurer
