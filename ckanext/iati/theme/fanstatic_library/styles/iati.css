@@ -11521,22 +11521,22 @@ table.dataTable thead .sorting_desc_disabled:before {
   font-weight: lighter;
 }
 
-.validerror {
-  color: #dc3545;
+.validError {
+  color: #f73357;
 }
 
-.validnot {
+.validNotFouns {
   color: #17a2b8;
 }
 
-.validcritical {
-  color:#dc3545;
+.validCritical {
+  color:#a66ee9;
 }
 
-.validsuccess {
-  color: #28a745;
+.validSuccess {
+  color: #18bc9c;
 }
 
-.validwarning {
-  color: #ffc107;
+.validWarning {
+  color: #ff7264;
 }
