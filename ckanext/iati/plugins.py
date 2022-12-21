@@ -461,7 +461,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
                                                    params={'id':pkg_id},
                                                    headers=headers,
                                                    timeout=TIMEOUT)
-            print(summary = iati_validator_response.json()['report'])
+            print(iati_validator_response.json()['report'])
             summary = iati_validator_response.json()['report']['summary']
             if summary['critical'] > 0:
                 log.info("CRITICAL")
