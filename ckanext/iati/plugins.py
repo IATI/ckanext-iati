@@ -442,7 +442,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         if validation_status == 'Critical':
             status_message = 'The data does not adhere to the format set out in the IATI XML Schema and is currently unavailable for many IATI data access tools and their users.'
         elif validation_status == 'Error':
-            status_message = 'The data does not follow IATI’s Rulesets which makes the data hard or impossible to use.'
+            status_message = 'The data does not follow IATI\'s Rulesets which makes the data hard or impossible to use.'
         body = emailer.dataset_critical_or_error_email.format(
             user_name='user', publisher_name='publisher_name',
             validation_status=validation_status,
