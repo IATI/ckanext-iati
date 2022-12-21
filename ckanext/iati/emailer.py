@@ -119,3 +119,19 @@ The dataset is not accessible. To fix the error, please update the dataset link 
 Kind regards,<br>
 IATI Technical Team<br>
 '''
+
+dataset_critical_or_error_email = '''
+Dear {user_name},<br><br>
+
+You're receiving this email because you published the following dataset to the {publisher_name}'s IATI Registry account: 
+<a href="{publisher_registry_dataset_link}">{publisher_registry_dataset_link}</a><br><br>
+
+We've detected that the dataset fails validation and its validation status is {validation_status}.<br><br>
+
+{status_message}<br><br>
+
+Should you have any queries or support needs, then please email the IATI Helpdesk at: support@iatistandard.org<br><br>
+
+Kind regards,<br>
+IATI Technical Team 
+'''
