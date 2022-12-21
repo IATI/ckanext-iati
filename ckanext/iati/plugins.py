@@ -418,7 +418,6 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         """
         if not context.get('disable_archiver', False):
             log.info("Running archiver as background job as package update")
-            log.info(pkg_dict.get('id', ''))
             ArchiverViewRun.run_archiver_after_package_create_update(pkg_dict.get("id", None))
         else:
             log.info('Ignoring archiver run since archiver is disabled in context')
@@ -438,9 +437,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             data_dict['q'] = q 
         return data_dict
 
-    def send_critail_or_error_dataset_email(self, validation_status):
-        user = context['auth_user_obj']
-        print(context)
+    def send_critail_or_error_dataset_email(self, email, validation_status):
         body = emailer.dataset_critical_or_error_email.format(
             user_name='user', publisher_name='publisher_name',
             validation_status=validation_status,
@@ -448,9 +445,9 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             validation_report_url='validation_report_url'
         )
         subject = "Dataset validation status is Critical or Error"
-        emailer.send_email(body, subject, user.email, content_type='html')
+        emailer.send_email(body, subject, email, content_type='html')
 
-    def _validator(self, pkg_id):
+    def _validator(self, pkg_id, email):
         GET_URI = 'https://api.iatistandard.org/validator/report'
         headers = {"Ocp-Apim-Subscription-Key": os.environ.get('IATI_DEVELOPER_SUBSCRIPTION_KEY')}
         try:
@@ -458,16 +455,14 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
                                                    params={'id':pkg_id},
                                                    headers=headers,
                                                    timeout=TIMEOUT)
-            log.info(iati_validator_response.json())
             summary = iati_validator_response.json()['report']['summary']
-            print("validating...")
             if summary['critical'] > 0:
                 log.info("CRITICAL")
-                self.send_critail_or_error_dataset_email('Critical')
+                self.send_critail_or_error_dataset_email(email, 'Critical')
                 return 'Critical'
             elif summary['error'] > 0:
                 log.info("ERRORS")
-                self.send_critail_or_error_dataset_email('Error')
+                self.send_critail_or_error_dataset_email(email, 'Error')
                 return 'Error'
             elif summary['warning'] > 0:
                 return 'Warning'
@@ -502,7 +497,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             log.error(e)
             pass
 
-        validation_status = self._validator(data_dict['id'])
+        validation_status = self._validator(data_dict['id'], json.loads(data_dict['data_dict'])['author_email'])
         data_dict['extras_validation_status'] = validation_status
         validated_data_dict = json.loads(data_dict['validated_data_dict'])
         validated_data_dict['extras'].append({'key':'validation_status', 'value':validation_status})
