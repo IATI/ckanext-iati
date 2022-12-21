@@ -447,8 +447,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             user_name='user', publisher_name='publisher_name',
             validation_status=validation_status,
             status_message=status_message,
-            publisher_registry_dataset_link='https//www.iatiregistry.org/dataset/'+dataset_name,
-            validation_report_url='validation_report_url'
+            publisher_registry_dataset_link='https//www.iatiregistry.org/dataset/'+dataset_name
         )
         subject = "Dataset validation status is Critical or Error"
         emailer.send_email(body, subject, email, content_type='html')
@@ -461,14 +460,11 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
                                                    params={'id':pkg_id},
                                                    headers=headers,
                                                    timeout=TIMEOUT)
-            print(iati_validator_response.json())
             summary = iati_validator_response.json()['report']['summary']
             if summary['critical'] > 0:
-                log.info("CRITICAL")
                 self.send_critail_or_error_dataset_email(email, 'Critical', dataset_name, publisher_name)
                 return 'Critical'
             elif summary['error'] > 0:
-                log.info("ERRORS")
                 self.send_critail_or_error_dataset_email(email, 'Error', dataset_name, publisher_name)
                 return 'Error'
             elif summary['warning'] > 0:
