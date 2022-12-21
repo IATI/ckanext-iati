@@ -1,4 +1,5 @@
 import logging
+import requests
 from ckan.common import c
 # Bad imports: this should be in the toolkit
 import json
