@@ -461,15 +461,15 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
                                                    params={'id':pkg_id},
                                                    headers=headers,
                                                    timeout=TIMEOUT)
-            print(iati_validator_response.json()['report'])
+            print(iati_validator_response.json())
             summary = iati_validator_response.json()['report']['summary']
             if summary['critical'] > 0:
                 log.info("CRITICAL")
-                self.send_critail_or_error_dataset_email(email, 'Critical', dataset_name)
+                self.send_critail_or_error_dataset_email(email, 'Critical', dataset_name, publisher_name)
                 return 'Critical'
             elif summary['error'] > 0:
                 log.info("ERRORS")
-                self.send_critail_or_error_dataset_email(email, 'Error', dataset_name)
+                self.send_critail_or_error_dataset_email(email, 'Error', dataset_name, publisher_name)
                 return 'Error'
             elif summary['warning'] > 0:
                 return 'Warning'
