@@ -121,16 +121,17 @@ IATI Technical Team<br>
 '''
 
 dataset_critical_or_error_email = '''
-Dear {user_name},
+Dear {user_name},<br>
 
-You're receiving this email because you published the following dataset to the {publisher_name}'s IATI Registry account: {publisher_registry_dataset_link}
+You're receiving this email because you published the following dataset to the {publisher_name}'s IATI Registry account: 
+<a href="{publisher_registry_dataset_link}">{publisher_registry_dataset_link}</a><br>
 
-We've detected that the dataset fails validation and its validation status is {validation_status}.
+We've detected that the dataset fails validation and its validation status is {validation_status}.<br>
 
-{status_message}
+{status_message}<br>
 
-Should you have any queries or support needs, then please email the IATI Helpdesk at: support@iatistandard.org
+Should you have any queries or support needs, then please email the IATI Helpdesk at: support@iatistandard.org<br>
 
-Kind regards,
+Kind regards,<br>
 IATI Technical Team 
 '''

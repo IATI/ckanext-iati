@@ -444,10 +444,10 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         elif validation_status == 'Error':
             status_message = 'The data does not follow IATI\'s Rulesets which makes the data hard or impossible to use.'
         body = emailer.dataset_critical_or_error_email.format(
-            user_name='user', publisher_name='publisher_name',
+            user_name='user', publisher_name=publisher_name,
             validation_status=validation_status,
             status_message=status_message,
-            publisher_registry_dataset_link='https//www.iatiregistry.org/dataset/'+dataset_name
+            publisher_registry_dataset_link='https://www.iatiregistry.org/dataset/'+dataset_name
         )
         subject = "Dataset validation status is Critical or Error"
         emailer.send_email(body, subject, email, content_type='html')
