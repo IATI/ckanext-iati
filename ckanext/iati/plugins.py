@@ -29,7 +29,7 @@ from ckanext.iati.logic.validators import (
     not_empty,
     iati_publisher_name_validator,
     iati_org_identifier_name_validator,
-    valid_xml_url
+    valid_xml_url,
 )
 from ckanext.iati.logic.converters import strip, convert_date_string_to_iso_format
 import ckanext.iati.helpers as iati_helpers
