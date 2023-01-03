@@ -21,7 +21,6 @@ from ckanext.iati.logic.validators import (
     iati_org_identifier_validator,
     remove_leading_or_trailing_spaces,
     licence_validator,
-    iati_resource_url_mandatory,
     country_code,
     change_publisher_id_or_org_id,
     first_publisher_date_validator,
