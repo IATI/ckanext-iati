@@ -14,7 +14,7 @@ from ckanext.iati.logic.validators import (
     iati_owner_org_validator,
     iati_dataset_name,
     iati_resource_count,
-    iati_resource_url,
+    valid_url,
     iati_one_resource,
     email_validator,
     file_type_validator,
@@ -29,7 +29,8 @@ from ckanext.iati.logic.validators import (
     not_missing,
     not_empty,
     iati_publisher_name_validator,
-    iati_org_identifier_name_validator
+    iati_org_identifier_name_validator,
+    valid_xml_url
 )
 from ckanext.iati.logic.converters import strip, convert_date_string_to_iso_format
 import ckanext.iati.helpers as iati_helpers
@@ -160,8 +161,8 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'publisher_country': default_validators,
             'publisher_segmentation': default_validators,
             'publisher_ui': default_validators,
-            'publisher_ui_url': [_ignore_missing, iati_resource_url, _convert_to_extras, unicode],
-            'publisher_url': [_ignore_missing, iati_resource_url, _convert_to_extras, unicode],
+            'publisher_ui_url': [_ignore_missing, valid_url, _convert_to_extras, unicode],
+            'publisher_url': [_ignore_missing, valid_url, _convert_to_extras, unicode],
             'publisher_frequency_select': default_validators,
             'publisher_frequency': default_validators,
             'publisher_thresholds': default_validators,
@@ -316,6 +317,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         _ignore_missing = p.toolkit.get_validator('ignore_missing')
         _ignore_empty = p.toolkit.get_validator('ignore_empty')
         _int_validator = p.toolkit.get_validator('int_validator')
+        _not_empty = p.toolkit.get_validator('not_empty')
 
         schema.update({
             'filetype': [_ignore_missing, file_type_validator, _convert_to_extras],
@@ -333,7 +335,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         schema['name'].extend([iati_dataset_name, iati_one_resource])
         schema['owner_org'].append(iati_owner_org_validator)
 
-        schema['resources']['url'].extend([iati_resource_count, strip, iati_resource_url_mandatory])
+        schema['resources']['url'].extend([iati_resource_count, strip, _not_empty, valid_url, valid_xml_url])
 
         return schema
 
