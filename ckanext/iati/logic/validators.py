@@ -41,10 +41,10 @@ def send_url_invalid_email(context, is_url_error=True):
     emailer.send_email(body, subject, user.email, content_type='html')
 
 
-def iati_resource_url(value, context):
+def iati_resource_url(value, context, is_dataset_url=False):
     if not value:
         return
-    
+
     try:
         url = urlparse(value)
     except ValueError:
@@ -57,7 +57,7 @@ def iati_resource_url(value, context):
     if not url.hostname:
         send_url_invalid_email(context)
         raise Invalid('Invalid URL host name')
-    if not value.endswith('.xml'):
+    if is_dataset_url and not value.endswith('.xml'):
         send_url_invalid_email(context, is_url_error=False)
         raise Invalid("Incorrect file format. All files should be in XML format that follows the IATI Standard. See http://iatistandard.org/")
 
@@ -67,7 +67,7 @@ def iati_resource_url(value, context):
 
 def iati_resource_url_mandatory(value, context):
 
-    value = iati_resource_url(value, context)
+    value = iati_resource_url(value, context, True)
 
     if (not value) or (not value.strip()):
         raise Invalid('URL cannot be empty')
