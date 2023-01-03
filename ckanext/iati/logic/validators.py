@@ -65,9 +65,9 @@ def iati_resource_url(value, context, is_dataset_url=False):
 
     return value
 
-def iati_resource_url_mandatory(value, context):
+def iati_resource_url_mandatory(value, context, is_dataset=True):
 
-    value = iati_resource_url(value, context, True)
+    value = iati_resource_url(value, context, is_dataset)
 
     if (not value) or (not value.strip()):
         raise Invalid('URL cannot be empty')
