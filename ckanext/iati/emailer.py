@@ -56,7 +56,7 @@ Well done for taking the first step to join over 1300 others in becoming an IATI
 Your next step is to start creating your IATI files. Guidance for this can be found on the IATI website under step 2 on the <a href="https://iatistandard.org/en/guidance/publishing-data/publishing-files/publishing-checklist/">Publishing Checklist</a>.<br><br>
 
 We are happy to let you know that we have launched the new IATI publishing tool, which will be free to use. 
-If you would like to hear more about this please click on the link <a href="https://publisher.iatistandard.org/" publisher.iatistandard.org</a><br><br> 
+If you would like to hear more about this please click on the link <a href="https://publisher.iatistandard.org/"/>publisher.iatistandard.org</a><br><br> 
 
 Should you have any queries or support needs, then please email the IATI Helpdesk at: <a href="mailto:support@iatistandard.org">support@iatistandard.org</a><br><br>
 
