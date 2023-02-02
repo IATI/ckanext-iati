@@ -311,6 +311,7 @@ def archive_package(package_id, context, consecutive_errors=0):
 
         log.info("Is package: {} is update? - {}".format(package.get('name', ''), str(update)))
         if update:
+            log.info("INSIDE if update")
             package['extras'] = extras_to_list(extras_dict)
             return update_package(context, package), None, None
     log.info("************** Done **********")
