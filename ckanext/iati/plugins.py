@@ -371,6 +371,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             # validation status only in show, as it's a read only field added from before_index
             'validation_status': [_ignore_missing, _convert_from_extras],
         })
+        print(schema['validation_status'])
 
         return schema
 
@@ -455,14 +456,19 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     #     emailer.send_email(body, subject, email, content_type='html')
 
     def _validator(self, pkg_id):
+        log.info(pkg_id)
         GET_URI = 'https://api.iatistandard.org/validator/report'
         headers = {"Ocp-Apim-Subscription-Key": os.environ.get('IATI_DEVELOPER_SUBSCRIPTION_KEY')}
         try:
-            iati_validator_response = requests.get(GET_URI,
-                                                   params={'id':pkg_id},
-                                                   headers=headers,
-                                                   timeout=TIMEOUT)
+            iati_validator_response = requests.get(GET_URI, params={'id':pkg_id}, headers=headers, timeout=TIMEOUT)
+            log.info('!!!!!!!=====')
+            log.info(iati_validator_response)
+            log.info(iati_validator_response.json())
+            log.info(iati_validator_response.json()['report'])
+            log.info('!!!!!!!=====')
             summary = iati_validator_response.json()['report']['summary']
+            log.info('Summary')
+            log.info(summary)
             if summary['critical'] > 0:
                 return 'Critical'
             elif summary['error'] > 0:
@@ -474,7 +480,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
         except Exception as e:
             log.error("EXCEPTION in validator: %s %s", type(e),e)
-
+        log.info("Returning not found for " + pkg_id)
         return 'Not Found'
 
 
