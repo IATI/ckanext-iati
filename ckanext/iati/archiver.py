@@ -311,7 +311,6 @@ def archive_package(package_id, context, consecutive_errors=0):
 
         log.info("Is package: {} is update? - {}".format(package.get('name', ''), str(update)))
         if update:
-            log.info("INSIDE if update")
             package['extras'] = extras_to_list(extras_dict)
             return update_package(context, package), None, None
     log.info("************** Done **********")
@@ -364,9 +363,6 @@ def save_package_core_validation_issue(pkg_id, issue_message):
 
 
 def update_package(context, data_dict, message=None):
-    log.info("!!!!!update_package!!!!!")
-    log.info(data_dict)
-    log.info(data_dict['extras'])
     log.info("Updating package: {}".format(data_dict.get('name', '')))
     context['id'] = data_dict['id']
     message = (message or 'Daily archiver: update dataset '
@@ -375,13 +371,9 @@ def update_package(context, data_dict, message=None):
     context['disable_archiver'] = True
     for extra in data_dict['extras']:
         data_dict[extra['key']] = extra['value']
-    log.info("after for loop")
-    log.info(data_dict)
     data_dict['extras'] = []
     data_dict = patch_invalid_country_code(context, data_dict)
     updated_package = toolkit.get_action('package_update')(context, data_dict)
-    log.info("after updated")
-    log.info(updated_package)
     log.info('Package {0} updated with new extras'.format(data_dict['name']))
     return updated_package
 
