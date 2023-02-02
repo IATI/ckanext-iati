@@ -8,7 +8,8 @@ from routes.mapper import SubMapper     # Maybe not this one
 from ckan.lib.plugins import DefaultOrganizationForm
 from ckanext.iati.views.archiver import ArchiverViewRun
 import ckan.plugins as p
-from ckan.plugins.toolkit import config
+from ckan.common import config
+from ckan.common import config
 from ckanext.iati.logic.validators import (
     db_date,
     iati_publisher_state_validator,
@@ -457,19 +458,11 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     #     emailer.send_email(body, subject, email, content_type='html')
 
     def _validator(self, pkg_id):
-        log.info(pkg_id)
         GET_URI = 'https://api.iatistandard.org/validator/report'
         headers = {"Ocp-Apim-Subscription-Key": config.get('ckanext.iati.validator_key')}
         try:
             iati_validator_response = requests.get(GET_URI, params={'id':pkg_id}, headers=headers, timeout=TIMEOUT)
-            log.info('!!!!!!!=====')
-            log.info(iati_validator_response)
-            log.info(iati_validator_response.json())
-            log.info(iati_validator_response.json()['report'])
-            log.info('!!!!!!!=====')
             summary = iati_validator_response.json()['report']['summary']
-            log.info('Summary')
-            log.info(summary)
             if summary['critical'] > 0:
                 return 'Critical'
             elif summary['error'] > 0:
@@ -481,7 +474,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
         except Exception as e:
             log.error("EXCEPTION in validator: %s %s", type(e),e)
-        log.info("Returning not found for " + pkg_id)
+
         return 'Not Found'
 
 
