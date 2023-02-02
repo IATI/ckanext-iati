@@ -8,6 +8,7 @@ from routes.mapper import SubMapper     # Maybe not this one
 from ckan.lib.plugins import DefaultOrganizationForm
 from ckanext.iati.views.archiver import ArchiverViewRun
 import ckan.plugins as p
+from ckan.plugins.toolkit import config
 from ckanext.iati.logic.validators import (
     db_date,
     iati_publisher_state_validator,
@@ -458,7 +459,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     def _validator(self, pkg_id):
         log.info(pkg_id)
         GET_URI = 'https://api.iatistandard.org/validator/report'
-        headers = {"Ocp-Apim-Subscription-Key": os.environ.get('IATI_DEVELOPER_SUBSCRIPTION_KEY')}
+        headers = {"Ocp-Apim-Subscription-Key": config.get('ckanext.iati.validator_key')}
         try:
             iati_validator_response = requests.get(GET_URI, params={'id':pkg_id}, headers=headers, timeout=TIMEOUT)
             log.info('!!!!!!!=====')
