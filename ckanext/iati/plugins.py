@@ -9,7 +9,6 @@ from ckan.lib.plugins import DefaultOrganizationForm
 from ckanext.iati.views.archiver import ArchiverViewRun
 import ckan.plugins as p
 from ckan.common import config
-from ckan.common import config
 from ckanext.iati.logic.validators import (
     db_date,
     iati_publisher_state_validator,
