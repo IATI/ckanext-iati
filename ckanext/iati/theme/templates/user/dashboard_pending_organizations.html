@@ -6,6 +6,15 @@
   <h2 class="hide-heading">{{ _('My Organizations') }}</h2>
   {% if pending_organizations %}
     <div class="wide">
+    {% snippet 'snippets/search_form.html', type='organization',
+        not_disp_query=True, site_search_label=_('Search for Publishers'),
+        query=c.q,
+        sorting_selected=c.sort_by_selected,
+        count=c.page.item_count, facets=facets,
+        placeholder=_('Search publishers...'),
+        show_empty=request.params,
+        sorting=[(_('Date Descending'), 'publisher_first_publish_date desc'),
+                (_('Date Ascending'), 'publisher_first_publish_date asc')] %}
       {% snippet "organization/snippets/organization_list_dashboard.html", pending=c.page %}
     </div>
   {% else %}
