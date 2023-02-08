@@ -36,8 +36,4 @@ sorting=[(_('Date Descending'), 'display_name desc'),
     </p>
   {% endif %}
   {{ c.page.pager() }}
-  {% block scripts %}
-      {{ super() }}
-      {% resource 'ckanext-iati/table_sorter' %}
-  {% endblock %}
 {% endblock %}

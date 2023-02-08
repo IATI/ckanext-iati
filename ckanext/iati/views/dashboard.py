@@ -160,9 +160,9 @@ def my_pending_organizations():
         if not c.user:
             raise NotAuthorized
 
-
         q = request.params.get(u'q', u'')
-        pending_organizations = iati_h.organization_list_pending(q)
+        c.q = q
+ 	pending_organizations = iati_h.organization_list_pending(q)
         extra_vars = _extra_template_variables(context, data_dict)
         page = h.get_page_number(request.params) or 1
 
@@ -173,6 +173,7 @@ def my_pending_organizations():
             item_count=len(pending_organizations),
             items_per_page=20,
         )
+	extra_vars["q"] = c.q
         extra_vars["page"] = c.page
         extra_vars['pending_organizations'] = pending_organizations
         return render('user/dashboard_pending_organizations.html', extra_vars)
@@ -209,5 +210,4 @@ custom_dashboard.add_url_rule(u'/dashboard/recent-publishers/download', view_fun
 custom_dashboard.add_url_rule(u'/dashboard/datasets', view_func=datasets)
 custom_dashboard.add_url_rule(u'/dashboard/mypublishers-pending', view_func=my_pending_organizations)
 custom_dashboard.add_url_rule(u'/dashboard/mypublishers', view_func=my_organizations)
-
 
