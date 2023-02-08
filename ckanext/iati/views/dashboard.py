@@ -159,9 +159,13 @@ def my_pending_organizations():
     try:
         if not c.user:
             raise NotAuthorized
-        pending_organizations = iati_h.organization_list_pending()
+
+
+        q = request.params.get(u'q', u'')
+        pending_organizations = iati_h.organization_list_pending(q)
         extra_vars = _extra_template_variables(context, data_dict)
         page = h.get_page_number(request.params) or 1
+
         c.page = h.Page(
             collection=pending_organizations,
             page=page,
@@ -205,4 +209,5 @@ custom_dashboard.add_url_rule(u'/dashboard/recent-publishers/download', view_fun
 custom_dashboard.add_url_rule(u'/dashboard/datasets', view_func=datasets)
 custom_dashboard.add_url_rule(u'/dashboard/mypublishers-pending', view_func=my_pending_organizations)
 custom_dashboard.add_url_rule(u'/dashboard/mypublishers', view_func=my_organizations)
+
 
