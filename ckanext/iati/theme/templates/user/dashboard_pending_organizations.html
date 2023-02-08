@@ -6,18 +6,26 @@
   <h2 class="hide-heading">{{ _('My Organizations') }}</h2>
   {% if pending_organizations %}
     {% block organizations_search_form %}
+        {% set facets = {
+            'fields': c.fields_grouped,
+            'search': c.search_facets,
+            'titles': c.facet_titles,
+            'translated_fields': c.translated_fields,
+            'remove_field': c.remove_field }
+          %}
         {% snippet 'snippets/search_form.html', type='organization',
             not_disp_query=True, site_search_label=_('Search for Publishers'),
             query=c.q,
             sorting_selected=c.sort_by_selected,
             count=c.page.item_count, facets=facets,
-            placeholder=_('Search publishers...'),
+            placeholder=_('Search for pending publishers...'),
             show_empty=request.params,
-            sorting=[(_('Date Descending'), 'publisher_first_publish_date desc'),
-                    (_('Date Ascending'), 'publisher_first_publish_date asc')] %}
-      {% endblock %}
+sorting=[(_('Date Descending'), 'display_name desc'),
+                    (_('Date Ascending'), 'display_name asc')]
+         %}
+    {% endblock %}
     <div class="wide">
-      {% snippet "organization/snippets/organization_list_dashboard.html", pending=c.page.items %}
+    {% snippet "organization/snippets/organization_list_dashboard.html", pending=c.page.items %}
     </div>
   {% else %}
     <p class="empty">
@@ -28,4 +36,8 @@
     </p>
   {% endif %}
   {{ c.page.pager() }}
+  {% block scripts %}
+      {{ super() }}
+      {% resource 'ckanext-iati/table_sorter' %}
+  {% endblock %}
 {% endblock %}
