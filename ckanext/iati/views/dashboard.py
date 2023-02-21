@@ -173,8 +173,7 @@ def my_pending_organizations():
             item_count=len(pending_organizations),
             items_per_page=20,
         )
-	extra_vars["q"] = c.q
-        extra_vars["page"] = c.page
+	extra_vars["page"] = c.page
         extra_vars['pending_organizations'] = pending_organizations
         return render('user/dashboard_pending_organizations.html', extra_vars)
     except NotAuthorized:
