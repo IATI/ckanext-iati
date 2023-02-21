@@ -20,8 +20,8 @@
             count=c.page.item_count, facets=facets,
             placeholder=_('Search for pending publishers...'),
             show_empty=request.params,
-sorting=[(_('Date Descending'), 'display_name desc'),
-                    (_('Date Ascending'), 'display_name asc')]
+            sorting=[(_('Name Descending'), 'display_name desc'),
+                    (_('Name Ascending'), 'display_name asc')]
          %}
     {% endblock %}
     <div class="wide">

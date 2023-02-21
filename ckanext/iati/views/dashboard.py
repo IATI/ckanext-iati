@@ -162,7 +162,7 @@ def my_pending_organizations():
 
         q = request.params.get(u'q', u'')
         c.q = q
- 	pending_organizations = iati_h.organization_list_pending(q)
+        pending_organizations = iati_h.organization_list_pending(q)
         extra_vars = _extra_template_variables(context, data_dict)
         page = h.get_page_number(request.params) or 1
 
