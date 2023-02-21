@@ -159,9 +159,13 @@ def my_pending_organizations():
     try:
         if not c.user:
             raise NotAuthorized
-        pending_organizations = iati_h.organization_list_pending()
+
+        q = request.params.get(u'q', u'')
+        c.q = q
+        pending_organizations = iati_h.organization_list_pending(q)
         extra_vars = _extra_template_variables(context, data_dict)
         page = h.get_page_number(request.params) or 1
+
         c.page = h.Page(
             collection=pending_organizations,
             page=page,
@@ -169,7 +173,7 @@ def my_pending_organizations():
             item_count=len(pending_organizations),
             items_per_page=20,
         )
-        extra_vars["page"] = c.page
+	extra_vars["page"] = c.page
         extra_vars['pending_organizations'] = pending_organizations
         return render('user/dashboard_pending_organizations.html', extra_vars)
     except NotAuthorized:
