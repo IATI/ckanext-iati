@@ -371,7 +371,6 @@ def update_package(context, data_dict, message=None):
     context['disable_archiver'] = True
     for extra in data_dict['extras']:
         data_dict[extra['key']] = extra['value']
-
     data_dict['extras'] = []
     data_dict = patch_invalid_country_code(context, data_dict)
     updated_package = toolkit.get_action('package_update')(context, data_dict)

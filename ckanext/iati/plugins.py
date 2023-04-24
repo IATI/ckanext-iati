@@ -8,6 +8,7 @@ from routes.mapper import SubMapper     # Maybe not this one
 from ckan.lib.plugins import DefaultOrganizationForm
 from ckanext.iati.views.archiver import ArchiverViewRun
 import ckan.plugins as p
+from ckan.common import config
 from ckanext.iati.logic.validators import (
     db_date,
     iati_publisher_state_validator,
@@ -371,6 +372,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             # validation status only in show, as it's a read only field added from before_index
             'validation_status': [_ignore_missing, _convert_from_extras],
         })
+        print(schema['validation_status'])
 
         return schema
 
@@ -456,12 +458,9 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
     def _validator(self, pkg_id):
         GET_URI = 'https://api.iatistandard.org/validator/report'
-        headers = {"Ocp-Apim-Subscription-Key": os.environ.get('IATI_DEVELOPER_SUBSCRIPTION_KEY')}
+        headers = {"Ocp-Apim-Subscription-Key": config.get('ckanext.iati.validator_key')}
         try:
-            iati_validator_response = requests.get(GET_URI,
-                                                   params={'id':pkg_id},
-                                                   headers=headers,
-                                                   timeout=TIMEOUT)
+            iati_validator_response = requests.get(GET_URI, params={'id':pkg_id}, headers=headers, timeout=TIMEOUT)
             summary = iati_validator_response.json()['report']['summary']
             if summary['critical'] > 0:
                 return 'Critical'
