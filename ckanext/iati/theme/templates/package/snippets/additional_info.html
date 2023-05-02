@@ -50,7 +50,6 @@
 
   {{ package_additional_info_row('IATI data updated', 'data_updated', force_value=h.render_datetime(h.get_pkg_dict_extra(pkg_dict, 'data_updated', ''), date_format=date_format)) }}
   {{ package_additional_info_row('IATI registry updated', 'data_recorded', force_value=h.render_datetime(pkg_dict.metadata_modified, date_format=date_format)) }}
-  {{ package_additional_info_row('Validation Status', 'validation_status') }}
     <tr>
         <th scope="row" class="dataset-label">{{ _('Validation URL') }}</th>
         <td class="dataset-details">
