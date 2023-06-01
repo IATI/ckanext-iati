@@ -372,7 +372,6 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             # validation status only in show, as it's a read only field added from before_index
             'validation_status': [_ignore_missing, _convert_from_extras],
         })
-        print(schema['validation_status'])
 
         return schema
 
