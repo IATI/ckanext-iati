@@ -1,4 +1,5 @@
 import logging
+import requests
 from ckan.common import c
 # Bad imports: this should be in the toolkit
 import json
@@ -7,20 +8,20 @@ from routes.mapper import SubMapper     # Maybe not this one
 from ckan.lib.plugins import DefaultOrganizationForm
 from ckanext.iati.views.archiver import ArchiverViewRun
 import ckan.plugins as p
+from ckan.common import config
 from ckanext.iati.logic.validators import (
     db_date,
     iati_publisher_state_validator,
     iati_owner_org_validator,
     iati_dataset_name,
     iati_resource_count,
-    iati_resource_url,
+    valid_url,
     iati_one_resource,
     email_validator,
     file_type_validator,
     iati_org_identifier_validator,
     remove_leading_or_trailing_spaces,
     licence_validator,
-    iati_resource_url_mandatory,
     country_code,
     change_publisher_id_or_org_id,
     first_publisher_date_validator,
@@ -28,7 +29,7 @@ from ckanext.iati.logic.validators import (
     not_missing,
     not_empty,
     iati_publisher_name_validator,
-    iati_org_identifier_name_validator
+    iati_org_identifier_name_validator,
 )
 from ckanext.iati.logic.converters import strip, convert_date_string_to_iso_format
 import ckanext.iati.helpers as iati_helpers
@@ -41,9 +42,11 @@ from ckanext.iati.views.helper_pages import helper_pages
 from ckanext.iati.views.spreadsheet import spreadsheet
 from ckanext.iati.views.archiver import archiver as archiver_blueprint
 from ckanext.iati.views.registration import registration_blueprint
+import ckanext.iati.emailer as emailer
 
 log = logging.getLogger(__name__)
 
+TIMEOUT = 5
 
 class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
 
@@ -157,8 +160,8 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'publisher_country': default_validators,
             'publisher_segmentation': default_validators,
             'publisher_ui': default_validators,
-            'publisher_ui_url': [_ignore_missing, iati_resource_url, _convert_to_extras, unicode],
-            'publisher_url': [_ignore_missing, iati_resource_url, _convert_to_extras, unicode],
+            'publisher_ui_url': [_ignore_missing, valid_url, _convert_to_extras, unicode],
+            'publisher_url': [_ignore_missing, valid_url, _convert_to_extras, unicode],
             'publisher_frequency_select': default_validators,
             'publisher_frequency': default_validators,
             'publisher_thresholds': default_validators,
@@ -177,6 +180,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'publisher_implementation_schedule': default_validators,
             'publisher_first_publish_date': [_ignore_missing, convert_date_string_to_iso_format, _convert_to_extras,
                                              unicode, first_publisher_date_validator]
+
         })
 
         return schema
@@ -312,6 +316,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         _ignore_missing = p.toolkit.get_validator('ignore_missing')
         _ignore_empty = p.toolkit.get_validator('ignore_empty')
         _int_validator = p.toolkit.get_validator('int_validator')
+        _not_empty = p.toolkit.get_validator('not_empty')
 
         schema.update({
             'filetype': [_ignore_missing, file_type_validator, _convert_to_extras],
@@ -329,7 +334,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         schema['name'].extend([iati_dataset_name, iati_one_resource])
         schema['owner_org'].append(iati_owner_org_validator)
 
-        schema['resources']['url'].extend([iati_resource_count, strip, iati_resource_url_mandatory])
+        schema['resources']['url'].extend([_not_empty, iati_resource_count, strip, valid_url])
 
         return schema
 
@@ -363,6 +368,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'issue_type': [_ignore_missing, _convert_from_extras],
             'issue_message': [_ignore_missing, _convert_from_extras],
             'issue_date': [_ignore_missing, _convert_from_extras],
+            # validation status only in show, as it's a read only field added from before_index
+            'validation_status': [_ignore_missing, _convert_from_extras],
         })
 
         return schema
@@ -412,12 +419,12 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         """
         if not context.get('disable_archiver', False):
             log.info("Running archiver as background job as package update")
-            log.info(pkg_dict.get('id', ''))
             ArchiverViewRun.run_archiver_after_package_create_update(pkg_dict.get("id", None))
         else:
             log.info('Ignoring archiver run since archiver is disabled in context')
-        return pkg_dict
 
+        return pkg_dict
+    
     def before_search(self, data_dict):
         if not data_dict.get('sort', ''):
             data_dict['sort'] = 'title_string asc'
@@ -431,8 +438,44 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             data_dict['q'] = q 
         return data_dict
 
-    def before_index(self, data_dict):
+    # def send_critail_or_error_dataset_email(self, email, validation_status, dataset_name, publisher_name):
+    #     Do after reindex
+    #     status_message = ''
+    #     if validation_status == 'Critical':
+    #         status_message = 'The data does not adhere to the format set out in the IATI XML Schema and is currently unavailable for many IATI data access tools and their users.'
+    #     elif validation_status == 'Error':
+    #         status_message = 'The data does not follow IATI\'s Rulesets which makes the data hard or impossible to use.'
+    #     body = emailer.dataset_critical_or_error_email.format(
+    #         user_name='user', publisher_name=publisher_name,
+    #         validation_status=validation_status,
+    #         status_message=status_message,
+    #         publisher_registry_dataset_link='https://www.iatiregistry.org/dataset/'+dataset_name
+    #     )
+    #     subject = "Dataset validation status is Critical or Error"
+    #     emailer.send_email(body, subject, email, content_type='html')
 
+    def _validator(self, pkg_id):
+        GET_URI = 'https://api.iatistandard.org/validator/report'
+        headers = {"Ocp-Apim-Subscription-Key": config.get('ckanext.iati.validator_key')}
+        try:
+            iati_validator_response = requests.get(GET_URI, params={'id':pkg_id}, headers=headers, timeout=TIMEOUT)
+            summary = iati_validator_response.json()['report']['summary']
+            if summary['critical'] > 0:
+                return 'Critical'
+            elif summary['error'] > 0:
+                return 'Error'
+            elif summary['warning'] > 0:
+                return 'Warning'
+            else:
+                return 'Success'
+
+        except Exception as e:
+            log.error("EXCEPTION in validator: %s %s", type(e),e)
+
+        return 'Not Found'
+
+
+    def before_index(self, data_dict):
         # Add nicely formatted values for faceting
         fields = (
             ('country', iati_helpers.get_country_title),
@@ -453,6 +496,13 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         except Exception as e:
             log.error(e)
             pass
+
+        validation_status = self._validator(data_dict['id'])
+        data_dict['extras_validation_status'] = validation_status
+        validated_data_dict = json.loads(data_dict['validated_data_dict'])
+        validated_data_dict['extras'].append({'key':'validation_status', 'value':validation_status})
+        data_dict['validated_data_dict'] = json.dumps(validated_data_dict)
+
         return data_dict
 
     ## IConfigurer

@@ -3666,6 +3666,27 @@ a.thumbnail:focus {
 .alert-danger .alert-link {
   color: #953b39;
 }
+.alert-deprecation {
+  border-color: #bce8f1;
+  color: #3a87ad;
+  margin-left: 23%;
+  margin-right: 26%;
+  padding: 1%;
+  background: #e1e1a1;
+  position: relative;
+}
+
+#closeDeprecationAlert {
+    color: grey;
+    background-color: inherit;
+    border-color: #cccccc;
+    border: 0;
+    position: absolute;
+    bottom: 0%;
+    right: 1%;
+    font-size: 20px;
+}
+
 @-webkit-keyframes progress-bar-stripes {
   from {
     background-position: 40px 0;
@@ -11498,4 +11519,24 @@ table.dataTable thead .sorting_desc_disabled:before {
   font-size: 14px;
   color: #737373;
   font-weight: lighter;
+}
+
+.validError {
+  color: #f73357;
+}
+
+.validNotFouns {
+  color: #17a2b8;
+}
+
+.validCritical {
+  color:#a66ee9;
+}
+
+.validSuccess {
+  color: #18bc9c;
+}
+
+.validWarning {
+  color: #ff7264;
 }
