@@ -51,9 +51,12 @@ Dear {user_name},<br><br>
 
 Congratulations, the publisher that you created on the IATI Registry has been approved.<br><br>
 
-Well done for taking the first step to join over 1300 others in becoming an IATI publisher! Your publisher account can be found in the <a href="{group_link}"> IATI Registry</a>.<br><br>
+Well done for taking the first step to join over 1500 others in becoming an IATI publisher! Your publisher account can be found in the <a href="{group_link}"> IATI Registry</a>.<br><br>
 
 Your next step is to start creating your IATI files. Guidance for this can be found on the IATI website under step 2 on the <a href="https://iatistandard.org/en/guidance/publishing-data/publishing-files/publishing-checklist/">Publishing Checklist</a>.<br><br>
+
+We are happy to let you know that we have launched the new IATI publishing tool, which will be free to use. 
+If you would like to hear more about this please click on the link <a href="https://publisher.iatistandard.org/"/>publisher.iatistandard.org</a><br><br> 
 
 Should you have any queries or support needs, then please email the IATI Helpdesk at: <a href="mailto:support@iatistandard.org">support@iatistandard.org</a><br><br>
 
@@ -90,4 +93,48 @@ Should you have any queries or support needs, then please email the IATI Helpdes
 
 Kind regards,<br>
 IATI Technical Team<br>
+'''
+
+data_not_xml_email_body = '''
+Dear {user_name},<br><br>
+
+You're receiving this email because you are the admin user of {publisher_name}'s IATI Registry account.<br>
+
+We've detected an issue with the following IATI dataset in your IATI Registry account: {publisher_registry_dataset_link}<br>
+
+The dataset is not in a valid IATI XML format. Please see our <a href="https://iatistandard.org/en/guidance/publishing-data/creating-files/">Guidance pages</a> on how to publish your data in IATI XML format.<br>
+
+<br>Should you have any queries or support needs, then please email the IATI Helpdesk at: <a href='support@iatistandard.org'>support@iatistandard.org</a><br>
+Kind regards,<br>
+IATI Technical Team<br>
+'''
+
+data_has_url_errors = '''
+Dear {user_name},<br><br>
+
+You're receiving this email because you are the admin user of {publisher_name}'s IATI Registry account.<br>
+
+We've detected an issue with the following IATI dataset in your IATI Registry account: {publisher_registry_dataset_link}<br>
+
+The dataset is not accessible. To fix the error, please update the dataset link (URL) in the IATI Registry.<br>
+
+<br>Should you have any queries or support needs, then please email the IATI Helpdesk at: <a href='support@iatistandard.org'>support@iatistandard.org</a><br>
+Kind regards,<br>
+IATI Technical Team<br>
+'''
+
+dataset_critical_or_error_email = '''
+Dear {user_name},<br><br>
+
+You're receiving this email because you published the following dataset to the {publisher_name}'s IATI Registry account: 
+<a href="{publisher_registry_dataset_link}">{publisher_registry_dataset_link}</a><br><br>
+
+We've detected that the dataset fails validation and its validation status is {validation_status}.<br><br>
+
+{status_message}<br><br>
+
+Should you have any queries or support needs, then please email the IATI Helpdesk at: support@iatistandard.org<br><br>
+
+Kind regards,<br>
+IATI Technical Team 
 '''

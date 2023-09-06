@@ -316,11 +316,11 @@ def organization_list(include_extras=False):
         data_dict['include_extras'] = include_extras
     return p.toolkit.get_action('organization_list')({}, data_dict)
 
-def organization_list_pending():
+def organization_list_pending(q=None):
     context = {'user': c.user, "model": model}
     if authz.is_sysadmin(c.user):
         return p.toolkit.get_action('organization_list_pending')(context, {
-            'all_fields': True, 'sort': 'title asc', 'include_extras': True})
+            'all_fields': True, 'q': q, 'sort': 'title asc', 'include_extras': True})
     else:
         return _pending_organization_list_for_user()
 
@@ -589,10 +589,8 @@ def _pending_organization_list_for_user():
     This will extract the pending publisher for the given user.
     :return: Pending Organizations
     """
-
     context = {'user': c.user, "model": model}
     user_obj = model.User.by_name(context.get('user'))
-
     try:
         q = model.Session.query(model.Member, model.Group) \
             .filter(model.Member.table_name == 'user') \
