@@ -30,7 +30,6 @@ from ckanext.iati.logic.validators import (
     not_empty,
     iati_publisher_name_validator,
     iati_org_identifier_name_validator,
-    valid_xml_url,
 )
 from ckanext.iati.logic.converters import strip, convert_date_string_to_iso_format
 import ckanext.iati.helpers as iati_helpers
@@ -335,7 +334,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
         schema['name'].extend([iati_dataset_name, iati_one_resource])
         schema['owner_org'].append(iati_owner_org_validator)
 
-        schema['resources']['url'].extend([_not_empty, iati_resource_count, strip, valid_url, valid_xml_url])
+        schema['resources']['url'].extend([_not_empty, iati_resource_count, strip, valid_url])
 
         return schema
 
@@ -372,7 +371,6 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             # validation status only in show, as it's a read only field added from before_index
             'validation_status': [_ignore_missing, _convert_from_extras],
         })
-        print(schema['validation_status'])
 
         return schema
 

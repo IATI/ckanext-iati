@@ -62,11 +62,6 @@ def valid_url(value, context):
     return value
 
 
-def valid_xml_url(value, context):
-    if not value.endswith('.xml'):
-        send_url_invalid_email(context, is_url_error=False)
-        raise Invalid("Incorrect file format. All files should be in XML format that follows the IATI Standard. See http://iatistandard.org/")
-    return value
 
 def iati_owner_org_validator(key, data, errors, context):
 
