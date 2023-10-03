@@ -50,8 +50,8 @@
         <a href="{{ package_url }}">View Metadata</a>
         &middot;
         {% snippet 'snippets/resource_links.html', resource=resource, package=package %}
-          <span>Validation URL:</span><span> <a href="https://validator.iatistandard.org/report/{{ package.name }}">Check validation report</a></span>
-      </p>
+	<span>Validation URL:</span><span> <a href="https://validator.iatistandard.org/report/{{ package.name }}">Check validation report</a></span>
+	</p>
     {% endfor %}
   {% endif %}
 

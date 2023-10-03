@@ -10,8 +10,8 @@ log = logging.getLogger(__name__)
 
 FROM = config.get('smtp.mail.from', 'no-reply@iatiregistry.org')
 SMTP_SERVER = config.get('smtp.server', 'localhost')
-#SMTP_USER = config.get('smtp.user', 'username')
-#SMTP_PASSWORD = config.get('smtp.password', 'password')
+SMTP_USER = config.get('smtp.user', 'username')
+SMTP_PASSWORD = config.get('smtp.password', 'password')
 
 def send_email(content, subject, to, from_=FROM, content_type="plain"):
 
@@ -23,10 +23,11 @@ def send_email(content, subject, to, from_=FROM, content_type="plain"):
     msg['Subject'] = subject
     msg['From'] = from_
     msg['To'] = ','.join(to)
-
     try:
         s = smtplib.SMTP(SMTP_SERVER)
-        s.sendmail(from_, to, msg.as_string())
+        s.starttls()
+	s.login(SMTP_USER, SMTP_PASSWORD)
+	s.sendmail(from_, to, msg.as_string())
         s.quit()
     except socket_error:
         log.critical('Could not connect to email server. Have you configured the SMTP settings?')
