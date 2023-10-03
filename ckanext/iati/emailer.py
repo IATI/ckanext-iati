@@ -23,7 +23,6 @@ def send_email(content, subject, to, from_=FROM, content_type="plain"):
     msg['Subject'] = subject
     msg['From'] = from_
     msg['To'] = ','.join(to)
-    print('To: ' + str(msg['To']))
     try:
         s = smtplib.SMTP(SMTP_SERVER)
         s.starttls()
