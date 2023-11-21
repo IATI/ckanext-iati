@@ -1,3 +1,5 @@
+import os
+
 from urlparse import urlparse, urlunparse
 from dateutil.parser import parse as date_parse
 from datetime import datetime
@@ -26,15 +28,26 @@ def iati_resource_count(key, data, errors, context):
 
 def send_url_invalid_email(context, is_url_error=True):
     user = context['auth_user_obj']
+
+    publisher_name = context['group'].name
+    if not os.environ.get('SITE_HOST').startswith('https://'):
+        site_host = 'https://' + os.environ.get('SITE_HOST')
+    else:
+        site_host = os.environ.get('SITE_HOST')
+
+    if site_host.endswith('/'):
+        site_host = site_host[:-1]
+    publisher_url = '{0}/publisher/{1}'.format(site_host, publisher_name)
+
     if is_url_error:
         body = emailer.data_has_url_errors.format(
-            user_name=context['user'], publisher_name='publisher_name',
-            publisher_registry_dataset_link='publisher_registry_dataset_link'
+            user_name=context['user'], publisher_name=publisher_name,
+            publisher_registry_dataset_link=publisher_url
         )
     else:
         body = emailer.data_not_xml_email_body.format(
-            user_name=context['user'], publisher_name='publisher_name',
-            publisher_registry_dataset_link='publisher_registry_dataset_link'
+            user_name=context['user'], publisher_name=publisher_name,
+            publisher_registry_dataset_link=publisher_url
         )
 
     subject = "Invalid dataset upload format"
