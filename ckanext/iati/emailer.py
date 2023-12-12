@@ -117,7 +117,8 @@ You're receiving this email because you are the admin user of {publisher_name}'s
 
 We've detected an issue with the following IATI dataset in your IATI Registry account: <a href="{publisher_registry_dataset_link}">{publisher_registry_dataset_link}</a><br>
 
-The dataset is not accessible. To fix the error, please update the dataset link (URL) in the IATI Registry.<br>
+The dataset {dataset_url} is not accessible. 
+To fix the error, please update the dataset link (URL) in the IATI Registry.<br>
 
 <br>Should you have any queries or support needs, then please email the IATI Helpdesk at: <a href='support@iatistandard.org'>support@iatistandard.org</a><br>
 Kind regards,<br>
@@ -130,7 +131,8 @@ Dear {user_name},<br><br>
 You're receiving this email because you published the following dataset to the {publisher_name}'s IATI Registry account: 
 <a href="{publisher_registry_dataset_link}">{publisher_registry_dataset_link}</a><br><br>
 
-We've detected that the dataset fails validation and its validation status is {validation_status}.<br><br>
+We've detected that the dataset fails validation and its validation status is {validation_status}.<br>
+View the dataset here: {dataset_url}<br>
 
 {status_message}<br><br>
 

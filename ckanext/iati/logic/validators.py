@@ -38,16 +38,20 @@ def send_url_invalid_email(context, is_url_error=True):
     if site_host.endswith('/'):
         site_host = site_host[:-1]
     publisher_url = '{0}/publisher/{1}'.format(site_host, publisher_name)
+    dataset_name = context['package'].name
+    dataset_url = '{0}/dataset/{1}'.format(site_host, dataset_name)
 
     if is_url_error:
         body = emailer.data_has_url_errors.format(
             user_name=context['user'], publisher_name=publisher_name,
-            publisher_registry_dataset_link=publisher_url
+            publisher_registry_dataset_link=publisher_url,
+            dataset_url=dataset_url
         )
     else:
         body = emailer.data_not_xml_email_body.format(
             user_name=context['user'], publisher_name=publisher_name,
-            publisher_registry_dataset_link=publisher_url
+            publisher_registry_dataset_link=publisher_url,
+            dataset_url=dataset_url
         )
 
     subject = "Invalid dataset upload format"
