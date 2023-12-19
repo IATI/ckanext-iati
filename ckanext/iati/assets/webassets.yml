@@ -1,0 +1,5 @@
+iati-css:
+  output: ckanext-iati/%(version)s_iati.css
+  filters: cssrewrite
+  contents:
+    - fanstatic_library/styles/iati.css
