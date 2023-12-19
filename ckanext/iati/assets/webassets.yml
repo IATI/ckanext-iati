@@ -3,3 +3,21 @@ iati-css:
   filters: cssrewrite
   contents:
     - fanstatic_library/styles/iati.css
+
+upload_animation:
+  filters: rjsmin
+  output: ckanext-iati/%(version)s_main.js
+  contents:
+    - fanstatic_library/scripts/uploadanimcation.js
+
+ckanext-iati/table_sorter:
+  filters: rjsmin
+  output: ckanext-iati/%(version)s_main.js
+  contents:
+    - fanstatic_library/scripts/tablesorter.js
+
+ckanext-iati/popover:
+  filters: rjsmin
+  output: ckanext-iati/%(version)s_main.js
+  contents:
+    - fanstatic_library/scripts/popover.js
