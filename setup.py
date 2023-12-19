@@ -26,6 +26,9 @@ setup(name='ckanext-iati',
           'email_validator!= 1.3.0',
           'xlwt',
           'kombu==3.0.37',
+	  'webhelpers2',
+	  'Paste',
+	  'PasteDeploy'
       ],
       entry_points="""
       # -*- Entry points: -*-

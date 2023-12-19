@@ -21,7 +21,7 @@ class TestCSVImporter():
     context = {
         'model':model,
         'session':Session,
-        'user':u'tester',
+        'user':'tester',
         'api_version':3
     }
 
@@ -131,13 +131,13 @@ class TestCSVImporter():
 
         assert errors == [
             ('1', {'registry-publisher-id': ['Publisher not found: test-publisher-unknown']}),
-            ('2', {'registry-file-id': [u'Dataset name does not follow the convention <publisher>-<code>: "test-wrong-name" (using publisher test-publisher)']}),
-            ('3', {'activity-count': [u'Invalid integer']}),
+            ('2', {'registry-file-id': ['Dataset name does not follow the convention <publisher>-<code>: "test-wrong-name" (using publisher test-publisher)']}),
+            ('3', {'activity-count': ['Invalid integer']}),
             ('4', {'recipient-country': ['Unknown country code "NOT_A_COUNTRY"']}),
             ('5', {'file-type': ['File type must be one of [activity, organisation]']}),
             ('6', {'verification-status': ['Value must be one of [yes, no]']}),
-            ('7', {'registry-publisher-id': [u'Missing value'], 'registry-file-id': ['Publisher name missing']}),
-            ('8', {'registry-file-id': [u'Missing value']})
+            ('7', {'registry-publisher-id': ['Missing value'], 'registry-file-id': ['Publisher name missing']}),
+            ('8', {'registry-file-id': ['Missing value']})
 
             ]
 
@@ -181,6 +181,6 @@ class TestCSVImporter():
         # Wrong dates
         added, updated, warnings, errors = self.assert_csv_import('dates_errors.csv',0,0,0,1)
 
-        for field, msg in errors[0][1].iteritems():
+        for field, msg in list(errors[0][1].items()):
             assert 'cannot parse db date' in msg[0].lower()
 

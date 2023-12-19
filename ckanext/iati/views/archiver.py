@@ -17,7 +17,7 @@ ValidationError = logic.ValidationError
 NotAuthorized = logic.NotAuthorized
 NotFound = logic.NotFound
 
-archiver = Blueprint(u'archiver', __name__, url_prefix=u'/archiver')
+archiver = Blueprint('archiver', __name__, url_prefix='/archiver')
 
 
 class ArchiverViewRun(MethodView):
@@ -105,7 +105,7 @@ class ArchiverViewRun(MethodView):
         :return:
         """
 
-        context = {u'model': model, u'session': model.Session, u'user': c.user or c.author}
+        context = {'model': model, 'session': model.Session, 'user': c.user or c.author}
         extra_vars = dict()
 
         try:
@@ -115,25 +115,25 @@ class ArchiverViewRun(MethodView):
 
         if view_type == "publisher":
             try:
-                group_dict = p.toolkit.get_action(u'organization_show')(context, {u'id': id})
-                group_type = group_dict[u'type']
+                group_dict = p.toolkit.get_action('organization_show')(context, {'id': id})
+                group_type = group_dict['type']
                 g.group_dict = group_dict
-                extra_vars[u"group_type"] = group_type
-                extra_vars[u"group_dict"] = group_dict
+                extra_vars["group_type"] = group_type
+                extra_vars["group_dict"] = group_dict
                 return self.render_template(view_type, extra_vars)
             except (NotFound, NotAuthorized):
-                abort(404, _(u'Group not found'))
+                abort(404, _('Group not found'))
         elif view_type == "status":
             return self.status(id)
         else:
-            extra_vars[u'id'] = id
+            extra_vars['id'] = id
             try:
-                pkg = p.toolkit.get_action(u'package_show')(context, {u'id': id})
-                extra_vars[u'organization'] = pkg[u'organization']
-                extra_vars[u'pkg'] = pkg
+                pkg = p.toolkit.get_action('package_show')(context, {'id': id})
+                extra_vars['organization'] = pkg['organization']
+                extra_vars['pkg'] = pkg
                 return self.render_template(view_type, extra_vars)
             except (NotFound, NotAuthorized):
-                abort(404, _(u'Group not found'))
+                abort(404, _('Group not found'))
 
     def post(self, view_type, id):
         """
@@ -150,12 +150,12 @@ class ArchiverViewRun(MethodView):
             package_id = id
 
         context = {
-            u'model': model,
-            u'session': model.Session,
-            u'site_url': config.get('ckan.site_url'),
-            u'user': config.get('iati.admin_user.name'),
-            u'apikey': config.get('iati.admin_user.api_key'),
-            u'api_version': 3,
+            'model': model,
+            'session': model.Session,
+            'site_url': config.get('ckan.site_url'),
+            'user': config.get('iati.admin_user.name'),
+            'apikey': config.get('iati.admin_user.api_key'),
+            'api_version': 3,
         }
 
         if not c.user:
@@ -205,14 +205,14 @@ class ArchiverViewRun(MethodView):
 
             job = jobs.enqueue(arch.run, [pkg_id, None, publisher_id])
 
-            task[u'task_id'] = job.id
-            task[u'name'] = pkg_id
-            task[u'status'] = 'Queued'
+            task['task_id'] = job.id
+            task['name'] = pkg_id
+            task['status'] = 'Queued'
             if publisher_id:
-                task[u'title'] = _pkg[u'title']
+                task['title'] = _pkg['title']
             else:
                 pkg = p.toolkit.get_action('package_show')(context, {'id': pkg_id})
-                task[u'title'] = pkg['title']
+                task['title'] = pkg['title']
                 pkg_stat['pkg'] = pkg
             tasks.append(json.dumps(task))
 
@@ -231,7 +231,7 @@ class ArchiverViewRun(MethodView):
 
 
 archiver.add_url_rule(
-    u'/<view_type>/<id>',
+    '/<view_type>/<id>',
     view_func=ArchiverViewRun.as_view('archiver_controller'),
-    methods=[u'GET', u'POST'])
+    methods=['GET', 'POST'])
 

@@ -17,7 +17,7 @@ def send_email(content, subject, to, from_=FROM, content_type="plain"):
 
     msg = MIMEText(content, content_type, 'UTF-8')
 
-    if isinstance(to, basestring):
+    if isinstance(to, str):
         to = [to]
 
     msg['Subject'] = subject
@@ -26,8 +26,8 @@ def send_email(content, subject, to, from_=FROM, content_type="plain"):
     try:
         s = smtplib.SMTP(SMTP_SERVER)
         s.starttls()
-	s.login(SMTP_USER, SMTP_PASSWORD)
-	s.sendmail(from_, to, msg.as_string())
+        s.login(SMTP_USER, SMTP_PASSWORD)
+        s.sendmail(from_, to, msg.as_string())
         s.quit()
     except socket_error:
         log.critical('Could not connect to email server. Have you configured the SMTP settings?')

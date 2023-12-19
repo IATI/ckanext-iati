@@ -2,7 +2,7 @@ import logging
 import json
 import csv
 import tempfile
-from urlparse import urljoin
+from urllib.parse import urljoin
 import inspect
 from ckan.plugins.toolkit import config
 import sqlalchemy
@@ -27,7 +27,7 @@ from ckanext.iati.logic import publisher_tasks
 from paste.deploy.converters import asbool
 from ckan.common import _, g
 import ckan
-import cStringIO
+import io
 import codecs
 
 log = logging.getLogger(__name__)
@@ -75,7 +75,7 @@ def package_create(context, data_dict):
     created_package = create_core.package_create(context, data_dict)
 
     # Part of first publisher date patch - after package create patch the organization
-    if 'owner_org' in data_dict.keys():
+    if 'owner_org' in list(data_dict.keys()):
         hlp.first_published_date_patch(created_package.get('owner_org'))
 
     if created_package.get('state') != "deleted" and not created_package.get("private"):
@@ -280,7 +280,7 @@ def issues_report_csv(context, data_dict):
         result = logic.get_action('package_search')(context, data_dict)
         if result['count'] > 0:
             publishers = result['facets']['organization']
-            for publisher_name, count in publishers.iteritems():
+            for publisher_name, count in list(publishers.items()):
                 result = packages_with_issues_for_a_publisher(context, publisher_name)
                 issues[publisher_name] = result['results']
 
@@ -293,7 +293,7 @@ def issues_report_csv(context, data_dict):
 
         return default
 
-    for publisher, datasets in issues.iteritems():
+    for publisher, datasets in list(issues.items()):
         for dataset in datasets:
             url = urljoin(site_url, '/dataset/' + dataset['name'])
             if len(dataset['resources']):
@@ -448,7 +448,7 @@ def _custom_group_or_org_list(context, data_dict, is_org=True):
     if groups:
         query = query.filter(model.Group.name.in_(groups))
     if q:
-        q = u'%{0}%'.format(q)
+        q = '%{0}%'.format(q)
         query = query.filter(_or_(
             model.Group.name.ilike(q),
             model.Group.title.ilike(q),
@@ -546,7 +546,7 @@ def _approval_needed(context, data_dict, is_org=False):
     if groups:
         query = query.filter(model.Group.name.in_(groups))
     if q:
-        q = u'%{0}%'.format(q)
+        q = '%{0}%'.format(q)
         query = query.filter(_or_(
             model.Group.name.ilike(q),
             model.Group.title.ilike(q),

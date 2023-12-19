@@ -1,5 +1,5 @@
 from flask import Blueprint, make_response
-from ckan.lib.base import response, render, abort
+from ckan.lib.base import render, abort
 from ckan.common import _, c, g, config, request
 from ckan import model
 from ckan import logic
@@ -138,29 +138,29 @@ def records_upload_process(row_dict, user):
                     counts['added'].append(_status['created'])
                 else:
                     counts['updated'].append(_status['updated'])
-            except p.toolkit.ValidationError, e:
+            except p.toolkit.ValidationError as e:
                 iati_keys = dict([(f[2], f[0]) for f in PublisherRecordsUpload.CSV_MAPPING])
-                for key, msgs in e.error_dict.iteritems():
+                for key, msgs in list(e.error_dict.items()):
                     iati_key = iati_keys.get(key, key)
                     if iati_key == "name_or_id":
                         iati_key = 'registry-file-id'
                     log.error('Error in row %i: %s: %s' % (
                         i + 1, iati_key, str(msgs)))
                     errors[i][iati_key] = iati_h.parse_error_object_to_list(msgs)
-            except p.toolkit.NotAuthorized, e:
+            except p.toolkit.NotAuthorized as e:
                 msg = 'Not authorized to publish to this organization: %s' % row['registry-publisher-id']
                 log.error('Error in row %i: %s' % (i + 1, msg))
                 errors[i]['registry-publisher-id'] = [msg]
-            except p.toolkit.ObjectNotFound, e:
+            except p.toolkit.ObjectNotFound as e:
                 msg = 'Publisher not found: %s' % row['registry-publisher-id']
                 log.error('Error in row %i: %s' % (i + 1, msg))
                 errors[i]['registry-publisher-id'] = [msg]
-            except ValueError, e:
+            except ValueError as e:
                 log.error('Error in row %i: %s' % (i + 1, str(e)))
                 errors[i]['last-updated-datetime'] = [str(e)]
 
-        warnings = sorted(warnings.iteritems())
-        errors = sorted(errors.iteritems())
+        warnings = sorted(warnings.items())
+        errors = sorted(errors.items())
 
         counts['warnings'] = warnings
         counts['errors'] = errors
@@ -170,12 +170,12 @@ def records_upload_process(row_dict, user):
     return read_csv_file(row_dict, user)
 
 
-spreadsheet = Blueprint(u'spreadsheet', __name__, url_prefix=u'/csv')
+spreadsheet = Blueprint('spreadsheet', __name__, url_prefix='/csv')
 
 
 def index():
     is_organization = True
-    group_type = u'organization'
+    group_type = 'organization'
     return core_group_view.index(group_type, is_organization)
 
 
@@ -238,14 +238,14 @@ def csv_upload_datasets():
             for i, x in enumerate(row):
                 row_dict[columns[i].encode('utf-8')] = x.encode('utf-8')
 
-            task[u'title'] = u"No Title" if not row_dict.get(u'title', '') else row_dict.get(u'title')
-            task[u'task_id'] = str(uuid.uuid4())
+            task['title'] = "No Title" if not row_dict.get('title', '') else row_dict.get('title')
+            task['task_id'] = str(uuid.uuid4())
             job = jobs.enqueue(records_upload_process,
                                [json.dumps([row_dict], ensure_ascii=False).encode('utf-8'), c.user])
-            task[u'task_id'] = str(job.id)
+            task['task_id'] = str(job.id)
             tasks.append(json.dumps(task))
 
-        vars[u'tasks'] = tasks
+        vars['tasks'] = tasks
 
         return render('csv/result.html', extra_vars=vars)
 
@@ -279,7 +279,7 @@ def publishers_upload_status(task_id):
     return json.dumps(result)
 
 
-spreadsheet.add_url_rule(u'/download', view_func=index)
-spreadsheet.add_url_rule(u'/download/<id>', view_func=download_publisher_records)
-spreadsheet.add_url_rule(u'/upload', view_func=csv_upload_datasets, methods=[u'GET', u'POST'])
-spreadsheet.add_url_rule(u'/check_status/<task_id>', view_func=publishers_upload_status, methods=[u'GET'])
+spreadsheet.add_url_rule('/download', view_func=index)
+spreadsheet.add_url_rule('/download/<id>', view_func=download_publisher_records)
+spreadsheet.add_url_rule('/upload', view_func=csv_upload_datasets, methods=['GET', 'POST'])
+spreadsheet.add_url_rule('/check_status/<task_id>', view_func=publishers_upload_status, methods=['GET'])

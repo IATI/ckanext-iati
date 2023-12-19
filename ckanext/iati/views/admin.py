@@ -1,5 +1,5 @@
 import csv
-import StringIO
+import io
 import os
 import json
 from datetime import datetime
@@ -20,7 +20,7 @@ log = logging.getLogger(__file__)
 ValidationError = logic.ValidationError
 NotAuthorized = logic.NotAuthorized
 
-admin_tabs = Blueprint(u'admin_tabs', __name__, url_prefix=u'/ckan-admin')
+admin_tabs = Blueprint('admin_tabs', __name__, url_prefix='/ckan-admin')
 
 
 _query = """
@@ -50,7 +50,7 @@ def _active_publisher_data(from_dt, to_dt):
     log.info(query)
     conn = model.Session.connection()
     rows = conn.execute(query)
-    active_publishers = [{key: value for (key, value) in row.items()} for row in rows]
+    active_publishers = [{key: value for (key, value) in list(row.items())} for row in rows]
 
     return active_publishers
 
@@ -101,7 +101,7 @@ def admin_publishers_report():
                 if pub_data:
                     # 1st element keys is the header
                     fieldnames = list(pub_data[0].keys())
-                    file_object = StringIO.StringIO()
+                    file_object = io.StringIO()
                     writer = csv.DictWriter(file_object, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
                     writer.writeheader()
 
@@ -185,7 +185,7 @@ def iati_redirects():
     return base.render('admin/redirects.html', vars)
 
 
-admin_tabs.add_url_rule(u'/iati-redirects', view_func=iati_redirects, methods=['POST', 'GET'])
-admin_tabs.add_url_rule(u'/admin-publishers-report', view_func=admin_publishers_report, methods=['POST', 'GET'])
+admin_tabs.add_url_rule('/iati-redirects', view_func=iati_redirects, methods=['POST', 'GET'])
+admin_tabs.add_url_rule('/admin-publishers-report', view_func=admin_publishers_report, methods=['POST', 'GET'])
 
 

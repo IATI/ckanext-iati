@@ -10,7 +10,7 @@ from ckanext.iati import helpers as h
 from ckanext.iati.logic import action
 import sqlalchemy
 import csv
-import StringIO
+import io
 from collections import OrderedDict
 import json
 from xlwt import Workbook
@@ -142,7 +142,7 @@ class PublishersListDownload:
         Sysadmin recent publisher is allowed to download only csv
         :return:
         """
-        f = StringIO.StringIO()
+        f = io.StringIO()
         writer = csv.writer(f)
         writer.writerow(list(self._headers))
         _org_data = PublishersListDownload._get_publisher_data()
@@ -153,14 +153,14 @@ class PublishersListDownload:
                 if self.request_type_recent_publisher:
                     rows.append(org_data)
                 else:
-                    writer.writerow([s.encode("utf-8") if six.PY2 and isinstance(s, unicode) else s for s in org_data])
+                    writer.writerow([s.encode("utf-8") if six.PY2 and isinstance(s, str) else s for s in org_data])
 
         # This is expensive but we need sorting for first published
         # date since its hard to get sorted for GroupExtra table
         if self.request_type_recent_publisher:
             rows = sorted(rows, key=lambda entry: entry[4], reverse=True)
             for csv_row in rows:
-                writer.writerow([s.encode("utf-8") if six.PY2 and isinstance(s, unicode) else s for s in csv_row])
+                writer.writerow([s.encode("utf-8") if six.PY2 and isinstance(s, str) else s for s in csv_row])
 
         output = f.getvalue()
         f.close()
@@ -173,13 +173,13 @@ class PublishersListDownload:
         Json download
         :return:
         """
-        f = StringIO.StringIO()
+        f = io.StringIO()
         json_data = []
 
         _org_data = PublishersListDownload._get_publisher_data()
         for org in _org_data:
             if org.Group.state == 'active' and int(org.package_count) > 0:
-                json_data.append(OrderedDict(zip(self._headers, self._prepare(org))))
+                json_data.append(OrderedDict(list(zip(self._headers, self._prepare(org)))))
 
         json.dump(json_data, f)
         output = f.getvalue()
@@ -193,7 +193,7 @@ class PublishersListDownload:
         xml format download
         :return:
         """
-        f = StringIO.StringIO()
+        f = io.StringIO()
 
         fields = list(self._headers)
         fields.pop(1)
@@ -235,7 +235,7 @@ class PublishersListDownload:
         xls format download
         :return:
         """
-        f = StringIO.StringIO()
+        f = io.StringIO()
         wb = Workbook(encoding='utf-8')
         sheet1 = wb.add_sheet('IATI Publishers List')
         _org_data = PublishersListDownload._get_publisher_data()
