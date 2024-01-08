@@ -147,6 +147,21 @@ def get_publisher_obj_extra_fields_pub_ids(group_dict):
     extras['publisher_iati_id'] = group_dict.get('publisher_iati_id', '')
     return extras
 
+def get_user_search_extras(user):
+    extras = {}
+    if not user:
+        return extras
+    q = model.Session.query(model.Activity)
+    q = q.filter(model.Activity.user_id == user[0].id)
+    q = q.order_by(model.Activity.timestamp.desc())
+
+    last_activity = q.first()
+    if last_activity:
+        extras['last_activity'] = last_activity.timestamp.strftime("%d %b %Y")
+    else:
+        extras['last_activity'] = ''
+    return extras
+
 def is_route_active(menu_item):
     _menu_items = config.get('routes.named_routes')
     if menu_item not in _menu_items:
