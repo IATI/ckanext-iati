@@ -42,6 +42,7 @@ from ckanext.iati.views.helper_pages import helper_pages
 from ckanext.iati.views.spreadsheet import spreadsheet
 from ckanext.iati.views.archiver import archiver as archiver_blueprint
 from ckanext.iati.views.registration import registration_blueprint
+from ckanext.iati.views.user import users
 import ckanext.iati.emailer as emailer
 
 log = logging.getLogger(__name__)
@@ -247,7 +248,8 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             spreadsheet,
             archiver_blueprint,
             publisher_with_user_blueprint,
-            registration_blueprint
+            registration_blueprint,
+            users
         ]
 
 
@@ -547,6 +549,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'organization_list_pending',
             'get_publisher_obj_extra_fields',
             'get_publisher_obj_extra_fields_pub_ids',
+            'get_user_search_extras',
             'dataset_follower_count',
             'radio',
             'check_publisher_contact_email',
