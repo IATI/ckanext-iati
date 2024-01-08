@@ -9,6 +9,7 @@ from ckan.lib.plugins import DefaultOrganizationForm
 from ckanext.iati.views.archiver import ArchiverViewRun
 import ckan.plugins as p
 from ckan.common import config
+from ckan.lib.navl.validators import unicode_safe
 from ckanext.iati.logic.validators import (
     db_date,
     iati_publisher_state_validator,
@@ -88,7 +89,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             '/help': 'http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-register-with-iati/'
         }
 
-        for k, v in list(redirects.items()):
+        for k, v in redirects.items():
             map.redirect(k, v)
 
         return map
@@ -146,7 +147,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         _unicode_safe = p.toolkit.get_validator('unicode_safe')
         _group_name_validator = p.toolkit.get_validator('group_name_validator')
 
-        default_validators = [_ignore_missing, _convert_to_extras, str]
+        default_validators = [_ignore_missing, _convert_to_extras, unicode_safe]
         schema.update({
             'state': [iati_publisher_state_validator],
             'title': [_not_empty, remove_leading_or_trailing_spaces],

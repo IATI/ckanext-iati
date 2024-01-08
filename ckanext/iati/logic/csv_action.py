@@ -179,7 +179,7 @@ class PublishersListDownload:
         _org_data = PublishersListDownload._get_publisher_data()
         for org in _org_data:
             if org.Group.state == 'active' and int(org.package_count) > 0:
-                json_data.append(OrderedDict(list(zip(self._headers, self._prepare(org)))))
+                json_data.append(OrderedDict(zip(self._headers, self._prepare(org))))
 
         json.dump(json_data, f)
         output = f.getvalue()

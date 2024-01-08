@@ -292,7 +292,7 @@ def archive_package(package_id, context, consecutive_errors=0):
         else:
             new_extras['data_updated'] = None
 
-        for key, value in list(new_extras.items()):
+        for key, value in new_extras.items():
             if value and (key not in extras_dict or str(value) != str(extras_dict.get(key, ''))):
                 log.info("Identified update")
                 update = True

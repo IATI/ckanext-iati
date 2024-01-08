@@ -140,7 +140,7 @@ def records_upload_process(row_dict, user):
                     counts['updated'].append(_status['updated'])
             except p.toolkit.ValidationError as e:
                 iati_keys = dict([(f[2], f[0]) for f in PublisherRecordsUpload.CSV_MAPPING])
-                for key, msgs in list(e.error_dict.items()):
+                for key, msgs in e.error_dict.items():
                     iati_key = iati_keys.get(key, key)
                     if iati_key == "name_or_id":
                         iati_key = 'registry-file-id'

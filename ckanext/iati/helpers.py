@@ -124,7 +124,7 @@ def get_publisher_obj_extra_fields(group_dict):
     }
 
     for ex in group_dict.get("extras", []):
-        if ex.get("key", None) in list(formatter_map.keys()):
+        if ex.get("key", None) in formatter_map.keys():
             extras[ex["key"]] = formatter_map[ex["key"]](ex.get("value", ""))
     return extras
 
@@ -139,7 +139,7 @@ def get_publisher_obj_extra_fields_pub_ids(group_dict):
         'publisher_first_publish_date': render_first_published_date_parse
     }
     for ex in group_dict:
-        if ex in list(formatter_map.keys()):
+        if ex in formatter_map.keys():
             extras[ex] = formatter_map[ex](group_dict.get(ex, ""))
 
     extras['publisher_iati_id'] = group_dict['publisher_iati_id']

@@ -181,6 +181,6 @@ class TestCSVImporter():
         # Wrong dates
         added, updated, warnings, errors = self.assert_csv_import('dates_errors.csv',0,0,0,1)
 
-        for field, msg in list(errors[0][1].items()):
+        for field, msg in errors[0][1].items():
             assert 'cannot parse db date' in msg[0].lower()
 
