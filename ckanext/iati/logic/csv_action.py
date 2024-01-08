@@ -352,10 +352,10 @@ class PublisherRecordsDownload:
             else:
                 packages = self._get_packages_for_org(context, publisher)
 
-            f = io.BytesIO()
+            f = io.StringIO()
             fieldnames = [n[0] for n in self.CSV_MAPPING if n[0] != 'state']
             writer = csv.DictWriter(f, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
-            headers = dict((n[0], n[0]) for n in self.CSV_MAPPING if n[0] != 'state')
+            headers = {n[0]: n[0] for n in self.CSV_MAPPING if n[0] != 'state'}
             writer.writerow(headers)
 
             for package in packages:
@@ -440,7 +440,8 @@ class PublisherRecordsUpload(PublisherRecordsDownload):
         if not data:
             raise ValidationError("CSV file is empty")
 
-        buffer = io.BytesIO(data)
+        decoded_data = data.decode('utf-8')
+        buffer = io.StringIO(decoded_data)
         log.info("Validating CSV file....")
         reader = csv.reader(buffer)
         columns = next(reader)

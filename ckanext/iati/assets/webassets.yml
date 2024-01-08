@@ -4,7 +4,7 @@ iati-css:
   contents:
     - fanstatic_library/styles/iati.css
 
-upload_animation:
+ckanext-iati/upload_animation:
   filters: rjsmin
   output: ckanext-iati/%(version)s_main.js
   contents:

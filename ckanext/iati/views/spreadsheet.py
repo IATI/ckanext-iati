@@ -226,7 +226,8 @@ def csv_upload_datasets():
         vars['file_name'] = csv_file.filename
         data = io.BytesIO(_data)
         log.info("Reading CSV file for upload....")
-        reader = csv.reader(data)
+        buffer_text = io.TextIOWrapper(data, encoding='utf-8', errors='replace')
+        reader = csv.reader(buffer_text)
         columns = next(reader)
         tasks = list()
 
@@ -236,12 +237,15 @@ def csv_upload_datasets():
 
             # try catch block for each row.
             for i, x in enumerate(row):
-                row_dict[columns[i].encode('utf-8')] = x.encode('utf-8')
+                key = str(columns[i])
+                value = x if isinstance(x, str) else x.decode('utf-8')
+                row_dict[key] = value
 
             task['title'] = "No Title" if not row_dict.get('title', '') else row_dict.get('title')
             task['task_id'] = str(uuid.uuid4())
+            row_dict_str_values = {key: str(value) for key, value in row_dict.items()}
             job = jobs.enqueue(records_upload_process,
-                               [json.dumps([row_dict], ensure_ascii=False).encode('utf-8'), c.user])
+                               [json.dumps([row_dict_str_values], ensure_ascii=False).encode('utf-8'), c.user])
             task['task_id'] = str(job.id)
             tasks.append(json.dumps(task))
 
