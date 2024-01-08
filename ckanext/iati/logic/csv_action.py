@@ -66,8 +66,9 @@ class PublishersListDownload:
         self._mapping = tuple(self._mapping)
 
     def _get_xml_value(self, val):
-        val = val.replace('&', "&amp;")
-        return val
+        val_str = str(val, 'utf-8') if isinstance(val, bytes) else val
+        val_str = val_str.replace('&', "&amp;")
+        return val_str
 
     def _get_xml_name(self, val):
         val = val.lower()
@@ -179,7 +180,12 @@ class PublishersListDownload:
         _org_data = PublishersListDownload._get_publisher_data()
         for org in _org_data:
             if org.Group.state == 'active' and int(org.package_count) > 0:
-                json_data.append(OrderedDict(zip(self._headers, self._prepare(org))))
+                ordered_dict = OrderedDict(zip(self._headers, self._prepare(org)))
+                for key, value in ordered_dict.items():
+                    if isinstance(value, bytes):
+                        ordered_dict[key] = value.decode('utf-8')
+
+                json_data.append(ordered_dict)
 
         json.dump(json_data, f)
         output = f.getvalue()
@@ -235,7 +241,7 @@ class PublishersListDownload:
         xls format download
         :return:
         """
-        f = io.StringIO()
+        f = io.BytesIO()
         wb = Workbook(encoding='utf-8')
         sheet1 = wb.add_sheet('IATI Publishers List')
         _org_data = PublishersListDownload._get_publisher_data()
@@ -251,6 +257,8 @@ class PublishersListDownload:
                 _dt = self._prepare(org)
                 # Write Items
                 for _col, _item in enumerate(_dt):
+                    if isinstance(_item, bytes):
+                        _item = _item.decode('utf-8')
                     sheet1.write(_row, _col, _item)
                 _row += 1
 
