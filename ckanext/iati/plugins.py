@@ -238,6 +238,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
     # IConfigurer
     def update_config(self, config):
         p.toolkit.add_template_directory(config, 'theme/templates')
+        p.toolkit.add_public_directory(config, 'assets')
 
     # IBlueprint
     def get_blueprint(self):
@@ -633,7 +634,6 @@ class IatiTheme(p.SingletonPlugin):
     def update_config(self, config):
         p.toolkit.add_template_directory(config, 'theme/templates')
         p.toolkit.add_public_directory(config, 'theme/public')
-        # p.toolkit.add_resource('theme/fanstatic_library', 'ckanext-iati')
         p.toolkit.add_resource('assets', 'ckanext-iati')
         p.toolkit.add_public_directory(config, 'assets/')
 
