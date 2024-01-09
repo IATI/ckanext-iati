@@ -534,7 +534,6 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
         content_str = content_bytes.decode('utf-8')
         content_str = re.sub(r'generated-datetime="[^"]+"', '', content_str)
 
-
     resource_hash = hashlib.sha1()
     resource_hash.update(content_str.encode('utf-8'))
     resource_hash = str(resource_hash.hexdigest())
