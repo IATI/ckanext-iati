@@ -75,7 +75,7 @@ def package_create(context, data_dict):
     created_package = create_core.package_create(context, data_dict)
 
     # Part of first publisher date patch - after package create patch the organization
-    if 'owner_org' in list(data_dict.keys()):
+    if 'owner_org' in data_dict:
         hlp.first_published_date_patch(created_package.get('owner_org'))
 
     if created_package.get('state') != "deleted" and not created_package.get("private"):
@@ -280,7 +280,7 @@ def issues_report_csv(context, data_dict):
         result = logic.get_action('package_search')(context, data_dict)
         if result['count'] > 0:
             publishers = result['facets']['organization']
-            for publisher_name, count in list(publishers.items()):
+            for publisher_name, count in publishers.items():
                 result = packages_with_issues_for_a_publisher(context, publisher_name)
                 issues[publisher_name] = result['results']
 
@@ -293,7 +293,7 @@ def issues_report_csv(context, data_dict):
 
         return default
 
-    for publisher, datasets in list(issues.items()):
+    for publisher, datasets in issues.items():
         for dataset in datasets:
             url = urljoin(site_url, '/dataset/' + dataset['name'])
             if len(dataset['resources']):

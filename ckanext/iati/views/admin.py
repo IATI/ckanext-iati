@@ -50,7 +50,7 @@ def _active_publisher_data(from_dt, to_dt):
     log.info(query)
     conn = model.Session.connection()
     rows = conn.execute(query)
-    active_publishers = [{key: value for (key, value) in list(row.items())} for row in rows]
+    active_publishers = [{key: value for (key, value) in row.items()} for row in rows]
 
     return active_publishers
 

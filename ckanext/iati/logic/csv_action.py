@@ -66,8 +66,9 @@ class PublishersListDownload:
         self._mapping = tuple(self._mapping)
 
     def _get_xml_value(self, val):
-        val = val.replace('&', "&amp;")
-        return val
+        val_str = str(val, 'utf-8') if isinstance(val, bytes) else val
+        val_str = val_str.replace('&', "&amp;")
+        return val_str
 
     def _get_xml_name(self, val):
         val = val.lower()
@@ -179,7 +180,12 @@ class PublishersListDownload:
         _org_data = PublishersListDownload._get_publisher_data()
         for org in _org_data:
             if org.Group.state == 'active' and int(org.package_count) > 0:
-                json_data.append(OrderedDict(list(zip(self._headers, self._prepare(org)))))
+                ordered_dict = OrderedDict(zip(self._headers, self._prepare(org)))
+                for key, value in ordered_dict.items():
+                    if isinstance(value, bytes):
+                        ordered_dict[key] = value.decode('utf-8')
+
+                json_data.append(ordered_dict)
 
         json.dump(json_data, f)
         output = f.getvalue()
@@ -235,7 +241,7 @@ class PublishersListDownload:
         xls format download
         :return:
         """
-        f = io.StringIO()
+        f = io.BytesIO()
         wb = Workbook(encoding='utf-8')
         sheet1 = wb.add_sheet('IATI Publishers List')
         _org_data = PublishersListDownload._get_publisher_data()
@@ -251,6 +257,8 @@ class PublishersListDownload:
                 _dt = self._prepare(org)
                 # Write Items
                 for _col, _item in enumerate(_dt):
+                    if isinstance(_item, bytes):
+                        _item = _item.decode('utf-8')
                     sheet1.write(_row, _col, _item)
                 _row += 1
 
@@ -352,10 +360,10 @@ class PublisherRecordsDownload:
             else:
                 packages = self._get_packages_for_org(context, publisher)
 
-            f = io.BytesIO()
+            f = io.StringIO()
             fieldnames = [n[0] for n in self.CSV_MAPPING if n[0] != 'state']
             writer = csv.DictWriter(f, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
-            headers = dict((n[0], n[0]) for n in self.CSV_MAPPING if n[0] != 'state')
+            headers = {n[0]: n[0] for n in self.CSV_MAPPING if n[0] != 'state'}
             writer.writerow(headers)
 
             for package in packages:
@@ -440,7 +448,8 @@ class PublisherRecordsUpload(PublisherRecordsDownload):
         if not data:
             raise ValidationError("CSV file is empty")
 
-        buffer = io.BytesIO(data)
+        decoded_data = data.decode('utf-8')
+        buffer = io.StringIO(decoded_data)
         log.info("Validating CSV file....")
         reader = csv.reader(buffer)
         columns = next(reader)
