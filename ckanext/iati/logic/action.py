@@ -58,7 +58,7 @@ def send_data_published_notification(context, owner_org, package_title):
             user_name=context['user'], publisher_link=publisher_link
         )
         subject = "[IATI Registry] Data: {0} is published".format(
-            package_title.encode('utf8')
+            package_title
         )
         emailer.send_email(body, subject, user.email, content_type='html')
     except Exception as e:
