@@ -18,6 +18,7 @@
                     <thead>
                     <tr>
                         <th title="Sort by name">Name</th>
+                        <th title="Sort by name">Username</th>
                         <th title="Sort by email">Email</th>
                         <th title="Sort by created">Date Created</th>
                         <th title="Sort by number of datasets">Datasets Created</th>
@@ -35,6 +36,7 @@
                             <td>
                                 <li>{{ h.linked_user(user['name'], maxlength=80) }}</li>
                             </td>
+                            <td>{{ user.name }}</td>
                             <td>{{ user.email }}</td>
                             <td>{{ h.render_datetime(user.created) }}</td>
                             <td>{{ h.SI_number_span(user.number_created_packages) }}</td>
@@ -61,3 +63,9 @@
 {% block secondary_content %}
     {% snippet 'user/snippets/user_search.html', q=q %}
 {% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  {% asset 'ckanext-iati/table_sorter' %}
+{% endblock %}
+
