@@ -224,28 +224,17 @@ def csv_upload_datasets():
             return h.redirect_to('spreadsheet.csv_upload_datasets')
 
         vars['file_name'] = csv_file.filename
-        data = io.BytesIO(_data)
-        log.info("Reading CSV file for upload....")
-        buffer_text = io.TextIOWrapper(data, encoding='utf-8', errors='replace')
-        reader = csv.reader(buffer_text)
-        columns = next(reader)
+        decoded_data = _data.decode('utf-8')
+        buffer = io.StringIO(decoded_data)
+        log.info("Validating CSV file....")
+        reader = csv.DictReader(buffer)
         tasks = list()
-
-        for row_no, row in enumerate(reader):
-            task = OrderedDict()
-            row_dict = OrderedDict()
-
-            # try catch block for each row.
-            for i, x in enumerate(row):
-                key = str(columns[i])
-                value = x if isinstance(x, str) else x.decode('utf-8')
-                row_dict[key] = value
-
-            task['title'] = "No Title" if not row_dict.get('title', '') else row_dict.get('title')
+        for row in reader:
+            task = {}
+            task['title'] = row.get('title', '') or "No Title"
             task['task_id'] = str(uuid.uuid4())
-            row_dict_str_values = {key: str(value) for key, value in row_dict.items()}
             job = jobs.enqueue(records_upload_process,
-                               [json.dumps([row_dict_str_values], ensure_ascii=False).encode('utf-8'), c.user])
+                               [json.dumps([row], ensure_ascii=False).encode('utf-8'), c.user])
             task['task_id'] = str(job.id)
             tasks.append(json.dumps(task))
 
