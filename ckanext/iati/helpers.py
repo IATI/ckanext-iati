@@ -1,4 +1,4 @@
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import os
 import time
 from xml.etree import ElementTree
@@ -6,7 +6,7 @@ import datetime
 import json
 from markupsafe import Markup, escape
 from sqlalchemy import create_engine
-from webhelpers.html import literal
+from webhelpers2.html import literal
 import ckan.authz as authz
 import ckan.model as model # get_licenses should be in core
 from ckan.model import User
@@ -29,7 +29,7 @@ log = logging.getLogger(__name__)
     
 
 def get_countries():
-    countries = (("", u"Please select"),)
+    countries = (("", "Please select"),)
     get_countries_path = lambda: os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                               'countries.xml')
     root = ElementTree.parse(get_countries_path()).getroot()
@@ -242,7 +242,7 @@ def format_file_size(size):
 
 def urlencode(string):
     # Jinja 2.7 has this filter directly available
-    return urllib.quote(string)
+    return urllib.parse.quote(string)
 
 def extras_to_dict(pkg):
     extras_dict = {}
@@ -284,7 +284,7 @@ def get_global_facet_items_dict(facet, limit=10, exclude_active=False, search_fa
     for facet_item in search_facets.get(facet)['items']:
         if not len(facet_item['name'].strip()):
             continue
-        if not (facet, facet_item['name']) in p.toolkit.request.params.items():
+        if not (facet, facet_item['name']) in list(p.toolkit.request.params.items()):
             facets.append(dict(active=False, **facet_item))
         elif not exclude_active:
             facets.append(dict(active=True, **facet_item))
@@ -300,7 +300,7 @@ def get_global_search_facets():
 
     query = p.toolkit.get_action('package_search')({}, {
         'q': '*:*',
-        'facet.field': p.toolkit.c.facet_titles.keys()
+        'facet.field': list(p.toolkit.c.facet_titles.keys())
     })
     return query['search_facets']
 
@@ -663,7 +663,7 @@ def linked_user(user, maxlength=0, avatar=20):
         if user.state == 'deleted' and not authz.is_sysadmin(c.user):
             return helpers.literal(helpers.text_type("Anonymous"))
 
-        return helpers.literal(u'{icon} {link}'.format(
+        return helpers.literal('{icon} {link}'.format(
             icon=helpers.user_image(
                 user.id,
                 size=avatar

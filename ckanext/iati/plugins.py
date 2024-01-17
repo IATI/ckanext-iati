@@ -9,6 +9,7 @@ from ckan.lib.plugins import DefaultOrganizationForm
 from ckanext.iati.views.archiver import ArchiverViewRun
 import ckan.plugins as p
 from ckan.common import config
+from ckan.lib.navl.validators import unicode_safe
 from ckanext.iati.logic.validators import (
     db_date,
     iati_publisher_state_validator,
@@ -88,7 +89,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             '/help': 'http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-register-with-iati/'
         }
 
-        for k, v in redirects.iteritems():
+        for k, v in redirects.items():
             map.redirect(k, v)
 
         return map
@@ -146,28 +147,28 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         _unicode_safe = p.toolkit.get_validator('unicode_safe')
         _group_name_validator = p.toolkit.get_validator('group_name_validator')
 
-        default_validators = [_ignore_missing, _convert_to_extras, unicode]
+        default_validators = [_ignore_missing, _convert_to_extras, unicode_safe]
         schema.update({
             'state': [iati_publisher_state_validator],
             'title': [_not_empty, remove_leading_or_trailing_spaces],
             'name': [_not_empty, _unicode_safe, iati_publisher_name_validator, _group_name_validator,
                      change_publisher_id_or_org_id, validate_new_publisher_id_against_old],
             'license_id': [_convert_to_extras, licence_validator],
-            'publisher_source_type': [_not_empty, _convert_to_extras, unicode],
+            'publisher_source_type': [_not_empty, _convert_to_extras, str],
             'publisher_iati_id': [_not_empty, remove_leading_or_trailing_spaces, iati_org_identifier_validator,
-                                  _convert_to_extras, unicode, change_publisher_id_or_org_id,
+                                  _convert_to_extras, str, change_publisher_id_or_org_id,
                                   iati_org_identifier_name_validator],
             'publisher_country': default_validators,
             'publisher_segmentation': default_validators,
             'publisher_ui': default_validators,
-            'publisher_ui_url': [_ignore_missing, valid_url, _convert_to_extras, unicode],
-            'publisher_url': [_ignore_missing, valid_url, _convert_to_extras, unicode],
+            'publisher_ui_url': [_ignore_missing, valid_url, _convert_to_extras, str],
+            'publisher_url': [_ignore_missing, valid_url, _convert_to_extras, str],
             'publisher_frequency_select': default_validators,
             'publisher_frequency': default_validators,
             'publisher_thresholds': default_validators,
             'publisher_units': default_validators,
             'publisher_contact': default_validators,
-            'publisher_contact_email': [_not_empty, _convert_to_extras, email_validator, unicode],
+            'publisher_contact_email': [_not_empty, _convert_to_extras, email_validator, str],
             'publisher_agencies': default_validators,
             'publisher_field_exclusions': default_validators,
             'publisher_description': default_validators,
@@ -176,10 +177,10 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'publisher_refs': default_validators,
             'publisher_constraints': default_validators,
             'publisher_data_quality': default_validators,
-            'publisher_organization_type': [_not_empty, _convert_to_extras, unicode],
+            'publisher_organization_type': [_not_empty, _convert_to_extras, str],
             'publisher_implementation_schedule': default_validators,
             'publisher_first_publish_date': [_ignore_missing, convert_date_string_to_iso_format, _convert_to_extras,
-                                             unicode, first_publisher_date_validator]
+                                             str, first_publisher_date_validator]
 
         })
 
@@ -236,6 +237,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
     # IConfigurer
     def update_config(self, config):
         p.toolkit.add_template_directory(config, 'theme/templates')
+        p.toolkit.add_public_directory(config, 'assets')
 
     # IBlueprint
     def get_blueprint(self):
@@ -492,7 +494,7 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
         try:
             _organization_title = json.loads(data_dict['data_dict'])['organization']['title']
-            data_dict[u'extras_org_title'] = _organization_title
+            data_dict['extras_org_title'] = _organization_title
         except Exception as e:
             log.error(e)
             pass
@@ -600,9 +602,9 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     # Validators
     def get_validators(self):
         return {
-            u'not_empty': not_empty,
-            u'not_missing': not_missing,
-            u'email_validator': email_validator
+            'not_empty': not_empty,
+            'not_missing': not_missing,
+            'email_validator': email_validator
         }
 
 
@@ -629,7 +631,8 @@ class IatiTheme(p.SingletonPlugin):
     def update_config(self, config):
         p.toolkit.add_template_directory(config, 'theme/templates')
         p.toolkit.add_public_directory(config, 'theme/public')
-        p.toolkit.add_resource('theme/fanstatic_library', 'ckanext-iati')
+        p.toolkit.add_resource('assets', 'ckanext-iati')
+        p.toolkit.add_public_directory(config, 'assets/')
 
     # IFacets
     def dataset_facets(self, facets_dict, package_type):

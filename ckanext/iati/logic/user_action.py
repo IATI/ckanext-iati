@@ -12,4 +12,4 @@ def user_list(context, data_dict):
     if h.email_validator(val):
         return h.get_user_list_by_email(val)
 
-    return toolkit.get_action(u'user_list')(context, data_dict)
+    return toolkit.get_action('user_list')(context, data_dict)

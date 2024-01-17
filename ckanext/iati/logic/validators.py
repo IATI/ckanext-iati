@@ -1,6 +1,6 @@
 import os
 
-from urlparse import urlparse, urlunparse
+from urllib.parse import urlparse, urlunparse
 from dateutil.parser import parse as date_parse
 from datetime import datetime
 from email_validator import validate_email

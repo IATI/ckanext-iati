@@ -1,5 +1,5 @@
 from flask import Blueprint, make_response
-from ckan.lib.base import request, response, render, abort
+from ckan.lib.base import request, render, abort
 from ckan.common import _, c, g
 from ckan.views.user import _extra_template_variables
 from ckan import model
@@ -11,7 +11,7 @@ import csv
 NotFound = logic.NotFound
 NotAuthorized = logic.NotAuthorized
 
-issues = Blueprint(u'issues', __name__, url_prefix=u'/report')
+issues = Blueprint('issues', __name__, url_prefix='/report')
 
 
 def issues_report():
@@ -65,5 +65,5 @@ def download_issues_report():
         abort(401, 'Not authorized to see this report')
 
 
-issues.add_url_rule(u'/issues', view_func=issues_report)
-issues.add_url_rule(u'/download_issues_report', view_func=download_issues_report)
+issues.add_url_rule('/issues', view_func=issues_report)
+issues.add_url_rule('/download_issues_report', view_func=download_issues_report)

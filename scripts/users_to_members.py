@@ -1,6 +1,6 @@
 import sys
 import json
-import ConfigParser
+import configparser
 
 from sqlalchemy import create_engine
 import requests
@@ -12,7 +12,7 @@ ACTION_URL_CREATE_MEMBER = 'http://{host}/api/action/member_create'.format(host=
 
 
 def go(conf_path):
-    config = ConfigParser.SafeConfigParser()
+    config = configparser.SafeConfigParser()
     config.read(conf_path)
 
     conn = create_engine(config.get('app:main', 'sqlalchemy.url')).connect()
@@ -48,17 +48,18 @@ ORDER BY u.id
                      data=json.dumps(data), headers=headers)
 
         if r.status_code != 200:
-            print r.status_code
-            print r.content
+            print(r.status_code)
+            print(r.content)
             continue
         
-        print 'Added user "{0}" as a member of org "{1}" with capacity "{2}"'.format(
-                row['user_name'], row['group_name'], row['capacity'])
+        print('Added user "{0}" as a member of org "{1}" with capacity "{2}"'.format(
+                row['user_name'], row['group_name'], row['capacity']))
+        
 
 
 if __name__ == '__main__':
     if len(sys.argv) <= 1:
-        print 'Please provide path to CKAN ini file'
+        print('Please provide path to CKAN ini file')
         sys.exit(1)
     go(sys.argv[1])
     

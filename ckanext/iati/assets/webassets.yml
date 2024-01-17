@@ -1,0 +1,39 @@
+iati-css:
+  output: ckanext-iati/%(version)s_iati.css
+  filters: cssrewrite
+  contents:
+    - fanstatic_library/styles/iati.css
+
+upload_animation:
+  filters: rjsmin
+  output: ckanext-iati/%(version)s_upload_animation.js
+  extra:
+    preload:
+      - vendor/jquery
+      - vendor/bootstrap
+      - base/main
+  contents:
+    - fanstatic_library/scripts/uploadanimation.js
+
+table_sorter:
+  filters: rjsmin
+  output: ckanext-iati/%(version)s_table_sorter.js
+  extra:
+    preload:
+      - vendor/jquery
+      - vendor/bootstrap
+      - base/main
+  contents:
+    - fanstatic_library/scripts/vendor/tablesorter.js
+    - fanstatic_library/scripts/tablesorter.js
+
+popover:
+  filters: rjsmin
+  output: ckanext-iati/%(version)s_popover.js
+  extra:
+    preload:
+      - vendor/jquery
+      - vendor/bootstrap
+      - base/main
+  contents:
+    - fanstatic_library/scripts/popover.js

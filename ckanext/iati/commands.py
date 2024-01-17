@@ -39,14 +39,14 @@ class Archiver(CkanCommand):
         Parse command line arguments and call appropriate method.
         '''
         if not self.args or self.args[0] in ['--help', '-h', 'help']:
-            print Archiver.__doc__
+            print(Archiver.__doc__)
             return
 
         cmd = self.args[0]
         self._load_config()
 
         if cmd == 'update':
-            package_id = unicode(self.args[1]) if len(self.args) > 1 else None
+            package_id = str(self.args[1]) if len(self.args) > 1 else None
             publisher_id = self.options.publisher
             result = run_archiver(package_id, publisher_id)
             if not result:
@@ -112,7 +112,7 @@ class UpdatePublisherDate(CkanCommand):
     def command(self):
 
         if not self.args or self.args[0] in ['--help', '-h', 'help']:
-            print UpdatePublisherDate.__doc__
+            print(UpdatePublisherDate.__doc__)
             return
 
         cmd = self.args[0]
@@ -134,7 +134,7 @@ class RedirectsCommand(CkanCommand):
     def command(self):
 
         if not self.args or self.args[0] in ['--help', '-h', 'help']:
-            print RedirectsCommand.__doc__
+            print(RedirectsCommand.__doc__)
             return
 
         cmd = self.args[0]

@@ -21,42 +21,42 @@ tuplize_dict = logic.tuplize_dict
 clean_dict = logic.clean_dict
 parse_params = logic.parse_params
 
-publisher_blueprint = Blueprint(u'publisher', __name__,
-                                url_prefix=u'/publisher',
-                                url_defaults={u'group_type': u'organization',
-                                              u'is_organization': True})
+publisher_blueprint = Blueprint('publisher', __name__,
+                                url_prefix='/publisher',
+                                url_defaults={'group_type': 'organization',
+                                              'is_organization': True})
 
-publisher_with_user_blueprint = Blueprint(u'publisher_with_user', __name__,
-                                          url_prefix=u'/register_publisher',
-                                          url_defaults={u'group_type': u'organization',
-                                                        u'is_organization': True})
+publisher_with_user_blueprint = Blueprint('publisher_with_user', __name__,
+                                          url_prefix='/register_publisher',
+                                          url_defaults={'group_type': 'organization',
+                                                        'is_organization': True})
 
 
 def members_read(id, group_type, is_organization):
-    group_type = u'organization'
-    context = {u'model': model, u'session': model.Session,
-               u'user': c.user or c.author}
+    group_type = 'organization'
+    context = {'model': model, 'session': model.Session,
+               'user': c.user or c.author}
     try:
-        data_dict = {u'id': id}
-        logic.check_access(u'group_edit_permissions', context, data_dict)
-        members = p.toolkit.get_action(u'member_list')(context, {
-            u'id': id,
-            u'object_type': u'user'
+        data_dict = {'id': id}
+        logic.check_access('group_edit_permissions', context, data_dict)
+        members = p.toolkit.get_action('member_list')(context, {
+            'id': id,
+            'object_type': 'user'
         })
-        data_dict[u'include_datasets'] = False
-        group_dict = p.toolkit.get_action(u'organization_show')(context, data_dict)
+        data_dict['include_datasets'] = False
+        group_dict = p.toolkit.get_action('organization_show')(context, data_dict)
     except logic.NotAuthorized:
-        p.toolkit.abort(401, _(u'Unauthorized to read/edit group members %s') % '')
+        p.toolkit.abort(401, _('Unauthorized to read/edit group members %s') % '')
     except logic.NotFound:
-        p.toolkit.abort(404, _(u'Group not found'))
+        p.toolkit.abort(404, _('Group not found'))
 
     g.members = members
     g.group_dict = group_dict
 
     extra_vars = {
-        u"members": members,
-        u"group_dict": group_dict,
-        u"group_type": group_type
+        "members": members,
+        "group_dict": group_dict,
+        "group_type": group_type
     }
     return render('organization/members_read.html', extra_vars)
 
@@ -79,38 +79,38 @@ class MembersGroupViewPatch(publisher.MembersGroupView):
             dict_fns.unflatten(tuplize_dict(parse_params(request.form))))
         data_dict['id'] = id
 
-        email = data_dict.get(u'email')
+        email = data_dict.get('email')
 
         if email:
             user_data_dict = {
-                u'email': email,
-                u'group_id': data_dict['id'],
-                u'role': data_dict['role']
+                'email': email,
+                'group_id': data_dict['id'],
+                'role': data_dict['role']
             }
             del data_dict['email']
             try:
-                user_dict = publisher._action(u'user_invite')(context, user_data_dict)
+                user_dict = publisher._action('user_invite')(context, user_data_dict)
                 data_dict['username'] = user_dict['name']
             except NotFound:
-                base.abort(404, _(u'Group not found'))
+                base.abort(404, _('Group not found'))
             except ValidationError as e:
                 h.flash_error(e.error_summary)
-                return h.redirect_to(u'{}.member_new'.format(group_type), id=id)
+                return h.redirect_to('{}.member_new'.format(group_type), id=id)
 
         try:
-            group_dict = publisher._action(u'group_member_create')(context, data_dict)
+            group_dict = publisher._action('group_member_create')(context, data_dict)
         except NotAuthorized:
-            base.abort(403, _(u'Unauthorized to add member to group %s') % u'')
+            base.abort(403, _('Unauthorized to add member to group %s') % '')
         except NotFound:
-            base.abort(404, _(u'Group not found'))
+            base.abort(404, _('Group not found'))
         except ValidationError as e:
             h.flash_error(e.error_summary)
-            return h.redirect_to(u'{}.member_new'.format(group_type), id=id)
+            return h.redirect_to('{}.member_new'.format(group_type), id=id)
 
         # TODO: Remove
         g.group_dict = group_dict
 
-        return h.redirect_to(u'publisher.members', id=id)
+        return h.redirect_to('publisher.members', id=id)
 
 
 class PublisherCreateWithUserView(publisher.CreateGroupView):
@@ -118,8 +118,8 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
     @staticmethod
     def get_context():
         context = {
-            u'model': model,
-            u'session': model.Session
+            'model': model,
+            'session': model.Session
         }
         return context
 
@@ -153,7 +153,7 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
 
         if errors:
             if is_password_mismatch:
-                errors['password'] = [u'Password and confirm password are not same']
+                errors['password'] = ['Password and confirm password are not same']
             return errors
 
         return dict()
@@ -187,19 +187,19 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
             "user_image_upload": "image_upload"
         })
         data['password'] = data['password1']
-        return logic.get_action(u'user_create')(context, data)
+        return logic.get_action('user_create')(context, data)
 
     @staticmethod
     def create_publisher(data_dict, context, user_dict):
-        data_dict['users'] = [{u'name': user_dict['name'], u'capacity': u'admin'}]
+        data_dict['users'] = [{'name': user_dict['name'], 'capacity': 'admin'}]
         context['user'] = user_dict['name']
         context['auth_user_obj'] = model.User.get(user_dict['id'])
-        return logic.get_action(u'organization_create')(context, data_dict)
+        return logic.get_action('organization_create')(context, data_dict)
 
     def post(self, group_type, is_organization):
         if g.user:
             # #1799 Don't offer the publisher registration form if already logged in
-            return base.render(u'user/logout_first.html', {})
+            return base.render('user/logout_first.html', {})
 
         is_organization = True
         context = self.get_context()
@@ -210,10 +210,10 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
                 dict_fns.unflatten(tuplize_dict(parse_params(request.files)))
             ))
         except dict_fns.DataError:
-            base.abort(400, _(u'Integrity Error'))
+            base.abort(400, _('Integrity Error'))
 
-        context['message'] = data_dict.get(u'log_message', u'')
-        data_dict['type'] = u'organization'
+        context['message'] = data_dict.get('log_message', '')
+        data_dict['type'] = 'organization'
 
         # Check for any errors in the data - we need to mimic this as transaction
         user_errors = PublisherCreateWithUserView.validate_user_create(data_dict, context)
@@ -238,17 +238,17 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
             return self.get(group_type, is_organization,
                             data_dict, errors, error_summary)
         except NotAuthorized as e:
-            base.abort(404, _(u'Not authorized to create group or publisher'))
+            base.abort(404, _('Not authorized to create group or publisher'))
 
         h.flash_error("Publisher registered and it is pending for approval. Please wait until you "
                       "receive a approval email. Until then you can use IATI portal with "
                       "the username and password you just created")
-        return h.redirect_to(u'user.login')
+        return h.redirect_to('user.login')
 
     def get(self, group_type, is_organization, data=None, errors=None, error_summary=None):
         if g.user:
             # #1799 Don't offer the publisher registration form if already logged in
-            return base.render(u'user/logout_first.html', {})
+            return base.render('user/logout_first.html', {})
 
         publisher.set_org(is_organization)
         context = self.get_context()
@@ -256,65 +256,65 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
         errors = errors or dict()
         error_summary = error_summary or dict()
         extra_vars = {
-            u'data': data,
-            u'errors': errors,
-            u'error_summary': error_summary,
-            u'action': u'new',
-            u'is_user_create': True,
-            u'group_type': group_type,
+            'data': data,
+            'errors': errors,
+            'error_summary': error_summary,
+            'action': 'new',
+            'is_user_create': True,
+            'group_type': group_type,
         }
-        user_form = base.render(u'user/new_user_and_publisher_form.html', extra_vars)
+        user_form = base.render('user/new_user_and_publisher_form.html', extra_vars)
         extra_vars["user_form"] = user_form
         publisher._setup_template_variables(
             context, data, group_type=group_type)
-        form = base.render(publisher._get_group_template(u'group_form', group_type), extra_vars)
+        form = base.render(publisher._get_group_template('group_form', group_type), extra_vars)
 
         g.form = form
         g.user_form = user_form
         extra_vars["form"] = form
-        return base.render(publisher._get_group_template(u'new_template', group_type), extra_vars)
+        return base.render(publisher._get_group_template('new_template', group_type), extra_vars)
 
 
 def register_group_plugin_rules(blueprint):
     actions = [
-        u'member_delete', u'history', u'followers', u'follow',
-        u'unfollow', u'admins', u'activity'
+        'member_delete', 'history', 'followers', 'follow',
+        'unfollow', 'admins', 'activity'
     ]
-    blueprint.add_url_rule(u'/', view_func=publisher.index, strict_slashes=False)
+    blueprint.add_url_rule('/', view_func=publisher.index, strict_slashes=False)
     blueprint.add_url_rule(
-        u'/new',
-        methods=[u'GET', u'POST'],
-        view_func=publisher.CreateGroupView.as_view(str(u'new')))
-    blueprint.add_url_rule(u'/<id>', methods=[u'GET'], view_func=publisher.read)
+        '/new',
+        methods=['GET', 'POST'],
+        view_func=publisher.CreateGroupView.as_view(str('new')))
+    blueprint.add_url_rule('/<id>', methods=['GET'], view_func=publisher.read)
     blueprint.add_url_rule(
-        u'/edit/<id>', view_func=publisher.EditGroupView.as_view(str(u'edit')))
+        '/edit/<id>', view_func=publisher.EditGroupView.as_view(str('edit')))
     blueprint.add_url_rule(
-        u'/activity/<id>/<int:offset>', methods=[u'GET'], view_func=publisher.activity)
-    blueprint.add_url_rule(u'/about/<id>', methods=[u'GET'], view_func=publisher.about)
+        '/activity/<id>/<int:offset>', methods=['GET'], view_func=publisher.activity)
+    blueprint.add_url_rule('/about/<id>', methods=['GET'], view_func=publisher.about)
     blueprint.add_url_rule(
-        u'/edit_members/<id>', methods=[u'GET', u'POST'], view_func=publisher.members)
+        '/edit_members/<id>', methods=['GET', 'POST'], view_func=publisher.members)
     blueprint.add_url_rule(
-        u'/member_new/<id>',
-        view_func=MembersGroupViewPatch.as_view(str(u'member_new')))
+        '/member_new/<id>',
+        view_func=MembersGroupViewPatch.as_view(str('member_new')))
     blueprint.add_url_rule(
-        u'/bulk_process/<id>',
-        view_func=publisher.BulkProcessView.as_view(str(u'bulk_process')))
+        '/bulk_process/<id>',
+        view_func=publisher.BulkProcessView.as_view(str('bulk_process')))
     blueprint.add_url_rule(
-        u'/delete/<id>',
-        methods=[u'GET', u'POST'],
-        view_func=publisher.DeleteGroupView.as_view(str(u'delete')))
+        '/delete/<id>',
+        methods=['GET', 'POST'],
+        view_func=publisher.DeleteGroupView.as_view(str('delete')))
 
     for action in actions:
         blueprint.add_url_rule(
-            u'/{0}/<id>'.format(action),
-            methods=[u'GET', u'POST'],
+            '/{0}/<id>'.format(action),
+            methods=['GET', 'POST'],
             view_func=getattr(publisher, action))
 
-    blueprint.add_url_rule(u'/members/<id>', methods=[u'GET'], view_func=members_read)
-    blueprint.add_url_rule(u'/download/<output_format>', methods=[u'GET'], view_func=publisher_list_download)
+    blueprint.add_url_rule('/members/<id>', methods=['GET'], view_func=members_read)
+    blueprint.add_url_rule('/download/<output_format>', methods=['GET'], view_func=publisher_list_download)
 
 
 register_group_plugin_rules(publisher_blueprint)
 
-publisher_with_user_blueprint.add_url_rule(u'/', methods=["GET", "POST"],
+publisher_with_user_blueprint.add_url_rule('/', methods=["GET", "POST"],
                                            view_func=PublisherCreateWithUserView.as_view('register_publisher'))
