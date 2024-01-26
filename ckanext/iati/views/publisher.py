@@ -220,12 +220,17 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
         data_dict['type'] = 'organization'
 
         captcha_response = data_dict['h-captcha-response']
-        response = requests.post('https://hcaptcha.com/siteverify', data={
-            'secret': os.environ.get('hCAPTCHA_SECRET_KEY'),
-            'response': captcha_response,
-        })
-        if not response.json()['success']:
-            error_msg = _(u'Complete captcha to continue. Please try again.')
+        try:
+            response = requests.post('https://hcaptcha.com/siteverify', timeout=20, data={
+                'secret': os.environ.get('hCAPTCHA_SECRET_KEY'),
+                'response': captcha_response,
+            })
+            if not response.json().get('success', False):
+                error_msg = _(u'Complete captcha to continue. Please try again.')
+                h.flash_error(error_msg)
+                return self.get(group_type, is_organization, data=data_dict)
+        except requests.RequestException as e:
+            error_msg = _(u'Error while verifying captcha. Please try again.')
             h.flash_error(error_msg)
             return self.get(group_type, is_organization, data=data_dict)
 
