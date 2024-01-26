@@ -1,5 +1,7 @@
 {% import "macros/form.html" as form %}
-
+{% block scripts %}
+    <script src="https://hcaptcha.com/1/api.js" async defer></script>
+{% endblock %}
 {% block form %}
     <fieldset class="fieldset-4">
         <p class="form-group-header">{{ _('Admin User Information') }}</p>
@@ -40,9 +42,7 @@
         {% endblock %}
 
         {% block captcha %}
-          {% if g.recaptcha_publickey %}
-            {% snippet "user/snippets/recaptcha.html", public_key=g.recaptcha_publickey %}
-          {% endif %}
+            <div class="h-captcha" data-sitekey="{{ hcaptcha_site_key }}"></div>
         {% endblock %}
 
     </fieldset>

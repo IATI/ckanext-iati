@@ -1,3 +1,7 @@
+import logging
+import os
+import requests
+
 from flask import Blueprint
 from ckan.views import group as publisher, user as user_view
 import ckan.plugins as p
@@ -215,6 +219,21 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
         context['message'] = data_dict.get('log_message', '')
         data_dict['type'] = 'organization'
 
+        captcha_response = data_dict['h-captcha-response']
+        try:
+            response = requests.post('https://hcaptcha.com/siteverify', timeout=20, data={
+                'secret': os.environ.get('hCAPTCHA_SECRET_KEY'),
+                'response': captcha_response,
+            })
+            if not response.json().get('success', False):
+                error_msg = _(u'Complete captcha to continue. Please try again.')
+                h.flash_error(error_msg)
+                return self.get(group_type, is_organization, data=data_dict)
+        except requests.RequestException as e:
+            error_msg = _(u'Error while verifying captcha. Please try again.')
+            h.flash_error(error_msg)
+            return self.get(group_type, is_organization, data=data_dict)
+
         # Check for any errors in the data - we need to mimic this as transaction
         user_errors = PublisherCreateWithUserView.validate_user_create(data_dict, context)
         errors = PublisherCreateWithUserView.validate_publisher_create(data_dict, context)
@@ -262,6 +281,7 @@ class PublisherCreateWithUserView(publisher.CreateGroupView):
             'action': 'new',
             'is_user_create': True,
             'group_type': group_type,
+            'hcaptcha_site_key': os.environ.get('hCAPTCHA_SITE_KEY')
         }
         user_form = base.render('user/new_user_and_publisher_form.html', extra_vars)
         extra_vars["user_form"] = user_form
