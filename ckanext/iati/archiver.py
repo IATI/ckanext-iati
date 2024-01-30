@@ -111,7 +111,7 @@ def run(package_id=None, publisher_id=None, pub_id=None):
 
         package_search = toolkit.get('package_search')(
             context, {
-                "fq": 'owner_org:{}'.format(organization['id']),
+                "fq": 'owner_org:{}'.format(publisher_id),
                 "rows": 1000  # unlikely 1 single organization crossing 1000 dataset
             })
         package_ids = [p['id'] for p in package_search]

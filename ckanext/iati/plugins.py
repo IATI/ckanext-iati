@@ -621,6 +621,7 @@ class IatiTheme(p.SingletonPlugin):
     p.implements(p.IRoutes, inherit=True)
     p.implements(p.IConfigurer)
     p.implements(p.IFacets, inherit=True)
+    p.implements(p.IClick)
 
     # IRoutes
     def before_map(self, map):
@@ -667,3 +668,6 @@ class IatiTheme(p.SingletonPlugin):
 
         return facets_dict
 
+    def get_commands(self):
+        from . import commands
+        return commands.cmds

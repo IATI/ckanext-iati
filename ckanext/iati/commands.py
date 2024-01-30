@@ -1,151 +1,83 @@
 import sys
 import logging
-from ckan.lib.cli import CkanCommand
+# from ckan.lib.cli import CkanCommand
 from ckanext.iati.archiver import run as run_archiver
 from ckan.common import config
 from ckanext.iati import model as iati_model
 import json
 import os
+import click
 
 log = logging.getLogger('iati_archiver')
 
 
-class Archiver(CkanCommand):
+@click.group(help='''
+    Usage:
+        ckan iati-archiver update [-p {publisher-id}] [{package-id}]
+           - Archive all activity files or just those belonging to a specific
+             package or publisher.
+    ''')
+def iati_archiver():
     '''
     Download and save copies of all IATI activity files, extract some metrics
     from them and store them as extras.
+    '''
 
+
+@iati_archiver.command(help='''
     Usage:
-
-        paster iati-archiver update [-p {publisher-id}] [{package-id}]
+        ckan iati-archiver update [-p {publisher-id}] [{package-id}]
            - Archive all activity files or just those belonging to a specific
              package or publisher.
+    ''')
+@click.option('-p', '--publisher-id', type=str, help='Archive datasets only from this publisher')
+@click.argument('package_id', default=None, type=str, required=False)
+def update(publisher_id=None, package_id=None):
+    run_archiver(package_id, publisher_id)
 
-    '''
-    summary = __doc__.split('\n')[0]
-    usage = __doc__
-    min_args = 0
-    max_args = 2
-    pkg_names = []
+@click.command()
+def iati_purge(help='Purges deleted datasets.'):
+    import ckan.model as model
+    deleted_packages = list(model.Session.query(
+                model.Package).filter_by(state=model.State.DELETED))
+    pkg_len = len(deleted_packages)
 
-    def __init__(self, name):
-        super(Archiver, self).__init__(name)
-        self.parser.add_option('-p', '--publisher', dest='publisher',
-                               action='store', default=None, help='Archive '
-                               'datasets only from this publisher')
+    for i, pkg in enumerate(deleted_packages, start=1):
+        log.info('Purging {0}/{1}: {2}'.format(i, pkg_len, pkg.id))
+        members = model.Session.query(model.Member) \
+                       .filter(model.Member.table_id == pkg.id) \
+                       .filter(model.Member.table_name == 'package')
+        if members.count() > 0:
+            for m in members.all():
+                m.purge()
 
-    def command(self):
-        '''
-        Parse command line arguments and call appropriate method.
-        '''
-        if not self.args or self.args[0] in ['--help', '-h', 'help']:
-            print(Archiver.__doc__)
-            return
+        pkg = model.Package.get(pkg.id)
+        model.repo.new_revision()
+        pkg.purge()
+        model.repo.commit_and_remove()
 
-        cmd = self.args[0]
-        self._load_config()
+    log.info('Purge complete')
 
-        if cmd == 'update':
-            package_id = str(self.args[1]) if len(self.args) > 1 else None
-            publisher_id = self.options.publisher
-            result = run_archiver(package_id, publisher_id)
-            if not result:
-                sys.exit(1)
-        else:
-            log.error('Command {0} not recognized'.format(cmd))
-
-
-class PurgeCmd(CkanCommand):
-    '''Purge deleted datasets.
-
-    Usage:
-      iati-purge - remove deleted datasets from db entirely
-    '''
-    summary = __doc__.split('\n')[0]
-    usage = __doc__
-    max_args = 2
-    min_args = 0
-
-    def command(self):
-        self._load_config()
-
-        if not self.args:
-            print(self.usage)
-        elif self.args[0] == 'purge':
-            self.iati_purge()
-
-    def iati_purge(self):
-        '''Purges deleted datasets.'''
-        import ckan.model as model
-
-        deleted_packages = list(model.Session.query(
-                    model.Package).filter_by(state=model.State.DELETED))
-        pkg_len = len(deleted_packages)
-
-        for i, pkg in enumerate(deleted_packages, start=1):
-
-            print('Purging {0}/{1}: {2}'.format(i, pkg_len, pkg.id))
-            members = model.Session.query(model.Member) \
-                           .filter(model.Member.table_id == pkg.id) \
-                           .filter(model.Member.table_name == 'package')
-            if members.count() > 0:
-                for m in members.all():
-                    m.purge()
-
-            pkg = model.Package.get(pkg.id)
-            model.repo.new_revision()
-            pkg.purge()
-            model.repo.commit_and_remove()
-
-        print('Purge complete')
-
-
-class UpdatePublisherDate(CkanCommand):
+@click.group(help='Ti initalise the db and also to fetch redirects from the database.')
+def iati_redirects():
     """
-        Update first publisher date as cron job or command line.
+    Ti initalise the db and also to fetch redirects from the database.
     """
-    summary = __doc__.split('\n')[0]
-    usage = __doc__
-    min_args = 0
-    max_args = 2
-
-    def command(self):
-
-        if not self.args or self.args[0] in ['--help', '-h', 'help']:
-            print(UpdatePublisherDate.__doc__)
-            return
-
-        cmd = self.args[0]
-        self._load_config()
-
-        if cmd == 'update_first_publisher_date':
-            pub_date.run()
+    pass
 
 
-class RedirectsCommand(CkanCommand):
-    """
-        Ti initalise the db and also to fetch redirects from the database.
-    """
-    summary = __doc__.split('\n')[0]
-    usage = __doc__
-    min_args = 0
-    max_args = 2
+@iati_redirects.command(help='Initializes the database tables.')
+def initdb():
+    iati_model.init_tables()
 
-    def command(self):
 
-        if not self.args or self.args[0] in ['--help', '-h', 'help']:
-            print(RedirectsCommand.__doc__)
-            return
+@iati_redirects.command(help='Extract all change in publisher ids i.e.old and new publisher mapping.')
+def update_redirects():
+    iati_model.IATIRedirects.update_redirects()
 
-        cmd = self.args[0]
-        self._load_config()
 
-        if cmd == 'initdb':
-            iati_model.init_tables()
-        elif cmd == 'update_redirects':
-            """
-            Extract all change in publisher ids i.e.old and new publisher mapping.
-            """
-            iati_model.IATIRedirects.update_redirects()
-        else:
-            log.error('Command {0} not recognized'.format(cmd))
+cmds = [
+    iati_archiver,
+    iati_redirects,
+    iati_purge
+]
