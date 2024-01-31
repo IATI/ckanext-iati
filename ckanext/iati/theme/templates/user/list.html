@@ -1,0 +1,63 @@
+{% extends "page.html" %}
+
+{% block subtitle %}{{ _('All Users') }}{% endblock %}
+
+{% block breadcrumb_content %}
+    <li class="active">{{ h.nav_link(_('Users'), named_route='user.index') }}</li>
+{% endblock %}
+
+{% block primary_content %}
+    <article class="module">
+        <div class="module-content">
+            <h1 class="page-heading">
+                {% block page_heading %}{{ _('Users') }}{% endblock %}
+            </h1>
+            {% block users_list %}
+                <form method="post" action="{{ url_for('users.delete_selected_users') }}">
+                <table class="table table-hover table-bordered table-striped table-sorted" data-module="table-sorter">
+                    <thead>
+                    <tr>
+                        <th title="Sort by name">Name</th>
+                        <th title="Sort by email">Email</th>
+                        <th title="Sort by created">Date Created</th>
+                        <th title="Sort by number of datasets">Datasets Created</th>
+                        <th title="Sort by last activity">Last Activity</th>
+                        {% if c.userobj and 'sysadmin' %}
+                            <th>Select to delete</th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for user in page.items %}
+                        {% set extra_fields = h.get_user_search_extras(user) %}
+                        <tr>
+                            <td>
+                                <li>{{ h.linked_user(user['name'], maxlength=80) }}</li>
+                            </td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ h.render_datetime(user.created) }}</td>
+                            <td>{{ h.SI_number_span(user.number_created_packages) }}</td>
+                            <td>{{ extra_fields.last_activity }}</td>
+                            {% if c.userobj and 'sysadmin' %}
+                                <td><input type="checkbox" name="selected_users" value="{{ user[0].id }}"></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% if c.userobj and 'sysadmin' %}
+                    <button class="btn btn-danger" type="submit">Delete Selected Users</button>
+                {% endif %}
+                </form>
+            {% endblock %}
+        </div>
+        {% block page_pagination %}
+            {{ page.pager(q=q, order_by=order_by) }}
+        {% endblock %}
+    </article>
+{% endblock %}
+
+{% block secondary_content %}
+    {% snippet 'user/snippets/user_search.html', q=q %}
+{% endblock %}
