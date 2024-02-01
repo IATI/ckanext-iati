@@ -387,10 +387,6 @@ class PublisherRecordsDownload:
                                 value = extras_dict[key]
                         row[fieldname] = value
 
-                        for field_to_check in ('title', 'description'):
-                            if fieldname == field_to_check and row.get(field_to_check):
-                                row[field_to_check] = row[field_to_check].encode('utf-8')
-
                     writer.writerow(row)
             output = f.getvalue()
             f.close()
