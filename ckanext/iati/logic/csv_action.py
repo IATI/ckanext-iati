@@ -121,12 +121,12 @@ class PublishersListDownload:
         for key in self._mapping[:-1]:
             val = ''
             if hasattr(data.Group, key):
-                val = getattr(data.Group, key).encode('utf-8')
+                val = getattr(data.Group, key)
 
             if "extras_" in key:
                 val = extras.get(key.replace("extras_", ''), '')
                 if val:
-                    val = val.value.encode('utf-8')
+                    val = val.value
 
                 if key in self._func_mapping:
                     val = self._func_mapping.get(key)(val)
@@ -143,6 +143,7 @@ class PublishersListDownload:
         Sysadmin recent publisher is allowed to download only csv
         :return:
         """
+        log.error('!!! Download all publishers')
         f = io.StringIO()
         writer = csv.writer(f)
         writer.writerow(list(self._headers))
@@ -154,14 +155,14 @@ class PublishersListDownload:
                 if self.request_type_recent_publisher:
                     rows.append(org_data)
                 else:
-                    writer.writerow([s.encode("utf-8") if six.PY2 and isinstance(s, str) else s for s in org_data])
+                    writer.writerow([s if six.PY2 and isinstance(s, str) else s for s in org_data])
 
         # This is expensive but we need sorting for first published
         # date since its hard to get sorted for GroupExtra table
         if self.request_type_recent_publisher:
             rows = sorted(rows, key=lambda entry: entry[4], reverse=True)
             for csv_row in rows:
-                writer.writerow([s.encode("utf-8") if six.PY2 and isinstance(s, str) else s for s in csv_row])
+                writer.writerow([s if six.PY2 and isinstance(s, str) else s for s in csv_row])
 
         output = f.getvalue()
         f.close()
