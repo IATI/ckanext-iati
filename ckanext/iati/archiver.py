@@ -217,12 +217,12 @@ def archive_package(package_id, context, consecutive_errors=0):
         if old_hash != result.get('hash'):
             update = True
 
-        with open(file_path, 'r') as f:
+        with open(file_path, 'rb') as f:
             xml = f.read()
         os.remove(file_path)
 
-        if (re.sub('<!doctype(.*)>', '',
-                   xml.lower()[:100]).strip().startswith('<html')):
+        if (re.sub(b'<!doctype(.*)>', b'',
+                   xml.lower()[:100]).strip().startswith(b'<html')):
             return save_package_issue(context, package, extras_dict,
                                       'xml-error', 'File is an HTML document')
 
