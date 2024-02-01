@@ -143,7 +143,6 @@ class PublishersListDownload:
         Sysadmin recent publisher is allowed to download only csv
         :return:
         """
-        log.error('!!! Download all publishers')
         f = io.StringIO()
         writer = csv.writer(f)
         writer.writerow(list(self._headers))
