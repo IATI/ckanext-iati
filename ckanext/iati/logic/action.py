@@ -136,7 +136,7 @@ def organization_create(context, data_dict):
             user = context['auth_user_obj']
             body = emailer.new_publisher_email_to_publisher_body.format(user_name=context['user'])
             subject = "[IATI Registry] New Publisher: {0} - Status: {1}".format(
-                data_dict['title'].encode('utf8'), "Pending"
+                data_dict['title'], "Pending"
             )
             emailer.send_email(body, subject, user.email, content_type='html')
         except Exception as e:
@@ -349,7 +349,7 @@ def _send_new_publisher_email(context, organization_dict):
                publisher_title=organization_dict['title'].encode('utf8'),
                publisher_link=publisher_link,
             )
-            subject = "[IATI Registry] New Publisher: {0}".format(organization_dict['title'].encode('utf8'))
+            subject = "[IATI Registry] New Publisher: {0}".format(organization_dict['title'])
             emailer.send_email(body, subject, sysadmin.email)
             log.debug('[email] New publisher notification email sent to sysadmin {0}'.format(sysadmin.name))
 
