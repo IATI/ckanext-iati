@@ -346,7 +346,7 @@ def _send_new_publisher_email(context, organization_dict):
                sysadmin_name=sysadmin.name,
                user_name=context['user'],
                site_url=site_url,
-               publisher_title=organization_dict['title'].encode('utf8'),
+               publisher_title=organization_dict['title'],
                publisher_link=publisher_link,
             )
             subject = "[IATI Registry] New Publisher: {0}".format(organization_dict['title'])
