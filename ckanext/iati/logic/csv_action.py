@@ -295,7 +295,7 @@ class PublisherRecordsDownload:
 
     OPTIONAL_COLUMNS = ['state', 'description', 'default-language', 'secondary-publisher']
 
-    MAX_ROWS = int(config.get('ckanext.iati.max_rows_csv_upload', 101))
+    MAX_ROWS = int(config.get('ckanext.iati.max_rows_csv_upload', 100))
 
     def __init__(self):
         pass
@@ -469,7 +469,7 @@ class PublisherRecordsUpload(PublisherRecordsDownload):
         log.info("Number of rows in csv: {}".format(str(row_count)))
         if row_count > self.MAX_ROWS:
             raise ValidationError(
-                "Exceeded the limit. Maximum allowed rows is 50"
+                "Exceeded the limit. Maximum allowed rows is {0}".format(self.MAX_ROWS)
             )
 
         return data
