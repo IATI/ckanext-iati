@@ -205,6 +205,12 @@ def archive_package(package_id, context, consecutive_errors=0):
         except socket.timeout:
             return save_package_issue(context, package, extras_dict,
                                       'download-error', 'URL timeout')
+        except Exception as e:
+            log.error(f"New Exceptetion for {resource['id']} occurred: {str(e)}", exc_info=True)
+            message = str(e)
+            return save_package_issue(context, package, extras_dict,
+                                      'download-error', message)
+
         file_path = result['saved_file']
         if 'zip' in result['headers'].get('content-type', ''):
             # Skip zipped files for now
@@ -417,6 +423,7 @@ def _save_resource(resource, response, max_file_size, chunk_size=1024*16):
             if length >= max_file_size:
                 fp.close()
                 os.remove(tmp_resource_file_path)
+                log.error('Max file size exceeded for {0}'.format(resource['id']))
                 raise tasks.ChooseNotToDownload(
                     _("Content-length %s exceeds maximum allowed value %s") %
                     (length, max_file_size))
@@ -432,6 +439,8 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
              data_formats=DATA_FORMATS):
     res = None
     resource_changed = False
+    log.info(resource)
+    log.info('Downloading resource {0}'.format(resource['id']))
 
     link_context = "{}"
     link_data = json.dumps({
@@ -450,14 +459,17 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
             response = requests.get(resource['url'], timeout=url_timeout,
                                     headers=_request_headers, verify=True)
         except Exception as e:
+            log.error(f"An error for {resource['id']} occurred: {str(e)}", exc_info=True)
             request_headers['User-Agent'] = 'curl/7.35.0'
             response = requests.get(resource['url'], timeout=url_timeout,
                                     headers=_request_headers, verify=False)
+            log.error("After request for {0}".format(resource['id']))
         return response
 
     try:
         headers = json.loads(tasks.link_checker(link_context, link_data))
     except tasks.LinkHeadMethodNotSupported as e:
+        log.error(f"An LinkHeadMethodNotSupported for {resource['id']} occurred: {str(e)}", exc_info=True)
         res = _download_resource(resource_url=resource['url'],
                                  timeout=url_timeout)
         headers = res.headers
@@ -466,10 +478,13 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
                                              )):
             # If the HEAD method is not supported or if a 500
             # error is returned we'll handle the download manually
+            log.error(f"An LinkCheckerError for {resource['id']} occurred: {str(e)}", exc_info=True)
             res = _download_resource(resource_url=resource['url'],
                                      timeout=url_timeout)
             headers = res.headers
         else:
+            log.error('In Else calling raise {0}: '.format(resource['id']))
+            log.error(f"In Else LinkCheckerError {resource['id']} occurred: {str(e)}", exc_info=True)
             raise
 
     resource_format = resource.get('format', '').lower()
@@ -488,12 +503,14 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
     # make sure resource content-length does not exceed our maximum
     if cl and int(cl) >= max_content_length:
         # CKAN 2.9 doesnt support pylons config. Hence removing _update_resource
+        log.error('max_content_length error for {0}'.format(resource['id']))
         raise tasks.DownloadError("Content-length {0} exceeds maximum allowed"
                                   "value {1}".format(cl, max_content_length))
 
     # check that resource is a data file
     if not (resource_format in data_formats or ct.lower().strip('"') in data_formats):
         # CKAN 2.9 doesnt support pylons config. Hence removing _update_resource
+        log.error('resource_format error for {0}'.format(resource['id']))
         raise tasks.DownloadError("Of content type {0}, not "
                                   "downloading".format(ct))
 
@@ -506,8 +523,10 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
         }
         if user_agent_string is not None:
             request_headers['User-Agent'] = user_agent_string
+        log.info('Request before for {0}'.format(resource['id']))
         res = requests.get(resource['url'], timeout=url_timeout,
                            headers=request_headers, verify=False)
+        log.info('Request after for {0}'.format(resource['id']))
     length, hash, saved_file = _save_resource(resource, res, max_content_length)
 
     # check if resource size changed
@@ -523,6 +542,7 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
     if length >= max_content_length:
         # CKAN 2.9 doesnt support pylons config. Hence removing _update_resource
         # record fact that resource is too large to archive
+        log.error('Download Error for {0}: Content-length after streaming reached'.format(resource['id']))
         raise tasks.DownloadError("Content-length after streaming reached "
                                   "maximum allowed value of "
                                   "{0}".format(max_content_length))
