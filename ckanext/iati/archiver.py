@@ -483,7 +483,6 @@ def download(context, resource, url_timeout=URL_TIMEOUT,
                                      timeout=url_timeout)
             headers = res.headers
         else:
-            log.error('In Else calling raise {0}: '.format(resource['id']))
             log.error(f"In Else LinkCheckerError {resource['id']} occurred: {str(e)}", exc_info=True)
             raise
 
