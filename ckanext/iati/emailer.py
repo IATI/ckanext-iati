@@ -36,49 +36,26 @@ new_publisher_body_template = '''
 Dear {sysadmin_name},
 
 The IATI Registry user {user_name} ({site_url}/user/{user_name}) just created a new publisher,
-named "{publisher_title}". In order to become active, it needs to be
+named "{publisher_title}". To become active, it needs to be
 confirmed by a system administrator. Please visit the link below and set
 state to 'active' (to approve) or 'deleted' (to disapprove).
 
- {publisher_link}
+{publisher_link}
 
 Best regards,
 
- The IATI Registry
+The IATI Registry
 '''
-
-publisher_activation_body_template = '''
-Dear {user_name},<br><br>
-
-Congratulations, the publisher that you created on the IATI Registry has been approved.<br><br>
-
-Well done for taking the first step to join over 1500 others in becoming an IATI publisher! Your publisher account can be found in the <a href="{group_link}"> IATI Registry</a>.<br><br>
-
-Your next step is to start creating your IATI files. Guidance for this can be found on the IATI website under step 2 on the <a href="https://iatistandard.org/en/guidance/publishing-data/publishing-files/publishing-checklist/">Publishing Checklist</a>.<br><br>
-
-We are happy to let you know that we have launched the new IATI publishing tool, which will be free to use. 
-If you would like to hear more about this please click on the link <a href="https://publisher.iatistandard.org/"/>publisher.iatistandard.org</a><br><br> 
-
-Should you have any queries or support needs, then please email the IATI Helpdesk at: <a href="mailto:support@iatistandard.org">support@iatistandard.org</a><br><br>
-
-You can also join the conversation with other new publishers in the "Newbies Corner" on <a href="https://iaticonnect.org/newbies-corner/stream">IATI Connect</a>.<br><br>
-
-
-Kind regards,<br>
-IATI Technical Team<br>
-
-'''
-
 
 new_publisher_email_to_publisher_body = '''
 Dear {user_name},<br><br>
 
 Thank you for registering with IATI.<br><br>
 
-A member of the Technical Team will review your account and contact you in 1-3 days with an update.<br><br>
+We will review your account and contact you within two working days with an update.<br><br>
 
 Kind regards,<br>
-IATI Technical Team<br>
+IATI Support<br>
 '''
 
 data_published_email_notification_body = '''
@@ -88,12 +65,12 @@ Congratulations! Your file(s) have been successfully published to <a href="{publ
 
 To view your published data, please check <a href="http://d-portal.org/ctrack.html#view=search">d-portal</a> (allow 24 hours after publishing).<br><br>
 
-You can also do a more detailed search of your published data via the <a href="https://iatidatastore.iatistandard.org/querybuilder/">Datastore</a>.<br><br>
+You can also do a more detailed search of your published data via the <a href="https://datastore.iatistandard.org">Datastore</a>.<br><br>
 
 Should you have any queries or support needs, then please email the IATI Helpdesk at: <a href="mailto:support@iatistandard.org">support@iatistandard.org</a>.<br><br>
 
 Kind regards,<br>
-IATI Technical Team<br>
+IATI Support<br>
 '''
 
 data_not_xml_email_body = '''
@@ -105,9 +82,9 @@ We've detected an issue with the following IATI dataset in your IATI Registry ac
 
 The dataset is not in a valid IATI XML format. Please see our <a href="https://iatistandard.org/en/guidance/publishing-data/creating-files/">Guidance pages</a> on how to publish your data in IATI XML format.<br>
 
-<br>Should you have any queries or support needs, then please email the IATI Helpdesk at: <a href='support@iatistandard.org'>support@iatistandard.org</a><br>
+<br>Should you have any queries or support needs, then please email <a href="mailto:support@iatistandard.org">support@iatistandard.org</a><br>
 Kind regards,<br>
-IATI Technical Team<br>
+IATI Support<br>
 '''
 
 data_has_url_errors = '''
@@ -120,9 +97,9 @@ We've detected an issue with the following IATI dataset in your IATI Registry ac
 The dataset {dataset_url} is not accessible. 
 To fix the error, please update the dataset link (URL) in the IATI Registry.<br>
 
-<br>Should you have any queries or support needs, then please email the IATI Helpdesk at: <a href='support@iatistandard.org'>support@iatistandard.org</a><br>
+<br>Should you have any queries or support needs, then please email <a href="mailto:support@iatistandard.org">support@iatistandard.org</a><br>
 Kind regards,<br>
-IATI Technical Team<br>
+IATI Support<br>
 '''
 
 dataset_critical_or_error_email = '''
@@ -136,8 +113,8 @@ View the dataset here: {dataset_url}<br>
 
 {status_message}<br><br>
 
-Should you have any queries or support needs, then please email the IATI Helpdesk at: support@iatistandard.org<br><br>
+Should you have any queries or support needs, then please email <a href="mailto:support@iatistandard.org">support@iatistandard.org</a><br><br>
 
 Kind regards,<br>
-IATI Technical Team 
+IATI Support<br>
 '''
