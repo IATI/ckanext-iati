@@ -185,7 +185,7 @@ def email_validator(key, data, errors, context):
     try:
         v = validate_email(email, check_deliverability=False)
     except Exception as e:
-        errors[key].append(f'Please provide a valid email address. The email address "{email}" should be for a mailbox that is regularly monitored. Cormac Debug - key {key}')
+        errors[key].append(f'Please provide a valid email address. The email address "{email}" should be for a mailbox that is regularly monitored.')
 
 
 def iati_org_identifier_validator(key, data, errors, context):
