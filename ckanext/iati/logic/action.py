@@ -369,8 +369,8 @@ def _send_activation_notification_email(context, organization_dict):
         user = model.User.get(admin[0])
         if user and user.email:
             user_name = user.fullname or user.name
-            content = emailer.publisher_activation_body_template.format(user_name=user_name.encode('utf8'),
-                    group_title=organization_dict['title'].encode('utf8'), group_link=group_link, user_email=user.email,
+            content = emailer.publisher_activation_body_template.format(user_name=user_name,
+                    group_title=organization_dict['title'], group_link=group_link, user_email=user.email,
                     site_url=site_url)
             emailer.send_email(content, subject, user.email, content_type='html')
             log.debug('[email] Publisher activated notification email sent to user {0}'.format(user.name))
