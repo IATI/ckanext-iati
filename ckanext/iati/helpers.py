@@ -141,7 +141,7 @@ def get_publisher_obj_extra_fields_pub_ids(group_dict):
     for ex in group_dict:
         if ex in formatter_map.keys():
             extras[ex] = formatter_map[ex](group_dict.get(ex, ""))
-
+    log.info(group_dict)
     extras['publisher_iati_id'] = group_dict['publisher_iati_id']
     return extras
 
@@ -310,7 +310,7 @@ def normalize_publisher_name(name):
         return name[4:] + ', The'
     return name
 
-def organization_list(include_extras=False):
+def organization_list(include_extras=True):
     data_dict = {'all_fields': True, 'sort': 'title asc'}
     if include_extras:
         data_dict['include_extras'] = include_extras
