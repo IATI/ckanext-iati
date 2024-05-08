@@ -87,21 +87,6 @@ Kind regards,<br>
 IATI Support<br>
 '''
 
-data_has_url_errors = '''
-Dear {user_name},<br><br>
-
-You're receiving this email because you are the admin user of {publisher_name}'s IATI Registry account.<br>
-
-We've detected an issue with the following IATI dataset in your IATI Registry account: <a href="{publisher_registry_dataset_link}">{publisher_registry_dataset_link}</a><br>
-
-The dataset {dataset_url} is not accessible. 
-To fix the error, please update the dataset link (URL) in the IATI Registry.<br>
-
-<br>Should you have any queries or support needs, then please email <a href="mailto:support@iatistandard.org">support@iatistandard.org</a><br>
-Kind regards,<br>
-IATI Support<br>
-'''
-
 dataset_critical_or_error_email = '''
 Dear {user_name},<br><br>
 

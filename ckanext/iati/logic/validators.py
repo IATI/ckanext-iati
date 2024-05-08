@@ -26,38 +26,6 @@ def iati_resource_count(key, data, errors, context):
         errors[key].append('Datasets can only have one resource (a single IATI XML file)')
 
 
-def send_url_invalid_email(context, is_url_error=True):
-    user = context['auth_user_obj']
-
-    publisher_name = context['group'].name
-    if not os.environ.get('SITE_HOST').startswith('https://'):
-        site_host = 'https://' + os.environ.get('SITE_HOST')
-    else:
-        site_host = os.environ.get('SITE_HOST')
-
-    if site_host.endswith('/'):
-        site_host = site_host[:-1]
-    publisher_url = '{0}/publisher/{1}'.format(site_host, publisher_name)
-    dataset_name = context['package'].name
-    dataset_url = '{0}/dataset/{1}'.format(site_host, dataset_name)
-
-    if is_url_error:
-        body = emailer.data_has_url_errors.format(
-            user_name=context['user'], publisher_name=publisher_name,
-            publisher_registry_dataset_link=publisher_url,
-            dataset_url=dataset_url
-        )
-    else:
-        body = emailer.data_not_xml_email_body.format(
-            user_name=context['user'], publisher_name=publisher_name,
-            publisher_registry_dataset_link=publisher_url,
-            dataset_url=dataset_url
-        )
-
-    subject = "Invalid dataset upload format"
-    emailer.send_email(body, subject, user.email, content_type='html')
-
-
 def valid_url(value, context):
     if not value:
         return
@@ -69,10 +37,8 @@ def valid_url(value, context):
 
     valid_schemes = ('http', 'https', 'ftp')
     if not url.scheme in valid_schemes:
-        send_url_invalid_email(context)
         raise Invalid('Invalid URL scheme')
     if not url.hostname:
-        send_url_invalid_email(context)
         raise Invalid('Invalid URL host name')
     value = urlunparse(url)
 
