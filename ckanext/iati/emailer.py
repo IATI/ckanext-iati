@@ -72,34 +72,3 @@ Should you have any queries or support needs, then please email the IATI Helpdes
 Kind regards,<br>
 IATI Support<br>
 '''
-
-data_not_xml_email_body = '''
-Dear {user_name},<br><br>
-
-You're receiving this email because you are the admin user of {publisher_name}'s IATI Registry account.<br>
-
-We've detected an issue with the following IATI dataset in your IATI Registry account: <a href="{publisher_registry_dataset_link}">{publisher_registry_dataset_link}</a><br>
-
-The dataset is not in a valid IATI XML format. Please see our <a href="https://iatistandard.org/en/guidance/publishing-data/creating-files/">Guidance pages</a> on how to publish your data in IATI XML format.<br>
-
-<br>Should you have any queries or support needs, then please email <a href="mailto:support@iatistandard.org">support@iatistandard.org</a><br>
-Kind regards,<br>
-IATI Support<br>
-'''
-
-dataset_critical_or_error_email = '''
-Dear {user_name},<br><br>
-
-You're receiving this email because you published the following dataset to the {publisher_name}'s IATI Registry account: 
-<a href="{publisher_registry_dataset_link}">{publisher_registry_dataset_link}</a><br><br>
-
-We've detected that the dataset fails validation and its validation status is {validation_status}.<br>
-View the dataset here: {dataset_url}<br>
-
-{status_message}<br><br>
-
-Should you have any queries or support needs, then please email <a href="mailto:support@iatistandard.org">support@iatistandard.org</a><br><br>
-
-Kind regards,<br>
-IATI Support<br>
-'''
