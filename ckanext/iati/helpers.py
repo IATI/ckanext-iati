@@ -129,8 +129,11 @@ def get_publisher_obj_extra_fields(group_dict):
     return extras
 
 def get_publisher_obj_extra_fields_pub_ids(group_dict):
+    log.info('----- get_publisher_obj_extra_fields_pub_ids -----')
+    log.info(f"{group_dict['name']} with state {group_dict['state']}")
     extras = {}
     if not group_dict:
+        log.info('not group_dict')
         return extras
 
     formatter_map = {
@@ -141,8 +144,9 @@ def get_publisher_obj_extra_fields_pub_ids(group_dict):
     for ex in group_dict:
         if ex in formatter_map.keys():
             extras[ex] = formatter_map[ex](group_dict.get(ex, ""))
-    log.info(group_dict)
+
     extras['publisher_iati_id'] = group_dict['publisher_iati_id']
+    log.info(f'Returning ---> {extras}')
     return extras
 
 def is_route_active(menu_item):

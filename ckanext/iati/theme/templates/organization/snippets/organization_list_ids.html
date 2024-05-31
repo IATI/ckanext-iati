@@ -20,26 +20,30 @@ Example:
         <th title="Sort by country">HQ Country / Region</th>
       {% endif %}
       <th title="Sort by number of published datasets">Datasets</th>
+      <th>State</th>
+      <!-- <th>{{ organizations }}</th> -->
     </tr>
   </thead>
 
   <tbody>
   {% for organization in organizations %}
    {% set extra_fields = h.get_publisher_obj_extra_fields_pub_ids(organization) %}
-
-    {% if is_admin_page or organization.package_count > 0 or 'dashboard' in request.url %}
-      <tr>
+    <tr>
+      {% if organization.title %}
         <td><a href="{{ h.url_for('publisher.read', id=organization.name) }}">{{ h.normalize_publisher_name(organization.title) }}</a></td>
-        <td>{{ extra_fields.publisher_iati_id }}</td>
-        <td>{{ extra_fields.publisher_organization_type }}</td>
-        {% if is_admin_page %}
-          <td>{{ extra_fields.publisher_first_publish_date }}</td>
-        {% else %}
-          <td>{{ extra_fields.publisher_country }}</td>
-        {% endif %}
-        <td>{{ organization.package_count }}</td>
-      </tr>
-    {% endif %}
+      {% else %}
+        <td><a href="{{ h.url_for('publisher.read', id=organization.name) }}">{{ h.normalize_publisher_name(organization.name) }}</a></td>
+      {% endif %}
+      <td>{{ extra_fields.publisher_iati_id }}</td>
+      <td>{{ extra_fields.publisher_organization_type }}</td>
+      <td>{{ extra_fields.publisher_country }}</td>
+      <td>{{ organization.package_count }}</td>
+      {% if organization.state == 'approval_needed' %}
+        <td>approval needed</td>
+      {% else %}
+        <td>{{ organization.state }}</td>
+      {% endif %}
+    </tr>
   {% endfor %}
   </tbody>
 </table>

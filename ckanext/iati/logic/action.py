@@ -379,11 +379,13 @@ def _send_activation_notification_email(context, organization_dict):
             log.debug('[email] Publisher activated notification email sent to user {0}'.format(user.name))
 
 
-def _custom_group_or_org_list(context, data_dict, is_org=True):
+def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
     """
     Custom group or organization list function.
     """
     log.error(data_dict)
+    log.error(context)
+    
     model = context['model']
     group_type = data_dict.get('type', 'organization')
 
@@ -402,6 +404,7 @@ def _custom_group_or_org_list(context, data_dict, is_org=True):
     q = data_dict.get('q', '').strip()
     publisher_country = None
     publisher_iati_id = None
+    name_query = None
     if 'publisher_country' in q or 'publisher_iati_id' in q:
         filter_args = parse_qs(q)
         publisher_country = filter_args.get("publisher_country", [None])[0]
@@ -409,9 +412,12 @@ def _custom_group_or_org_list(context, data_dict, is_org=True):
     else:
         name_query = q
 
-    query = model.Session.query(Group.id, Group.name, Group.title)
-    query = query.filter(Group.state == 'active', Group.is_organization == is_org)
-    query = query.filter(Group.type == group_type)
+    query = model.Session.query(model.Group.id, model.Group.name, model.Group.title, model.Group.state)
+    if is_sysadmin:
+        query = query.filter(or_(Group.state == 'active', model.Group.state == 'approval_needed'), Group.is_organization == is_org)
+    else:
+      query = query.filter(model.Group.state == 'active', model.Group.is_organization == is_org)   
+    query = query.filter(model.Group.type == group_type)
 
     if name_query:
         general_search_pattern = f"%{name_query}%"
@@ -488,7 +494,7 @@ def _custom_group_or_org_list(context, data_dict, is_org=True):
     else:
         ref_group_by = 'id' if context.get('api_version', 1) == 2 else 'name'
         group_list = [getattr(group, ref_group_by) for group in groups]
-
+    log.info(group_list)
     return group_list
 
 
@@ -572,7 +578,8 @@ def organization_list(context, data_dict):
     p.toolkit.check_access('organization_list', context, data_dict)
     data_dict['groups'] = data_dict.pop('organizations', [])
     data_dict.setdefault('type', 'organization')
-    return _custom_group_or_org_list(context, data_dict, is_org=True)
+    is_sysadmin = authz.is_sysadmin(g.user)
+    return _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True)
 
 
 @p.toolkit.side_effect_free
