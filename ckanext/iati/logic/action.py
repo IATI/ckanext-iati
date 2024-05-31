@@ -160,7 +160,7 @@ def organization_update(context, data_dict):
     new_state = new_org_dict.get('state')
 
     if old_state == 'approval_needed' and new_state == 'active':
-        h.flash_success('Publisher activated, a notification email has been sent to its administrators.')
+        h.flash_success('Publisher activated.')
 
     old_org_name = old_org_dict.get('name', '')
     new_org_name = new_org_dict.get('name', '')
