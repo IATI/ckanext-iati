@@ -388,12 +388,21 @@ def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
     
     model = context['model']
     group_type = data_dict.get('type', 'organization')
-
     limit = data_dict.get('limit', 10)
     offset = data_dict.get('offset', 0)
-
     sort = data_dict.get('sort', 'title')
-    log.error(sort)
+
+    # Enforce max limit
+    max_limit = int(config.get('ckan.group_and_organization_list_max', 1000))
+    if limit and int(limit) > max_limit:
+        limit = max_limit
+
+    # Validate pagination
+    pagination_dict = {'limit': limit, 'offset': offset}
+    pagination_dict, errors = _validate(data_dict, logic.schema.default_pagination_schema(), context)
+    if errors:
+        raise ValidationError(errors)
+
     if sort:
         sort_order = 'asc' if 'asc' in sort else 'desc'
         sort_field_name = sort.strip().split(' ')[0]
@@ -412,52 +421,49 @@ def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
     else:
         name_query = q
 
-    query = model.Session.query(model.Group.id, model.Group.name, model.Group.title, model.Group.state)
-    if is_sysadmin:
-        query = query.filter(or_(Group.state == 'active', model.Group.state == 'approval_needed'), Group.is_organization == is_org)
-    else:
-      query = query.filter(model.Group.state == 'active', model.Group.is_organization == is_org)   
-    query = query.filter(model.Group.type == group_type)
+    query = model.Session.query(Group.id, Group.name, Group.title)
+    query = query.filter(Group.state == 'active', Group.is_organization == is_org)
+    query = query.filter(Group.type == group_type)
 
     if name_query:
         general_search_pattern = f"%{name_query}%"
         query = query.filter(
             or_(
-                model.Group.name.like(general_search_pattern),
-                model.Group.title.like(general_search_pattern),
+                model.Group.name.ilike(general_search_pattern),
+                model.Group.title.ilike(general_search_pattern),
             )
         )
 
     group_extra_sort_fields = ["publisher_first_publish_date", "publisher_iati_id", "publisher_organization_type", "publisher_country"]
     if publisher_country:
         query = query.join(
-            model.GroupExtra,
-            sa.and_(
-                model.GroupExtra.group_id == model.Group.id,
-                model.GroupExtra.key == 'publisher_country',
+            GroupExtra,
+            and_(
+                GroupExtra.group_id == Group.id,
+                GroupExtra.key == 'publisher_country',
             ),
             isouter=True
         ).filter(
-            model.GroupExtra.value.like(f"%{publisher_country}%")
+            GroupExtra.value.ilike(f"%{publisher_country}%")
         )
 
     if publisher_iati_id:
         query = query.join(
-            model.GroupExtra,
-            sa.and_(
-                model.GroupExtra.group_id == model.Group.id,
-                model.GroupExtra.key == 'publisher_iati_id',
+            GroupExtra,
+            and_(
+                GroupExtra.group_id == Group.id,
+                GroupExtra.key == 'publisher_iati_id',
             ),
             isouter=True,
         ).filter(
-            model.GroupExtra.value.like(f"%{publisher_iati_id}%")
+            GroupExtra.value.ilike(f"%{publisher_iati_id}%")
         )
 
     if sort_field_name in group_extra_sort_fields:
         extra_alias = sa.alias(GroupExtra, name=f"group_extra_{sort_field_name}")
         query = query.join(
             extra_alias,
-            sa.and_(
+            and_(
                 extra_alias.c.group_id == Group.id,
                 extra_alias.c.key == sort_field_name
             )
@@ -494,7 +500,7 @@ def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
     else:
         ref_group_by = 'id' if context.get('api_version', 1) == 2 else 'name'
         group_list = [getattr(group, ref_group_by) for group in groups]
-    log.info(group_list)
+
     return group_list
 
 
