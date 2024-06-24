@@ -440,22 +440,6 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             data_dict['q'] = q 
         return data_dict
 
-    # def send_critail_or_error_dataset_email(self, email, validation_status, dataset_name, publisher_name):
-    #     Do after reindex
-    #     status_message = ''
-    #     if validation_status == 'Critical':
-    #         status_message = 'The data does not adhere to the format set out in the IATI XML Schema and is currently unavailable for many IATI data access tools and their users.'
-    #     elif validation_status == 'Error':
-    #         status_message = 'The data does not follow IATI\'s Rulesets which makes the data hard or impossible to use.'
-    #     body = emailer.dataset_critical_or_error_email.format(
-    #         user_name='user', publisher_name=publisher_name,
-    #         validation_status=validation_status,
-    #         status_message=status_message,
-    #         publisher_registry_dataset_link='https://www.iatiregistry.org/dataset/'+dataset_name
-    #     )
-    #     subject = "Dataset validation status is Critical or Error"
-    #     emailer.send_email(body, subject, email, content_type='html')
-
     def _validator(self, pkg_id):
         GET_URI = 'https://api.iatistandard.org/validator/report'
         headers = {"Ocp-Apim-Subscription-Key": config.get('ckanext.iati.validator_key')}
