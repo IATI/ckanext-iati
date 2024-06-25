@@ -20,9 +20,10 @@ Example:
         <th title="Sort by country">HQ Country / Region</th>
       {% endif %}
       <th title="Sort by number of published datasets">Datasets</th>
-      <!-- TODO: Checked logged in as admin -->
-      <th>State</th>
       <th>Created</th>
+      {% if c.userobj.sysadmin %}
+        <th>State</th>
+      {% endif %}
     </tr>
   </thead>
 
@@ -39,12 +40,14 @@ Example:
       <td>{{ extra_fields.publisher_organization_type }}</td>
       <td>{{ extra_fields.publisher_country }}</td>
       <td>{{ organization.package_count }}</td>
-      {% if organization.state == 'approval_needed' %}
-        <td>approval needed</td>
-      {% else %}
-        <td>{{ organization.state }}</td>
-      {% endif %}
       <td>{{organization.created}}</td>
+      {% if c.userobj.sysadmin %}
+        {% if organization.state == 'approval_needed' %}
+          <td>approval needed</td>
+        {% else %}
+          <td>{{ organization.state }}</td>
+        {% endif %}
+      {% endif %}
     </tr>
   {% endfor %}
   </tbody>
