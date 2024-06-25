@@ -98,7 +98,7 @@ def package_update(context, data_dict):
         hlp.first_published_date_patch(updated_package.get('owner_org'))
 
     if old_package_dict.get('private') and not updated_package.get('private') and \
-            updated_package.get('satte') != "deleted":
+            updated_package.get('state') != "deleted":
         # Data is published send an email
         package_title = updated_package.get('title') or updated_package.get('name')
         send_data_published_notification(context, updated_package.get('owner_org', ''), package_title)
@@ -160,9 +160,7 @@ def organization_update(context, data_dict):
     new_state = new_org_dict.get('state')
 
     if old_state == 'approval_needed' and new_state == 'active':
-        # Notify users
-        _send_activation_notification_email(context, new_org_dict)
-        h.flash_success('Publisher activated, a notification email has been sent to its administrators.')
+        h.flash_success('Publisher activated.')
 
     old_org_name = old_org_dict.get('name', '')
     new_org_name = new_org_dict.get('name', '')
@@ -352,28 +350,6 @@ def _send_new_publisher_email(context, organization_dict):
             subject = "[IATI Registry] New Publisher: {0}".format(organization_dict['title'])
             emailer.send_email(body, subject, sysadmin.email)
             log.debug('[email] New publisher notification email sent to sysadmin {0}'.format(sysadmin.name))
-
-
-def _send_activation_notification_email(context, organization_dict):
-
-    model = context['model']
-
-    members = p.toolkit.get_action('member_list')(context, {'id': organization_dict['id']})
-    admins = [m for m in members if m[1] == 'user' and m[2] == 'Admin']
-
-    subject = config.get('iati.publisher_activation_email_subject', 'IATI Registry Publisher Activation')
-
-    group_link = urljoin(site_url, '/publisher/' + organization_dict['name'])
-
-    for admin in admins:
-        user = model.User.get(admin[0])
-        if user and user.email:
-            user_name = user.fullname or user.name
-            content = emailer.publisher_activation_body_template.format(user_name=user_name,
-                    group_title=organization_dict['title'], group_link=group_link, user_email=user.email,
-                    site_url=site_url)
-            emailer.send_email(content, subject, user.email, content_type='html')
-            log.debug('[email] Publisher activated notification email sent to user {0}'.format(user.name))
 
 
 def _custom_group_or_org_list(context, data_dict, is_org=True):
