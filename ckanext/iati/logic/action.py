@@ -407,8 +407,8 @@ def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
         sort_order = 'asc' if 'asc' in sort else 'desc'
         sort_field_name = sort.strip().split(' ')[0]
     else:
-        sort_order = None
-        sort_field_name = None
+        sort_order = 'desc'
+        sort_field_name = 'created'
 
     q = data_dict.get('q', '').strip()
     publisher_country = None
@@ -421,7 +421,7 @@ def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
     else:
         name_query = q
 
-    query = model.Session.query(Group.id, Group.name, Group.title)
+    query = model.Session.query(Group.id, Group.name, Group.title, Group.created)
     query = query.filter(Group.state == 'active', Group.is_organization == is_org)
     query = query.filter(Group.type == group_type)
 
@@ -477,6 +477,8 @@ def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
     else:
         if sort_field_name == 'name':
             query = query.order_by(sa.asc(Group.name) if sort_order == 'asc' else sa.desc(Group.name))
+        elif sort_field_name == 'created':
+            query = query.order_by(sa.asc(Group.created) if sort_order == 'asc' else sa.desc(Group.created))
         else:
             query = query.order_by(sa.asc(Group.title) if sort_order == 'asc' else sa.desc(Group.title))
 
@@ -496,11 +498,12 @@ def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
                 'id': group.id,
                 'include_extras': True,
             }
-            group_list.append(get_action(action)(context, item_data_dict))
+            org_all_fields = get_action(action)(context, item_data_dict)
+            org_all_fields['created'] = group[3].date()
+            group_list.append(org_all_fields)
     else:
         ref_group_by = 'id' if context.get('api_version', 1) == 2 else 'name'
         group_list = [getattr(group, ref_group_by) for group in groups]
-
     return group_list
 
 

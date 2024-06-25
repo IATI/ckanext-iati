@@ -20,8 +20,9 @@ Example:
         <th title="Sort by country">HQ Country / Region</th>
       {% endif %}
       <th title="Sort by number of published datasets">Datasets</th>
+      <!-- TODO: Checked logged in as admin -->
       <th>State</th>
-      <!-- <th>{{ organizations }}</th> -->
+      <th>Created</th>
     </tr>
   </thead>
 
@@ -43,6 +44,7 @@ Example:
       {% else %}
         <td>{{ organization.state }}</td>
       {% endif %}
+      <td>{{organization.created}}</td>
     </tr>
   {% endfor %}
   </tbody>

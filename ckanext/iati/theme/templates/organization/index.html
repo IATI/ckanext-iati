@@ -50,7 +50,7 @@
         'translated_fields': c.translated_fields,
         'remove_field': c.remove_field }
       %}
-      {% snippet 'snippets/search_form.html', type='organization', not_disp_query=True, site_search_label=_('Search for Publishers'), query=c.q, sorting_selected=c.sort_by_selected, count=c.page.item_count, facets=facets, placeholder=_('Search publishers...'), show_empty=request.params, sorting=[(_('Title Ascending'), 'title asc'), (_('Title Descending'), 'title desc')] %}
+      {% snippet 'snippets/search_form.html', type='organization', not_disp_query=True, site_search_label=_('Search for Publishers'), query=c.q, sorting_selected=c.sort_by_selected, count=c.page.item_count, facets=facets, placeholder=_('Search publishers...'), show_empty=request.params, sorting=[(_('Created Descending'), 'created desc'), (_('Created Ascending'), 'created asc')] %}
 
 {% endblock %}
 
