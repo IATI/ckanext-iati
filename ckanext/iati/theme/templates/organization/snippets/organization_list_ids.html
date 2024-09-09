@@ -32,7 +32,7 @@ Example:
    {% set extra_fields = h.get_publisher_obj_extra_fields_pub_ids(organization) %}
     <tr>
       {% if organization.title %}
-        <td><a href="{{ h.url_for('publisher.read', id=organization.name) }}">{{ h.normalize_publisher_name(organization.title) }}</a></td>
+        <td><a href="{{ h.url_for('publisher.read', id=organization.name) }}">{{ organization.title }}</a></td>
       {% else %}
         <td><a href="{{ h.url_for('publisher.read', id=organization.name) }}">{{ h.normalize_publisher_name(organization.name) }}</a></td>
       {% endif %}

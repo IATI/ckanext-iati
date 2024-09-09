@@ -19,8 +19,10 @@ this.ckan.module('table-sorter', function (jQuery, _) {
       } else if (given_order === "name desc" || given_order === "title desc"){
         el.tablesorter({sortList: [[0,1]]});
       } else if (given_order === "publisher_iati_id asc"){
+        console.log('publisher_iati_id asc')
         el.tablesorter({sortList: [[1,0]]});
       } else if (given_order === "publisher_iati_id desc"){
+        console.log('publisher_iati_id desc')
         el.tablesorter({sortList: [[1,1]]});
       } else if (given_order === "publisher_organization_type asc"){
         el.tablesorter({sortList: [[2,0]]});
