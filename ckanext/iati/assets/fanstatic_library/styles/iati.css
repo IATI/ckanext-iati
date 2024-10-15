@@ -9219,18 +9219,20 @@ fieldset[disabled] .control-custom.disabled .checkbox.btn.active {
 .search-form .search-input button {
   cursor: pointer;
   display: block;
-  position: absolute;
   top: 50%;
   margin-top: -10px;
   right: 10px;
   height: 20px;
   padding: 0;
   border: none;
-  background: transparent;
 }
-.search-form .search-input button span {
-  display: none;
+
+button.btn.btn-primary.publisher_search_button {
+    margin-top: 1px;
+    height: auto;
+    position: inherit;
 }
+
 .search-form .search-input button i {
   color: #999999;
   -webkit-transition: color 0.2s ease-in;

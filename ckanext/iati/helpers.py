@@ -25,6 +25,7 @@ from email_validator import validate_email as _validate_email
 from dateutil.parser import parse as dt_parse
 import uuid
 import logging
+from ckanext.iati.countries import COUNTRIES
 log = logging.getLogger(__name__)
     
 
@@ -143,7 +144,7 @@ def get_publisher_obj_extra_fields_pub_ids(group_dict):
         if ex in formatter_map.keys():
             extras[ex] = formatter_map[ex](group_dict.get(ex, ""))
 
-    extras['publisher_iati_id'] = group_dict['publisher_iati_id']
+    extras['publisher_iati_id'] = group_dict.get('publisher_iati_id', '')
     return extras
 
 def is_route_active(menu_item):
@@ -701,3 +702,22 @@ def get_helper_text_popover_to_form(field_label, helper_text, is_required=False)
         link = link+'<span class="required">*</span>'
 
     return link
+
+def search_country_list():
+    return [('', 'All')] + [(code, name) for code, name in COUNTRIES[1:]]
+
+def error_count(publisher_name):
+    import requests
+    query = p.toolkit.get_action('package_search')({} , {'q': publisher_name})
+    sub_key = os.environ.get('IATI_DEVELOPER_SUBSCRIPTION_KEY')
+    headers = {
+        "Ocp-Apim-Subscription-Key": sub_key
+    }
+    for package in query['results']:
+        print(package)
+        print(f'https://api.iatistandard.org/validator/report?id={package["id"]}')
+        res = requests.get(f'https://api.iatistandard.org/validator/report?id={package["id"]}', headers=headers)
+        print(res)
+    print('publisher name')
+    print(publisher_name)
+    return 'test'

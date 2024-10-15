@@ -50,7 +50,10 @@
         'translated_fields': c.translated_fields,
         'remove_field': c.remove_field }
       %}
-      {% snippet 'snippets/search_form.html', type='organization', not_disp_query=True, site_search_label=_('Search for Publishers'), query=c.q, sorting_selected=c.sort_by_selected, count=c.page.item_count, facets=facets, placeholder=_('Search publishers...'), show_empty=request.params, 
+      {% snippet 'snippets/search_form.html', type='organization', not_disp_query=True, site_search_label=_('Search for Publishers'), 
+      query=c.q, sorting_selected=c.sort_by_selected, count=c.page.item_count, facets=facets, placeholder=_('Search publishers...'), 
+      show_empty=request.params, 
+      country_list=h.search_country_list(),
       sorting=[(_('Created Descending'), 'created desc'), (_('Created Ascending'), 'created asc'),
                (_('Name Ascending'), 'name asc'), (_('Name Descending'), 'name desc'),
                (_('IATI ID Ascending'), 'publisher_iati_id asc'), (_('IATI ID Descending'), 'publisher_iati_id desc'),

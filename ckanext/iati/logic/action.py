@@ -402,6 +402,8 @@ def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
     publisher_iati_id = None
     is_approval_needed = False
     name_query = None
+    print('!!!!')
+    print(q)
     if 'publisher_country' in q or 'publisher_iati_id' in q or 'approval_needed' in q:
         filter_args = parse_qs(q)
         publisher_country = filter_args.get("publisher_country", [None])[0]
@@ -410,6 +412,11 @@ def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
             is_approval_needed = True
     else:
         name_query = q
+        publisher_country = data_dict.get("publisher_country", None)
+        print(f'---- {publisher_country}')
+        publisher_iati_id = data_dict.get("publisher_iati_id", None)
+        if data_dict.get("state", [None]) == 'approval_needed':
+            is_approval_needed = True
 
     query = model.Session.query(Group.id, Group.name, Group.title, Group.created)
 
@@ -626,6 +633,10 @@ def _approval_needed(context, data_dict, is_org=False):
 @p.toolkit.side_effect_free
 def organization_list(context, data_dict):
     p.toolkit.check_access('organization_list', context, data_dict)
+    print(request.params)
+    data_dict['publisher_country'] = request.params.get('publisher_country', None)
+    data_dict['publisher_iati_id'] = request.params.get('publisher_iati_id', None)
+    data_dict['state'] = request.params.get('state', None)
     data_dict['groups'] = data_dict.pop('organizations', [])
     data_dict.setdefault('type', 'organization')
     is_sysadmin = authz.is_sysadmin(g.user)

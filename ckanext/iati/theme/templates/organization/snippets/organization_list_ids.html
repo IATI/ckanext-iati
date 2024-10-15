@@ -8,19 +8,20 @@ Example:
     {% snippet "organization/snippets/organization_list_ids.html" %}
 
 #}
-<table class="table table-hover table-bordered table-striped table-sorted" {% if not is_admin_page %}data-module="table-sorter"{% endif %}>
+<table class="table table-hover table-bordered table-striped table-sorted">
   <thead>
     <tr>
-      <th title="Sort by publisher name">Publisher</th>
-      <th title="Sort by organisation identifier">IATI Organisation Identifier</th>
-      <th title="Sort by organisation type">Organisation Type</th>
+      <th width="110" title="Sort by publisher name">Publisher</th>
+      <th width="110" title="Sort by organisation identifier">IATI Organisation Identifier</th>
+      <th width="100" title="Sort by organisation type">Organisation Type</th>
       {% if is_admin_page %}
         <th title="Sort by country">First Published Date</th>
       {% else %}
-        <th title="Sort by country">HQ Country / Region</th>
+        <th  width="100" title="Sort by country">HQ Country / Region</th>
       {% endif %}
       <th title="Sort by number of published datasets">Datasets</th>
-      <th>Created</th>
+      <th  width="100" >Created</th>
+      <th>Errors</th>
       {% if c.userobj.sysadmin %}
         <th>State</th>
       {% endif %}
@@ -41,6 +42,7 @@ Example:
       <td>{{ extra_fields.publisher_country }}</td>
       <td>{{ organization.package_count }}</td>
       <td>{{organization.created}}</td>
+      <td>{{ h.error_count(organization.name) }}</td>
       {% if c.userobj.sysadmin %}
         {% if organization.state == 'approval_needed' %}
           <td>approval needed</td>
