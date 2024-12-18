@@ -21,7 +21,6 @@ Example:
       {% endif %}
       <th title="Sort by number of published datasets">Datasets</th>
       <th  width="100" >Created</th>
-      <th>Errors</th>
       {% if c.userobj.sysadmin %}
         <th>State</th>
       {% endif %}
@@ -42,7 +41,6 @@ Example:
       <td>{{ extra_fields.publisher_country }}</td>
       <td>{{ organization.package_count }}</td>
       <td>{{organization.created}}</td>
-      <td>{{ h.error_count(organization.name) }}</td>
       {% if c.userobj.sysadmin %}
         {% if organization.state == 'approval_needed' %}
           <td>approval needed</td>

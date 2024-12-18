@@ -706,18 +706,3 @@ def get_helper_text_popover_to_form(field_label, helper_text, is_required=False)
 def search_country_list():
     return [('', 'All')] + [(code, name) for code, name in COUNTRIES[1:]]
 
-def error_count(publisher_name):
-    import requests
-    query = p.toolkit.get_action('package_search')({} , {'q': publisher_name})
-    sub_key = os.environ.get('IATI_DEVELOPER_SUBSCRIPTION_KEY')
-    headers = {
-        "Ocp-Apim-Subscription-Key": sub_key
-    }
-    for package in query['results']:
-        print(package)
-        print(f'https://api.iatistandard.org/validator/report?id={package["id"]}')
-        res = requests.get(f'https://api.iatistandard.org/validator/report?id={package["id"]}', headers=headers)
-        print(res)
-    print('publisher name')
-    print(publisher_name)
-    return 'test'

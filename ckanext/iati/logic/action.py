@@ -365,9 +365,6 @@ def custom_pager_url(page, **kwargs):
     return url_for(request.path, **params)
 
 def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
-    """
-    Custom group or organization list function.
-    """
     model = context['model']
     group_type = data_dict.get('type', 'organization')
     limit = data_dict.get('limit', 20)
@@ -376,17 +373,8 @@ def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
 
     # Enforce max limit
     max_limit = int(config.get('ckan.group_and_organization_list_max', 1000))
-    pagination_dict = {}
     if limit and int(limit) > max_limit:
         limit = max_limit
-    if limit:
-        pagination_dict['limit'] = limit
-    if offset:
-        pagination_dict['offset'] = offset
-    if pagination_dict:
-        pagination_dict, errors = _validate(data_dict, default_pagination_schema(), context)
-        if errors:
-            raise ValidationError(errors)
 
     # Determine sort field and order
     if sort:
@@ -398,12 +386,12 @@ def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
 
     q = data_dict.get('q', '').strip()
 
+    # Parse filters
     publisher_country = None
     publisher_iati_id = None
     is_approval_needed = False
     name_query = None
-    print('!!!!')
-    print(q)
+
     if 'publisher_country' in q or 'publisher_iati_id' in q or 'approval_needed' in q:
         filter_args = parse_qs(q)
         publisher_country = filter_args.get("publisher_country", [None])[0]
@@ -413,24 +401,26 @@ def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
     else:
         name_query = q
         publisher_country = data_dict.get("publisher_country", None)
-        print(f'---- {publisher_country}')
         publisher_iati_id = data_dict.get("publisher_iati_id", None)
         if data_dict.get("state", [None]) == 'approval_needed':
             is_approval_needed = True
 
+    # Base query
     query = model.Session.query(Group.id, Group.name, Group.title, Group.created)
 
     if is_approval_needed:
         query = query.filter(Group.state == 'approval_needed', Group.is_organization == is_org)
     elif is_sysadmin:
         query = query.filter(
-            or_(Group.state == 'active', Group.state == 'approval_needed'), 
-            Group.is_organization == is_org)
+            or_(Group.state == 'active', Group.state == 'approval_needed'),
+            Group.is_organization == is_org
+        )
     else:
         query = query.filter(Group.state == 'active', Group.is_organization == is_org)
 
     query = query.filter(Group.type == group_type)
 
+    # Name or general search
     if name_query:
         general_search_pattern = f"%{name_query}%"
         query = query.outerjoin(
@@ -447,32 +437,36 @@ def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
             )
         )
 
-    group_extra_sort_fields = ["publisher_first_publish_date", "publisher_iati_id", "publisher_organization_type", "publisher_country"]
+    # Filter by publisher_country
     if publisher_country:
+        country_alias = sa.alias(GroupExtra, name="group_extra_country")
         query = query.join(
-            GroupExtra,
+            country_alias,
             and_(
-                GroupExtra.group_id == Group.id,
-                GroupExtra.key == 'publisher_country',
+                country_alias.c.group_id == Group.id,
+                country_alias.c.key == 'publisher_country',
             ),
             isouter=True
         ).filter(
-            GroupExtra.value.ilike(f"%{publisher_country}%")
+            country_alias.c.value.ilike(f"%{publisher_country}%")
         )
 
+    # Filter by publisher_iati_id
     if publisher_iati_id:
+        iati_alias = sa.alias(GroupExtra, name="group_extra_iati")
         query = query.join(
-            GroupExtra,
+            iati_alias,
             and_(
-                GroupExtra.group_id == Group.id,
-                GroupExtra.key == 'publisher_iati_id',
+                iati_alias.c.group_id == Group.id,
+                iati_alias.c.key == 'publisher_iati_id',
             ),
-            isouter=True,
+            isouter=True
         ).filter(
-            GroupExtra.value.like(f"%{publisher_iati_id}%")
+            iati_alias.c.value.like(f"%{publisher_iati_id}%")
         )
 
-    extra_alias = None
+    # Handle sorting
+    group_extra_sort_fields = ["publisher_first_publish_date", "publisher_iati_id", "publisher_organization_type", "publisher_country"]
     if sort_field_name in group_extra_sort_fields:
         extra_alias = sa.alias(GroupExtra, name=f"group_extra_{sort_field_name}")
         query = query.outerjoin(
@@ -488,64 +482,52 @@ def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
                 [(extra_alias.c.value == code, sa.literal(desc)) for code, desc in lists.ORGANIZATION_TYPES],
                 else_=extra_alias.c.value).label('organization_type_description'))
 
-            if sort_order == 'asc':
-                query = query.order_by(sa.asc('organization_type_description'))
-            else:
-                query = query.order_by(sa.desc('organization_type_description'))
+            query = query.order_by(sa.asc('organization_type_description') if sort_order == 'asc' else sa.desc('organization_type_description'))
         elif sort_field_name == 'publisher_country':
             query = query.add_columns(sa.case(
                 [(extra_alias.c.value == code, sa.literal(name)) for code, name in COUNTRIES],
                 else_=extra_alias.c.value).label('country_name'))
 
-            if sort_order == 'asc':
-                query = query.order_by(sa.asc('country_name'))
-            else:
-                query = query.order_by(sa.desc('country_name'))
+            query = query.order_by(sa.asc('country_name') if sort_order == 'asc' else sa.desc('country_name'))
         else:
-            if sort_order == 'asc':
-                query = query.order_by(sa.asc(extra_alias.c.value))
-            else:
-                query = query.order_by(sa.desc(extra_alias.c.value))
+            query = query.order_by(sa.asc(extra_alias.c.value) if sort_order == 'asc' else sa.desc(extra_alias.c.value))
     else:
-        if sort_field_name == 'name':
-            query = query.order_by(sa.asc(Group.title) if sort_order == 'asc' else sa.desc(Group.title))
-        elif sort_field_name == 'created':
-            query = query.order_by(sa.asc(Group.created) if sort_order == 'asc' else sa.desc(Group.created))
-        else:
-            query = query.order_by(sa.asc(Group.title) if sort_order == 'asc' else sa.desc(Group.title))
+        query = query.order_by(
+            sa.asc(Group.title) if sort_field_name == 'name' and sort_order == 'asc' else
+            sa.desc(Group.title) if sort_field_name == 'name' else
+            sa.asc(Group.created) if sort_field_name == 'created' and sort_order == 'asc' else
+            sa.desc(Group.created)
+        )
 
+    # Pagination
     total_count = query.count()
-
     if limit:
         query = query.limit(int(limit))
     if offset:
         query = query.offset(int(offset))
-    print(query)
+
+    # Fetch results
     groups = query.distinct().all()
 
+    # Generate group list
     all_fields = asbool(data_dict.get('all_fields', False))
     if all_fields:
         action = 'organization_show' if is_org else 'group_show'
         group_list = []
         for group in groups:
-            item_data_dict = {
-                'id': group.id,
-                'include_extras': True,
-            }
+            item_data_dict = {'id': group.id, 'include_extras': True}
             org_all_fields = get_action(action)(context, item_data_dict)
             org_all_fields['created'] = group[3].date()
-            del org_all_fields['users']
-            del org_all_fields['tags']
-            del org_all_fields['groups']
+            del org_all_fields['users'], org_all_fields['tags'], org_all_fields['groups']
             group_list.append(org_all_fields)
     else:
         ref_group_by = 'id' if context.get('api_version', 1) == 2 else 'name'
         group_list = [getattr(group, ref_group_by) for group in groups]
 
+    # Pagination metadata
     page = int(int(offset) // int(limit)) + 1
     items_per_page = int(limit)
-
-    custom_pagenation = Page(
+    custom_pagination = Page(
         collection=group_list,
         page=page,
         url=custom_pager_url,
@@ -553,7 +535,7 @@ def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
         item_count=total_count
     )
 
-    return group_list, custom_pagenation
+    return group_list, custom_pagination
 
 def _approval_needed(context, data_dict, is_org=False):
     model = context['model']
