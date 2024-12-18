@@ -547,7 +547,6 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'linked_user',
             'get_helper_text_popover_to_form',
             'search_country_list',
-            'error_count'
         )
         return _get_module_functions(iati_helpers, function_names)
 
