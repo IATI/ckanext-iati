@@ -8,38 +8,47 @@ Example:
     {% snippet "organization/snippets/organization_list_ids.html" %}
 
 #}
-<table class="table table-hover table-bordered table-striped table-sorted" {% if not is_admin_page %}data-module="table-sorter"{% endif %}>
+<table class="table table-hover table-bordered table-striped table-sorted">
   <thead>
     <tr>
-      <th title="Sort by publisher name">Publisher</th>
-      <th title="Sort by organisation identifier">IATI Organisation Identifier</th>
-      <th title="Sort by organisation type">Organisation Type</th>
+      <th width="110" title="Sort by publisher name">Publisher</th>
+      <th width="110" title="Sort by organisation identifier">IATI Organisation Identifier</th>
+      <th width="100" title="Sort by organisation type">Organisation Type</th>
       {% if is_admin_page %}
         <th title="Sort by country">First Published Date</th>
       {% else %}
-        <th title="Sort by country">HQ Country / Region</th>
+        <th  width="100" title="Sort by country">HQ Country / Region</th>
       {% endif %}
       <th title="Sort by number of published datasets">Datasets</th>
+      <th  width="100" >Created</th>
+      {% if c.userobj.sysadmin %}
+        <th>State</th>
+      {% endif %}
     </tr>
   </thead>
 
   <tbody>
   {% for organization in organizations %}
    {% set extra_fields = h.get_publisher_obj_extra_fields_pub_ids(organization) %}
-
-    {% if is_admin_page or organization.package_count > 0 or 'dashboard' in request.url %}
-      <tr>
-        <td><a href="{{ h.url_for('publisher.read', id=organization.name) }}">{{ h.normalize_publisher_name(organization.title) }}</a></td>
-        <td>{{ extra_fields.publisher_iati_id }}</td>
-        <td>{{ extra_fields.publisher_organization_type }}</td>
-        {% if is_admin_page %}
-          <td>{{ extra_fields.publisher_first_publish_date }}</td>
+    <tr>
+      {% if organization.title %}
+        <td><a href="{{ h.url_for('publisher.read', id=organization.name) }}">{{ organization.title }}</a></td>
+      {% else %}
+        <td><a href="{{ h.url_for('publisher.read', id=organization.name) }}">{{ h.normalize_publisher_name(organization.name) }}</a></td>
+      {% endif %}
+      <td>{{ extra_fields.publisher_iati_id }}</td>
+      <td>{{ extra_fields.publisher_organization_type }}</td>
+      <td>{{ extra_fields.publisher_country }}</td>
+      <td>{{ organization.package_count }}</td>
+      <td>{{organization.created}}</td>
+      {% if c.userobj.sysadmin %}
+        {% if organization.state == 'approval_needed' %}
+          <td>approval needed</td>
         {% else %}
-          <td>{{ extra_fields.publisher_country }}</td>
+          <td>{{ organization.state }}</td>
         {% endif %}
-        <td>{{ organization.package_count }}</td>
-      </tr>
-    {% endif %}
+      {% endif %}
+    </tr>
   {% endfor %}
   </tbody>
 </table>

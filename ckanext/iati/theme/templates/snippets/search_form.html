@@ -1,30 +1,49 @@
 {% ckan_extends %}
 
-
 {% block search_input %}
     <div class="search-input control-group search-giant">
         {% if site_search_label %}
             <label for="field-giant-search">{% block header_site_search_label %}{{ site_search_label }}{% endblock %}</label>
         {% endif %}
-      <input id="field-giant-search" type="text" class="search" name="q" value="{{ query }}" autocomplete="off" placeholder="{{ placeholder }}">
-      {% block search_input_button %}
-        <button style="margin:auto;" type="submit" value="search">
-          <i class="icon-search"></i>
-                  <span>Submit</span>
-        </button>
-      {% endblock %}
-    </div>
-  {% endblock %}
+        <input id="field-giant-search" type="text" class="search" name="q" value="{{ query }}" autocomplete="off" placeholder="{{ placeholder }}">
+        
+        <div class="country-input control-group">
+            <label for="field-country-search">Country</label>
+            <select id="field-publisher-country" name="publisher_country" class="form-control">
+              {% for code, name in country_list %}
+                  <option value="{{ code }}" {% if request.params.get('publisher_country') == code %}selected{% endif %}>
+                      {{ name }}
+                  </option>
+              {% endfor %}
+          </select>
+        </div>
+        {% if c.userobj.sysadmin %}
+          <div class="form-group">
+            <label for="field-needs-approval">Only Show Needs Approval</label>
+            <select id="field-needs-approval" name="state" class="form-control">
+                <option value="">Select</option>
+                <option value="approval_needed" {% if request.params.get('state') == 'approval_needed' %}selected{% endif %}>Yes</option>
+                <option value="" {% if request.params.get('state') == '' %}selected{% endif %}>No</option>
+            </select>
+          </div>
+        {% endif %}
 
+        {% block search_input_button %}
+          <div class="form-group">
+            <button style="margin-top: 1px; height: auto; position: inherit;" class="btn btn-primary" type="submit" value="search" aria-label="{{_('Search')}}">
+                <span>Search</span>
+            </button>
+          </div>
+        {% endblock %}
+    </div>
+{% endblock %}
 
 {% block search_title %}
-    
     {% if not error %}
-      {% if not not_disp_query %}
-       <h2>{% snippet 'snippets/search_result_text.html', query=query, count=count, type=type %}</h2>
-      {% endif %}
+        {% if not not_disp_query %}
+            <h2>{% snippet 'snippets/search_result_text.html', query=query, count=count, type=type %}</h2>
+        {% endif %}
     {% else %}
-      <h2>Error</h2>
+        <h2>Error</h2>
     {% endif %}
-  {% endblock %}
-
+{% endblock %}

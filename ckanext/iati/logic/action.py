@@ -2,7 +2,7 @@ import logging
 import json
 import csv
 import tempfile
-from urllib.parse import urljoin
+from urllib.parse import urljoin, parse_qs
 import inspect
 from ckan.plugins.toolkit import config
 import sqlalchemy
@@ -11,8 +11,11 @@ from ckan import logic
 import ckan.authz as authz
 import ckan.plugins as p
 import ckan.lib.helpers as h
+from ckan.lib.helpers import Page, url_for
 import ckan.lib.dictization.model_dictize as model_dictize
 import ckan.model as model
+from ckan.logic import schema, get_action
+from ckan.model import Group, GroupExtra, Package, Member
 import ckan.logic.action.get as get_core
 import ckan.logic.action.create as create_core
 import ckan.logic.action.update as update_core
@@ -21,11 +24,14 @@ from ckan.lib import jobs
 import ckanext.iati.emailer as emailer
 import ckanext.iati.helpers as hlp
 import ckanext.iati.model as iati_model
-from sqlalchemy import and_
+from sqlalchemy import and_, func, or_
+import sqlalchemy as sa
 from ckanext.iati.logic import publisher_tasks
+import ckanext.iati.lists as lists
+from ckan.logic.schema import default_pagination_schema
 
 from paste.deploy.converters import asbool
-from ckan.common import _, g
+from ckan.common import _, g, request
 import ckan
 import io
 import codecs
@@ -48,7 +54,7 @@ _func = sqlalchemy.func
 _desc = sqlalchemy.desc
 _case = sqlalchemy.case
 _text = sqlalchemy.text
-
+COUNTRIES = ((""," "),("AF","Afghanistan"),("AX","Åland Islands"),("AL","Albania"),("DZ","Algeria"),("AS","American Samoa"),("AD","Andorra"),("AO","Angola"),("AI","Anguilla"),("AQ","Antarctica"),("AG","Antigua and Barbuda"),("AR","Argentina"),("AM","Armenia"),("AW","Aruba"),("AU","Australia"),("AT","Austria"),("AZ","Azerbaijan"),("BS","Bahamas"),("BH","Bahrain"),("BD","Bangladesh"),("BB","Barbados"),("BY","Belarus"),("BE","Belgium"),("BZ","Belize"),("BJ","Benin"),("BM","Bermuda"),("BT","Bhutan"),("BO","Bolivia"),("BQ","Bonaire, Sint Eustatius and Saba"),("BA","Bosnia and Herzegovina"),("BW","Botswana"),("BV","Bouvet Island"),("BR","Brazil"),("IO","British Indian Ocean Territory"),("BN","Brunei Darussalam"),("BG","Bulgaria"),("BF","Burkina Faso"),("BI","Burundi"),("KH","Cambodia"),("CM","Cameroon"),("CA","Canada"),("CV","Cabo Verde"),("KY","Cayman Islands"),("CF","Central African Republic"),("TD","Chad"),("CL","Chile"),("CN","China"),("CX","Christmas Island"),("CC","Cocos (Keeling) Islands"),("CO","Colombia"),("KM","Comoros"),("CG","Congo"),("CD","Congo (Democratic Republic of the)"),("CK","Cook Islands"),("CR","Costa Rica"),("CI","Côte D'Ivoire"),("HR","Croatia"),("CU","Cuba"),("CW","Curaçao"),("CY","Cyprus"),("CZ","Czechia"),("DK","Denmark"),("DJ","Djibouti"),("DM","Dominica"),("DO","Dominican Republic"),("EC","Ecuador"),("EG","Egypt"),("SV","El Salvador"),("GQ","Equatorial Guinea"),("ER","Eritrea"),("EE","Estonia"),("ET","Ethiopia"),("FK","Falkland Islands [Malvinas]"),("FO","Faroe Islands"),("FJ","Fiji"),("FI","Finland"),("FR","France"),("GF","French Guiana"),("PF","French Polynesia"),("TF","French Southern Territories"),("GA","Gabon"),("GM","Gambia"),("GE","Georgia"),("DE","Germany"),("GH","Ghana"),("GI","Gibraltar"),("GR","Greece"),("GL","Greenland"),("GD","Grenada"),("GP","Guadeloupe"),("GU","Guam"),("GT","Guatemala"),("GG","Guernsey"),("GN","Guinea"),("GW","Guinea-Bissau"),("GY","Guyana"),("HT","Haiti"),("HM","Heard Island and Mcdonald Islands"),("VA","Holy See"),("HN","Honduras"),("HK","Hong Kong"),("HU","Hungary"),("IS","Iceland"),("IN","India"),("ID","Indonesia"),("IR","Iran, Islamic Republic of"),("IQ","Iraq"),("IE","Ireland"),("IM","Isle of Man"),("IL","Israel"),("IT","Italy"),("JM","Jamaica"),("JP","Japan"),("JE","Jersey"),("JO","Jordan"),("KZ","Kazakhstan"),("KE","Kenya"),("KI","Kiribati"),("KP","Korea (Democratic People's Republic of)"),("KR","Korea (Republic of)"),("XK","Kosovo"),("KW","Kuwait"),("KG","Kyrgyzstan"),("LA","Lao People's Democratic Republic"),("LV","Latvia"),("LB","Lebanon"),("LS","Lesotho"),("LR","Liberia"),("LY","Libya"),("LI","Liechtenstein"),("LT","Lithuania"),("LU","Luxembourg"),("MO","Macao"),("MK","Macedonia (former Yugoslav Republic of"),("MG","Madagascar"),("MW","Malawi"),("MY","Malaysia"),("MV","Maldives"),("ML","Mali"),("MT","Malta"),("MH","Marshall Islands"),("MQ","Martinique"),("MR","Mauritania"),("MU","Mauritius"),("YT","Mayotte"),("MX","Mexico"),("FM","Micronesia (Federated States of"),("MD","Moldova (Republic of)"),("MC","Monaco"),("MN","Mongolia"),("ME","Montenegro"),("MS","Montserrat"),("MA","Morocco"),("MZ","Mozambique"),("MM","Myanmar"),("NA","Namibia"),("NR","Nauru"),("NP","Nepal"),("NL","Netherlands"),("NC","New Caledonia"),("NZ","New Zealand"),("NI","Nicaragua"),("NE","Niger"),("NG","Nigeria"),("NU","Niue"),("NF","Norfolk Island"),("MP","Northern Mariana Islands"),("NO","Norway"),("OM","Oman"),("PK","Pakistan"),("PW","Palau"),("PS","Palestine, State of"),("PA","Panama"),("PG","Papua New Guinea"),("PY","Paraguay"),("PE","Peru"),("PH","Philippines"),("PN","Pitcairn"),("PL","Poland"),("PT","Portugal"),("PR","Puerto Rico"),("QA","Qatar"),("RE","Réunion"),("RO","Romania"),("RU","Russian Federation"),("RW","Rwanda"),("BL","Saint Barthélemy"),("SH","Saint Helena, Ascension and Tristan da Cunha"),("KN","Saint Kitts and Nevis"),("LC","Saint Lucia"),("MF","Saint Martin (French part)"),("PM","Saint Pierre and Miquelon"),("VC","Saint Vincent and the Grenadines"),("WS","Samoa"),("SM","San Marino"),("ST","Sao Tome and Principe"),("SA","Saudi Arabia"),("SN","Senegal"),("RS","Serbia"),("SC","Seychelles"),("SL","Sierra Leone"),("SG","Singapore"),("SX","Sint Maarten (Dutch part)"),("SK","Slovakia"),("SI","Slovenia"),("SB","Solomon Islands"),("SO","Somalia"),("ZA","South Africa"),("GS","South Georgia and the South Sandwich Islands"),("SS","South Sudan"),("ES","Spain"),("LK","Sri Lanka"),("SD","Sudan"),("SR","Suriname"),("SJ","Svalbard and Jan Mayen"),("SZ","eSwatini"),("SE","Sweden"),("CH","Switzerland"),("SY","Syrian Arab Republic"),("TW","Taiwan (Province of China)"),("TJ","Tajikistan"),("TZ","Tanzania, United Republic of"),("TH","Thailand"),("TL","Timor-Leste"),("TG","Togo"),("TK","Tokelau"),("TO","Tonga"),("TT","Trinidad and Tobago"),("TN","Tunisia"),("TR","Turkey"),("TM","Turkmenistan"),("TC","Turks and Caicos Islands"),("TV","Tuvalu"),("UG","Uganda"),("UA","Ukraine"),("AE","United Arab Emirates"),("GB","United Kingdom"),("US","United States"),("UM","United States Minor Outlying Islands"),("UY","Uruguay"),("UZ","Uzbekistan"),("VU","Vanuatu"),("VE","Venezuela (Bolivarian Republic of)"),("VN","Viet Nam"),("VG","Virgin Islands (British)"),("VI","Virgin Islands (U.S.)"),("WF","Wallis and Futuna"),("EH","Western Sahara"),("YE","Yemen"),("ZM","Zambia"),("ZW","Zimbabwe"),("88","States Ex-Yugoslavia unspecified"),("298","Africa, regional"),("189","North of Sahara, regional"),("289","South of Sahara, regional"),("89","Europe, regional"),("498","America, regional"),("389","North & Central America, regional"),("489","South America, regional"),("380","West Indies, regional"),("589","Middle East, regional"),("798","Asia, regional"),("619","Central Asia, regional"),("679","South Asia, regional"),("689","South & Central Asia, regional"),("789","Far East Asia, regional"),("889","Oceania, regional"),("998","Bilateral, unspecified"),)
 
 def send_data_published_notification(context, owner_org, package_title):
     publisher_link = urljoin(site_url, '/publisher/' + owner_org)
@@ -352,135 +358,184 @@ def _send_new_publisher_email(context, organization_dict):
             log.debug('[email] New publisher notification email sent to sysadmin {0}'.format(sysadmin.name))
 
 
-def _custom_group_or_org_list(context, data_dict, is_org=True):
-    """
-     Custom oprg search by publisher_iati_id and sort by publisher_first_published
-    """
+def custom_pager_url(page, **kwargs):
+    params = request.params.copy()
+    params['page'] = page
+    params.update(kwargs)
+    return url_for(request.path, **params)
+
+def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
     model = context['model']
-    api = context.get('api_version')
-    groups = data_dict.get('groups')
-    group_type = data_dict.get('type', 'group')
-    ref_group_by = 'id' if api == 2 else 'name'
-    pagination_dict = {}
-    limit = data_dict.get('limit', None)
-    if limit:
-        pagination_dict['limit'] = data_dict['limit']
-    offset = data_dict.get('offset')
-    if offset:
-        pagination_dict['offset'] = data_dict['offset']
-    if pagination_dict:
-        pagination_dict, errors = _validate(
-            data_dict, logic.schema.default_pagination_schema(), context)
-        if errors:
-            raise ValidationError(errors)
-    sort = data_dict.get('sort') or 'title'
-    q = data_dict.get('q', '').strip()
+    group_type = data_dict.get('type', 'organization')
+    limit = data_dict.get('limit', 20)
+    offset = data_dict.get('offset', 0)
+    sort = data_dict.get('sort', 'title')
 
-    all_fields = asbool(data_dict.get('all_fields', None))
-
-    if all_fields:
-        # all_fields is really computationally expensive, so need a tight limit
-        max_limit = int(config.get(
-            'ckan.group_and_organization_list_all_fields_max', 50))
-    else:
-        max_limit = int(config.get('ckan.group_and_organization_list_max', 1000))
-    
+    # Enforce max limit
+    max_limit = int(config.get('ckan.group_and_organization_list_max', 1000))
     if limit and int(limit) > max_limit:
         limit = max_limit
 
-    # order_by deprecated in ckan 1.8
-    # if it is supplied and sort isn't use order_by and raise a warning
-    order_by = data_dict.get('order_by', '')
-    if order_by:
-        log.warn('`order_by` deprecated please use `sort`')
-        if not data_dict.get('sort'):
-            sort = order_by
-
-    # if the sort is packages and no sort direction is supplied we want to do a
-    # reverse sort to maintain compatibility.
-    if sort.strip() in ('packages', 'package_count'):
-        sort = 'package_count desc'
-
-    sort_info = get_core._unpick_search(sort,
-                               allowed_fields=['name', 'packages',
-                                               'package_count', 'title', 'publisher_first_publish_date'],
-                               total=1)
-
-    if sort_info and sort_info[0][0] == 'package_count':
-        query = model.Session.query(model.Group.id,
-                                    model.Group.name,
-                                    sqlalchemy.func.count(model.Group.id)).join(model.GroupExtra)
-
-        query = query.filter(model.Member.group_id == model.Group.id) \
-            .filter(model.Member.table_id == model.Package.id) \
-            .filter(model.Member.table_name == 'package') \
-            .filter(model.Package.state == 'active')
+    # Determine sort field and order
+    if sort:
+        sort_order = 'asc' if 'asc' in sort else 'desc'
+        sort_field_name = sort.strip().split(' ')[0]
     else:
-        query = model.Session.query(model.Group.id,
-                                    model.Group.name).join(model.GroupExtra)
+        sort_order = 'desc'
+        sort_field_name = 'created'
 
-    query = query.filter(_and_(model.Group.state == 'active', model.GroupExtra.key == 'publisher_iati_id'))
+    q = data_dict.get('q', '').strip()
 
-    if groups:
-        query = query.filter(model.Group.name.in_(groups))
-    if q:
-        q = '%{0}%'.format(q)
-        query = query.filter(_or_(
-            model.Group.name.ilike(q),
-            model.Group.title.ilike(q),
-            model.GroupExtra.value.ilike(q),
-        ))
+    # Parse filters
+    publisher_country = None
+    publisher_iati_id = None
+    is_approval_needed = False
+    name_query = None
 
-    query = query.filter(model.Group.is_organization == is_org)
-    query = query.filter(model.Group.type == group_type)
+    if 'publisher_country' in q or 'publisher_iati_id' in q or 'approval_needed' in q:
+        filter_args = parse_qs(q)
+        publisher_country = filter_args.get("publisher_country", [None])[0]
+        publisher_iati_id = filter_args.get("publisher_iati_id", [None])[0]
+        if filter_args.get("state", [None])[0] == 'approval_needed':
+            is_approval_needed = True
+    else:
+        name_query = q
+        publisher_country = data_dict.get("publisher_country", None)
+        publisher_iati_id = data_dict.get("publisher_iati_id", None)
+        if data_dict.get("state", [None]) == 'approval_needed':
+            is_approval_needed = True
 
-    if sort_info:
-        sort_field = sort_info[0][0]
-        sort_direction = sort_info[0][1]
-        if sort_field == 'package_count':
-            query = query.group_by(model.Group.id, model.Group.name)
-            sort_model_field = sqlalchemy.func.count(model.Group.id)
-        elif sort_field == 'name':
-            sort_model_field = model.Group.name
-        elif sort_field == 'title':
-            sort_model_field = model.Group.title
-        elif sort_field == "publisher_first_publish_date":
-            sort_model_field = model.GroupExtra.value
-            query = query.subquery()
-            query = model.Session.query(model.Group.id, model.Group.name).join(
-                query, query.c.id == model.Group.id).join(model.GroupExtra).filter(
-                model.GroupExtra.key == 'publisher_first_publish_date')
+    # Base query
+    query = model.Session.query(Group.id, Group.name, Group.title, Group.created)
+
+    if is_approval_needed:
+        query = query.filter(Group.state == 'approval_needed', Group.is_organization == is_org)
+    elif is_sysadmin:
+        query = query.filter(
+            or_(Group.state == 'active', Group.state == 'approval_needed'),
+            Group.is_organization == is_org
+        )
+    else:
+        query = query.filter(Group.state == 'active', Group.is_organization == is_org)
+
+    query = query.filter(Group.type == group_type)
+
+    # Name or general search
+    if name_query:
+        general_search_pattern = f"%{name_query}%"
+        query = query.outerjoin(
+            model.GroupExtra,
+            and_(
+                model.GroupExtra.group_id == model.Group.id,
+                model.GroupExtra.key == 'publisher_iati_id'
+            )
+        ).filter(
+            or_(
+                model.Group.name.ilike(general_search_pattern),
+                model.Group.title.ilike(general_search_pattern),
+                model.GroupExtra.value.ilike(general_search_pattern)
+            )
+        )
+
+    # Filter by publisher_country
+    if publisher_country:
+        country_alias = sa.alias(GroupExtra, name="group_extra_country")
+        query = query.join(
+            country_alias,
+            and_(
+                country_alias.c.group_id == Group.id,
+                country_alias.c.key == 'publisher_country',
+            ),
+            isouter=True
+        ).filter(
+            country_alias.c.value.ilike(f"%{publisher_country}%")
+        )
+
+    # Filter by publisher_iati_id
+    if publisher_iati_id:
+        iati_alias = sa.alias(GroupExtra, name="group_extra_iati")
+        query = query.join(
+            iati_alias,
+            and_(
+                iati_alias.c.group_id == Group.id,
+                iati_alias.c.key == 'publisher_iati_id',
+            ),
+            isouter=True
+        ).filter(
+            iati_alias.c.value.like(f"%{publisher_iati_id}%")
+        )
+
+    # Handle sorting
+    group_extra_sort_fields = ["publisher_first_publish_date", "publisher_iati_id", "publisher_organization_type", "publisher_country"]
+    if sort_field_name in group_extra_sort_fields:
+        extra_alias = sa.alias(GroupExtra, name=f"group_extra_{sort_field_name}")
+        query = query.outerjoin(
+            extra_alias,
+            and_(
+                extra_alias.c.group_id == Group.id,
+                extra_alias.c.key == sort_field_name
+            )
+        )
+
+        if sort_field_name == 'publisher_organization_type':
+            query = query.add_columns(sa.case(
+                [(extra_alias.c.value == code, sa.literal(desc)) for code, desc in lists.ORGANIZATION_TYPES],
+                else_=extra_alias.c.value).label('organization_type_description'))
+
+            query = query.order_by(sa.asc('organization_type_description') if sort_order == 'asc' else sa.desc('organization_type_description'))
+        elif sort_field_name == 'publisher_country':
+            query = query.add_columns(sa.case(
+                [(extra_alias.c.value == code, sa.literal(name)) for code, name in COUNTRIES],
+                else_=extra_alias.c.value).label('country_name'))
+
+            query = query.order_by(sa.asc('country_name') if sort_order == 'asc' else sa.desc('country_name'))
         else:
-            sort_model_field = model.Group.title
+            query = query.order_by(sa.asc(extra_alias.c.value) if sort_order == 'asc' else sa.desc(extra_alias.c.value))
+    else:
+        query = query.order_by(
+            sa.asc(Group.title) if sort_field_name == 'name' and sort_order == 'asc' else
+            sa.desc(Group.title) if sort_field_name == 'name' else
+            sa.asc(Group.created) if sort_field_name == 'created' and sort_order == 'asc' else
+            sa.desc(Group.created)
+        )
 
-        if sort_direction == 'asc':
-            query = query.order_by(sqlalchemy.asc(sort_model_field))
-        else:
-            query = query.order_by(sqlalchemy.desc(sort_model_field))
-
+    # Pagination
+    total_count = query.count()
     if limit:
         query = query.limit(int(limit))
     if offset:
         query = query.offset(int(offset))
 
+    # Fetch results
     groups = query.distinct().all()
 
+    # Generate group list
+    all_fields = asbool(data_dict.get('all_fields', False))
     if all_fields:
         action = 'organization_show' if is_org else 'group_show'
         group_list = []
         for group in groups:
-            data_dict['id'] = group.id
-            for key in ('include_extras', 'include_tags', 'include_users',
-                        'include_groups', 'include_followers'):
-                if key not in data_dict:
-                    data_dict[key] = False
-
-            group_list.append(logic.get_action(action)(context, data_dict))
+            item_data_dict = {'id': group.id, 'include_extras': True}
+            org_all_fields = get_action(action)(context, item_data_dict)
+            org_all_fields['created'] = group[3].date()
+            del org_all_fields['users'], org_all_fields['tags'], org_all_fields['groups']
+            group_list.append(org_all_fields)
     else:
+        ref_group_by = 'id' if context.get('api_version', 1) == 2 else 'name'
         group_list = [getattr(group, ref_group_by) for group in groups]
 
-    return group_list
+    # Pagination metadata
+    page = int(int(offset) // int(limit)) + 1
+    items_per_page = int(limit)
+    custom_pagination = Page(
+        collection=group_list,
+        page=page,
+        url=custom_pager_url,
+        items_per_page=items_per_page,
+        item_count=total_count
+    )
 
+    return group_list, custom_pagination
 
 def _approval_needed(context, data_dict, is_org=False):
     model = context['model']
@@ -560,9 +615,14 @@ def _approval_needed(context, data_dict, is_org=False):
 @p.toolkit.side_effect_free
 def organization_list(context, data_dict):
     p.toolkit.check_access('organization_list', context, data_dict)
+    print(request.params)
+    data_dict['publisher_country'] = request.params.get('publisher_country', None)
+    data_dict['publisher_iati_id'] = request.params.get('publisher_iati_id', None)
+    data_dict['state'] = request.params.get('state', None)
     data_dict['groups'] = data_dict.pop('organizations', [])
     data_dict.setdefault('type', 'organization')
-    return _custom_group_or_org_list(context, data_dict, is_org=True)
+    is_sysadmin = authz.is_sysadmin(g.user)
+    return _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True)
 
 
 @p.toolkit.side_effect_free

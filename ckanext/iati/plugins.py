@@ -545,7 +545,8 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
             'get_publisher_list_download_formats',
             'get_archiver_status',
             'linked_user',
-            'get_helper_text_popover_to_form'
+            'get_helper_text_popover_to_form',
+            'search_country_list',
         )
         return _get_module_functions(iati_helpers, function_names)
 
