@@ -367,7 +367,7 @@ def custom_pager_url(page, **kwargs):
 def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
     model = context['model']
     group_type = data_dict.get('type', 'organization')
-    limit = data_dict.get('limit', 20)
+    limit = data_dict.get('limit')
     offset = data_dict.get('offset', 0)
     sort = data_dict.get('sort', 'title')
 
@@ -615,14 +615,22 @@ def _approval_needed(context, data_dict, is_org=False):
 @p.toolkit.side_effect_free
 def organization_list(context, data_dict):
     p.toolkit.check_access('organization_list', context, data_dict)
-    print(request.params)
     data_dict['publisher_country'] = request.params.get('publisher_country', None)
     data_dict['publisher_iati_id'] = request.params.get('publisher_iati_id', None)
     data_dict['state'] = request.params.get('state', None)
     data_dict['groups'] = data_dict.pop('organizations', [])
     data_dict.setdefault('type', 'organization')
     is_sysadmin = authz.is_sysadmin(g.user)
-    return _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True)
+
+    is_api_call = request.path.startswith('/api/')
+    if is_api_call:
+        if 'limit' not in data_dict.keys():
+            data_dict['limit'] = 2000
+        group_list, _ = _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True)
+        return group_list
+    else:
+        data_dict['limit'] = data_dict.get('limit', 20)
+        return _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True)
 
 
 @p.toolkit.side_effect_free
