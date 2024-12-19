@@ -1,0 +1,22 @@
+{% extends "page.html" %}
+
+{% block subtitle %}{{ _('Deleted Users from the registry') }}{% endblock %}
+{% block breadcrumb_content %}
+    <li class="active">{{ h.nav_link(_('Users'), named_route='user.index') }}</li>
+{% endblock %}
+
+{% block primary_content %}
+    <article class="module">
+        <div class="module-content">
+            <h1 class="page-heading">
+                {% block page_heading %}{{ _('Deleted Users') }}{% endblock %}
+            </h1>
+        {% block users_list %}
+            {% for user in deleted_users %}
+                <p>{{ h.linked_user(user, maxlength=80) }}</p>
+            {% endfor %}
+        {% endblock %}
+        <a href="{{ h.url_for('user.index') }}" class="btn btn-info" type="submit">Back to Users</a>
+        </div>
+    </article>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends "page.html" %}
+
+{% block subtitle %}{{ _('All Users') }}{% endblock %}
+
+{% block breadcrumb_content %}
+    <li class="active">{{ h.nav_link(_('Users'), named_route='user.index') }}</li>
+{% endblock %}
+
+
+{% block primary %}
+
+    {% block primary_content %}
+        <article class="module">
+            <div class="module-content">
+                <h1 class="page-heading">
+                    {% block page_heading %}{{ _('Users') }}{% endblock %}
+                </h1>
+
+                {% block search_sortby %}
+                    <form method="get" action="{{ h.url_for('user.index') }}">
+                        <div class="field">
+                            <label for="field-user-search">{{ _('Search Users') }}</label>
+                            <input id="field-user-search" value="{{ q }}" class="field form-control" name="q" placeholder="{{ _('Search') }}" />
+                        </div>
+                        <div class="form-select form-group control-order-by">
+                            <label for="field-order-by">{{ _('Order by') }}</label>
+                            <select id="field-order-by" name="order_by" class="form-control">
+                                <option value="name"{% if order_by == 'name' %} selected="selected"{% endif %}>{{ _('Name') }}</option>
+                                {% if g.user and g.user.name %}
+                                    <option value="email"{% if order_by == 'email' %} selected="selected"{% endif %}>{{ _('Email') }}</option>
+                                {% endif %}
+                                <option value="created"{% if order_by == 'created' %} selected="selected"{% endif %}>{{ _('Date Created') }}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-select form-group control-sort-order">
+                            <label for="field-sort-order">{{ _('Sort Order') }}</label>
+                            <select id="field-sort-order" name="sort_order" class="form-control">
+                                <option value="asc"{% if sort_order == 'asc' %} selected="selected"{% endif %}>{{ _('Ascending') }}</option>
+                                <option value="desc"{% if sort_order == 'desc' %} selected="selected"{% endif %}>{{ _('Descending') }}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <button class="btn btn-default" type="submit">{{ _('Go') }}</button>
+                        </div>
+                    </form>
+                {% endblock %}
+
+                {% block users_list %}
+                    <form method="post" action="{{ url_for('users.delete_selected_users') }}">
+                    <table class="table table-hover table-bordered table-striped table-sorted" data-module="table-sorter">
+                        <thead>
+                        <tr>
+                            <th title="Sort by name">Full Names</th>
+                            <th title="Sort by name">Username</th>
+                            {% if g.user and g.user.name %}
+                                <th title="Sort by email">Email</th>
+                            {% endif %}
+                            <th title="Sort by created">Date Created</th>
+                            <th title="Sort by number of datasets">Datasets Created</th>
+                            <th>Last Activity</th>
+                            <th>Publishers</th>
+                            {% if c.userobj and 'sysadmin' %}
+                                <th>Select to delete</th>
+                            {% endif %}
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        {% for user in page.items %}
+                            {% set extra_fields = h.get_user_search_extras(user) %}
+                            <tr>
+                                <td>
+                                    <li>{{ h.linked_user(user['name'], maxlength=80) }}</li>
+                                </td>
+                                <td>{{ user.name }}</td>
+                                {% if g.user and g.user.name %}
+                                    <td>{{ user.email }}</td>
+                                {% endif %}
+                                <td>{{ h.render_datetime(user.created) }}</td>
+                                <td>{{ h.SI_number_span(user.number_created_packages) }}</td>
+                                <td>{{ extra_fields.last_activity }}</td>
+                                <td>
+                                    {% for publisher in extra_fields.publishers %}
+                                        {% if publisher %}
+                                            <li><a href="{{ h.url_for('publisher.read', id=publisher.name) }}">{{ h.normalize_publisher_name(publisher.title) }} ({{ publisher.state }})</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                                {% if c.userobj and 'sysadmin' %}
+                                    <td><input type="checkbox" name="selected_users" value="{{ user[0].id }}"></td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if c.userobj and 'sysadmin' %}
+                        <button class="btn btn-danger" type="submit">Delete Selected Users</button>
+                    {% endif %}
+                    </form>
+                {% endblock %}
+            </div>
+            {% block page_pagination %}
+                {{ page.pager(q=q, order_by=order_by, sort_order=sort_order) }}
+            {% endblock %}
+        </article>
+    {% endblock %}
+
+    {% block secondary %}
+        <aside hidden></aside>
+    {% endblock %}
+
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  {% asset 'ckanext-iati/table_sorter' %}
+{% endblock %}
