@@ -625,7 +625,7 @@ def organization_list(context, data_dict):
     is_api_call = request.path.startswith('/api/')
     if is_api_call:
         if 'limit' not in data_dict.keys():
-            data_dict['limit'] = 2000
+            data_dict['limit'] = int(config.get('ckan.group_and_organization_list_max', 1000))
         group_list, _ = _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True)
         return group_list
     else:
