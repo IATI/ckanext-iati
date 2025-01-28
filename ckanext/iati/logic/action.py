@@ -622,7 +622,16 @@ def organization_list(context, data_dict):
     data_dict['groups'] = data_dict.pop('organizations', [])
     data_dict.setdefault('type', 'organization')
     is_sysadmin = authz.is_sysadmin(g.user)
-    return _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True)
+    
+    is_api_call = request.path.startswith('/api/')
+    if is_api_call:
+        if 'limit' not in data_dict.keys():
+            data_dict['limit'] = 10000
+        group_list, _ = _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True)
+        return group_list
+    else:
+        data_dict['limit'] = int(config.get('ckan.group_and_organization_list_max', 1000))
+        return _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True)
 
 
 @p.toolkit.side_effect_free
