@@ -367,7 +367,7 @@ def custom_pager_url(page, **kwargs):
 def _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True):
     model = context['model']
     group_type = data_dict.get('type', 'organization')
-    limit = data_dict.get('limit')
+    limit = data_dict.get('limit', 20)
     offset = data_dict.get('offset', 0)
     sort = data_dict.get('sort', 'title')
 
@@ -629,7 +629,7 @@ def organization_list(context, data_dict):
         group_list, _ = _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True)
         return group_list
     else:
-        data_dict['limit'] = int(config.get('ckan.group_and_organization_list_max', 1000))
+        data_dict['limit'] = 20
         return _custom_group_or_org_list(context, data_dict, is_sysadmin, is_org=True)
 
 
