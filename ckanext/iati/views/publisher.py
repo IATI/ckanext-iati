@@ -66,8 +66,7 @@ def register_group_plugin_rules(blueprint):
     blueprint.add_url_rule(u'/<id>', methods=[u'GET'], view_func=publisher.read)
     blueprint.add_url_rule(
         u'/edit/<id>', view_func=publisher.EditGroupView.as_view(str(u'edit')))
-    blueprint.add_url_rule(
-        u'/activity/<id>/<int:offset>', methods=[u'GET'], view_func=publisher.activity)
+    
     blueprint.add_url_rule(u'/about/<id>', methods=[u'GET'], view_func=publisher.about)
     blueprint.add_url_rule(
         u'/edit_members/<id>', methods=[u'GET', u'POST'], view_func=publisher.members)
@@ -82,10 +81,12 @@ def register_group_plugin_rules(blueprint):
         methods=[u'GET', u'POST'],
         view_func=publisher.DeleteGroupView.as_view(str(u'delete')))
     for action in actions:
-        blueprint.add_url_rule(
-            u'/{0}/<id>'.format(action),
-            methods=[u'GET', u'POST'],
-            view_func=getattr(publisher, action))
+        _view = getattr(publisher, action, None)
+        if _view is not None:
+            blueprint.add_url_rule(
+                u'/{0}/<id>'.format(action),
+                methods=[u'GET', u'POST'],
+                view_func=_view)
 
     blueprint.add_url_rule(u'/members/<id>', methods=[u'GET'], view_func=members_read)
     blueprint.add_url_rule(u'/download/<output_format>', methods=[u'GET'], view_func=publisher_list_download)

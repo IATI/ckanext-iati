@@ -17,7 +17,7 @@
   <header id="header">
     <div class="container">
       {% block header_logo %}
-        <a class="logo" href="{{ h.url('home.index') }}">
+        <a class="logo" href="{{ h.url_for('home.index') }}">
           <span>{{ _('IATI Registry') }}</span>
         </a>
       {% endblock %}

@@ -3,7 +3,8 @@ import smtplib
 from socket import error as socket_error
 from email.mime.text import MIMEText
 
-from pylons import config
+from ckan.plugins import toolkit as tk
+config = tk.config
 
 
 log = logging.getLogger(__name__)

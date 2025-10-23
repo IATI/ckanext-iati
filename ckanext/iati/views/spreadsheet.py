@@ -1,5 +1,6 @@
 from flask import Blueprint, make_response
-from ckan.lib.base import response, render, abort
+from ckan.lib.base import render
+from flask import abort, make_response
 from ckan.common import _, c, g, config, request
 from ckan import model
 from ckan import logic
@@ -137,7 +138,7 @@ def records_upload_process(row_dict, user):
                     counts['added'].append(_status['created'])
                 else:
                     counts['updated'].append(_status['updated'])
-            except p.toolkit.ValidationError, e:
+            except p.toolkit.ValidationError as e:
                 iati_keys = dict([(f[2], f[0]) for f in PublisherRecordsUpload.CSV_MAPPING])
                 for key, msgs in e.error_dict.iteritems():
                     iati_key = iati_keys.get(key, key)
@@ -146,15 +147,15 @@ def records_upload_process(row_dict, user):
                     log.error('Error in row %i: %s: %s' % (
                         i + 1, iati_key, str(msgs)))
                     errors[i][iati_key] = parse_error_object_to_list(msgs)
-            except p.toolkit.NotAuthorized, e:
+            except p.toolkit.NotAuthorized as e:
                 msg = 'Not authorized to publish to this organization: %s' % row['registry-publisher-id']
                 log.error('Error in row %i: %s' % (i + 1, msg))
                 errors[i]['registry-publisher-id'] = [msg]
-            except p.toolkit.ObjectNotFound, e:
+            except p.toolkit.ObjectNotFound as e:
                 msg = 'Publisher not found: %s' % row['registry-publisher-id']
                 log.error('Error in row %i: %s' % (i + 1, msg))
                 errors[i]['registry-publisher-id'] = [msg]
-            except ValueError, e:
+            except ValueError as e:
                 log.error('Error in row %i: %s' % (i + 1, str(e)))
                 errors[i]['last-updated-datetime'] = [str(e)]
 

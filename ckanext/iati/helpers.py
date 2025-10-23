@@ -1,4 +1,4 @@
-import urllib
+from urllib.parse import quote
 import os
 import time
 from xml.etree import ElementTree
@@ -6,9 +6,9 @@ import datetime
 import json
 from markupsafe import Markup, escape
 from sqlalchemy import create_engine
-# Bad import: should be in toolkit
-from pylons import config
-from webhelpers.html import literal
+from ckan.plugins import toolkit as tk
+config = tk.config
+from ckan.lib.helpers import literal
 import ckan.authz as authz
 import ckan.model as model # get_licenses should be in core
 from ckan.model import User
@@ -140,8 +140,8 @@ def get_publisher_obj_extra_fields_pub_ids(group_dict):
     return extras
 
 def is_route_active(menu_item):
-    _menu_items = config.get('routes.named_routes')
-    if menu_item not in _menu_items:
+    _menu_items = config.get('routes.named_routes') or {}
+    if not _menu_items or menu_item not in _menu_items:
         return False
     return helpers._link_active(_menu_items[menu_item])
 
@@ -236,7 +236,7 @@ def format_file_size(size):
 
 def urlencode(string):
     # Jinja 2.7 has this filter directly available
-    return urllib.quote(string)
+    return quote(string)
 
 def extras_to_dict(pkg):
     extras_dict = {}
@@ -532,7 +532,7 @@ def publisher_first_published_date_validator(data_dict):
 
         if str(first_pub_date).strip() not in invalid_dates:
             data_dict['publisher_first_publish_date'] = first_pub_date
-    except Exception, e:
+    except Exception as e:
         print(e)
         log.warning("Cannot get the first published date - {}", str(e))
 
@@ -559,7 +559,7 @@ def first_published_date_patch(org_id):
             p.toolkit.get_action('organization_patch')({}, data_dict=data_dict)
         except NotAuthorized:
             pass
-    except Exception, e:
+    except Exception as e:
         log.warning("Cannot be patched - {}", e)
 
 

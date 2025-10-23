@@ -2,9 +2,10 @@ import logging
 import json
 import csv
 import tempfile
-from urlparse import urljoin
+from urllib.parse import urljoin
 import inspect
-from pylons import config
+from ckan.plugins import toolkit as tk
+config = tk.config
 import sqlalchemy
 import sys
 from ckan import logic
@@ -23,10 +24,9 @@ import ckanext.iati.emailer as emailer
 import ckanext.iati.helpers as hlp
 from sqlalchemy import and_
 
-from paste.deploy.converters import asbool
-from ckan.common import _
+from ckan.common import _, asbool
 import ckan
-import cStringIO
+import io as cStringIO
 import codecs
 
 log = logging.getLogger(__name__)

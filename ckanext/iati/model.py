@@ -6,7 +6,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, DateTime, UnicodeText
 from sqlalchemy import create_engine
 from sqlalchemy import func
-from pylons import config
+from ckan.plugins import toolkit as tk
+config = tk.config
 import logging
 
 log = logging.getLogger(__name__)

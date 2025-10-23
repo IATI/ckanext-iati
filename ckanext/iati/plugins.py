@@ -3,7 +3,8 @@ from ckan.common import c
 # Bad imports: this should be in the toolkit
 import json
 import os
-from routes.mapper import SubMapper     # Maybe not this one
+from collections import OrderedDict
+from flask import Blueprint, redirect
 from ckan.lib.plugins import DefaultOrganizationForm
 from ckanext.iati.views.archiver import ArchiverViewRun
 import ckan.plugins as p
@@ -42,7 +43,7 @@ log = logging.getLogger(__name__)
 
 class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
 
-    p.implements(p.IRoutes, inherit=True)
+    p.implements(p.IBlueprint)
     p.implements(p.IGroupForm, inherit=True)
     p.implements(p.IConfigurer)
     p.implements(p.IBlueprint)
@@ -113,7 +114,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             '/help': 'http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-register-with-iati/'
         }
 
-        for k, v in redirects.iteritems():
+        for k, v in redirects.items():
             map.redirect(k, v)
 
         return map
@@ -172,7 +173,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
         _name_validator = p.toolkit.get_validator('name_validator')
         _group_name_validator = p.toolkit.get_validator('group_name_validator')
 
-        default_validators = [_ignore_missing, _convert_to_extras, unicode]
+        default_validators = [_ignore_missing, _convert_to_extras, str]
         schema.update({
             'state': [iati_publisher_state_validator],
             'title': [_not_empty, remove_leading_or_trailing_spaces],
@@ -181,18 +182,18 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'license_id': [_convert_to_extras, licence_validator],
             'publisher_source_type': default_validators,
             'publisher_iati_id': [_not_empty, remove_leading_or_trailing_spaces, iati_org_identifier_validator,
-                                  _convert_to_extras, unicode, change_publisher_id_or_org_id],
+                                  _convert_to_extras, str, change_publisher_id_or_org_id],
             'publisher_country': default_validators,
             'publisher_segmentation': default_validators,
             'publisher_ui': default_validators,
-            'publisher_ui_url': [_ignore_missing, iati_resource_url, _convert_to_extras, unicode],
-            'publisher_url': [_ignore_missing, iati_resource_url, _convert_to_extras, unicode],
+            'publisher_ui_url': [_ignore_missing, iati_resource_url, _convert_to_extras, str],
+            'publisher_url': [_ignore_missing, iati_resource_url, _convert_to_extras, str],
             'publisher_frequency_select': default_validators,
             'publisher_frequency': default_validators,
             'publisher_thresholds': default_validators,
             'publisher_units': default_validators,
             'publisher_contact': default_validators,
-            'publisher_contact_email': [_not_empty, _convert_to_extras, email_validator, unicode],
+            'publisher_contact_email': [_not_empty, _convert_to_extras, email_validator, str],
             'publisher_agencies': default_validators,
             'publisher_field_exclusions': default_validators,
             'publisher_description': default_validators,
@@ -203,7 +204,7 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
             'publisher_data_quality': default_validators,
             'publisher_organization_type': default_validators,
             'publisher_implementation_schedule': default_validators,
-            'publisher_first_publish_date': [_ignore_missing, _convert_to_extras, unicode,
+            'publisher_first_publish_date': [_ignore_missing, _convert_to_extras, str,
                                              first_publisher_date_validator]
         })
 
@@ -263,13 +264,118 @@ class IatiPublishers(p.SingletonPlugin, DefaultOrganizationForm):
 
     # IBlueprint
     def get_blueprint(self):
-        # blueprint for this extension
-        return [publisher_blueprint, custom_dashboard, issues, admin_tabs, helper_pages, spreadsheet, archiver_blueprint]
+        blueprints = [publisher_blueprint, custom_dashboard, issues, admin_tabs, helper_pages, spreadsheet, archiver_blueprint]
 
+        bp = Blueprint(u'iati_publishers_redirects', __name__)
+
+        @bp.route('/group/<path:url>')
+        def _r_group_url(url):
+            return redirect('/publisher/{0}'.format(url), code=301)
+
+        @bp.route('/group')
+        def _r_group_root():
+            return redirect('/publisher', code=301)
+
+        @bp.route('/organization/<path:url>')
+        def _r_org_url(url):
+            return redirect('/publisher/{0}'.format(url), code=301)
+
+        @bp.route('/organization')
+        def _r_org_root():
+            return redirect('/publisher', code=301)
+
+        @bp.route('/publishers')
+        def _r_publishers_root():
+            return redirect('/publisher', code=301)
+
+        @bp.route('/publishers/<path:url>')
+        def _r_publishers_url(url):
+            return redirect('/publisher/{0}'.format(url), code=301)
+
+        @bp.route('/dataset_search')
+        def _r_dataset_search():
+            return redirect('/dataset', code=301)
+
+        built_in = [
+            ('amrefuk', 'amrefha'),
+            ('ausaid', 'ausgov'),
+            ('mrdf', 'allwecan'),
+            ('unesco-ihe', 'ihedelft'),
+        ]
+
+        rename_map = OrderedDict((old, new) for (old, new) in built_in)
+
+        try:
+            _redirects = IATIRedirects.get_redirects()
+            for row in _redirects:
+                old, new = row[2], row[1]
+                if old and new and old != new:
+                    rename_map[old] = new
+        except Exception:
+            # Don't fail extension load if DB isn't ready at import time
+            pass
+
+        def _add_publisher_rename(old, new):
+            # Publisher pages
+            bp.add_url_rule(
+                '/publisher/{0}'.format(old),
+                endpoint='pub_{0}'.format(old),
+                view_func=(lambda old=old, new=new: redirect('/publisher/{0}'.format(new), code=301))
+            )
+            bp.add_url_rule(
+                '/publisher/<path:url>/{0}'.format(old),
+                endpoint='pub_sub_{0}'.format(old),
+                view_func=(lambda url, old=old, new=new: redirect('/publisher/{0}/{1}'.format(url, new), code=301))
+            )
+            # Dataset pages for that publisher prefix
+            bp.add_url_rule(
+                '/dataset/{0}-<code>'.format(old),
+                endpoint='ds_pub_{0}'.format(old),
+                view_func=(lambda code, old=old, new=new: redirect('/dataset/{0}-{1}'.format(new, code), code=301))
+            )
+            bp.add_url_rule(
+                '/dataset/<path:url>/{0}-<code>'.format(old),
+                endpoint='ds_pub_sub_{0}'.format(old),
+                view_func=(lambda url, code, old=old, new=new: redirect('/dataset/{0}/{1}-{2}'.format(url, new, code), code=301))
+            )
+
+        for old, new in rename_map.items():
+            _add_publisher_rename(old, new)
+
+        @bp.route('/api/<ver>/rest/publisher')
+        def _r_api_pub(ver):
+            return redirect('/api/{0}/rest/group'.format(ver), code=301)
+
+        @bp.route('/api/rest/publisher')
+        def _r_api_pub_legacy():
+            return redirect('/api/rest/group', code=301)
+
+        @bp.route('/api/<ver>/rest/publisher/<path:url>')
+        def _r_api_pub_url(ver, url):
+            return redirect('/api/{0}/rest/group/{1}'.format(ver, url), code=301)
+
+        @bp.route('/api/rest/publisher/<path:url>')
+        def _r_api_pub_url_legacy(url):
+            return redirect('/api/rest/group/{0}'.format(url), code=301)
+
+        redirects = {
+            '/using-iati-data': 'http://iatistandard.org/en/using-data/',
+            '/registry-dashboard': 'http://iatistandard.org/en/guidance/publishing-data/data-quality-/how-to-improve-you-data-quality-with-the-iati-dashboard/',
+            '/about': 'http://iatistandard.org/en/using-data/IATI-tools-and-resources/using-IATI-registry/',
+            '/registry-api': 'http://iatistandard.org/en/using-data/IATI-tools-and-resources/using-IATI-registry/',
+            '/help': 'http://iatistandard.org/en/guidance/preparing-organisation/organisation-account/how-to-register-with-iati/'
+        }
+
+        for k, v in redirects.items():
+            endpoint_name = 'redir_' + (k.strip('/').replace('/', '_') or 'root')
+            bp.add_url_rule(k, endpoint=endpoint_name, view_func=(lambda v=v: redirect(v, code=301)))
+
+        blueprints.append(bp)
+        return blueprints
 
 class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
 
-    p.implements(p.IRoutes, inherit=True)
+    p.implements(p.IBlueprint)
     p.implements(p.IDatasetForm, inherit=True)
     p.implements(p.IPackageController, inherit=True)
     p.implements(p.IConfigurer)
@@ -277,42 +383,60 @@ class IatiDatasets(p.SingletonPlugin, p.toolkit.DefaultDatasetForm):
     p.implements(p.IActions)
     p.implements(p.IAuthFunctions)
 
-    ## IRoutes
-    def before_map(self, map):
+    def get_blueprint(self):
+        bp = Blueprint(u'iati_datasets_redirects', __name__)
 
-        # Redirects needed after updating the datasets name for some of the publishers
-        map.redirect('/dataset/wb-{code}','/dataset/worldbank-{code}',_redirect_code='301 Moved Permanently')
-        map.redirect('/dataset/minbuza_activities','/dataset/minbuza_nl-activities',_redirect_code='301 Moved Permanently')
-        map.redirect('/dataset/minbuza_organisation','/dataset/minbuza_nl-organisation',_redirect_code='301 Moved Permanently')
+        @bp.route('/dataset/wb-<code>')
+        def _r_wb(code):
+            return redirect('/dataset/worldbank-{0}'.format(code), code=301)
 
-        # Redirect the old extension feeds to the ones in core
-        map.redirect('/feed/registry.atom', '/feeds/dataset.atom', _redirect_code='301 Moved Permanently')
-        map.redirect('/feed/publisher/{id}.atom', '/feeds/group/{id}.atom', _redirect_code='301 Moved Permanently')
-        map.redirect('/feed/custom.atom', '/feeds/custom.atom', _redirect_code='301 Moved Permanently')
-        map.redirect('/feed/country/{id}.atom', '/feeds/custom.atom?extras_country={id}', _redirect_code='301 Moved Permanently')
-        map.redirect('/feed/organisation_type/{id}.atom', '/feeds/custom.atom?extras_publisher_organization_type={id}', _redirect_code='301 Moved Permanently')
+        @bp.route('/dataset/minbuza_activities')
+        def _r_minbuza_act():
+            return redirect('/dataset/minbuza_nl-activities', code=301)
 
-        # Custom redirects for dataset renames
-        # Add a new line for each redirect, in the form
-        #
-        #   ('old_name', 'new_name',),
-        #
+        @bp.route('/dataset/minbuza_organisation')
+        def _r_minbuza_org():
+            return redirect('/dataset/minbuza_nl-organisation', code=301)
+
+        @bp.route('/feed/registry.atom')
+        def _r_feed_registry():
+            return redirect('/feeds/dataset.atom', code=301)
+
+        @bp.route('/feed/publisher/<id>.atom')
+        def _r_feed_publisher(id):
+            return redirect('/feeds/group/{0}.atom'.format(id), code=301)
+
+        @bp.route('/feed/custom.atom')
+        def _r_feed_custom():
+            return redirect('/feeds/custom.atom', code=301)
+
+        @bp.route('/feed/country/<id>.atom')
+        def _r_feed_country(id):
+            return redirect('/feeds/custom.atom?extras_country={0}'.format(id), code=301)
+
+        @bp.route('/feed/organisation_type/<id>.atom')
+        def _r_feed_org_type(id):
+            return redirect('/feeds/custom.atom?extras_publisher_organization_type={0}'.format(id), code=301)
+
         renames = [
-            ('ciuk-org', 'ciuk-activity'),
-            ('uncdf-org', 'uncdf-activity'),
-            ('plan_uk-org210613', 'plan_uk-activity'),
-            # ('manxtimes-org', 'manxtimes-activity'),
-            ('international-alert-org', 'international-alert-activity'),
-            ('globalintegrity-org', 'globalintegrity-activity'),
+            ('ciuk-org','ciuk-activity'),
+            ('uncdf-org','uncdf-activity'),
+            ('plan_uk-org210613','plan_uk-activity'),
+            ('international-alert-org','international-alert-activity'),
+            ('globalintegrity-org','globalintegrity-activity'),
         ]
-
-        for rename in renames:
-            # Dataset pages
-            map.redirect('/dataset/' + rename[0], '/dataset/' + rename[1],
-                     _redirect_code='301 Moved Permanently')
-            map.redirect('/dataset/{url:.*}/' + rename[0], '/dataset/{url}/' + rename[1],
-                     _redirect_code='301 Moved Permanently')
-        return map
+        for old, new in renames:
+            bp.add_url_rule(
+                '/dataset/{0}'.format(old),
+                endpoint='ds_{0}'.format(old),
+                view_func=(lambda old=old, new=new: redirect('/dataset/{0}'.format(new), code=301))
+            )
+            bp.add_url_rule(
+                '/dataset/<path:url>/{0}'.format(old),
+                endpoint='ds_sub_{0}'.format(old),
+                view_func=(lambda url, old=old, new=new: redirect('/dataset/{0}/{1}'.format(url, new), code=301))
+            )
+        return [bp]
 
     ## IDatasetForm
     def is_fallback(self):
@@ -582,7 +706,7 @@ def _get_module_functions(module, function_names):
 
 class IatiTheme(p.SingletonPlugin):
 
-    p.implements(p.IRoutes, inherit=True)
+    p.implements(p.IBlueprint)
     p.implements(p.IConfigurer)
     p.implements(p.IFacets, inherit=True)
 
@@ -590,6 +714,15 @@ class IatiTheme(p.SingletonPlugin):
     def before_map(self, map):
         map.redirect('/about-2', '/about', _redirect_code='301 Moved Permanently')
         return map
+
+    def get_blueprint(self):
+        bp = Blueprint(u'iati_theme_redirects', __name__)
+
+        @bp.route('/about-2')
+        def _r_about_2():
+            return redirect('/about', code=301)
+
+        return [bp]
 
     # IConfigurer
     def update_config(self, config):
@@ -629,4 +762,3 @@ class IatiTheme(p.SingletonPlugin):
             facets_dict['issue_type'] = p.toolkit._('Issues')
 
         return facets_dict
-

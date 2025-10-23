@@ -1,7 +1,8 @@
 import os
 
 import paste.fixture
-from pylons import config
+from ckan.plugins import toolkit as tk
+config = tk.config
 
 from ckan import model
 from ckan.model import Session

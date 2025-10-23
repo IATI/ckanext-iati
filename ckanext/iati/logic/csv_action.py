@@ -10,7 +10,7 @@ from ckanext.iati import helpers as h
 from ckanext.iati.logic import action
 import sqlalchemy
 import csv
-import StringIO
+import io as StringIO
 from collections import OrderedDict
 import json
 from xlwt import Workbook
