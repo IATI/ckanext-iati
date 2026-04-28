@@ -1,3 +1,11 @@
+=================================================
+IATI Registry CKAN Extension: Archived 2026-04-28
+=================================================
+
+This repo contains the code which was used to customise CKAN for the IATI Registry which operated from 2013-2025. It has now been archived for reference. 
+
+---- 
+
 
 International Aid Transparency Initiative (IATI) Registry Extension for CKAN
 ============================================================================
